@@ -1,0 +1,320 @@
+/* WhyChooseSection.module.css */
+
+.section {
+  position: relative;
+  padding: 72px 24px 72px;
+  background: #f5f5f5;
+  border-radius: 20px;
+  box-shadow: inset 0 3px 1px #ffffff,
+    0 1px 1px -1px rgba(0, 0, 0, 0.08),
+    0 2px 2px -1px rgba(0, 0, 0, 0.08),
+    0 4px 4px -2px rgba(0, 0, 0, 0.07),
+    0 7px 7px -3px rgba(0, 0, 0, 0.07),
+    0 14px 14px -3px rgba(0, 0, 0, 0.05),
+    0 30px 30px -4px rgba(0, 0, 0, 0.03);
+}
+
+.section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(800px 800px at 15% 10%, rgba(128, 128, 128, 0.06), transparent 60%),
+    radial-gradient(800px 800px at 85% 20%, rgba(128, 128, 128, 0.05), transparent 60%);
+  border-radius: inherit;
+  z-index: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #f5f5f5;
+  border-radius: 60px;
+  background: #f5f5f5;
+  padding: 4px 12px;
+  box-shadow: inset 0 3px 1px #fff,
+    0 1px 1px -1px rgba(0, 0, 0, 0.10),
+    0 2px 2px -1px rgba(0, 0, 0, 0.09),
+    0 4px 4px -2px rgba(0, 0, 0, 0.09),
+    0 7px 7px -2px rgba(0, 0, 0, 0.09),
+    0 14px 14px -3px rgba(0, 0, 0, 0.08),
+    0 30px 30px -3px rgba(0, 0, 0, 0.05);
+}
+
+.tagIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.tagText {
+  font-size: 12px;
+  font-weight: 500;
+  color: #000;
+}
+
+.title {
+  font-size: 44px;
+  font-weight: 500;
+  text-align: center;
+  background: linear-gradient(142.4deg, #04070d 7%, #0b101b 92%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #344054;
+  text-align: center;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 48px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  background: #f5f5f5;
+  border-radius: 20px;
+  height: 360px;
+  overflow: hidden;
+  box-shadow: inset 0 3px 1px #ffffff, 0 1px 1px -1px #00000014,
+    0 2px 2px -1px #00000014, 0 4px 4px -2px #00000012,
+    0 7px 7px -3px #00000012, 0 14px 14px -3px #0000000d,
+    0 30px 30px -4px #00000005;
+}
+
+.shapeArea {
+  position: relative;
+  width: 100%;
+  height: 200px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 30px;
+}
+
+.cardTitle {
+  font-size: 20px;
+  font-weight: 500;
+  color: #344054;
+  text-align: center;
+}
+
+.cardDesc {
+  font-size: 16px;
+  line-height: 26px;
+  letter-spacing: -0.32px;
+  color: #344054;
+  opacity: 0.8;
+  text-align: center;
+}
+
+/* Shapes */
+.gauge {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 176px;
+  height: 176px;
+  border-radius: 100px;
+  background: #f5f5f5;
+  box-shadow: inset 0 1px 1px -1px #00000014, inset 0 2px 2px -1px #00000014,
+    inset 0 4px 4px -2px #00000012, inset 0 7px 7px -3px #00000012,
+    inset 0 14px 14px -3px #0000000d, inset 0 30px 30px -4px #00000005;
+}
+
+.gauge::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  left: 108px;
+  width: 16px;
+  height: 87px;
+  border-radius: 100px;
+  background: #f5f5f5;
+  box-shadow: inset 0 3px 1px #ffffff, 0 1px 1px -1px #00000033, 0 2px 2px -1px #00000030,
+    0 4px 4px -2px #0000002e, 0 7px 7px -3px #0000002b, 0 14px 14px -3px #00000021,
+    0 30px 30px -4px #0000000d;
+  transform: rotate(52deg);
+}
+
+.gauge::after {
+  content: '';
+  position: absolute;
+  top: 30px;
+  right: 50px;
+  width: 20px;
+  height: 20px;
+  border-radius: 100px;
+  background: #f5f5f5;
+  box-shadow: inset 0 3px 1px #ffffff, 0 1px 1px -1px #00000014,
+    0 2px 2px -1px #00000014, 0 4px 4px -2px #00000012,
+    0 7px 7px -3px #00000012, 0 14px 14px -3px #0000000d,
+    0 30px 30px -4px #00000005;
+}
+
+.bars {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  display: flex;
+  gap: 16px;
+}
+
+.bar {
+  width: 43px;
+  border-radius: 8px;
+  background: #e8e8e8;
+  box-shadow: inset 0 3px 1px #ffffff, 0 1px 1px -1px #00000014,
+    0 2px 2px -1px #00000014, 0 4px 4px -2px #00000012,
+    0 7px 7px -3px #00000012, 0 14px 14px -3px #0000000d,
+    0 30px 30px -4px #00000005;
+}
+
+.bar.h75 {
+  height: 75px;
+  margin-top: 44px;
+}
+
+.bar.h111 {
+  height: 111px;
+  margin-top: 8px;
+}
+
+.bar.h102 {
+  height: 102px;
+  margin-top: 17px;
+}
+
+.bar.h119 {
+  height: 119px;
+}
+
+.network {
+  position: absolute;
+  inset: 0;
+}
+
+.networkSvg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.networkShapeArea {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12px;
+}
+
+.networkShapeArea .networkSvg {
+  width: min(100%, 260px);
+  height: auto;
+  max-height: 176px;
+}
+
+.network {
+  position: absolute;
+  inset: 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-items: center;
+  }
+
+  .card {
+    height: auto;
+  }
+
+  .shapeArea {
+    height: 180px;
+  }
+
+  .networkShapeArea {
+    padding-top: 16px;
+  }
+
+  .networkShapeArea .networkSvg {
+    width: min(100%, 236px);
+    max-height: 164px;
+  }
+
+  /* Trzecia kafelka wyśrodkowana pod pierwszymi dwiema */
+  .thirdCard {
+    grid-column: 1 / -1;
+    justify-self: center;
+    max-width: min(480px, 100%);
+  }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 32px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+  }
+
+  .cardTitle {
+    font-size: 18px;
+  }
+
+  .cardDesc {
+    font-size: 14px;
+  }
+
+  /* Na telefonach jedna kolumna */
+  .cards {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .card {
+    width: 100%;
+    max-width: min(480px, 100%);
+  }
+
+  .networkShapeArea {
+    padding-top: 18px;
+  }
+
+  .networkShapeArea .networkSvg {
+    width: min(100%, 220px);
+    max-height: 156px;
+  }
+}

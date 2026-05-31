@@ -1,0 +1,391 @@
+* {
+  box-sizing: border-box;
+}
+
+.desktopAnimate2 {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  border-radius: 24px;
+  box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 1px 1px -1px #00000014,
+    0px 2px 2px -1px #00000014, 0px 4px 4px -2px #00000012,
+    0px 7px 7px -3px #00000012, 0px 14px 14px -3px #0000000d,
+    0px 30px 30px -4px #00000005;
+  background: var(--color-grey-96, #f5f5f5);
+  width: 100%;
+  max-width: 384px;
+  min-height: 372px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  isolation: isolate;
+}
+
+.desktopAnimate2::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 14%, rgba(16, 185, 129, 0.11), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(245, 245, 245, 0) 44%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.textContainer {
+  display: inline-flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: center;
+  align-self: stretch;
+  margin: 0;
+  padding: 28px 28px 30px;
+  row-gap: 10px;
+  z-index: 2;
+}
+
+.jednoMiejsceWieleMoL {
+  flex-shrink: 0;
+  align-self: stretch;
+  min-height: 52px;
+  line-height: 26px;
+  letter-spacing: -0.2px;
+  color: #101828;
+  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-size: 19px;
+  font-weight: 600;
+  text-align: center;
+  margin: 0;
+}
+
+.paragraph {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: center;
+  align-self: stretch;
+  opacity: 0.8;
+}
+
+.odKreatywnegoProjekt {
+  flex-shrink: 0;
+  width: 100%;
+  min-height: 72px;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: #344054;
+  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  text-align: center;
+  opacity: 0.86;
+  margin: 0;
+}
+
+.shape {
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  flex-shrink: 0;
+  opacity: 0.7;
+  border-radius: 100px;
+  box-shadow: inset 0px -3px 1px 0px #e3e3e375, 0px 1px 1px -1px #00000029,
+    0px 2px 2px -2px #00000026, 0px 5px 5px -3px #00000021,
+    0px 16px 16px -4px #0000000a;
+  background: var(--color-grey-96, #f5f5f5);
+  width: 248px;
+  height: 248px;
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  position: absolute;
+  top: 172px;
+  left: 50%;
+  transform: translateX(-50%);
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 1;
+  border-radius: 16px;
+  box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 1px 1px -1px #00000014,
+    0px 2px 2px -1px #00000014, 0px 4px 4px -2px #00000012,
+    0px 7px 7px -3px #00000012, 0px 14px 14px -3px #0000000d,
+    0px 30px 30px -4px #00000005;
+  background: var(--color-grey-96, #f5f5f5);
+  padding: 0px 13px 3px;
+  width: 52px;
+  height: 52px;
+}
+
+.component1 {
+  flex-shrink: 0;
+  align-self: stretch;
+  width: 27px;
+  height: 27px;
+}
+
+.backgroundShadow {
+  display: inline-flex;
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  border-radius: 100px;
+  box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 1px 1px -1px #00000014,
+    0px 2px 2px -1px #00000014, 0px 4px 4px -2px #00000012,
+    0px 7px 7px -3px #00000012, 0px 14px 14px -3px #0000000d,
+    0px 30px 30px -4px #00000005;
+  background: var(--color-grey-96, #f5f5f5);
+  padding: 9px;
+  width: 126px;
+  height: 126px;
+  overflow: visible; /* pozwala na efekt fali poza okręgiem */
+  will-change: transform, box-shadow;
+  animation: pulseGlow 3.2s ease-in-out infinite;
+}
+
+/* Efekt fali/pulsacji */
+.backgroundShadow::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.08);
+  animation: rippleRing 3.2s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    transform: translateX(-50%) scale(1);
+    box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 1px 1px -1px #00000014,
+      0px 2px 2px -1px #00000014, 0px 4px 4px -2px #00000012,
+      0px 7px 7px -3px #00000012, 0px 14px 14px -3px #0000000d,
+      0px 30px 30px -4px #00000005;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.04);
+    box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 6px 12px -4px rgba(0,0,0,0.10),
+      0px 12px 24px -6px rgba(0,0,0,0.08);
+  }
+}
+
+@keyframes rippleRing {
+  0% {
+    opacity: 0.28;
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0,0,0,0.08);
+  }
+  60% {
+    opacity: 0;
+    transform: scale(1.22);
+    box-shadow: 0 0 0 14px rgba(0,0,0,0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.22);
+    box-shadow: 0 0 0 14px rgba(0,0,0,0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backgroundShadow {
+    animation: none;
+  }
+  .backgroundShadow::after {
+    animation: none;
+  }
+}
+
+.shape2 {
+  display: flex;
+  flex-grow: 1;
+  flex-shrink: 0;
+  align-items: center;
+  border-radius: 100px;
+  box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 1px 1px -1px #00000014,
+    0px 2px 2px -1px #00000014, 0px 4px 4px -2px #00000012,
+    0px 7px 7px -3px #00000012, 0px 14px 14px -3px #0000000d,
+    0px 30px 30px -4px #00000005;
+  background: var(--color-grey-96, #f5f5f5);
+  padding: 19px 14px 19px 24px;
+  overflow: hidden;
+}
+
+.icon {
+  width: 64px;
+  height: 64px;
+}
+
+/* Responsywność */
+@media (max-width: 1024px) {
+  .desktopAnimate2 {
+    width: 100%;
+    max-width: 360px;
+    min-height: 352px;
+  }
+  
+  .textContainer {
+    padding: 28px 24px;
+  }
+  
+  .jednoMiejsceWieleMoL {
+    min-height: 52px;
+    font-size: 20px;
+    line-height: 26px;
+    letter-spacing: -0.2px;
+  }
+  
+  .odKreatywnegoProjekt {
+    width: 100%;
+    min-height: 66px;
+    font-size: 15px;
+    line-height: 22px;
+  }
+  
+  .shape {
+    width: 228px;
+    height: 228px;
+    top: -24px;
+  }
+  
+  .container {
+    top: 162px;
+    width: 48px;
+    height: 48px;
+  }
+  
+  .component1 {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .backgroundShadow {
+    top: 28px;
+    width: 116px;
+    height: 116px;
+    padding: 8px;
+  }
+  
+  .icon {
+    width: 58px;
+    height: 58px;
+  }
+}
+
+@media (max-width: 768px) {
+  .desktopAnimate2 {
+    width: 100%;
+    max-width: 350px;
+    height: auto;
+    min-height: 330px;
+  }
+  
+  .textContainer {
+    padding: 20px;
+    margin-right: 0;
+    margin-left: 0;
+  }
+  
+  .jednoMiejsceWieleMoL {
+    min-height: 44px;
+    font-size: 17px;
+    line-height: 22px;
+  }
+  
+  .odKreatywnegoProjekt {
+    width: 100%;
+    min-height: 60px;
+    font-size: 14px;
+    line-height: 20px;
+  }
+  
+  .shape {
+    width: 208px;
+    height: 208px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .container {
+    left: 50%;
+    transform: translateX(-50%);
+    top: 150px;
+  }
+  
+  .backgroundShadow {
+    left: 50%;
+    transform: translateX(-50%);
+    top: 26px;
+    width: 104px;
+    height: 104px;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .desktopAnimate2 {
+    max-width: 320px;
+    min-height: 308px;
+  }
+  
+  .textContainer {
+    padding: 15px;
+  }
+  
+  .jednoMiejsceWieleMoL {
+    min-height: 44px;
+    font-size: 16px;
+  }
+  
+  .odKreatywnegoProjekt {
+    min-height: 52px;
+    font-size: 13px;
+  }
+  
+  .shape {
+    width: 176px;
+    height: 176px;
+  }
+  
+  .backgroundShadow {
+    top: 22px;
+    width: 86px;
+    height: 86px;
+    padding: 6px;
+  }
+  
+  .container {
+    width: 40px;
+    height: 40px;
+    top: 126px;
+  }
+  
+  .component1 {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .icon {
+    width: 48px;
+    height: 48px;
+  }
+}
+
+@media (hover: hover) {
+  .desktopAnimate2:hover {
+    transform: translateY(-2px);
+    box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 2px 2px -1px #0000001a,
+      0px 4px 4px -1px #00000017, 0px 8px 8px -2px #00000017,
+      0px 14px 14px -2px #00000017, 0px 28px 28px -3px #00000014,
+      0px 60px 60px -3px #0000000d;
+  }
+}

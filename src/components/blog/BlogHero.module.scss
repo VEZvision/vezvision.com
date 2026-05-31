@@ -1,0 +1,176 @@
+* {
+  box-sizing: border-box;
+}
+
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 85vh;
+  padding-top: 120px;
+  padding-bottom: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.videoBg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%) brightness(2);
+  z-index: 0;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 10;
+}
+
+.content {
+  position: relative;
+  z-index: 20;
+  text-align: center;
+  padding: 0 16px;
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+.logoWrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.logoBadge {
+  width: 96px;
+  height: 96px;
+  border-radius: 16px;
+  background: #04070d;
+  box-shadow: 0px 1px 1px -1px rgba(64, 120, 168, 0.37),
+    0px 2px 2px -1px rgba(64, 120, 168, 0.36),
+    0px 4px 4px -2px rgba(64, 120, 168, 0.34),
+    0px 7px 7px -3px rgba(64, 120, 168, 0.31),
+    0px 14px 14px -3px rgba(64, 120, 168, 0.25),
+    0px 30px 30px -4px rgba(64, 120, 168, 0.15);
+  padding: 10px;
+}
+
+.logoInner {
+  border-radius: 100px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.subtitleWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  padding: 8px 12px;
+  margin: 0 auto 24px;
+}
+
+.pulseDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 100px;
+  background: #04070d;
+  box-shadow: 0 0 20px rgba(168, 209, 255, 0.5);
+}
+
+.subtitle {
+  font-size: 16px;
+  line-height: 26px;
+  letter-spacing: -0.32px;
+  color: #0f0f0f;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0 0 20px;
+  color: #000000;
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -1.6px;
+  font-size: clamp(38px, 6.5vw, 80px);
+}
+
+.titleItalic {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-style: italic;
+}
+
+.description {
+  margin: 0 auto 24px;
+  max-width: 936px;
+  font-size: 16px;
+  line-height: 26px;
+  letter-spacing: -0.32px;
+  color: #0f0f0f;
+}
+
+.ctaWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 8px;
+  background: #04070d;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 12px 20px;
+}
+
+.socialRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.divider {
+  width: 2px;
+  height: 24px;
+  background: #0a0a0a;
+}
+
+.socialIcon {
+  width: 24px;
+  height: 24px;
+  opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    min-height: 70vh;
+    padding-bottom: 60px;
+  }
+
+  .logoBadge {
+    width: 80px;
+    height: 80px;
+  }
+
+  .title {
+    font-size: clamp(30px, 8vw, 52px);
+  }
+}

@@ -1,0 +1,235 @@
+/* About Comparison Section Styles */
+.container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: transparent;
+  padding: 100px 20px;
+  width: 100%;
+  min-height: 910px;
+  gap: 48px;
+}
+
+.comparisonGrid {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.comparisonCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  border-radius: 16px;
+  background: #f5f5f5;
+  padding: 32px 24px;
+  box-shadow:
+    inset 0px 3px 1px 0px #ffffff,
+    0px 1px 1px -1px rgba(0, 0, 0, 0.08),
+    0px 2px 2px -1px rgba(0, 0, 0, 0.08),
+    0px 4px 4px -2px rgba(0, 0, 0, 0.07),
+    0px 7px 7px -3px rgba(0, 0, 0, 0.07),
+    0px 14px 14px -3px rgba(0, 0, 0, 0.05),
+    0px 30px 30px -4px rgba(0, 0, 0, 0.02);
+  gap: 24px;
+  flex: 1;
+  min-width: 280px;
+  max-width: 368px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-end;
+  align-self: stretch;
+  height: 50px;
+}
+
+.cardTitle {
+  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-size: 36px;
+  font-weight: 500;
+  line-height: 50px;
+  color: #000000;
+  margin: 0;
+  flex: 1;
+  text-align: center;
+}
+
+.divider {
+  width: 100%;
+  height: 2px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  opacity: 0.4;
+}
+
+.benefitsList {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  gap: 16px;
+}
+
+.benefitItem {
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  gap: 8px;
+  height: 22px;
+}
+
+.benefitIcon {
+  width: 15px;
+  height: 15px;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.benefitText {
+  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 22px;
+  color: #000000;
+  opacity: 0.8;
+  flex: 1;
+}
+
+.ctaButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  align-self: stretch;
+  border-radius: 10px;
+  background: #000000;
+  padding: 11px 24px 12px;
+  border: none;
+  cursor: pointer;
+  box-shadow:
+    0px 2px 4px -2px rgba(61, 61, 61, 0.64),
+    0px 10px 18px -4px rgba(61, 61, 61, 0.25),
+    0px 1px 1px -1px rgba(0, 0, 0, 0.35),
+    0px 2px 2px -1px rgba(0, 0, 0, 0.34),
+    0px 4px 4px -2px rgba(0, 0, 0, 0.33),
+    0px 7px 7px -2px rgba(0, 0, 0, 0.30),
+    0px 14px 14px -3px rgba(0, 0, 0, 0.26),
+    0px 30px 30px -3px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ctaButton:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0px 4px 8px -2px rgba(61, 61, 61, 0.64),
+    0px 12px 20px -4px rgba(61, 61, 61, 0.25),
+    0px 2px 2px -1px rgba(0, 0, 0, 0.35),
+    0px 4px 4px -1px rgba(0, 0, 0, 0.34),
+    0px 6px 6px -2px rgba(0, 0, 0, 0.33),
+    0px 9px 9px -2px rgba(0, 0, 0, 0.30),
+    0px 16px 16px -3px rgba(0, 0, 0, 0.26),
+    0px 32px 32px -3px rgba(0, 0, 0, 0.15);
+}
+
+.ctaButton span {
+  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  color: #ffffff;
+}
+
+.ctaIcon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .container {
+    padding: 80px 32px;
+    gap: 40px;
+  }
+
+  .comparisonGrid {
+    max-width: 720px;
+    gap: 24px;
+  }
+
+  .comparisonCard {
+    padding: 32px 24px;
+  }
+
+  .cardTitle {
+    font-size: 34px;
+    line-height: 42px;
+  }
+
+  .benefitText {
+    font-size: 15px;
+    line-height: 22px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 60px 20px;
+    gap: 32px;
+  }
+
+  .comparisonGrid {
+    flex-direction: column;
+    max-width: 100%;
+    gap: 16px;
+  }
+
+  .comparisonCard {
+    max-width: 100%;
+    padding: 24px 20px;
+  }
+
+  .cardTitle {
+    font-size: 28px;
+    line-height: 42px;
+  }
+
+  .benefitText {
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  .ctaButton {
+    padding: 12px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 40px 16px;
+    gap: 24px;
+  }
+
+  .comparisonCard {
+    padding: 20px 16px;
+  }
+
+  .cardTitle {
+    font-size: 24px;
+    line-height: 36px;
+  }
+
+  .benefitText {
+    font-size: 12px;
+    line-height: 18px;
+  }
+}

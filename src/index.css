@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  --vez-ink: #050505;
+  --vez-ink-soft: #101828;
+  --vez-text: #111827;
+  --vez-text-muted: #475467;
+  --vez-text-subtle: #667085;
+  --vez-surface: #f5f5f5;
+  --vez-surface-soft: #f8f9fa;
+  --vez-surface-raised: #ffffff;
+  --vez-line: rgba(16, 24, 40, 0.10);
+  --vez-line-strong: rgba(16, 24, 40, 0.18);
+  --vez-shadow-soft: rgba(16, 24, 40, 0.08);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  /* scroll-behavior managed by Lenis — do NOT set it here */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+body {
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* Webkit scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Zapobiegaj selekcji tekstu podczas scrollowania */
+.no-select {
+  user-select: none;
+}
+
+/* Quill Editor Styles Override */
+.ql-editor h1 {
+  font-size: 2.25em !important;
+  font-weight: 800 !important;
+  margin-top: 1.5em !important;
+  margin-bottom: 0.8em !important;
+  line-height: 1.1 !important;
+}
+
+.ql-editor h2 {
+  font-size: 1.8em !important;
+  font-weight: 700 !important;
+  margin-top: 1.4em !important;
+  margin-bottom: 0.6em !important;
+  line-height: 1.2 !important;
+}
+
+.ql-editor h3 {
+  font-size: 1.5em !important;
+  font-weight: 600 !important;
+  margin-top: 1.2em !important;
+  margin-bottom: 0.5em !important;
+}
+
+.ql-editor h4 {
+  font-size: 1.25em !important;
+  font-weight: 600 !important;
+  margin-top: 1em !important;
+  margin-bottom: 0.5em !important;
+}
+
+.ql-editor h5 {
+  font-size: 1.1em !important;
+  font-weight: 600 !important;
+}
+
+.ql-editor h6 {
+  font-size: 1em !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.ql-editor p {
+  margin-bottom: 1em !important;
+  line-height: 1.75 !important;
+}
+
+.ql-editor ul,
+.ql-editor ol {
+  padding-left: 1.5em !important;
+  margin-bottom: 1em !important;
+}
+
+.ql-editor ul {
+  list-style-type: disc !important;
+}
+
+.ql-editor ol {
+  list-style-type: decimal !important;
+}
+
+.ql-editor blockquote {
+  border-left: 4px solid #e5e7eb !important;
+  padding-left: 1em !important;
+  font-style: italic !important;
+  color: #4b5563 !important;
+}

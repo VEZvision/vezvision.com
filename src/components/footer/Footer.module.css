@@ -1,0 +1,443 @@
+/* Footer Component Styles */
+.footer {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.footerContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  overflow: hidden;
+}
+
+.backgroundLayer {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 160px 60px 40px;
+  overflow: hidden;
+}
+
+.backgroundVideo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  filter: invert(1);
+}
+
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1320px;
+  gap: 60px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Social Media Section */
+.socialsSection {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.socialLinks {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.socialLink {
+  display: flex;
+  align-items: center;
+  border-radius: 8px;
+  box-shadow: inset 0px 0px 9px 0px rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.socialLink:hover {
+  background: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.socialIconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ffffff;
+  border-radius: 8px;
+  padding: 11px;
+  width: 38px;
+  height: 38px;
+}
+
+.socialIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+/* Main Content */
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+  max-width: 844px;
+}
+
+.textContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.subtitle {
+  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: #000000;
+  text-align: center;
+  margin: 0;
+}
+
+.logoSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.logoWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100px;
+  box-shadow: 0px 1px 1px -1px rgba(122, 122, 122, 0.58),
+    0px 2px 3px -1px rgba(122, 122, 122, 0.57),
+    0px 4px 5px -2px rgba(122, 122, 122, 0.55),
+    0px 7px 10px -2px rgba(122, 122, 122, 0.52),
+    0px 14px 19px -3px rgba(122, 122, 122, 0.46),
+    0px 30px 42px -3px rgba(122, 122, 122, 0.32);
+  padding: 10px;
+  background: linear-gradient(180deg, #000000 0%, #ffffff 100%);
+  overflow: hidden;
+}
+
+.logoImage {
+  width: 83px;
+  height: 83px;
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.logoText {
+  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-size: 100px;
+  line-height: 120px;
+  letter-spacing: -6px;
+  color: #000000;
+  margin: 0;
+  font-weight: normal;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .logoText {
+    background: linear-gradient(37.15deg, #000000 38.97%, #ffffff 84.48%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.tagline {
+  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: #000000;
+  text-align: center;
+  margin: 0;
+  padding: 0 15px;
+}
+
+/* CTA Section */
+.ctaSection {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 10px;
+  box-shadow: 0px 2px 4px -2px rgba(61, 61, 61, 0.64),
+    0px 10px 18px -4px rgba(61, 61, 61, 0.25),
+    0px 1px 1px -1px rgba(0, 0, 0, 0.35),
+    0px 2px 2px -1px rgba(0, 0, 0, 0.34),
+    0px 4px 4px -2px rgba(0, 0, 0, 0.33),
+    0px 7px 7px -2px rgba(0, 0, 0, 0.30),
+    0px 14px 14px -3px rgba(0, 0, 0, 0.26),
+    0px 30px 30px -3px rgba(0, 0, 0, 0.15);
+  background: #000000;
+  padding: 11px 24px 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.ctaButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0px 4px 8px -2px rgba(61, 61, 61, 0.64),
+    0px 15px 25px -4px rgba(61, 61, 61, 0.35),
+    0px 2px 2px -1px rgba(0, 0, 0, 0.45),
+    0px 4px 4px -1px rgba(0, 0, 0, 0.44),
+    0px 8px 8px -2px rgba(0, 0, 0, 0.43),
+    0px 14px 14px -2px rgba(0, 0, 0, 0.40),
+    0px 28px 28px -3px rgba(0, 0, 0, 0.36),
+    0px 60px 60px -3px rgba(0, 0, 0, 0.25);
+}
+
+.ctaText {
+  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  letter-spacing: 0;
+  color: #ffffff;
+}
+
+.ctaIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Footer Navigation */
+.footerNav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  flex-wrap: wrap;
+}
+
+.navLink {
+  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: #000000;
+  text-decoration: underline;
+  transition: all 0.3s ease;
+}
+
+.navLink:hover {
+  color: #333333;
+  text-decoration-color: #333333;
+}
+
+.copyright {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: 24px;
+  opacity: 0.9;
+}
+
+.copyrightText {
+  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0;
+  color: #000000;
+  text-align: center;
+  margin: 0;
+}
+
+/* Legal Links */
+.legalLinks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.legalLink {
+  font-family: Inter, sans-serif;
+  font-size: 13px;
+  color: #666666;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.legalLink:hover {
+  color: #000000;
+  text-decoration: underline;
+}
+
+.legalDivider {
+  color: #cccccc;
+  font-size: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .backgroundLayer {
+    padding: 120px 40px 40px;
+  }
+
+  .logoText {
+    font-size: 80px;
+    line-height: 96px;
+    letter-spacing: -4px;
+  }
+
+  .logoImage {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .backgroundLayer {
+    padding: 100px 32px 40px;
+  }
+
+  .logoText {
+    font-size: 72px;
+    line-height: 86px;
+    letter-spacing: -3.6px;
+  }
+
+  .logoImage {
+    width: 65px;
+    height: 65px;
+  }
+
+  .navLinks {
+    gap: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .backgroundLayer {
+    padding: 80px 20px 40px;
+  }
+
+  .contentWrapper {
+    gap: 40px;
+  }
+
+  .logoContainer {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .logoText {
+    font-size: 60px;
+    line-height: 72px;
+    letter-spacing: -3px;
+  }
+
+  .logoImage {
+    width: 60px;
+    height: 60px;
+  }
+
+  .navLinks {
+    gap: 30px;
+    justify-content: center;
+  }
+
+  .subtitle,
+  .tagline {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .backgroundLayer {
+    padding: 60px 16px 30px;
+  }
+
+  .contentWrapper {
+    gap: 30px;
+  }
+
+  .logoText {
+    font-size: 48px;
+    line-height: 58px;
+    letter-spacing: -2px;
+  }
+
+  .logoImage {
+    width: 50px;
+    height: 50px;
+  }
+
+  .navLinks {
+    gap: 20px;
+    flex-direction: column;
+  }
+
+  .socialLinks {
+    gap: 12px;
+  }
+
+  .ctaButton {
+    padding: 10px 20px;
+  }
+
+  .ctaText {
+    font-size: 13px;
+  }
+
+  .ctaIcon {
+    width: 18px;
+    height: 18px;
+  }
+}

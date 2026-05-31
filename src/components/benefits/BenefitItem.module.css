@@ -1,0 +1,27 @@
+.benefitItem {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  border-radius: 60px;
+  background-color: #F5F5F5;
+  box-shadow: inset 0px 3px 1px 0px #ffffff;
+  transition: transform 0.3s ease;
+}
+
+.benefitItem:hover {
+  transform: translateY(-5px);
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+}
+
+.text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #000000;
+  line-height: 1;
+}

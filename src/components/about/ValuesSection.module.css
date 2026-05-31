@@ -1,0 +1,169 @@
+.section {
+    width: 100%;
+    padding: 20px 20px 80px 20px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    z-index: 10;
+}
+
+.container {
+    max-width: 1200px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+}
+
+/* Grid Layout - 3 columns with minmax to prevent overflow */
+.bentoGrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    width: 100%;
+}
+
+/* Card Base - MATCHING AboutCards exactly */
+.card {
+    background-color: #f8f8f8;
+    border-radius: 20px;
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+/* Wide Card (spans 2 columns) */
+.cardWide {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: row;
+    padding: 0;
+    min-height: 260px;
+}
+
+/* Standard Text Card (spans 1 column) */
+.cardStandard {
+    grid-column: span 1;
+    justify-content: center;
+}
+
+/* Image Side (inside wide card) */
+.imageSide {
+    width: 40%;
+    padding: 20px;
+    display: flex;
+}
+
+.imageBox {
+    width: 100%;
+    height: 100%;
+    background-color: #eee;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cardImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Content Side (inside wide card) */
+.contentSide {
+    width: 60%;
+    padding: 32px 28px 32px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+    overflow: hidden;
+    word-wrap: break-word;
+}
+
+/* Icons - same style as other sections */
+.iconBox {
+    background-color: #000;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-bottom: 4px;
+}
+
+/* Title - matching AboutCards */
+.cardTitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #111;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Description - matching AboutCards */
+.cardDesc {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #555;
+    margin: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+/* Responsive - matching AboutCards */
+@media (max-width: 1024px) {
+    .bentoGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .cardWide {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .bentoGrid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .section {
+        padding-bottom: 60px;
+    }
+
+    .cardWide {
+        grid-column: span 1;
+        flex-direction: column;
+        padding: 0;
+    }
+
+    .imageSide {
+        width: 100%;
+        height: 200px;
+        padding: 16px 16px 0 16px;
+    }
+
+    .contentSide {
+        width: 100%;
+        padding: 24px;
+    }
+
+    .card {
+        padding: 24px;
+    }
+}

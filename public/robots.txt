@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /client
+Disallow: /offer/
+Disallow: /api
+
+Sitemap: https://vezvision.com/sitemap.xml
