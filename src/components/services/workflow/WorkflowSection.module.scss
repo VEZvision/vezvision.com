@@ -60,6 +60,12 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+  }
+}
+
 .steps {
   display: grid;
   grid-template-columns: repeat(6, 1fr);

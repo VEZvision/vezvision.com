@@ -12,12 +12,13 @@ import { SectionReveal, StaggerReveal, StaggerItem } from '@/components/ui/Secti
 import { Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { usePageSectionConfig } from '@/hooks/usePageSection';
+import { safeCmsHref } from '@/utils/safeHref';
 
 const Features: React.FC = () => {
   const { t } = useLanguageContext();
   const sectionConfig = usePageSectionConfig('home', 'features');
-  const primaryHref = typeof sectionConfig.primaryHref === 'string' ? sectionConfig.primaryHref : '/contact';
-  const secondaryHref = typeof sectionConfig.secondaryHref === 'string' ? sectionConfig.secondaryHref : '/services';
+  const primaryHref = safeCmsHref(sectionConfig.primaryHref, '/contact');
+  const secondaryHref = safeCmsHref(sectionConfig.secondaryHref, '/services');
 
   return (
     <section id="features" className={styles.featuresSection} aria-labelledby="features-heading">

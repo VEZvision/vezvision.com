@@ -16,6 +16,7 @@
   overflow: hidden;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   isolation: isolate;
+  transform: translateZ(0);
 }
 
 .container::before {
@@ -214,6 +215,15 @@
 
   50% {
     transform: translateY(3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge,
+  .orbit,
+  .pointer,
+  .pointerDot {
+    animation: none !important;
   }
 }
 

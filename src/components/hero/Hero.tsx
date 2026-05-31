@@ -12,6 +12,7 @@ import logoText from '@/assets/logo-text-only.svg';
 import { Sparkles } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 import { usePageSectionConfig } from '@/hooks/usePageSection';
+import { safeCmsHref } from '@/utils/safeHref';
 
 const Hero = memo(() => {
   const { t } = useLanguageContext();
@@ -61,8 +62,8 @@ const Hero = memo(() => {
     { href: social?.instagram, icon: socialInstagram, label: 'Instagram' },
     { href: social?.linkedin, icon: socialLinkedin, label: 'LinkedIn' }
   ];
-  const primaryHref = typeof sectionConfig.primaryHref === 'string' ? sectionConfig.primaryHref : '/contact';
-  const secondaryHref = typeof sectionConfig.secondaryHref === 'string' ? sectionConfig.secondaryHref : '/services';
+  const primaryHref = safeCmsHref(sectionConfig.primaryHref, '/contact');
+  const secondaryHref = safeCmsHref(sectionConfig.secondaryHref, '/services');
 
   return (
     <section
@@ -71,7 +72,7 @@ const Hero = memo(() => {
     >
       <video
         ref={videoRef}
-        className="absolute inset-0 w-full h-full object-cover grayscale brightness-200 z-0"
+        className="absolute inset-0 w-full h-full object-cover z-0"
         autoPlay
         muted
         loop
@@ -143,14 +144,24 @@ const Hero = memo(() => {
           <div className="flex items-center justify-center gap-6 mt-6">
             {socialLinks.map(({ href, icon, label }, index) => (
               <Fragment key={label}>
-                <a
-                  href={href || '#'}
-                  className={`w-6 h-6 inline-flex items-center justify-center ${href ? 'opacity-80 hover:opacity-100' : 'opacity-40 pointer-events-none'}`}
-                  aria-label={label}
-                  {...(href ? { target: '_blank', rel: 'noopener noreferrer' } : { 'aria-hidden': true })}
-                >
-                  <img src={icon} className="w-6 h-6" alt="" aria-hidden="true" />
-                </a>
+                {href ? (
+                  <a
+                    href={href}
+                    className="w-6 h-6 inline-flex items-center justify-center opacity-80 hover:opacity-100"
+                    aria-label={label}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img src={icon} className="w-6 h-6" alt="" aria-hidden="true" />
+                  </a>
+                ) : (
+                  <span
+                    className="w-6 h-6 inline-flex items-center justify-center opacity-40"
+                    aria-hidden="true"
+                  >
+                    <img src={icon} className="w-6 h-6" alt="" />
+                  </span>
+                )}
                 {index < socialLinks.length - 1 && (
                   <div className="w-0.5 h-6 bg-[#0a0a0a]" aria-hidden="true" />
                 )}

@@ -118,23 +118,27 @@ export async function listPublishedBlogContent(signal?: AbortSignal): Promise<{
   categories: BlogCategory[]
 }> {
   try {
-    const { data: postsData, error: postsError } = await supabase
+    let postsQuery = supabase
       .from('vv_blog_posts')
       .select('*, vv_blog_post_categories(vv_blog_categories(*))')
       .eq('status', 'published')
       .lte('published_at', new Date().toISOString())
       .order('published_at', { ascending: false })
       .limit(100)
-      .abortSignal(signal)
+
+    if (signal) postsQuery = postsQuery.abortSignal(signal)
+    const { data: postsData, error: postsError } = await postsQuery
 
     if (postsError) throw postsError
 
-    const { data: rawCategories, error: categoriesError } = await supabase
+    let categoriesQuery = supabase
       .from('vv_blog_categories')
       .select('*')
       .order('created_at', { ascending: true })
       .limit(100)
-      .abortSignal(signal)
+
+    if (signal) categoriesQuery = categoriesQuery.abortSignal(signal)
+    const { data: rawCategories, error: categoriesError } = await categoriesQuery
 
     if (categoriesError) throw categoriesError
 
@@ -151,14 +155,15 @@ export async function listPublishedBlogContent(signal?: AbortSignal): Promise<{
 
 export async function getPublishedPostBySlug(slug: string, signal?: AbortSignal): Promise<BlogPostWithDetails | null> {
   try {
-    const { data: post, error: postError } = await supabase
+    let postQuery = supabase
       .from('vv_blog_posts')
       .select('*, vv_blog_post_categories(vv_blog_categories(*))')
       .eq('slug', slug)
       .eq('status', 'published')
       .lte('published_at', new Date().toISOString())
-      .abortSignal(signal)
-      .single()
+
+    if (signal) postQuery = postQuery.abortSignal(signal)
+    const { data: post, error: postError } = await postQuery.single()
 
     if (postError) throw postError
     if (!post) return null

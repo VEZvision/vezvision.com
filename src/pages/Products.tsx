@@ -1,5 +1,6 @@
 import '../styles/GridBackground.css';
 import { useState, type FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Palette, GraduationCap, Briefcase, Cpu } from 'lucide-react';
 import VideoHeroSection from '@/components/common/VideoHeroSection';
 import SectionHeader from '@/components/ui/SectionHeader';
@@ -12,6 +13,7 @@ import { SectionReveal, StaggerReveal, StaggerItem } from '@/components/ui/Secti
 
 const Products = () => {
   const { t, language } = useLanguageContext();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -50,8 +52,8 @@ const Products = () => {
           const contactSection = document.getElementById('kontakt') ?? document.getElementById('contact-form-section');
           if (contactSection) {
             contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          } else if (typeof window !== 'undefined') {
-            window.location.href = '/contact#kontakt';
+          } else {
+            void navigate('/contact#kontakt');
           }
         }}
         className="relative flex min-h-[85vh] w-full items-center justify-center overflow-hidden bg-white px-4 pt-[120px] pb-[80px]"

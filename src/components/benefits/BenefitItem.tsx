@@ -8,7 +8,7 @@ interface BenefitItemProps {
 const BenefitItem: React.FC<BenefitItemProps> = ({ icon, text }) => {
   return (
     <div className={styles.benefitItem}>
-      <img src={icon} alt={`${text} icon`} className={styles.icon} />
+      <img src={icon} alt={`${text} icon`} className={styles.icon} loading="lazy" decoding="async" />
       <span className={styles.text}>{text}</span>
     </div>
   );

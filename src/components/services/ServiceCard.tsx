@@ -68,7 +68,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                     {LucideResolvedIcon ? (
                         <LucideResolvedIcon />
                     ) : shouldRenderImage ? (
-                        <img src={normalizedIcon} alt="" aria-hidden="true" />
+                        <img src={normalizedIcon} alt="" aria-hidden="true" loading="lazy" decoding="async" />
                     ) : normalizedIcon ? (
                         <span className={styles.iconText}>{normalizedIcon}</span>
                     ) : (

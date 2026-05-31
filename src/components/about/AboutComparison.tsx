@@ -1,4 +1,5 @@
 import styles from './AboutComparison.module.css';
+import { useNavigate } from 'react-router-dom';
 import SectionHeader from '@/components/ui/SectionHeader';
 
 // Import icons
@@ -24,6 +25,7 @@ import { safeCmsHref } from '@/utils/safeHref';
 
 const AboutComparison: React.FC = () => {
   const { t } = useLanguageContext();
+  const navigate = useNavigate();
   const homeConfig = usePageSectionConfig('home', 'about_comparison');
   const aboutConfig = usePageSectionConfig('about', 'about_comparison');
 
@@ -33,12 +35,12 @@ const AboutComparison: React.FC = () => {
     const contactSection = document.getElementById('kontakt') ?? document.getElementById('contact-form-section');
     if (contactSection) {
       contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else if (typeof window !== 'undefined') {
+    } else {
       const configuredHref = safeCmsHref(
         homeConfig.contactHref ?? aboutConfig.contactHref,
         '/contact#kontakt'
       );
-      window.location.href = configuredHref;
+      void navigate(configuredHref);
     }
   };
 

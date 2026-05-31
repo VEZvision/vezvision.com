@@ -41,7 +41,7 @@ export function useBlog() {
       }
     }
 
-    run()
+    void run()
 
     return () => controller.abort()
   }, [refreshKey])

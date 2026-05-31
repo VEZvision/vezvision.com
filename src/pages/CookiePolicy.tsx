@@ -13,7 +13,7 @@ const CookiePolicy = () => {
 
   useEffect(() => {
     if (!loading && !content) {
-      import('@/data/legalTemplates').then(m => setTemplates(m.LEGAL_TEMPLATES));
+      void import('@/data/legalTemplates').then(m => { setTemplates(m.LEGAL_TEMPLATES); });
     }
   }, [loading, content]);
 

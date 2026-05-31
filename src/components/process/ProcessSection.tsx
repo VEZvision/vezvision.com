@@ -55,6 +55,9 @@ const ProcessSection: React.FC = () => {
                                     src={analysisImage}
                                     alt={t('process.analysis.title')}
                                     className={styles.cardImage}
+                                    loading="lazy"
+                                    decoding="async"
+                                    sizes="340px"
                                 />
                             </div>
                         </div>
@@ -88,6 +91,9 @@ const ProcessSection: React.FC = () => {
                                     src={implementationImage}
                                     alt={t('process.implementation.title')}
                                     className={styles.cardImage}
+                                    loading="lazy"
+                                    decoding="async"
+                                    sizes="340px"
                                 />
                             </div>
                         </div>
@@ -118,6 +124,9 @@ const ProcessSection: React.FC = () => {
                                     src={supportImage}
                                     alt={t('process.support.title')}
                                     className={styles.cardImage}
+                                    loading="lazy"
+                                    decoding="async"
+                                    sizes="340px"
                                 />
                             </div>
                         </div>

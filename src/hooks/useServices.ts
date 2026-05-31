@@ -42,7 +42,7 @@ export function useServices() {
       }
     }
 
-    run()
+    void run()
 
     return () => controller.abort()
   }, [refreshKey])

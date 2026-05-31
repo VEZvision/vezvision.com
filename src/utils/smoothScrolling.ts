@@ -16,7 +16,10 @@ function shouldUseNativeScroll(): boolean {
     return true;
   }
 
-  return window.matchMedia('(pointer: coarse)').matches;
+  return (
+    window.matchMedia('(pointer: coarse)').matches ||
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
 }
 
 function tick(time: number): void {
@@ -26,27 +29,25 @@ function tick(time: number): void {
 
 // ─── Lifecycle ────────────────────────────────────────────────────────────────
 
-export function initSmoothScrolling(): Lenis {
+export function initSmoothScrolling(): Lenis | null {
   if (lenisInstance) return lenisInstance;
 
   if (shouldUseNativeScroll()) {
-    return null as never;
+    return null;
   }
 
   lenisInstance = new Lenis({
-    // Duration in seconds — higher = slower / more cinematic feel
-    duration: 1.8,
-    // Exponential easing: fast start, elegant deceleration
-    easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    lerp: 0.08,
     // Keep native momentum scroll on touch screens (iOS / Android).
     // syncTouch: false (default) means Lenis does NOT intercept touch events —
     // the OS handles them natively for best mobile feel.
     syncTouch: false,
-    // Natural wheel / touch multipliers
-    wheelMultiplier: 1,
+    // Slightly soften mouse wheel input without adding expensive scroll handlers.
+    wheelMultiplier: 0.9,
     touchMultiplier: 1,
     // Allow inner scrollable areas to opt-out via data-lenis-prevent
     prevent: (node: Element) => node.hasAttribute('data-lenis-prevent'),
+    smoothWheel: true,
   });
 
   rafId = requestAnimationFrame(tick);
@@ -74,8 +75,7 @@ export function destroySmoothScrolling(): void {
 export function scrollToTopInstant(): void {
   if (lenisInstance) {
     lenisInstance.scrollTo(0, { immediate: true });
-  } else {
+  } else if (typeof window !== 'undefined') {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
   }
 }
-

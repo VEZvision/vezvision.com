@@ -1,8 +1,8 @@
-import { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useCallback, useMemo, type ReactNode } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { logError } from '@/lib/logger';
 import {
     getSettings,
-    saveSettings as saveSettingsService,
     ContactSettings,
     SocialSettings,
     SeoSettings,
@@ -40,7 +40,6 @@ interface SettingsContextType extends SettingsState {
     settings: SettingsState;
     loading: boolean;
     error: unknown;
-    saveSettings: (key: string, value: unknown, isPublic?: boolean) => Promise<void>;
     refreshSettings: () => Promise<void>;
 }
 
@@ -49,58 +48,49 @@ const defaultState: SettingsState = {
     seo: null, code: null, maintenance: null, seo_files: null, company: null, navigation: null, footer: null, pageSeo: {}, pageSections: {},
 };
 
-const SettingsContext = createContext<SettingsContextType>({
-    ...defaultState,
-    settings: defaultState,
-    loading: true,
-    error: null,
-    saveSettings: async () => {},
-    refreshSettings: async () => {},
-});
+const PUBLIC_SETTINGS_QUERY_KEY = ['public-settings'] as const;
 
-export const SettingsProvider = ({ children }: { children: ReactNode }) => {
-    const [settings, setSettings] = useState<SettingsState>(defaultState);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<unknown>(null);
+interface PublicSettingsSnapshot {
+    settings: SettingsState;
+    error: unknown;
+}
 
-    const fetchSettings = useCallback(async () => {
-        setLoading(true);
+async function loadPublicSettingsSnapshot(): Promise<PublicSettingsSnapshot> {
+    const [settingsResult, pageSeoResult, pageSectionsResult] = await Promise.allSettled([
+        getSettings('ALL'),
+        getAllPageSeo(),
+        getPublicPageSections(),
+    ]);
 
-        const [settingsResult, pageSeoResult, pageSectionsResult] = await Promise.allSettled([
-            getSettings('ALL'),
-            getAllPageSeo(),
-            getPublicPageSections(),
-        ]);
+    const settingsEntries: SettingEntry[] = settingsResult.status === 'fulfilled' ? settingsResult.value.data : [];
+    const pageSeo: PageSeoMap = pageSeoResult.status === 'fulfilled' ? pageSeoResult.value : {};
+    const pageSectionsPayload = pageSectionsResult.status === 'fulfilled' ? pageSectionsResult.value : { data: [], error: 'Unknown page sections error' };
+    const errors: unknown[] = [];
 
-        const settingsEntries: SettingEntry[] = settingsResult.status === 'fulfilled' ? settingsResult.value.data : [];
-        const pageSeo: PageSeoMap = pageSeoResult.status === 'fulfilled' ? pageSeoResult.value : {};
-        const pageSectionsPayload = pageSectionsResult.status === 'fulfilled' ? pageSectionsResult.value : { data: [], error: 'Unknown page sections error' };
+    if (settingsResult.status === 'rejected') {
+        errors.push(settingsResult.reason);
+        logError('settingsContext.settings', settingsResult.reason);
+    }
 
-        const errors: unknown[] = [];
+    if (pageSeoResult.status === 'rejected') {
+        errors.push(pageSeoResult.reason);
+        logError('settingsContext.pageSeo', pageSeoResult.reason);
+    }
 
-        if (settingsResult.status === 'rejected') {
-            errors.push(settingsResult.reason);
-            logError('settingsContext.settings', settingsResult.reason);
-        }
+    if (pageSectionsResult.status === 'rejected') {
+        errors.push(pageSectionsResult.reason);
+        logError('settingsContext.pageSections', pageSectionsResult.reason);
+    } else if (pageSectionsPayload.error) {
+        errors.push(pageSectionsPayload.error);
+        logError('settingsContext.pageSections', pageSectionsPayload.error);
+    }
 
-        if (pageSeoResult.status === 'rejected') {
-            errors.push(pageSeoResult.reason);
-            logError('settingsContext.pageSeo', pageSeoResult.reason);
-        }
+    const normalized = normalizeSettingsEntries(settingsEntries);
+    const pageSections = normalizePageSections(pageSectionsPayload.data);
+    setCmsTranslationsRegistry(flattenCmsTranslations(pageSections));
 
-        if (pageSectionsResult.status === 'rejected') {
-            errors.push(pageSectionsResult.reason);
-            logError('settingsContext.pageSections', pageSectionsResult.reason);
-        } else if (pageSectionsPayload.error) {
-            errors.push(pageSectionsPayload.error);
-            logError('settingsContext.pageSections', pageSectionsPayload.error);
-        }
-
-        const normalized = normalizeSettingsEntries(settingsEntries);
-        const pageSections = normalizePageSections(pageSectionsPayload.data);
-        setCmsTranslationsRegistry(flattenCmsTranslations(pageSections));
-
-        setSettings({
+    return {
+        settings: {
             identity: normalized.identity,
             contact: normalized.contact,
             social: normalized.social,
@@ -113,46 +103,60 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
             footer: normalized.footer,
             pageSeo,
             pageSections,
-        });
-        setError(errors[0] ?? null);
-        setLoading(false);
-    }, []);
+        },
+        error: errors[0] ?? null,
+    };
+}
 
-    useEffect(() => { fetchSettings(); }, [fetchSettings]);
+const SettingsContext = createContext<SettingsContextType>({
+    ...defaultState,
+    settings: defaultState,
+    loading: true,
+    error: null,
+    refreshSettings: async () => {},
+});
+
+export const SettingsProvider = ({ children }: { children: ReactNode }) => {
+    const queryClient = useQueryClient();
+    const settingsQuery = useQuery({
+        queryKey: PUBLIC_SETTINGS_QUERY_KEY,
+        queryFn: loadPublicSettingsSnapshot,
+    });
+
+    const settings = settingsQuery.data?.settings ?? defaultState;
+    const loading = settingsQuery.isLoading;
+    const error = settingsQuery.data?.error ?? settingsQuery.error ?? null;
+
+    const refreshSettings = useCallback(async () => {
+        await settingsQuery.refetch();
+    }, [settingsQuery]);
 
     useEffect(() => {
         const channel = supabase
             .channel('vezvision-public-settings-sync')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'vv_site_settings' }, () => {
-                void fetchSettings();
+                void queryClient.invalidateQueries({ queryKey: PUBLIC_SETTINGS_QUERY_KEY });
             })
             .on('postgres_changes', { event: '*', schema: 'public', table: 'vv_page_seo' }, () => {
-                void fetchSettings();
+                void queryClient.invalidateQueries({ queryKey: PUBLIC_SETTINGS_QUERY_KEY });
             })
             .on('postgres_changes', { event: '*', schema: 'public', table: 'vv_page_sections' }, () => {
-                void fetchSettings();
+                void queryClient.invalidateQueries({ queryKey: PUBLIC_SETTINGS_QUERY_KEY });
             })
             .subscribe();
 
         return () => {
             void supabase.removeChannel(channel);
         };
-    }, [fetchSettings]);
-
-    const save = useCallback(async (key: string, value: unknown, _isPublic?: boolean) => {
-        void _isPublic
-        await saveSettingsService(key, value);
-        await fetchSettings();
-    }, [fetchSettings]);
+    }, [queryClient]);
 
     const value = useMemo(() => ({
         ...settings,
         settings,
         loading,
         error,
-        saveSettings: save,
-        refreshSettings: fetchSettings,
-    }), [settings, loading, error, save, fetchSettings]);
+        refreshSettings,
+    }), [settings, loading, error, refreshSettings]);
 
     return (
         <SettingsContext.Provider value={value}>

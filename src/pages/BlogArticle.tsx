@@ -44,7 +44,7 @@ const BlogArticle: React.FC = () => {
       }
     };
 
-    loadPost();
+    void loadPost();
   }, [slug, fetchPostBySlug, incrementViewCount]);
 
   if (loading) {

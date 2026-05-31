@@ -1,6 +1,13 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { getClientIp } from "../_shared/clientIp.ts";
+import {
+  isContactPhoneProvided,
+  normalizeContactEmail,
+  normalizeContactPhone,
+  normalizeText as normalizeContactText,
+} from "../_shared/contactValidation.ts";
 
 function escapeHtml(value: string): string {
   return value
@@ -11,16 +18,8 @@ function escapeHtml(value: string): string {
     .replaceAll("'", "&#39;");
 }
 
-function getClientIp(req: Request): string {
-  const forwarded = req.headers.get("x-forwarded-for");
-  if (!forwarded) return "unknown";
-
-  const firstIp = forwarded.split(",")[0]?.trim();
-  if (firstIp && /^[\d.a-fA-F:]+$/.test(firstIp)) {
-    return firstIp.slice(0, 45);
-  }
-
-  return "unknown";
+function normalizeLanguage(value: unknown): "pl" | "en" {
+  return value === "en" ? "en" : "pl";
 }
 
 function getNotificationSubject(lang: string, subject: string): string {
@@ -205,6 +204,16 @@ Deno.serve(async (req: Request) => {
     return new Response("ok", { headers: getCorsHeaders(req) });
   }
 
+  if (req.method !== "POST") {
+    return new Response(
+      JSON.stringify({ success: false, error: "Method not allowed" }),
+      {
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json", "Allow": "POST, OPTIONS" },
+        status: 405,
+      }
+    );
+  }
+
   try {
     const clientIp = getClientIp(req);
 
@@ -214,30 +223,38 @@ Deno.serve(async (req: Request) => {
     );
 
     const body = await req.json();
-    const {
-      full_name,
-      email,
-      subject,
-      message,
-      phone = null,
-      status = "new",
-      language = "pl",
-    } = body;
+    const fullName = normalizeContactText(body?.full_name, 120);
+    const email = normalizeContactEmail(body?.email);
+    const subject = normalizeContactText(body?.subject, 160);
+    const message = normalizeContactText(body?.message, 5000);
+    const phoneResult = normalizeContactPhone(body?.phone);
+    const language = normalizeLanguage(body?.language);
 
-    if (!full_name || !email || !subject || !message) {
+    if (!fullName || !email || !subject || !message) {
       return new Response(
-        JSON.stringify({ success: false, error: "Missing required fields" }),
+        JSON.stringify({ success: false, error: "Invalid contact form payload", field: "form" }),
+        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 400 }
+      );
+    }
+
+    if (phoneResult.invalid || (isContactPhoneProvided(body?.phone) && !phoneResult.phone)) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: language === "pl" ? "Podaj poprawny numer telefonu." : "Enter a valid phone number.",
+          field: "phone",
+        }),
         { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 400 }
       );
     }
 
     const { data: id, error } = await supabase.rpc("safe_insert_contact_message", {
-      p_full_name: String(full_name).trim(),
-      p_email: String(email).trim().toLowerCase(),
-      p_subject: String(subject).trim(),
-      p_message: String(message).trim(),
-      p_phone: phone ? String(phone).trim() : null,
-      p_status: status,
+      p_full_name: fullName,
+      p_email: email,
+      p_subject: subject,
+      p_message: message,
+      p_phone: phoneResult.phone,
+      p_status: "new",
       p_language: language,
       p_client_ip: clientIp,
     });
@@ -264,35 +281,29 @@ Deno.serve(async (req: Request) => {
     const notifyEmail = Deno.env.get("CONTACT_NOTIFY_EMAIL") || "contact@vezvision.com";
 
     if (resendApiKey) {
-      const fullNameTrimmed = String(full_name).trim();
-      const emailTrimmed = String(email).trim().toLowerCase();
-      const subjectTrimmed = String(subject).trim();
-      const messageTrimmed = String(message).trim();
-      const phoneTrimmed = phone ? String(phone).trim() : null;
-
       sendEmailViaResend(
         resendApiKey,
         `VezVision <${fromEmail}>`,
         notifyEmail,
-        getNotificationSubject(language, subjectTrimmed),
+        getNotificationSubject(language, subject),
         getNotificationHtml({
-          fullName: fullNameTrimmed,
-          email: emailTrimmed,
-          phone: phoneTrimmed,
-          subject: subjectTrimmed,
-          message: messageTrimmed,
+          fullName,
+          email,
+          phone,
+          subject,
+          message,
           lang: language,
         }),
-        emailTrimmed
+        email
       ).catch(() => console.error("Notification email error"));
 
       sendEmailViaResend(
         resendApiKey,
         `VezVision <${fromEmail}>`,
-        emailTrimmed,
+        email,
         getAutoReplySubject(language),
         getAutoReplyHtml({
-          fullName: fullNameTrimmed,
+          fullName,
           lang: language,
         })
       ).catch(() => console.error("Auto-reply email error"));
@@ -310,10 +321,10 @@ Deno.serve(async (req: Request) => {
           "x-webhook-secret": webhookSecret,
         },
         body: JSON.stringify({
-          name: String(full_name).trim(),
-          email: String(email).trim().toLowerCase(),
-          phone: phone ? String(phone).trim() : null,
-          message: String(message).trim(),
+          name: fullName,
+          email,
+          phone,
+          message,
           source: "contact-form",
         }),
       }).catch(() => console.error("Webhook error"));

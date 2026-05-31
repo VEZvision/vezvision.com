@@ -1,6 +1,7 @@
 import { useLanguageContext } from '@/hooks/useLanguage';
 import BenefitItem from './BenefitItem';
 import styles from './MoreBenefits.module.css';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 import virtualAssistanceIcon from '../../assets/virtual-assistance-icon.svg';
 import scalableSolutionsIcon from '../../assets/scalable-solutions-icon.svg';
@@ -11,6 +12,7 @@ import fasterInnovationIcon from '../../assets/faster-innovation-icon.svg';
 
 const MoreBenefits: React.FC = () => {
   const { t } = useLanguageContext();
+  const reducedMotion = useReducedMotion();
 
   const benefits = [
     { icon: fasterInnovationIcon, text: t('potential.card1.title') },
@@ -24,7 +26,7 @@ const MoreBenefits: React.FC = () => {
   return (
     <div className={styles.moreBenefitsContainer}>
       <div className={styles.slider}>
-        <div className={styles.slideTrack}>
+        <div className={`${styles.slideTrack} ${reducedMotion ? styles.reducedMotion : ''}`}>
           {extendedBenefits.map((benefit, index) => (
             <BenefitItem key={index} icon={benefit.icon} text={benefit.text} />
           ))}

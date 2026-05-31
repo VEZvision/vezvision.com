@@ -7,7 +7,7 @@ import BenefitsMultifunction from './BenefitsMultifunction';
 import styles from './Benefits.module.css';
 
 import MoreBenefits from './MoreBenefits';
-import { SectionReveal } from '@/components/ui/SectionReveal';
+import { SectionReveal, StaggerItem, StaggerReveal } from '@/components/ui/SectionReveal';
 import { useLanguageContext } from '@/hooks/useLanguage';
 
 const Benefits: React.FC = () => {
@@ -33,13 +33,21 @@ const Benefits: React.FC = () => {
           id="benefits-heading"
         />
 
-        <div className={styles.benefitsGrid}>
-          <Container1 />
-          <Container2 />
-          <BenefitsMultifunction />
-        </div>
+        <StaggerReveal className={styles.benefitsGrid} amount={0.18}>
+          <StaggerItem>
+            <Container1 />
+          </StaggerItem>
+          <StaggerItem>
+            <Container2 />
+          </StaggerItem>
+          <StaggerItem>
+            <BenefitsMultifunction />
+          </StaggerItem>
+        </StaggerReveal>
 
-        <MoreBenefits />
+        <SectionReveal delay={0.12} amount={0.2}>
+          <MoreBenefits />
+        </SectionReveal>
         </div>
       </SectionReveal>
     </section>

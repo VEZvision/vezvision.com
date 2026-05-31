@@ -111,7 +111,7 @@ export async function listActiveServicesContent(signal?: AbortSignal): Promise<{
   categories: ServiceCategory[]
 }> {
   try {
-    const { data: servicesData, error: servicesError } = await supabase
+    let servicesQuery = supabase
       .from('vv_services')
       .select(`
         *,
@@ -120,16 +120,20 @@ export async function listActiveServicesContent(signal?: AbortSignal): Promise<{
       .eq('status', 'active')
       .order('order_index', { ascending: true })
       .limit(100)
-      .abortSignal(signal)
+
+    if (signal) servicesQuery = servicesQuery.abortSignal(signal)
+    const { data: servicesData, error: servicesError } = await servicesQuery
 
     if (servicesError) throw servicesError
 
-    const { data: categoriesData, error: categoriesError } = await supabase
+    let categoriesQuery = supabase
       .from('vv_service_categories')
       .select('*')
       .order('order_index', { ascending: true })
       .limit(100)
-      .abortSignal(signal)
+
+    if (signal) categoriesQuery = categoriesQuery.abortSignal(signal)
+    const { data: categoriesData, error: categoriesError } = await categoriesQuery
 
     if (categoriesError) throw categoriesError
 

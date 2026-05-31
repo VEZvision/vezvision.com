@@ -295,6 +295,14 @@
     overflow: hidden;
 }
 
+@media (prefers-reduced-motion: reduce) {
+    .skeleton,
+    .skeletonImage,
+    .skeletonLine {
+        animation: none !important;
+    }
+}
+
 .skeletonImage {
     aspect-ratio: 16/10;
     background: linear-gradient(90deg, #f2f4f7 0%, #eaecf0 50%, #f2f4f7 100%);

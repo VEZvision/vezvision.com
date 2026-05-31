@@ -13,8 +13,7 @@
     0px 14px 14px -3px rgba(0, 0, 0, 0.05),
     0px 30px 30px -4px rgba(0, 0, 0, 0.02);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  /* Usunięto content-visibility/contain-intrinsic-size ze względu na problemy z obliczaniem wysokości
-     w niektórych przeglądarkach. Karta ma po prostu zajmować pełną wysokość kontenera. */
+  transform: translateZ(0);
   width: 100%;
   height: 100%;
 }

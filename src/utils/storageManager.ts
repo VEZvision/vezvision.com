@@ -1,6 +1,22 @@
 import { CookieConsentStorage, StorageManager, CookiePreferences, ConsentAction } from '../types/cookies';
 import { COOKIE_CONSENT_KEY, COOKIE_CONSENT_VERSION, DEFAULT_COOKIE_PREFERENCES } from '../types/cookies';
 
+export function generateConsentId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return `consent_${crypto.randomUUID()}`;
+  }
+
+  const randomValues = new Uint32Array(2);
+  if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+    crypto.getRandomValues(randomValues);
+  } else {
+    randomValues[0] = Date.now();
+    randomValues[1] = performance.now();
+  }
+
+  return `consent_${Date.now()}_${Array.from(randomValues, value => value.toString(36)).join('')}`;
+}
+
 // Implementacja zarządzania localStorage dla zgody na cookies
 export class StorageManagerImpl implements StorageManager {
   
@@ -160,7 +176,7 @@ export class StorageManagerImpl implements StorageManager {
   // Metody prywatne
 
   private generateConsentId(): string {
-    return 'consent_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11);
+    return generateConsentId();
   }
 
   private isValidConsentData(consent: unknown): consent is CookieConsentStorage {
@@ -169,18 +185,21 @@ export class StorageManagerImpl implements StorageManager {
     }
     
     const obj = consent as Record<string, unknown>;
+    const preferences = obj.preferences;
+    if (!preferences || typeof preferences !== 'object') {
+      return false;
+    }
+
+    const prefs = preferences as Record<string, unknown>;
     
     return (
       typeof obj.version === 'string' &&
       typeof obj.consentId === 'string' &&
       typeof obj.timestamp === 'string' &&
-      obj.preferences &&
-      typeof obj.preferences === 'object' &&
-      obj.preferences !== null &&
-      typeof (obj.preferences as Record<string, unknown>).necessary === 'boolean' &&
-      typeof (obj.preferences as Record<string, unknown>).functional === 'boolean' &&
-      typeof (obj.preferences as Record<string, unknown>).analytics === 'boolean' &&
-      typeof (obj.preferences as Record<string, unknown>).marketing === 'boolean' &&
+      typeof prefs.necessary === 'boolean' &&
+      typeof prefs.functional === 'boolean' &&
+      typeof prefs.analytics === 'boolean' &&
+      typeof prefs.marketing === 'boolean' &&
       Array.isArray(obj.history)
     );
   }

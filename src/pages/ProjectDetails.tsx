@@ -21,6 +21,7 @@ import { useProject } from '@/hooks/usePortfolio';
 import { getProjectImageUrl } from '@/services/portfolio';
 import { useSettings } from '@/hooks/useSettings';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { safeExternalHref } from '@/utils/safeHref';
 import { LoadingScreen } from '@/components/loading';
 import styles from './ProjectDetails.module.css';
 
@@ -87,6 +88,8 @@ export default function ProjectDetails() {
     const canonicalUrl = seo?.siteUrl ? `${seo.siteUrl.replace(/\/$/, '')}/portfolio/${project.slug}` : `/portfolio/${project.slug}`;
     const ogDescription = project.translations?.[language]?.short_description || seo?.siteDescription || '';
     const ogImage = project.cover_path ? getProjectImageUrl(project.cover_path) : (seo?.siteUrl ? `${seo.siteUrl.replace(/\/$/, '')}/favicon.svg` : '/favicon.svg');
+    const demoUrl = safeExternalHref(project.demo_url);
+    const githubUrl = safeExternalHref(project.github_url);
 
     return (
         <div className={styles.page}>
@@ -132,14 +135,14 @@ export default function ProjectDetails() {
                         <p className={styles.subtitle}>{t('short_description', '')}</p>
 
                         <div className={styles.actions}>
-                            {project.show_demo_url !== false && project.demo_url && (
-                                <a href={project.demo_url} target="_blank" rel="noopener noreferrer" className={styles.primaryBtn}>
+                            {project.show_demo_url !== false && demoUrl && (
+                                <a href={demoUrl} target="_blank" rel="noopener noreferrer" className={styles.primaryBtn}>
                                     {tl('portfolio.detail.view_live')}
                                     <ExternalLink size={16} />
                                 </a>
                             )}
-                            {project.github_url && (
-                                <a href={project.github_url} target="_blank" rel="noopener noreferrer" className={styles.secondaryBtn}>
+                            {githubUrl && (
+                                <a href={githubUrl} target="_blank" rel="noopener noreferrer" className={styles.secondaryBtn}>
                                     <GitBranch size={16} />
                                     Source Code
                                 </a>
@@ -237,10 +240,12 @@ export default function ProjectDetails() {
                                 </h2>
                                 <div className={styles.galleryGrid}>
                                     {project.images.map((img) => (
-                                        <div
+                                        <button
+                                            type="button"
                                             key={img.id}
                                             className={styles.galleryItem}
                                             onClick={() => setSelectedImage(getProjectImageUrl(img.path))}
+                                            aria-label={`${tl('portfolio.detail.gallery')} - ${projectTitle}`}
                                         >
                                             <div className={styles.galleryItemInner}>
                                                 <img src={getProjectImageUrl(img.path)} alt={`${projectTitle} - ${tl('portfolio.detail.gallery')}`} loading="lazy" decoding="async" />
@@ -248,7 +253,7 @@ export default function ProjectDetails() {
                                             <div className={styles.galleryOverlay}>
                                                 <Maximize2 size={20} />
                                             </div>
-                                        </div>
+                                        </button>
                                     ))}
                                 </div>
                             </motion.section>

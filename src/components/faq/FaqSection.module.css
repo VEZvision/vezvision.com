@@ -113,6 +113,23 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .item,
+  .item summary,
+  .chevron,
+  .answer,
+  .answer a,
+  .contactText a,
+  .ctaButton {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .ctaButton:hover {
+    transform: none;
+  }
+}
+
 .answer p {
   margin-bottom: 1em;
 }

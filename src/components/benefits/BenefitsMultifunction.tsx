@@ -39,7 +39,6 @@ const BenefitsMultifunction: React.FC = () => {
           src={toolsIcon} 
           className={styles.component1}
           alt={t('benefits.multifunction.toolsAlt')}
-          role="img"
         />
       </div>
       
@@ -50,7 +49,6 @@ const BenefitsMultifunction: React.FC = () => {
             src={multifunctionIcon} 
             className={styles.icon}
             alt={t('benefits.multifunction.mainAlt')}
-            role="img"
           />
         </div>
       </div>

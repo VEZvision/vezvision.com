@@ -470,6 +470,15 @@
     }
 }
 
+@media (prefers-reduced-motion: reduce) {
+    .codeLine,
+    .typingCursor,
+    .floatingIcon,
+    .centerStar {
+        animation: none !important;
+    }
+}
+
 /* ====== INTEGRATIONS CARD - IMPROVED ====== */
 .integrationsGrid {
     display: grid;

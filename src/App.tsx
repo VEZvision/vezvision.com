@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { Toaster } from 'sonner';
-import { useEffect, memo, lazy, Suspense } from "react";
+import { useEffect, memo, lazy, Suspense, useState } from "react";
 import Navbar from "@/components/navbar/Navbar";
 import RouteErrorBoundary from "@/components/layout/RouteErrorBoundary";
 import {
@@ -37,6 +37,7 @@ import { useSettings } from '@/hooks/useSettings';
 import CodeInjector from '@/components/system/CodeInjector';
 import { useScrollToTopOnRouteChange } from '@/hooks/useScrollToTopOnRouteChange';
 import { useCookieConsent } from '@/hooks/useCookieConsent';
+import { checkMaintenanceBypass } from '@/services/maintenanceAccess';
 
 // Simple fallback shown while lazy chunks load
 const PageLoader = memo(() => (
@@ -71,11 +72,11 @@ const Layout = memo(() => {
         Avoid filter:blur() here: it forces GPU compositing for the *entire*
         subtree on every frame, which causes serious jank on mobile devices.
       */}
-      <div style={{ minHeight: '100vh' }}>
+      <main style={{ minHeight: '100vh' }}>
         <Suspense fallback={<PageLoader />}>
           <Outlet />
         </Suspense>
-      </div>
+      </main>
     </>
   );
 });
@@ -109,21 +110,50 @@ const router = createBrowserRouter([
   },
 ]);
 
+type MaintenanceAccessState = 'loading' | 'allowed' | 'blocked';
+
 const MaintenanceGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { maintenance, loading: settingsLoading } = useSettings();
-  if (settingsLoading) {
+  const [access, setAccess] = useState<MaintenanceAccessState>('loading');
+
+  useEffect(() => {
+    if (settingsLoading) return;
+
+    if (!maintenance?.enabled) {
+      setAccess('allowed');
+      return;
+    }
+
+    let cancelled = false;
+
+    const resolveAccess = async () => {
+      setAccess('loading');
+      const bypass = await checkMaintenanceBypass();
+      if (!cancelled) {
+        setAccess(bypass ? 'allowed' : 'blocked');
+      }
+    };
+
+    void resolveAccess();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [maintenance?.enabled, settingsLoading]);
+
+  if (settingsLoading || (maintenance?.enabled && access === 'loading')) {
     return <PageLoader />;
   }
 
-  if (!maintenance?.enabled) {
-    return <>{children}</>;
+  if (maintenance?.enabled && access === 'blocked') {
+    return (
+      <Suspense fallback={<PageLoader />}>
+        <MaintenancePage />
+      </Suspense>
+    );
   }
 
-  return (
-    <Suspense fallback={<PageLoader />}>
-      <MaintenancePage />
-    </Suspense>
-  );
+  return <>{children}</>;
 };
 
 const CookieModalsGate = memo(() => {

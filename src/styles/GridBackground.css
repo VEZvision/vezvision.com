@@ -42,31 +42,8 @@
     linear-gradient(to right, transparent, var(--highlight-color), transparent);
   background-size: 100% 3px, 3px 100%;
   background-repeat: no-repeat;
-  animation: grid-highlight 8s ease-in-out infinite;
-}
-
-@keyframes grid-highlight {
-
-  0%,
-  100% {
-    background-position: 0% 0%, 0% 0%;
-    opacity: 0.3;
-  }
-
-  25% {
-    background-position: 0% 25%, 25% 0%;
-    opacity: 0.6;
-  }
-
-  50% {
-    background-position: 0% 50%, 50% 0%;
-    opacity: 0.8;
-  }
-
-  75% {
-    background-position: 0% 75%, 75% 0%;
-    opacity: 0.6;
-  }
+  background-position: 0 35%, 35% 0;
+  opacity: 0.45;
 }
 
 @media (pointer: coarse) {

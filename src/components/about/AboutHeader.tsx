@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 
 import { useInView } from 'framer-motion';
 import { useLanguageContext } from '@/hooks/useLanguage';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import SectionBadge from '@/components/ui/SectionBadge';
 import { User } from 'lucide-react';
 
@@ -14,6 +15,7 @@ const AboutHeader: React.FC = () => {
   const [showCursor, setShowCursor] = useState(true);
   const [currentPhase, setCurrentPhase] = useState(0);
   const { t } = useLanguageContext();
+  const reducedMotion = useReducedMotion();
   const fullText = t('about.header.fullText');
   const beforeWord = t('about.header.beforeWord');
   const tempWord = t('about.header.tempWord');
@@ -22,6 +24,12 @@ const AboutHeader: React.FC = () => {
 
 
   useEffect(() => {
+    if (reducedMotion) {
+      setDisplayText(fullText);
+      setCurrentPhase(5);
+      return;
+    }
+
     // Uruchamiaj animację tylko wtedy, gdy tekstowy blok jest faktycznie widoczny w viewport
     if (!isTextVisible) return;
     const typeSpeed = 50;
@@ -101,16 +109,21 @@ const AboutHeader: React.FC = () => {
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [displayText, currentPhase, beforeWord, finalWord, fullText, tempWord, isTextVisible]);
+  }, [displayText, currentPhase, beforeWord, finalWord, fullText, tempWord, isTextVisible, reducedMotion]);
 
   // Cursor blinking effect
   useEffect(() => {
+    if (reducedMotion) {
+      setShowCursor(false);
+      return;
+    }
+
     const cursorInterval = setInterval(() => {
       setShowCursor(prev => !prev);
     }, 500);
 
     return () => clearInterval(cursorInterval);
-  }, []);
+  }, [reducedMotion]);
 
   return (
     <section className="py-12 sm:py-16 md:py-20 lg:py-24 px-4 sm:px-6 lg:px-8" style={{ background: '#ffffff' }}>

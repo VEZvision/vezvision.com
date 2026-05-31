@@ -7,6 +7,7 @@ import { useLocation } from 'react-router-dom';
 
 import { useSettings } from '@/hooks/useSettings';
 import { usePageSectionConfig } from '@/hooks/usePageSection';
+import { safePublicHref } from '@/utils/safeHref';
 
 const ContactSection: React.FC = () => {
   const { t } = useLanguageContext();
@@ -14,7 +15,7 @@ const ContactSection: React.FC = () => {
   const location = useLocation();
   const pageKey = location.pathname === '/about' ? 'about' : location.pathname === '/contact' ? 'contact' : 'home';
   const sectionConfig = usePageSectionConfig(pageKey, 'contact');
-  const fallbackMeetingHref = typeof sectionConfig.meetingHref === 'string' ? sectionConfig.meetingHref : '/contact';
+  const fallbackMeetingHref = safePublicHref(sectionConfig.meetingHref, '/contact');
 
   const tiles = [
     {

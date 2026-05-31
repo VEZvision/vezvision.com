@@ -2,6 +2,7 @@ import { Helmet } from 'react-helmet-async';
 import { useSettings } from '@/hooks/useSettings';
 import { useLocation } from 'react-router-dom';
 import { useLanguageContext } from '@/hooks/useLanguage';
+import { safeAbsoluteHttpUrl, safeImageUrl } from '@/utils/safeHref';
 
 const STATIC_PAGE_KEYS: Record<string, string> = {
     '/': 'home',
@@ -15,6 +16,7 @@ const STATIC_PAGE_KEYS: Record<string, string> = {
     '/terms': 'terms',
     '/cookie-policy': 'cookie-policy',
     '/unsubscribe': 'unsubscribe',
+    '/newsletter': 'newsletter',
     '/404': 'not-found',
 };
 
@@ -32,9 +34,9 @@ const SEO = () => {
     const matchedPageKey = STATIC_PAGE_KEYS[location.pathname];
     const hasDedicatedPageSeo = matchedPageKey ? Boolean(pageSeo?.[matchedPageKey]) : false;
     const shouldSuppressFallbackSeo = !matchedPageKey && !isDynamicContentPath(location.pathname);
-    const siteUrl = seo?.siteUrl || (typeof window !== 'undefined' ? window.location.origin : '');
+    const siteUrl = safeAbsoluteHttpUrl(seo?.siteUrl) || (typeof window !== 'undefined' ? window.location.origin : '');
     const canonicalUrl = siteUrl ? `${siteUrl}${location.pathname === '/' ? '' : location.pathname}` : '';
-    const ogImage = identity?.defaultOgImageUrl || identity?.logoUrl || (siteUrl ? `${siteUrl}/Logo_vezvision_optimized.svg` : '');
+    const ogImage = safeImageUrl(identity?.defaultOgImageUrl) || safeImageUrl(identity?.logoUrl) || (siteUrl ? `${siteUrl}/Logo_vezvision_optimized.svg` : '');
     const siteDescription = seo?.siteDescription || undefined;
     const robots = seo?.robots || 'index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1';
     const ogSiteName = seo?.ogSiteName || identity?.siteName || seo?.siteTitle || undefined;
@@ -42,7 +44,7 @@ const SEO = () => {
     return (
             <Helmet defaultTitle={seo?.siteTitle}>
             <html lang={language} />
-            {identity?.faviconUrl && <link rel="icon" href={identity.faviconUrl} />}
+            {safeImageUrl(identity?.faviconUrl) && <link rel="icon" href={safeImageUrl(identity?.faviconUrl)} />}
             {seo?.keywords && seo.keywords.length > 0 && <meta name="keywords" content={seo.keywords.join(', ')} />}
             {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && seo?.siteTitle ? <title>{seo.siteTitle}</title> : null}
             {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && siteDescription ? <meta name="description" content={siteDescription} /> : null}

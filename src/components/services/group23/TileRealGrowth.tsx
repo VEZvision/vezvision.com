@@ -18,9 +18,9 @@ const TileRealGrowth: React.FC = () => {
       <div className={styles.tileGrowthChart} role="img" aria-label={t('group23.growth.chart.aria')}>
         <div className={styles.chartInner}>
           <p className={styles.chartValue}>{t('group23.growth.chart.value')}</p>
-          <img src={chartLine} alt="Linia wzrostu" className={styles.chartLine} />
+          <img src={chartLine} alt="Linia wzrostu" className={styles.chartLine} loading="lazy" decoding="async" />
         </div>
-        <img src={chartMask} alt="Maska wykresu" className={styles.chartMask} />
+        <img src={chartMask} alt="Maska wykresu" className={styles.chartMask} loading="lazy" decoding="async" />
       </div>
     </div>
   );

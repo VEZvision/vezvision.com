@@ -1,6 +1,6 @@
 import '../styles/GridBackground.css';
 import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Briefcase, FolderOpen } from 'lucide-react';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { usePortfolio } from '../hooks/usePortfolio';
@@ -18,6 +18,7 @@ import socialInstagram from '@/assets/products/social-instagram.svg';
 
 const Portfolio = () => {
   const { t, language } = useLanguageContext();
+  const navigate = useNavigate();
   const { projects, loading, error } = usePortfolio();
   const [activeCategory, setActiveCategory] = useState('all');
   const [visibleCount, setVisibleCount] = useState<number>(6);
@@ -45,8 +46,8 @@ const Portfolio = () => {
     const contactSection = document.getElementById('kontakt') ?? document.getElementById('contact-form-section');
     if (contactSection) {
       contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else if (typeof window !== 'undefined') {
-      window.location.href = '/contact#kontakt';
+    } else {
+      void navigate('/contact#kontakt');
     }
   };
 

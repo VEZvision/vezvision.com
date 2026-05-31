@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './BlogHero.module.scss';
 import SectionBadge from '@/components/ui/SectionBadge';
 import { BookOpen } from 'lucide-react';
@@ -17,6 +18,7 @@ interface BlogHeroProps {
 
 const BlogHero: React.FC<BlogHeroProps> = ({ badge, title, description }) => {
   const { t } = useLanguageContext();
+  const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const sectionRef = useRef<HTMLElement | null>(null);
 
@@ -66,8 +68,8 @@ const BlogHero: React.FC<BlogHeroProps> = ({ badge, title, description }) => {
     const contactSection = document.getElementById('kontakt') ?? document.getElementById('contact-form-section');
     if (contactSection) {
       contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else if (typeof window !== 'undefined') {
-      window.location.href = '/contact#kontakt';
+    } else {
+      void navigate('/contact#kontakt');
     }
   };
 

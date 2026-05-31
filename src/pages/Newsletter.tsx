@@ -1,5 +1,4 @@
 import '../styles/GridBackground.css';
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Mail, Newspaper, ShieldCheck } from 'lucide-react';
 import PageSeo from '@/components/seo/PageSeo';
@@ -48,13 +47,9 @@ const Newsletter = () => {
   return (
     <div className="min-h-screen bg-white text-slate-950">
       <PageSeo pageKey="newsletter" />
-      <Helmet>
-        <title>{copy.title}</title>
-        <meta name="description" content={copy.description} />
-      </Helmet>
       <div className="grid-background" />
 
-      <main className="relative z-10 pt-32">
+      <div className="relative z-10 pt-32">
         <section className="px-6 pb-12">
           <SectionReveal>
             <div className="mx-auto max-w-5xl text-center">
@@ -103,7 +98,7 @@ const Newsletter = () => {
         </section>
 
         <NewsletterSection />
-      </main>
+      </div>
 
       <Footer />
     </div>

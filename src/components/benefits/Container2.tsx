@@ -1,17 +1,24 @@
 import { useState, useEffect } from 'react';
 import styles from './Container2.module.css';
 import { useLanguageContext } from '../../hooks/useLanguage';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
 const Container2: React.FC = () => {
   const [alt, setAlt] = useState(false);
   const { t } = useLanguageContext();
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
+    if (reducedMotion) {
+      setAlt(false);
+      return;
+    }
+
     const interval = setInterval(() => {
       setAlt((prev) => !prev);
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [reducedMotion]);
 
   return (
     <article className={`${styles.container} ${alt ? styles.alt : ""}`} aria-labelledby="container2-title">

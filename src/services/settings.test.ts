@@ -114,4 +114,43 @@ describe('normalizeSettingsEntries', () => {
     expect(settings.navigation.items).toEqual([])
     expect(settings.footer.legalLinks).toEqual([])
   })
+
+  it('drops unsafe CMS URLs while keeping safe public links', () => {
+    const settings = normalizeSettingsEntries([
+      {
+        key: 'navigation',
+        value: {
+          items: [
+            { href: 'javascript:alert(1)', labelPl: 'Bad', labelEn: 'Bad' },
+            { href: '//evil.example', labelPl: 'Protocol-relative', labelEn: 'Protocol-relative' },
+            { href: 'https://vezvision.com/about', labelPl: 'Safe', labelEn: 'Safe' },
+          ],
+          contactButtonHref: 'javascript:alert(1)',
+        },
+        updated_at: '2026-03-31T00:00:00Z',
+      },
+      {
+        key: 'social',
+        value: {
+          linkedin: 'https://linkedin.com/company/vezvision',
+          instagram: '/not-external',
+        },
+        updated_at: '2026-03-31T00:00:00Z',
+      },
+      {
+        key: 'seo',
+        value: {
+          siteUrl: 'javascript:alert(1)',
+        },
+        updated_at: '2026-03-31T00:00:00Z',
+      },
+    ])
+
+    expect(settings.navigation.items).toHaveLength(1)
+    expect(settings.navigation.items[0]?.href).toBe('https://vezvision.com/about')
+    expect(settings.navigation.contactButtonHref).toBe('')
+    expect(settings.social.linkedin).toBe('https://linkedin.com/company/vezvision')
+    expect(settings.social.instagram).toBe('')
+    expect(settings.seo.siteUrl).toBe('')
+  })
 })

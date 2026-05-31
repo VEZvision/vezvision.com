@@ -39,7 +39,7 @@ export function usePortfolio(filter?: PortfolioFilter) {
       }
     };
 
-    run();
+    void run();
 
     return () => controller.abort();
   }, [filter, refreshKey]);
@@ -83,7 +83,7 @@ export function useProject(idOrSlug: string | null) {
       }
     };
 
-    run();
+    void run();
 
     return () => controller.abort();
   }, [idOrSlug, refreshKey]);

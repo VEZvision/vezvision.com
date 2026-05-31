@@ -156,6 +156,20 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .cardLarge,
+  .cardLarge .content .readMoreContainer,
+  .cardLarge .content .readMoreContainer .readMore,
+  .cardLarge .imageContainer .image {
+    transition: none !important;
+  }
+
+  .cardLarge:hover,
+  .cardLarge .imageContainer:hover .image {
+    transform: none;
+  }
+}
+
 // Responsive design
 @media (max-width: 1200px) {
   .cardLarge {

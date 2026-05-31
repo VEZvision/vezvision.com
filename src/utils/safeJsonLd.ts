@@ -6,3 +6,13 @@ export function safeJsonLd(value: unknown): string {
     .replace(/\u2028/g, '\\u2028')
     .replace(/\u2029/g, '\\u2029')
 }
+
+export function getSafeStructuredDataJson(structuredDataJson: string): string | null {
+  if (!structuredDataJson.trim()) return null
+
+  try {
+    return safeJsonLd(JSON.parse(structuredDataJson))
+  } catch {
+    return null
+  }
+}

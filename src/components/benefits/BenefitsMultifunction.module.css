@@ -197,6 +197,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .container,
+  .backgroundShadow,
+  .shape,
+  .shape2,
+  .icon {
+    animation: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
   .backgroundShadow {
     animation: none;
   }

@@ -7,7 +7,7 @@ import {
   DEFAULT_COOKIE_PREFERENCES,
   COOKIE_CONSENT_VERSION
 } from '../types/cookies';
-import { storageManager } from '../utils/storageManager';
+import { generateConsentId, storageManager } from '../utils/storageManager';
 import { clearCookiesByCategory } from '../utils/cookieUtils';
 import { handleConsentChange } from '../lib/sentryConsent';
 import { applyGoogleAnalyticsConsent } from '../lib/googleAnalyticsConsent';
@@ -63,8 +63,8 @@ function cookieConsentReducer(
         ...state,
         hasConsent: true,
         preferences: {
-          necessary: true,
-          ...action.payload
+          ...action.payload,
+          necessary: true
         },
         showBanner: false,
         showPreferences: false,
@@ -111,7 +111,7 @@ function cookieConsentReducer(
       return {
         ...initialState,
         showBanner: true,
-        consentId: 'consent_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11)
+        consentId: generateConsentId()
       };
 
     case 'LOAD_CONSENT':
@@ -184,7 +184,7 @@ export function CookieConsentProvider({ children }: CookieConsentProviderProps) 
         clearCookiesByCategory('marketing');
       }
 
-      handleConsentChange(preferences);
+      void handleConsentChange(preferences);
       applyGoogleAnalyticsConsent(preferences.analytics);
 
       window.dispatchEvent(new CustomEvent('cookiePreferencesChanged', {
@@ -238,8 +238,8 @@ export function CookieConsentProvider({ children }: CookieConsentProviderProps) 
 
     updatePreferences: (preferences: CookiePreferences) => {
       const finalPreferences = {
-        necessary: true, // zawsze true
-        ...preferences
+        ...preferences,
+        necessary: true // zawsze true
       };
 
       dispatch({ type: 'UPDATE_PREFERENCES', payload: finalPreferences });

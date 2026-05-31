@@ -12,6 +12,7 @@ export interface LanguageContextType {
 }
 
 const translations = { pl, en };
+const translationDictionaries: Record<Language, Record<string, string>> = translations;
 
 const LANGUAGE_STORAGE_KEY = 'vezvision_language';
 
@@ -40,7 +41,7 @@ export function useLanguage() {
 
   const t = useCallback((key: string): string => {
     const cmsOverride = getCmsTranslation(language, key);
-    return cmsOverride || translations[language]?.[key] || key;
+    return cmsOverride || translationDictionaries[language][key] || key;
   }, [language]);
 
   return useMemo(() => ({

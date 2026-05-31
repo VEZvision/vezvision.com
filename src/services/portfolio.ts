@@ -120,8 +120,9 @@ export async function listProjects(filter: PortfolioFilter = {}, signal?: AbortS
         vv_project_category_assignments(vv_project_categories(slug)),
         vv_project_images(*)
       `, { count: 'exact' })
-      .limit(100)
-      .abortSignal(signal);
+      .limit(100);
+
+    if (signal) query = query.abortSignal(signal);
 
     if (filter.category && filter.category !== 'all') {
       query = query.eq('vv_project_category_assignments.vv_project_categories.slug', filter.category);
@@ -170,8 +171,9 @@ export async function getProject(idOrSlug: string, signal?: AbortSignal): Promis
         *,
         vv_project_category_assignments(vv_project_categories(slug)),
         vv_project_images(*)
-      `)
-      .abortSignal(signal);
+      `);
+
+    if (signal) query = query.abortSignal(signal);
 
     if (isUuid) {
       query = query.eq('id', idOrSlug);

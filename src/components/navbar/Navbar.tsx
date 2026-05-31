@@ -4,13 +4,14 @@ import { Link } from 'react-router-dom';
 import logoNavbar from '@/assets/logo-navbar.svg';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { useSettings } from '@/hooks/useSettings';
+import { isSafeExternalHref, safePublicHref } from '@/utils/safeHref';
 
 function getLocalizedLabel(language: 'pl' | 'en', labelPl: string, labelEn: string) {
   return language === 'en' ? (labelEn || labelPl) : labelPl
 }
 
 function isExternalHref(href: string) {
-  return href.startsWith('http://') || href.startsWith('https://') || href.startsWith('mailto:') || href.startsWith('tel:')
+  return isSafeExternalHref(href)
 }
 
 const FALLBACK_NAV_LINKS = [
@@ -59,7 +60,7 @@ const Navbar = memo(() => {
     }
   }, [isMenuOpen]);
 
-  const navLinks = navigation?.items?.length
+  const navLinks = (navigation?.items?.length
     ? navigation.items.filter((item) => item.enabled)
     : FALLBACK_NAV_LINKS.map((item) => ({
         id: item.id,
@@ -67,9 +68,9 @@ const Navbar = memo(() => {
         labelPl: t(item.labelKey),
         labelEn: t(item.labelKey),
         enabled: true,
-      }))
+      }))).map((item) => ({ ...item, href: safePublicHref(item.href) })).filter((item) => item.href)
   const contactButtonLabel = navigation ? getLocalizedLabel(language, navigation.contactButtonLabelPl, navigation.contactButtonLabelEn) : t('nav.contact')
-  const contactButtonHref = navigation?.contactButtonHref || '/contact'
+  const contactButtonHref = safePublicHref(navigation?.contactButtonHref, '/contact') || '/contact'
   const navTextClass = 'text-black'
   const navHoverClass = 'hover:bg-black/[0.05]'
   const desktopGroupClass = isScrolled

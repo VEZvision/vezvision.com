@@ -17,13 +17,15 @@ interface DBFaqItem {
 
 export async function listActiveFaqItems(language: 'pl' | 'en', signal?: AbortSignal): Promise<FaqItem[]> {
   try {
-    const { data, error } = await supabase
+    let query = supabase
       .from('vv_faq_items')
       .select('id, question_pl, question_en, answer_pl, answer_en')
       .eq('is_active', true)
       .order('order_index', { ascending: true })
       .limit(100)
-      .abortSignal(signal)
+
+    if (signal) query = query.abortSignal(signal)
+    const { data, error } = await query
 
     if (error || !data) return []
 

@@ -167,7 +167,7 @@ export function PrivacyCenter({ className = '' }: PrivacyCenterProps) {
 
           <div className="flex flex-1 overflow-hidden">
             <div className="w-64 bg-gray-50 border-r border-gray-200 p-4">
-              <nav className="space-y-2" role="tablist" aria-orientation="vertical">
+              <div className="space-y-2" role="tablist" aria-orientation="vertical">
                 {tabs.map((tab, index) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -193,7 +193,7 @@ export function PrivacyCenter({ className = '' }: PrivacyCenterProps) {
                     </button>
                   );
                 })}
-              </nav>
+              </div>
 
               <div className="mt-6 pt-4 border-t border-gray-200">
                 <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">

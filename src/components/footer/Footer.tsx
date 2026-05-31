@@ -12,13 +12,14 @@ import { useLanguageContext } from '../../hooks/useLanguage';
 
 import { useSettings } from '../../hooks/useSettings';
 import { useCookieConsent } from '../../hooks/useCookieConsent';
+import { isSafeExternalHref, safePublicHref } from '@/utils/safeHref';
 
 function getLocalizedLabel(language: 'pl' | 'en', labelPl: string, labelEn: string) {
   return language === 'en' ? (labelEn || labelPl) : labelPl
 }
 
 function isExternalHref(href: string) {
-  return href.startsWith('http://') || href.startsWith('https://') || href.startsWith('mailto:') || href.startsWith('tel:')
+  return isSafeExternalHref(href)
 }
 
 const Footer = memo(() => {
@@ -34,12 +35,12 @@ const Footer = memo(() => {
     { href: social?.linkedin, icon: linkedinIcon, alt: 'LinkedIn', label: 'LinkedIn' }
   ];
 
-  const navLinks = (navigation?.items ?? []).filter((item) => item.enabled);
-  const legalLinks = (footer?.legalLinks ?? []).filter((item) => item.enabled);
+  const navLinks = (navigation?.items ?? []).filter((item) => item.enabled).map((item) => ({ ...item, href: safePublicHref(item.href) })).filter((item) => item.href);
+  const legalLinks = (footer?.legalLinks ?? []).filter((item) => item.enabled).map((item) => ({ ...item, href: safePublicHref(item.href) })).filter((item) => item.href);
   const footerSubtitle = footer ? getLocalizedLabel(language, footer.subtitlePl, footer.subtitleEn) : t('footer.subtitle');
   const footerTagline = footer ? getLocalizedLabel(language, footer.taglinePl, footer.taglineEn) : t('footer.tagline');
   const footerCtaLabel = footer ? getLocalizedLabel(language, footer.ctaLabelPl, footer.ctaLabelEn) : t('footer.cta');
-  const footerCtaHref = footer?.ctaHref || '/contact';
+  const footerCtaHref = safePublicHref(footer?.ctaHref, '/contact') || '/contact';
   const brandName = identity?.siteName || 'VezVision';
 
   return (
@@ -87,7 +88,7 @@ const Footer = memo(() => {
                     rel="noopener noreferrer"
                   >
                     <div className={styles.socialIconContainer}>
-                      <img src={icon} alt={alt} className={styles.socialIcon} />
+                      <img src={icon} alt={alt} className={styles.socialIcon} loading="lazy" decoding="async" />
                     </div>
                   </a>
                 ))}
@@ -104,7 +105,7 @@ const Footer = memo(() => {
                 <div className={styles.logoSection}>
                   <div className={styles.logoContainer}>
                     <div className={styles.logoWrapper}>
-                      <img src={logoIcon} alt="VezVision Logo" className={styles.logoImage} />
+                      <img src={logoIcon} alt="VezVision Logo" className={styles.logoImage} loading="lazy" decoding="async" />
                     </div>
                     <p className={styles.logoText}>{brandName.toUpperCase()}</p>
                   </div>
@@ -119,12 +120,12 @@ const Footer = memo(() => {
                 {isExternalHref(footerCtaHref) ? (
                   <a href={footerCtaHref} className={styles.ctaButton} target="_blank" rel="noopener noreferrer">
                     <span className={styles.ctaText}>{footerCtaLabel}</span>
-                    <img src={arrowIcon} alt="" className={styles.ctaIcon} aria-hidden="true" />
+                    <img src={arrowIcon} alt="" className={styles.ctaIcon} aria-hidden="true" loading="lazy" decoding="async" />
                   </a>
                 ) : (
                   <Link to={footerCtaHref} className={styles.ctaButton}>
                     <span className={styles.ctaText}>{footerCtaLabel}</span>
-                    <img src={arrowIcon} alt="" className={styles.ctaIcon} aria-hidden="true" />
+                    <img src={arrowIcon} alt="" className={styles.ctaIcon} aria-hidden="true" loading="lazy" decoding="async" />
                   </Link>
                 )}
               </div>

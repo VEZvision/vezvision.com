@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { safeAbsoluteHttpUrl, safeExternalHref, safeImageUrl, safePublicHref } from '@/utils/safeHref'
 
 export interface ContactSettings {
   email: string
@@ -209,7 +210,7 @@ function normalizeLocalizedLinkItems(value: unknown): LocalizedLinkItem[] {
   return value.flatMap((item, index) => {
     if (!isRecord(item)) return []
 
-    const href = asString(item.href)
+    const href = safePublicHref(item.href)
     const labelPl = asString(item.labelPl)
     const labelEn = asString(item.labelEn)
 
@@ -250,9 +251,9 @@ function normalizeIdentity(value: unknown): IdentitySettings {
 
   return {
     siteName: asString(value.siteName),
-    logoUrl: asString(value.logoUrl),
-    faviconUrl: asString(value.faviconUrl),
-    defaultOgImageUrl: asString(value.defaultOgImageUrl),
+    logoUrl: safeImageUrl(value.logoUrl),
+    faviconUrl: safeImageUrl(value.faviconUrl),
+    defaultOgImageUrl: safeImageUrl(value.defaultOgImageUrl),
   }
 }
 
@@ -265,11 +266,11 @@ function normalizeSocial(value: unknown): SocialSettings {
   if (!isRecord(value)) return EMPTY_PUBLIC_SETTINGS.social
 
   return {
-    facebook: asString(value.facebook),
-    instagram: asString(value.instagram),
-    linkedin: asString(value.linkedin),
-    github: asString(value.github),
-    x: asString(value.x),
+    facebook: safeExternalHref(value.facebook),
+    instagram: safeExternalHref(value.instagram),
+    linkedin: safeExternalHref(value.linkedin),
+    github: safeExternalHref(value.github),
+    x: safeExternalHref(value.x),
   }
 }
 
@@ -280,7 +281,7 @@ function normalizeSeo(value: unknown): SeoSettings {
     siteTitle: asString(value.siteTitle),
     siteDescription: asString(value.siteDescription),
     keywords: asStringArray(value.keywords),
-    siteUrl: asString(value.siteUrl),
+    siteUrl: safeAbsoluteHttpUrl(value.siteUrl),
     robots: asString(value.robots),
     ogSiteName: asString(value.ogSiteName),
   }
@@ -333,7 +334,7 @@ function normalizeNavigation(value: unknown): NavigationSettings {
     items: normalizeLocalizedLinkItems(value.items),
     contactButtonLabelPl: asString(value.contactButtonLabelPl),
     contactButtonLabelEn: asString(value.contactButtonLabelEn),
-    contactButtonHref: asString(value.contactButtonHref),
+    contactButtonHref: safePublicHref(value.contactButtonHref),
   }
 }
 
@@ -347,7 +348,7 @@ function normalizeFooter(value: unknown): FooterSettings {
     taglineEn: asString(value.taglineEn),
     ctaLabelPl: asString(value.ctaLabelPl),
     ctaLabelEn: asString(value.ctaLabelEn),
-    ctaHref: asString(value.ctaHref),
+    ctaHref: safePublicHref(value.ctaHref),
     legalLinks: normalizeLocalizedLinkItems(value.legalLinks),
   }
 }
@@ -400,10 +401,14 @@ export async function getSettings(key: string): Promise<{ data: SettingEntry[] }
   return data?.value ?? null
 }
 
+/**
+ * Admin-only helper. Public site context does not expose this API.
+ * Upsert updates value only and preserves the existing `is_public` flag.
+ */
 export async function saveSettings(key: string, value: unknown): Promise<void> {
   const { error } = await supabase
     .from('vv_site_settings')
-    .upsert({ key, value: value as import('@/types/database.types').Json, is_public: true }, { onConflict: 'key' })
+    .upsert({ key, value: value as import('@/types/database.types').Json }, { onConflict: 'key' })
 
   if (error) {
     throw new Error(`Failed to save setting '${key}': ${error.message}`)

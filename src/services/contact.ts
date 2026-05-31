@@ -6,8 +6,13 @@ export interface ContactSubmissionPayload {
   phone: string | null
   subject: string
   message: string
-  status: 'new'
   language: 'pl' | 'en'
+}
+
+interface ContactSubmissionResult {
+  success?: boolean
+  error?: string
+  field?: string
 }
 
 export async function submitContactForm(payload: ContactSubmissionPayload): Promise<void> {
@@ -17,7 +22,7 @@ export async function submitContactForm(payload: ContactSubmissionPayload): Prom
 
   if (error) throw error
 
-  const result = data as { success?: boolean; error?: string } | null
+  const result = data as ContactSubmissionResult | null
   if (result && result.success === false) {
     throw new Error(result.error || 'Contact form submission failed')
   }

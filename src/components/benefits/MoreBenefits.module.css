@@ -39,9 +39,23 @@
   animation: scroll 40s linear infinite;
 }
 
+.slideTrack.reducedMotion {
+  animation: none;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 @keyframes scroll {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slideTrack {
+    animation: none;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
 
 /* Responsive Design */

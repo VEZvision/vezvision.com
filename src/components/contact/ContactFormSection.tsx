@@ -9,6 +9,11 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { logError } from '@/lib/logger';
 import { submitContactForm, type ContactSubmissionPayload } from '@/services/contact';
+import {
+  formatTelHref,
+  normalizeContactEmail,
+  normalizeContactPhone,
+} from '@/utils/contactValidation';
 
 interface FormData {
   fullName: string;
@@ -27,19 +32,6 @@ interface FormErrors {
 }
 
 interface Props { t: LanguageContextType['t'] }
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_PATTERN = /^\+?[0-9()\s-]{5,30}$/;
-
-function normalizeEmail(value: string | null | undefined): string | null {
-  const email = value?.trim();
-  return email && EMAIL_PATTERN.test(email) ? email : null;
-}
-
-function normalizePhone(value: string | null | undefined): string | null {
-  const phone = value?.replace(/\s+/g, '').trim();
-  return phone && PHONE_PATTERN.test(value || '') ? phone : null;
-}
 
 function normalizeAddress(value: string | null | undefined): string | null {
   const address = value?.trim();
@@ -77,8 +69,11 @@ const ContactFormSection = ({ t }: Props) => {
       newErrors.email = t('contact.form.error.email.invalid');
     }
 
-    if (formData.phone.trim() && !/^[+]?[\d\s\-()]{7,20}$/.test(formData.phone.trim())) {
-      newErrors.phone = t('contact.form.error.phone');
+    if (formData.phone.trim()) {
+      const phoneResult = normalizeContactPhone(formData.phone);
+      if (phoneResult.invalid || !phoneResult.phone) {
+        newErrors.phone = t('contact.form.error.phone');
+      }
     }
 
     if (!formData.subject.trim()) {
@@ -115,14 +110,14 @@ const ContactFormSection = ({ t }: Props) => {
     e.preventDefault();
     if (validateForm()) {
       setIsSubmitting(true);
+      const phoneResult = normalizeContactPhone(formData.phone);
       const payload: ContactSubmissionPayload = {
-        full_name: formData.fullName,
-        email: formData.email,
-        phone: formData.phone || null,
-        subject: formData.subject,
-        message: formData.message,
-        status: 'new',
-        language
+        full_name: formData.fullName.trim(),
+        email: formData.email.trim(),
+        phone: phoneResult.phone,
+        subject: formData.subject.trim(),
+        message: formData.message.trim(),
+        language,
       };
       try {
         await submitContactForm(payload);
@@ -149,13 +144,13 @@ const ContactFormSection = ({ t }: Props) => {
   };
 
   const handleEmailClick = () => {
-    const email = normalizeEmail(displayEmail);
+    const email = normalizeContactEmail(displayEmail);
     if (email) window.location.href = `mailto:${email}`;
   };
 
   const handlePhoneClick = () => {
-    const phone = normalizePhone(contact?.phone);
-    if (phone) window.location.href = `tel:${phone}`;
+    const phoneResult = normalizeContactPhone(contact?.phone);
+    if (phoneResult.phone) window.location.href = formatTelHref(phoneResult.phone);
   };
 
   const handleAddressClick = () => {
@@ -184,7 +179,7 @@ const ContactFormSection = ({ t }: Props) => {
 
       <div className={styles.section}>
         <div className={styles.contacts}>
-          <div className={styles.contactCard} onClick={handleEmailClick}>
+          <button type="button" className={styles.contactCard} onClick={handleEmailClick}>
             <div className={styles.iconContainer}>
               <div className={styles.iconEmail} />
             </div>
@@ -200,9 +195,9 @@ const ContactFormSection = ({ t }: Props) => {
                 <span className={styles.contactInfo}>{displayEmail}</span>
               )}
             </div>
-          </div>
+          </button>
 
-          <div className={styles.contactCard} onClick={handlePhoneClick}>
+          <button type="button" className={styles.contactCard} onClick={handlePhoneClick}>
             <div className={styles.iconContainer}>
               <div className={styles.iconPhone} />
             </div>
@@ -218,9 +213,9 @@ const ContactFormSection = ({ t }: Props) => {
                 <span className={styles.contactInfo}>{displayPhone}</span>
               )}
             </div>
-          </div>
+          </button>
 
-          <div className={styles.contactCard} onClick={handleAddressClick}>
+          <button type="button" className={styles.contactCard} onClick={handleAddressClick}>
             <div className={styles.iconContainer}>
               <div className={styles.iconAddress} />
             </div>
@@ -236,7 +231,7 @@ const ContactFormSection = ({ t }: Props) => {
                 <span className={styles.contactInfo}>{displayAddress}</span>
               )}
             </div>
-          </div>
+          </button>
         </div>
 
         <form className={styles.formContainer} onSubmit={handleSubmit}>

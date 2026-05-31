@@ -159,6 +159,15 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .grid,
+  .logo,
+  .spinner,
+  .progressBar {
+    animation: none !important;
+  }
+}
+
 /* Responsive Design */
 @media (min-width: 1200px) {
   .container {

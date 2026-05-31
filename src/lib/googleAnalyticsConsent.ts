@@ -1,10 +1,13 @@
 type GtagCommand = 'js' | 'config' | 'consent'
-type GtagValue = string | Date | Record<string, string>
+type GtagTarget = string | Date
+type GtagConfig = Record<string, string>
+type GtagCall = [GtagCommand, GtagTarget, GtagConfig?]
+type GtagFunction = (command: GtagCommand, target: GtagTarget, config?: GtagConfig) => void
 
 declare global {
   interface Window {
-    dataLayer?: GtagValue[][]
-    gtag?: (command: GtagCommand, target: string | Date, config?: Record<string, string>) => void
+    dataLayer?: GtagCall[]
+    gtag?: GtagFunction
     __vezvisionGaLoaded?: boolean
   }
 }
@@ -32,11 +35,12 @@ export function applyGoogleAnalyticsConsent(analyticsAllowed: boolean): void {
   }
 
   window.dataLayer = window.dataLayer || []
-  window.gtag = window.gtag || ((...args: GtagValue[]) => {
-    window.dataLayer?.push(args)
+  window.gtag = window.gtag || ((command, target, config) => {
+    window.dataLayer?.push(config ? [command, target, config] : [command, target])
   })
+  const gtag = window.gtag
 
-  window.gtag('consent', 'update', { analytics_storage: 'granted' })
+  gtag('consent', 'update', { analytics_storage: 'granted' })
 
   if (window.__vezvisionGaLoaded) return
 
@@ -45,7 +49,7 @@ export function applyGoogleAnalyticsConsent(analyticsAllowed: boolean): void {
   script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_ID)}`
   document.head.appendChild(script)
 
-  window.gtag('js', new Date())
-  window.gtag('config', GA_ID, { anonymize_ip: 'true' })
+  gtag('js', new Date())
+  gtag('config', GA_ID, { anonymize_ip: 'true' })
   window.__vezvisionGaLoaded = true
 }

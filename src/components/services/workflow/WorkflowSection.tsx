@@ -1,4 +1,5 @@
 import styles from './WorkflowSection.module.scss';
+import { useNavigate } from 'react-router-dom';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { SectionReveal } from '@/components/ui/SectionReveal';
 import SectionHeader from '@/components/ui/SectionHeader';
@@ -52,6 +53,7 @@ const StepIcon: React.FC<{ index: number }> = ({ index }) => {
 
 const WorkflowSection: React.FC = () => {
   const { t } = useLanguageContext();
+  const navigate = useNavigate();
 
   const steps = [
     { title: t('workflow.step1.title'), desc: t('workflow.step1.desc') },
@@ -119,7 +121,7 @@ const WorkflowSection: React.FC = () => {
           <p className={styles.footerNote}>{t('workflow.cta.note')}</p>
           <button
             className={styles.ctaButton}
-            onClick={() => { window.location.href = '/contact'; }}
+            onClick={() => { void navigate('/contact'); }}
           >
             <span>{t('workflow.cta.button')}</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>

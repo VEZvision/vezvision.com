@@ -1,4 +1,5 @@
 import '../styles/GridBackground.css';
+import { useNavigate } from 'react-router-dom';
 import PageSeo from '@/components/seo/PageSeo';
 import VideoHeroSection from '@/components/common/VideoHeroSection';
 import BlogFounderNote from '@/components/blog/BlogFounderNote';
@@ -13,6 +14,7 @@ import socialLinkedin from '@/assets/social-linkedin.svg';
 
 const BlogHeroWrapper = () => {
   const { t } = useLanguageContext();
+  const navigate = useNavigate();
 
   const handleContactClick = () => {
     if (typeof document === 'undefined') return;
@@ -20,8 +22,8 @@ const BlogHeroWrapper = () => {
     const contactSection = document.getElementById('kontakt') ?? document.getElementById('contact-form-section');
     if (contactSection) {
       contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else if (typeof window !== 'undefined') {
-      window.location.href = '/contact#kontakt';
+    } else {
+      void navigate('/contact#kontakt');
     }
   };
 

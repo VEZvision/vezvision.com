@@ -14,9 +14,35 @@ function getClientIp(req: Request): string {
   return "unknown";
 }
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function normalizeEmail(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const email = value.trim().toLowerCase();
+  if (email.length < 5 || email.length > 254 || !EMAIL_PATTERN.test(email)) return null;
+  return email;
+}
+
+function normalizeSource(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const source = value.trim().slice(0, 50);
+  if (!source || /[<>]/.test(source)) return null;
+  return source;
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: getCorsHeaders(req) });
+  }
+
+  if (req.method !== "POST") {
+    return new Response(
+      JSON.stringify({ success: false, error: "Method not allowed" }),
+      {
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json", "Allow": "POST, OPTIONS" },
+        status: 405,
+      }
+    );
   }
 
   try {
@@ -28,19 +54,19 @@ Deno.serve(async (req: Request) => {
     );
 
     const body = await req.json();
-    const email = body?.email;
+    const email = normalizeEmail(body?.email);
     const language = body?.language === 'en' ? 'en' : 'pl';
-    const source = typeof body?.source === 'string' ? body.source.trim().slice(0, 50) : null;
+    const source = normalizeSource(body?.source);
 
-    if (!email || typeof email !== "string" || !email.trim()) {
+    if (!email) {
       return new Response(
-        JSON.stringify({ success: false, error: language === "pl" ? "Podaj adres email." : "Enter your email address." }),
+        JSON.stringify({ success: false, error: language === "pl" ? "Podaj poprawny adres email." : "Enter a valid email address." }),
         { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 400 }
       );
     }
 
     const { data: id, error } = await supabase.rpc("safe_insert_newsletter_subscriber", {
-      p_email: String(email).trim().toLowerCase(),
+      p_email: email,
       p_client_ip: clientIp,
       p_language: language,
       p_source: source,
@@ -57,7 +83,7 @@ Deno.serve(async (req: Request) => {
             ? language === "pl" ? "Zbyt wiele prób. Spróbuj ponownie za godzinę." : "Too many attempts. Try again in an hour."
             : isDuplicate
               ? language === "pl" ? "Ten adres email jest już zapisany do newslettera." : "This email address is already on the list."
-              : msg,
+              : language === "pl" ? "Nie udało się zapisać adresu. Spróbuj ponownie później." : "Could not subscribe this address. Try again later.",
         }),
         {
           headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },

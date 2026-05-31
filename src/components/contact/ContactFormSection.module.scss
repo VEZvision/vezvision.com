@@ -68,6 +68,9 @@
         0px 14px 14px -3px rgba(0, 0, 0, 0.05),
         0px 30px 30px -4px rgba(0, 0, 0, 0.02);
       cursor: pointer;
+      color: inherit;
+      font: inherit;
+      text-align: left;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       overflow: hidden;
@@ -306,6 +309,28 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sectionContactContainer .headingReachUs,
+  .sectionContactContainer .paragraphDescription,
+  .section .contacts .contactCard,
+  .section .contacts .contactCard::before,
+  .section .contacts .contactCard .iconContainer,
+  .section .contacts .contactCard .link .contactInfo,
+  .formContainer .formField .fieldInput,
+  .formContainer .formField .fieldTextarea,
+  .formContainer .submitButton {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .section .contacts .contactCard:hover,
+  .section .contacts .contactCard:hover .iconContainer,
+  .formContainer .submitButton:hover:not(:disabled),
+  .formContainer .submitButton:active:not(:disabled) {
+    transform: none;
   }
 }
 

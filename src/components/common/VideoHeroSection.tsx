@@ -1,7 +1,9 @@
 import { FC, Fragment, ReactNode, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SectionBadge from '@/components/ui/SectionBadge';
 import logoHero from '@/assets/logo-hero.svg';
 import arrowRight from '@/assets/arrow-right.svg';
+import { safeExternalHref, safePublicHref } from '@/utils/safeHref';
 
 export interface SocialLink {
   href?: string;
@@ -36,6 +38,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
   contentClassName,
   ariaLabelledBy,
 }) => {
+  const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const sectionRef = useRef<HTMLElement | null>(null);
 
@@ -81,15 +84,21 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
       return;
     }
 
-    if (buttonHref && typeof window !== 'undefined') {
-      if (buttonHref.startsWith('#')) {
-        const target = document.getElementById(buttonHref.slice(1));
+    const safeButtonHref = safePublicHref(buttonHref);
+    if (safeButtonHref) {
+      if (safeButtonHref.startsWith('#')) {
+        const target = document.getElementById(safeButtonHref.slice(1));
         if (target) {
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
           return;
         }
       }
-      window.location.href = buttonHref;
+
+      if (safeButtonHref.startsWith('/') || safeButtonHref.startsWith('#')) {
+        void navigate(safeButtonHref);
+      } else if (typeof window !== 'undefined') {
+        window.location.assign(safeButtonHref);
+      }
     }
   };
 
@@ -179,9 +188,9 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
             <div className="flex items-center justify-center gap-6 mt-6">
               {socialLinks.map((item, index) => (
                 <Fragment key={item.label}>
-                  {item.href ? (
+                  {safeExternalHref(item.href) ? (
                     <a
-                      href={item.href}
+                      href={safeExternalHref(item.href)}
                       className="opacity-80 hover:opacity-100 transition-opacity duration-300"
                       aria-label={item.label}
                       target="_blank"

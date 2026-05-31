@@ -10,6 +10,9 @@ export default defineConfig({
   resolve: {
     dedupe: ['react', 'react-dom']
   },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
+  },
   build: {
     sourcemap: 'hidden',
     chunkSizeWarningLimit: 1000,
@@ -17,9 +20,12 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
+            if (id.includes('react-dom') || (id.includes('react') && !id.includes('react-router') && !id.includes('react-helmet') && !id.includes('react-markdown') && !id.includes('lucide-react'))) return 'vendor-react';
+            if (id.includes('react-router')) return 'vendor-router';
+            if (id.includes('react-helmet')) return 'vendor-helmet';
+            if (id.includes('react-markdown') || id.includes('remark') || id.includes('rehype') || id.includes('micromark') || id.includes('unified')) return 'vendor-markdown';
             if (id.includes('framer-motion')) return 'vendor-motion';
             if (id.includes('@supabase')) return 'vendor-supabase';
-            if (id.includes('@sentry')) return 'vendor-sentry';
             if (id.includes('lenis')) return 'vendor-lenis';
             if (id.includes('lucide-react')) return 'vendor-icons';
           }
@@ -31,4 +37,4 @@ export default defineConfig({
     react(),
     tsconfigPaths()
   ],
-})
+});
