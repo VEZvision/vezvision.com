@@ -36,3 +36,9 @@ coverage
 .agent/
 .vercel/
 supabase/.temp/
+.sisyphus/
+.mcp-deploy-payload.json
+.deploy-*.json
+.edge-deploy-*.json
+scripts/mcp-deploy-*.json
+scripts/deploy-*.json

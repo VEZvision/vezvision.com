@@ -115,6 +115,7 @@ type MaintenanceAccessState = 'loading' | 'allowed' | 'blocked';
 const MaintenanceGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { maintenance, loading: settingsLoading } = useSettings();
   const [access, setAccess] = useState<MaintenanceAccessState>('loading');
+  const maintenanceAllowedIpsKey = maintenance?.allowedIps?.join(',') ?? '';
 
   useEffect(() => {
     if (settingsLoading) return;
@@ -139,7 +140,7 @@ const MaintenanceGuard: React.FC<{ children: React.ReactNode }> = ({ children })
     return () => {
       cancelled = true;
     };
-  }, [maintenance?.enabled, settingsLoading]);
+  }, [maintenance?.enabled, maintenanceAllowedIpsKey, settingsLoading]);
 
   if (settingsLoading || (maintenance?.enabled && access === 'loading')) {
     return <PageLoader />;

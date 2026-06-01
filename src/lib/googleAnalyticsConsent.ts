@@ -14,6 +14,20 @@ declare global {
 
 const GA_ID = import.meta.env.VITE_GA_ID
 
+function ensureGtagStub(): GtagFunction {
+  window.dataLayer = window.dataLayer || []
+  window.gtag = window.gtag || ((command, target, config) => {
+    window.dataLayer?.push(config ? [command, target, config] : [command, target])
+  })
+  return window.gtag
+}
+
+export function initGoogleAnalyticsConsentDefaults(): void {
+  if (!GA_ID) return
+  const gtag = ensureGtagStub()
+  gtag('consent', 'default', { analytics_storage: 'denied' })
+}
+
 function clearGoogleAnalyticsCookies(): void {
   const cookieNames = document.cookie
     .split(';')
@@ -34,11 +48,7 @@ export function applyGoogleAnalyticsConsent(analyticsAllowed: boolean): void {
     return
   }
 
-  window.dataLayer = window.dataLayer || []
-  window.gtag = window.gtag || ((command, target, config) => {
-    window.dataLayer?.push(config ? [command, target, config] : [command, target])
-  })
-  const gtag = window.gtag
+  const gtag = ensureGtagStub()
 
   gtag('consent', 'update', { analytics_storage: 'granted' })
 

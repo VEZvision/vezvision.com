@@ -289,7 +289,7 @@ Deno.serve(async (req: Request) => {
         getNotificationHtml({
           fullName,
           email,
-          phone,
+          phone: phoneResult.phone,
           subject,
           message,
           lang: language,
@@ -323,7 +323,7 @@ Deno.serve(async (req: Request) => {
         body: JSON.stringify({
           name: fullName,
           email,
-          phone,
+          phone: phoneResult.phone,
           message,
           source: "contact-form",
         }),

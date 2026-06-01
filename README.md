@@ -75,6 +75,8 @@ Use instead:
 
 When `maintenance_mode.enabled` is true, the public site shows the maintenance page unless the visitor IP is listed in `maintenance_mode.allowedIps`. IP checks run in the `check-maintenance-access` Edge Function using `x-forwarded-for`, so deploy that function alongside the site.
 
+To discover the IP seen by Supabase, temporarily log `getClientIp` in that function or inspect the function logs while loading the site from your network. If the header is missing, the value is `unknown` and must be added to `allowedIps` exactly.
+
 ## CI
 
 GitHub Actions workflow: `.github/workflows/ci.yml`.
