@@ -39,6 +39,7 @@ supabase/.temp/
 .sisyphus/
 .mcp-deploy-payload.json
 .deploy-*.json
+.mcp-args-*.json
 .edge-deploy-*.json
 scripts/mcp-deploy-*.json
 scripts/deploy-*.json
