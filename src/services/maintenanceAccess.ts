@@ -52,9 +52,3 @@ export function isSiteAccessible(snapshot: MaintenanceAccessSnapshot): boolean {
   if (!snapshot.maintenance) return true
   return snapshot.bypass
 }
-
-/** @deprecated Use fetchMaintenanceAccess + isSiteAccessible */
-export async function checkMaintenanceBypass(): Promise<boolean> {
-  const snapshot = await fetchMaintenanceAccess()
-  return isSiteAccessible(snapshot)
-}

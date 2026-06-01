@@ -4,6 +4,7 @@ import { unsubscribeByToken } from '@/services/newsletter';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import logoHero from '@/assets/logo-hero.svg';
 import PageSeo from '@/components/seo/PageSeo';
+import Footer from '@/components/footer/Footer';
 
 const Unsubscribe = () => {
     const [searchParams] = useSearchParams();
@@ -36,7 +37,8 @@ const Unsubscribe = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+        <div className="min-h-screen flex flex-col bg-gray-50">
+        <div className="flex flex-1 flex-col items-center justify-center px-4">
             <PageSeo pageKey="unsubscribe" />
             <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 text-center">
                 <div className="mb-8 flex justify-center">
@@ -126,6 +128,8 @@ const Unsubscribe = () => {
                     </div>
                 )}
             </div>
+        </div>
+        <Footer />
         </div>
     );
 };

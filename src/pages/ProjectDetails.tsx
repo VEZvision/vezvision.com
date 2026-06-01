@@ -23,6 +23,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { safeExternalHref } from '@/utils/safeHref';
 import { LoadingScreen } from '@/components/loading';
+import Footer from '@/components/footer/Footer';
 import styles from './ProjectDetails.module.css';
 
 export default function ProjectDetails() {
@@ -340,6 +341,7 @@ export default function ProjectDetails() {
                     </motion.div>
                 )}
             </AnimatePresence>
+            <Footer />
         </div>
     );
 }

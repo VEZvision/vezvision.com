@@ -5,6 +5,7 @@ import { useLegalContent } from '@/hooks/useLegalContent';
 import { Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import type { LegalTemplates } from '@/data/legalTemplates';
+import Footer from '@/components/footer/Footer';
 
 const CookiePolicy = () => {
   const { t, language } = useLanguageContext();
@@ -57,6 +58,7 @@ const CookiePolicy = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

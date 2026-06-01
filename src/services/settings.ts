@@ -400,17 +400,3 @@ export async function getSettings(key: string): Promise<{ data: SettingEntry[] }
 
   return data?.value ?? null
 }
-
-/**
- * Admin-only helper. Public site context does not expose this API.
- * Upsert updates value only and preserves the existing `is_public` flag.
- */
-export async function saveSettings(key: string, value: unknown): Promise<void> {
-  const { error } = await supabase
-    .from('vv_site_settings')
-    .upsert({ key, value: value as import('@/types/database.types').Json }, { onConflict: 'key' })
-
-  if (error) {
-    throw new Error(`Failed to save setting '${key}': ${error.message}`)
-  }
-}

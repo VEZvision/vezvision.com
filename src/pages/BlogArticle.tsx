@@ -10,6 +10,7 @@ import { useSettings } from '@/hooks/useSettings';
 import DOMPurify from 'dompurify';
 
 import { ArrowLeft, Clock, Calendar, Mail, Tag } from 'lucide-react';
+import Footer from '@/components/footer/Footer';
 
 const BlogArticle: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -101,6 +102,7 @@ const BlogArticle: React.FC = () => {
   const ogImage = post.featured_image || (seo?.siteUrl ? `${seo.siteUrl.replace(/\/$/, '')}/favicon.svg` : '/favicon.svg');
 
   return (
+    <>
     <section className="relative z-10 pt-32 pb-20 px-4 sm:px-6 lg:px-8" aria-labelledby="blog-article-title">
       <Helmet>
         <title>{fullTitle}</title>
@@ -251,6 +253,8 @@ const BlogArticle: React.FC = () => {
         </aside>
       </div>
     </section>
+    <Footer />
+    </>
   );
 };
 

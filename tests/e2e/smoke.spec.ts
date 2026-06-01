@@ -23,3 +23,9 @@ test('unknown routes render a not-found page', async ({ page }) => {
   await expect(page.getByRole('main')).toBeVisible()
   await expect(page.getByRole('heading', { name: /not found|nie znaleziono/i })).toBeVisible()
 })
+
+test('legal pages include site footer navigation', async ({ page }) => {
+  await page.goto('/privacy-policy')
+
+  await expect(page.getByRole('contentinfo')).toBeVisible()
+})

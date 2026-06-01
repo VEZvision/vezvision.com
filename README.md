@@ -1,6 +1,6 @@
 # VezVision website
 
-Production Vite + React + TypeScript website for VezVision. The app uses Supabase for CMS/public data, Supabase Edge Functions for contact/newsletter flows, Sentry and Google Analytics behind cookie consent, and Vercel security headers.
+Production Vite + React + TypeScript website for VezVision. The app uses Supabase for CMS/public data, Supabase Edge Functions for contact/newsletter flows, Sentry and Google Analytics behind cookie consent. Static build (`dist/`) is uploaded to hosting (e.g. Hostido); security headers can be set in the panel or via `vercel.json` as a reference.
 
 ## Stack
 
@@ -75,7 +75,11 @@ Use instead:
 
 When maintenance is enabled in `vv_site_settings`, the public app calls `check-maintenance-access` on every cold load (and whenever maintenance settings change). The edge function is the **source of truth** for whether maintenance is active and whether the visitor IP is allowlisted.
 
-Set optional Edge secret `ALLOWED_CORS_ORIGINS` (comma-separated origins) for Vercel preview or staging hosts, e.g. `https://vezvision-web.vercel.app`.
+Production origins (`https://vezvision.com`, `https://www.vezvision.com`) are already allowlisted in `supabase/functions/_shared/cors.ts`. On Hostido you normally **do not** need `ALLOWED_CORS_ORIGINS` if the public site is served from those domains.
+
+Set the optional Edge secret `ALLOWED_CORS_ORIGINS` (comma-separated full origins) only for **extra** hosts, for example a staging subdomain, a temporary Hostido URL, or an alternate domain:
+
+`https://staging.vezvision.com,https://twoja-domena.hostido.pl`
 
 To discover the IP seen by Supabase, inspect function logs while loading the site. If the header is missing, the value is `unknown` and must be added to `allowedIps` exactly.
 
@@ -87,9 +91,22 @@ GitHub Actions workflow: `.github/workflows/ci.yml`.
 
 It runs install, typecheck, lint, unit tests, production build, npm audit, and Chromium Playwright smoke tests.
 
+## Supabase Edge Functions (public site)
+
+| Function | Purpose |
+|----------|---------|
+| `check-maintenance-access` | Maintenance gate + IP allowlist |
+| `submit-contact` | Contact form → DB + Resend |
+| `subscribe-newsletter` | Newsletter signup via `safe_insert_newsletter_subscriber` |
+| `unsubscribe-newsletter` | Token unsubscribe via `unsubscribe_by_token` |
+
+Deploy from `supabase/functions/` (shared `_shared/cors.ts`, `_shared/clientIp.ts`). Apply DB migrations before deploying when RPC signatures change.
+
 ## Deployment notes
 
-- Vercel headers live in `vercel.json`.
-- Build output is `dist/` and must not be committed.
+- Build: `npm run build` → upload contents of `dist/` to Hostido (or your static host). Include `public/.htaccess` (SPA fallback + CSP). Do not commit `dist/`.
+- Configure HTTPS in the Hostido panel. `vercel.json` is optional reference only if you are not on Vercel.
+- Edge Functions CORS: browser calls from your live domain use the hardcoded production origins; local dev uses ports `5174` / `4173`.
+- Use **npm** (`npm ci`) for installs; do not commit alternate lockfiles.
 - Keep Browserslist data current with `npm update caniuse-lite browserslist` when build warnings appear.
 - Do not commit local files such as `.env`, `.DS_Store`, Playwright traces, or reports.

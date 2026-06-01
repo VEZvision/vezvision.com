@@ -37,11 +37,12 @@ export async function unsubscribeByToken(token: string): Promise<{ success: bool
 
         if (error) throw error;
 
-        if (!data.success) {
-            return { success: false, error: data.error };
+        const result = data as { success?: boolean; error?: string; email?: string } | null;
+        if (!result?.success) {
+            return { success: false, error: result?.error || 'Unknown error' };
         }
 
-        return { success: true, email: data.email };
+        return { success: true, email: result.email };
     } catch (error: unknown) {
         logError('newsletter.unsubscribe', error);
         return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
