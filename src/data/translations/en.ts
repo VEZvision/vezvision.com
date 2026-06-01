@@ -466,6 +466,12 @@ export const enTranslations = {
 
     'legal.back': 'Back',
     'legal.last_updated': 'Last updated',
+    'routeError.title': 'Something went wrong',
+    'routeError.message': 'Sorry, we ran into an unexpected problem.',
+    'routeError.unknown': 'An unknown error occurred.',
+    'routeError.home': 'Home',
+    'routeError.retry': 'Try again',
+
     'notfound.logoAlt': 'VezVision Logo',
     'notfound.title': 'Page not found',
     'notfound.description': 'Sorry, the page you are looking for does not exist or has been moved.',

@@ -83,7 +83,7 @@ Set the optional Edge secret `ALLOWED_CORS_ORIGINS` (comma-separated full origin
 
 To discover the IP seen by Supabase, inspect function logs while loading the site. If the header is missing, the value is `unknown` and must be added to `allowedIps` exactly.
 
-If the edge function is unreachable, the site fails open (stays online) and logs `maintenanceAccess.invoke` — monitor edge health separately when relying on maintenance mode.
+If the edge function is unreachable while maintenance is **disabled** in CMS, the site stays online (logs `maintenanceAccess.invoke`). If maintenance is **enabled** in CMS but edge cannot be reached, the site fails closed so a work-in-progress deploy stays protected.
 
 ## CI
 

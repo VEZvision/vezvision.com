@@ -33,6 +33,14 @@ export async function fetchMaintenanceAccess(): Promise<MaintenanceAccessSnapsho
   }
 
   if (data?.success === false) {
+    if (data?.maintenance === true) {
+      return {
+        maintenance: true,
+        bypass: Boolean(data?.bypass),
+        unavailable: false,
+      }
+    }
+
     logError('maintenanceAccess.response', new Error('check-maintenance-access returned success=false'))
     return AVAILABILITY_FALLBACK
   }
@@ -48,7 +56,18 @@ export async function fetchMaintenanceAccess(): Promise<MaintenanceAccessSnapsho
   }
 }
 
-export function isSiteAccessible(snapshot: MaintenanceAccessSnapshot): boolean {
+/**
+ * @param settingsMaintenanceEnabled CMS flag from cached settings — when edge is down but
+ * maintenance is enabled in CMS, fail closed so a half-deployed site stays protected.
+ */
+export function isSiteAccessible(
+  snapshot: MaintenanceAccessSnapshot,
+  settingsMaintenanceEnabled = false,
+): boolean {
+  if (snapshot.unavailable) {
+    return !settingsMaintenanceEnabled
+  }
+
   if (!snapshot.maintenance) return true
   return snapshot.bypass
 }

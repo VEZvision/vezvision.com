@@ -45,7 +45,7 @@ describe('fetchMaintenanceAccess', () => {
     expect(isSiteAccessible(snapshot)).toBe(true)
   })
 
-  it('fails open when the edge function is unavailable', async () => {
+  it('fails open when the edge function is unavailable and CMS maintenance is off', async () => {
     invokeMock.mockResolvedValue({ data: null, error: new Error('network') })
 
     const snapshot = await fetchMaintenanceAccess()
@@ -54,6 +54,28 @@ describe('fetchMaintenanceAccess', () => {
       bypass: true,
       unavailable: true,
     })
-    expect(isSiteAccessible(snapshot)).toBe(true)
+    expect(isSiteAccessible(snapshot, false)).toBe(true)
+  })
+
+  it('fails closed when edge is unavailable but CMS maintenance is enabled', async () => {
+    invokeMock.mockResolvedValue({ data: null, error: new Error('network') })
+
+    const snapshot = await fetchMaintenanceAccess()
+    expect(isSiteAccessible(snapshot, true)).toBe(false)
+  })
+
+  it('honours maintenance responses even when success is false', async () => {
+    invokeMock.mockResolvedValue({
+      data: { success: false, maintenance: true, bypass: false },
+      error: null,
+    })
+
+    const snapshot = await fetchMaintenanceAccess()
+    expect(snapshot).toEqual({
+      maintenance: true,
+      bypass: false,
+      unavailable: false,
+    })
+    expect(isSiteAccessible(snapshot)).toBe(false)
   })
 })

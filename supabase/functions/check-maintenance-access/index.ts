@@ -71,7 +71,7 @@ Deno.serve(async (req: Request) => {
   } catch {
     return new Response(
       JSON.stringify({ success: false, maintenance: true, bypass: false }),
-      { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 500 },
+      { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 200 },
     );
   }
 });

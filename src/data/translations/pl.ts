@@ -436,6 +436,12 @@ export const plTranslations = {
 
     'legal.back': 'Powrót',
     'legal.last_updated': 'Ostatnia aktualizacja',
+    'routeError.title': 'Ups! Coś poszło nie tak',
+    'routeError.message': 'Przepraszamy, napotkaliśmy niespodziewany problem.',
+    'routeError.unknown': 'Wystąpił nieznany błąd.',
+    'routeError.home': 'Strona główna',
+    'routeError.retry': 'Spróbuj ponownie',
+
     'notfound.logoAlt': 'Logo VezVision',
     'notfound.title': 'Strona nie została znaleziona',
     'notfound.description': 'Przepraszamy, ale strona której szukasz nie istnieje lub została przeniesiona.',

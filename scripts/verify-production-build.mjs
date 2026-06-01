@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { CONTENT_SECURITY_POLICY } from './csp-policy.mjs'
 
 const distDir = path.resolve('dist')
 const indexPath = path.join(distDir, 'index.html')
@@ -28,8 +29,8 @@ if (!fs.existsSync(htaccessPath)) {
   if (!htaccess.includes('RewriteRule . /index.html')) {
     errors.push('dist/.htaccess is missing SPA fallback rewrite')
   }
-  if (!htaccess.includes('google-analytics.com')) {
-    errors.push('dist/.htaccess CSP must allow Google Analytics connect-src')
+  if (!htaccess.includes(CONTENT_SECURITY_POLICY)) {
+    errors.push('dist/.htaccess CSP does not match scripts/csp-policy.mjs')
   }
 }
 

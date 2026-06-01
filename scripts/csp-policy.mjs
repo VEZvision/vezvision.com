@@ -1,0 +1,3 @@
+/** Single source of truth for CSP — keep public/.htaccess and vercel.json in sync manually or via review. */
+export const CONTENT_SECURITY_POLICY =
+  "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://pcxcqbpygyidkusetghk.supabase.co wss://pcxcqbpygyidkusetghk.supabase.co https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com https://*.sentry.io; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"

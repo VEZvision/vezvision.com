@@ -1,7 +1,6 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { Toaster } from 'sonner';
 import { useEffect, memo, lazy, Suspense, useState } from "react";
-import Navbar from "@/components/navbar/Navbar";
 import RouteErrorBoundary from "@/components/layout/RouteErrorBoundary";
 import {
   initSmoothScrolling,
@@ -12,8 +11,7 @@ import { LanguageProvider } from "@/contexts/LanguageProvider";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import CookieBanner from "@/components/cookies/CookieBanner";
 import { LoadingScreen } from "@/components/loading";
-import SEO from "@/components/seo/SEO";
-import Footer from "@/components/footer/Footer";
+import PublicChrome from "@/components/layout/PublicChrome";
 
 // Lazy load pages for better performance
 const Home = lazy(() => import("@/pages/Home"));
@@ -65,9 +63,7 @@ const Layout = memo(() => {
   }, []);
 
   return (
-    <>
-      <SEO />
-      <Navbar />
+    <PublicChrome>
       {/*
         Page transition — opacity only.
         Avoid filter:blur() here: it forces GPU compositing for the *entire*
@@ -78,8 +74,7 @@ const Layout = memo(() => {
           <Outlet />
         </Suspense>
       </main>
-      <Footer />
-    </>
+    </PublicChrome>
   );
 });
 
@@ -132,7 +127,9 @@ const MaintenanceGuard: React.FC<{ children: React.ReactNode }> = ({ children })
       const snapshot = await fetchMaintenanceAccess();
       if (cancelled) return;
 
-      setAccess(isSiteAccessible(snapshot) ? 'allowed' : 'blocked');
+      setAccess(
+        isSiteAccessible(snapshot, maintenance?.enabled === true) ? 'allowed' : 'blocked',
+      );
     };
 
     void resolveAccess();
@@ -140,7 +137,7 @@ const MaintenanceGuard: React.FC<{ children: React.ReactNode }> = ({ children })
     return () => {
       cancelled = true;
     };
-  }, [maintenanceSettingsKey, settingsLoading]);
+  }, [maintenanceSettingsKey, settingsLoading, maintenance?.enabled]);
 
   if (settingsLoading || access === 'loading') {
     return <PageLoader />;
