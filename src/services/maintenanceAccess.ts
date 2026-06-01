@@ -12,7 +12,7 @@ export interface MaintenanceAccessSnapshot {
   maintenance: boolean
   /** Whether the current visitor may use the public site during maintenance. */
   bypass: boolean
-  /** Edge function could not be reached; access policy falls back to availability-first. */
+  /** Edge function could not be reached; combine with a fresh DB read for fail-closed decisions. */
   unavailable: boolean
 }
 
@@ -20,6 +20,23 @@ const AVAILABILITY_FALLBACK: MaintenanceAccessSnapshot = {
   maintenance: false,
   bypass: true,
   unavailable: true,
+}
+
+export async function fetchMaintenanceEnabledFromDb(): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('vv_site_settings')
+    .select('value')
+    .eq('key', 'maintenance_mode')
+    .eq('is_public', true)
+    .maybeSingle()
+
+  if (error) {
+    logError('maintenanceAccess.db', error)
+    return false
+  }
+
+  const settings = data?.value as { enabled?: boolean } | null
+  return settings?.enabled === true
 }
 
 export async function fetchMaintenanceAccess(): Promise<MaintenanceAccessSnapshot> {

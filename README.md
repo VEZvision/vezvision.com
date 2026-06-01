@@ -83,7 +83,7 @@ Set the optional Edge secret `ALLOWED_CORS_ORIGINS` (comma-separated full origin
 
 To discover the IP seen by Supabase, inspect function logs while loading the site. If the header is missing, the value is `unknown` and must be added to `allowedIps` exactly.
 
-If the edge function is unreachable while maintenance is **disabled** in CMS, the site stays online (logs `maintenanceAccess.invoke`). If maintenance is **enabled** in CMS but edge cannot be reached, the site fails closed so a work-in-progress deploy stays protected.
+If the edge function is unreachable while maintenance is **disabled** in CMS, the site stays online (logs `maintenanceAccess.invoke`). If maintenance is **enabled** in CMS but edge cannot be reached, the guard performs a fresh read of `maintenance_mode` from the database (not only React Query cache) and fails closed so a work-in-progress deploy stays protected.
 
 ## CI
 
@@ -100,7 +100,9 @@ It runs install, typecheck, lint, unit tests, production build, npm audit, and C
 | `subscribe-newsletter` | Newsletter signup via `safe_insert_newsletter_subscriber` |
 | `unsubscribe-newsletter` | Token unsubscribe via `unsubscribe_by_token` |
 
-Deploy from `supabase/functions/` (shared `_shared/cors.ts`, `_shared/clientIp.ts`). Apply DB migrations before deploying when RPC signatures change.
+Deploy from `supabase/functions/` (shared `_shared/cors.ts`, `_shared/clientIp.ts`). Use `import_map_path: deno.json` when deploying via Supabase API. Apply DB migrations before deploying when RPC signatures change.
+
+Before every production build, `npm run build` verifies CSP sources (`verify:security`) and `dist/` artifacts (`verify-production-build.mjs`).
 
 ## Deployment notes
 

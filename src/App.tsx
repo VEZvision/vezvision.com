@@ -36,7 +36,11 @@ import { useSettings } from '@/hooks/useSettings';
 import CodeInjector from '@/components/system/CodeInjector';
 import { useScrollToTopOnRouteChange } from '@/hooks/useScrollToTopOnRouteChange';
 import { useCookieConsent } from '@/hooks/useCookieConsent';
-import { fetchMaintenanceAccess, isSiteAccessible } from '@/services/maintenanceAccess';
+import {
+  fetchMaintenanceAccess,
+  fetchMaintenanceEnabledFromDb,
+  isSiteAccessible,
+} from '@/services/maintenanceAccess';
 
 // Simple fallback shown while lazy chunks load
 const PageLoader = memo(() => (
@@ -127,9 +131,13 @@ const MaintenanceGuard: React.FC<{ children: React.ReactNode }> = ({ children })
       const snapshot = await fetchMaintenanceAccess();
       if (cancelled) return;
 
-      setAccess(
-        isSiteAccessible(snapshot, maintenance?.enabled === true) ? 'allowed' : 'blocked',
-      );
+      const cmsMaintenanceEnabled = snapshot.unavailable
+        ? await fetchMaintenanceEnabledFromDb()
+        : maintenance?.enabled === true;
+
+      if (cancelled) return;
+
+      setAccess(isSiteAccessible(snapshot, cmsMaintenanceEnabled) ? 'allowed' : 'blocked');
     };
 
     void resolveAccess();

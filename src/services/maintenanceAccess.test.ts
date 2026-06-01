@@ -1,14 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { fetchMaintenanceAccess, isSiteAccessible } from './maintenanceAccess'
+import {
+  fetchMaintenanceAccess,
+  fetchMaintenanceEnabledFromDb,
+  isSiteAccessible,
+} from './maintenanceAccess'
 
 const invokeMock = vi.fn()
+const fromMock = vi.fn()
 
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     functions: {
       invoke: (...args: unknown[]) => invokeMock(...args),
     },
+    from: (...args: unknown[]) => fromMock(...args),
   },
 }))
 
@@ -16,9 +22,37 @@ vi.mock('@/lib/logger', () => ({
   logError: vi.fn(),
 }))
 
+function mockMaintenanceDb(enabled: boolean) {
+  fromMock.mockReturnValue({
+    select: () => ({
+      eq: () => ({
+        eq: () => ({
+          maybeSingle: () =>
+            Promise.resolve({
+              data: { value: { enabled } },
+              error: null,
+            }),
+        }),
+      }),
+    }),
+  })
+}
+
+describe('fetchMaintenanceEnabledFromDb', () => {
+  beforeEach(() => {
+    fromMock.mockReset()
+  })
+
+  it('reads the public maintenance_mode flag from the database', async () => {
+    mockMaintenanceDb(true)
+    await expect(fetchMaintenanceEnabledFromDb()).resolves.toBe(true)
+  })
+})
+
 describe('fetchMaintenanceAccess', () => {
   beforeEach(() => {
     invokeMock.mockReset()
+    fromMock.mockReset()
   })
 
   it('allows everyone when maintenance is off in the database', async () => {
