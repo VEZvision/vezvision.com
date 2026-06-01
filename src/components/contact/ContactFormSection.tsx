@@ -8,8 +8,13 @@ import { useLanguageContext } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { logError } from '@/lib/logger';
-import { submitContactForm, type ContactSubmissionPayload } from '@/services/contact';
 import {
+  ContactFormError,
+  submitContactForm,
+  type ContactSubmissionPayload,
+} from '@/services/contact';
+import {
+  CONTACT_EMAIL_PATTERN,
   formatTelHref,
   normalizeContactEmail,
   normalizeContactPhone,
@@ -65,7 +70,7 @@ const ContactFormSection = ({ t }: Props) => {
 
     if (!formData.email.trim()) {
       newErrors.email = t('contact.form.error.email.required');
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    } else if (!CONTACT_EMAIL_PATTERN.test(formData.email.trim())) {
       newErrors.email = t('contact.form.error.email.invalid');
     }
 
@@ -135,6 +140,14 @@ const ContactFormSection = ({ t }: Props) => {
 
       } catch (err) {
         logError('contactForm.submit', err);
+
+        if (err instanceof ContactFormError && err.field) {
+          const fieldErrors: FormErrors = { [err.field]: err.message };
+          setErrors(fieldErrors);
+          toast.error(err.message);
+          return;
+        }
+
         const msg = err instanceof Error ? err.message : t('common.error');
         toast.error(msg);
       } finally {

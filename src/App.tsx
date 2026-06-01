@@ -37,7 +37,7 @@ import { useSettings } from '@/hooks/useSettings';
 import CodeInjector from '@/components/system/CodeInjector';
 import { useScrollToTopOnRouteChange } from '@/hooks/useScrollToTopOnRouteChange';
 import { useCookieConsent } from '@/hooks/useCookieConsent';
-import { checkMaintenanceBypass } from '@/services/maintenanceAccess';
+import { fetchMaintenanceAccess, isSiteAccessible } from '@/services/maintenanceAccess';
 
 // Simple fallback shown while lazy chunks load
 const PageLoader = memo(() => (
@@ -115,24 +115,22 @@ type MaintenanceAccessState = 'loading' | 'allowed' | 'blocked';
 const MaintenanceGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { maintenance, loading: settingsLoading } = useSettings();
   const [access, setAccess] = useState<MaintenanceAccessState>('loading');
-  const maintenanceAllowedIpsKey = maintenance?.allowedIps?.join(',') ?? '';
+  const maintenanceSettingsKey = JSON.stringify({
+    enabled: maintenance?.enabled ?? false,
+    allowedIps: maintenance?.allowedIps ?? [],
+  });
 
   useEffect(() => {
     if (settingsLoading) return;
-
-    if (!maintenance?.enabled) {
-      setAccess('allowed');
-      return;
-    }
 
     let cancelled = false;
 
     const resolveAccess = async () => {
       setAccess('loading');
-      const bypass = await checkMaintenanceBypass();
-      if (!cancelled) {
-        setAccess(bypass ? 'allowed' : 'blocked');
-      }
+      const snapshot = await fetchMaintenanceAccess();
+      if (cancelled) return;
+
+      setAccess(isSiteAccessible(snapshot) ? 'allowed' : 'blocked');
     };
 
     void resolveAccess();
@@ -140,13 +138,13 @@ const MaintenanceGuard: React.FC<{ children: React.ReactNode }> = ({ children })
     return () => {
       cancelled = true;
     };
-  }, [maintenance?.enabled, maintenanceAllowedIpsKey, settingsLoading]);
+  }, [maintenanceSettingsKey, settingsLoading]);
 
-  if (settingsLoading || (maintenance?.enabled && access === 'loading')) {
+  if (settingsLoading || access === 'loading') {
     return <PageLoader />;
   }
 
-  if (maintenance?.enabled && access === 'blocked') {
+  if (access === 'blocked') {
     return (
       <Suspense fallback={<PageLoader />}>
         <MaintenancePage />

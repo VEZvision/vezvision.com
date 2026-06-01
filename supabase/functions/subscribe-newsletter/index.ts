@@ -1,18 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
-
-function getClientIp(req: Request): string {
-  const forwarded = req.headers.get("x-forwarded-for");
-  if (!forwarded) return "unknown";
-
-  const firstIp = forwarded.split(",")[0]?.trim();
-  if (firstIp && /^[\d.a-fA-F:]+$/.test(firstIp)) {
-    return firstIp.slice(0, 45);
-  }
-
-  return "unknown";
-}
+import { getClientIp } from "../_shared/clientIp.ts";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -39,7 +28,7 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({ success: false, error: "Method not allowed" }),
       {
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json", "Allow": "POST, OPTIONS" },
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json", Allow: "POST, OPTIONS" },
         status: 405,
       }
     );

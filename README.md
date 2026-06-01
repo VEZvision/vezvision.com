@@ -73,9 +73,13 @@ Use instead:
 
 ### Maintenance mode
 
-When `maintenance_mode.enabled` is true, the public site shows the maintenance page unless the visitor IP is listed in `maintenance_mode.allowedIps`. IP checks run in the `check-maintenance-access` Edge Function using `x-forwarded-for`, so deploy that function alongside the site.
+When maintenance is enabled in `vv_site_settings`, the public app calls `check-maintenance-access` on every cold load (and whenever maintenance settings change). The edge function is the **source of truth** for whether maintenance is active and whether the visitor IP is allowlisted.
 
-To discover the IP seen by Supabase, temporarily log `getClientIp` in that function or inspect the function logs while loading the site from your network. If the header is missing, the value is `unknown` and must be added to `allowedIps` exactly.
+Set optional Edge secret `ALLOWED_CORS_ORIGINS` (comma-separated origins) for Vercel preview or staging hosts, e.g. `https://vezvision-web.vercel.app`.
+
+To discover the IP seen by Supabase, inspect function logs while loading the site. If the header is missing, the value is `unknown` and must be added to `allowedIps` exactly.
+
+If the edge function is unreachable, the site fails open (stays online) and logs `maintenanceAccess.invoke` — monitor edge health separately when relying on maintenance mode.
 
 ## CI
 

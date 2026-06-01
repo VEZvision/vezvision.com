@@ -10,13 +10,32 @@ const LOCAL_ORIGINS = [
   "http://127.0.0.1:4173",
 ] as const;
 
-const ALLOWED_ORIGINS = [...PRODUCTION_ORIGINS, ...LOCAL_ORIGINS];
+function parseExtraOrigins(): string[] {
+  const raw = Deno.env.get("ALLOWED_CORS_ORIGINS");
+  if (!raw?.trim()) return [];
+
+  return raw
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter((origin) => {
+      if (!origin) return false;
+      try {
+        const url = new URL(origin);
+        return url.protocol === "https:" || url.protocol === "http:";
+      } catch {
+        return false;
+      }
+    });
+}
+
+function getAllowedOrigins(): string[] {
+  return [...PRODUCTION_ORIGINS, ...LOCAL_ORIGINS, ...parseExtraOrigins()];
+}
 
 export function getCorsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get("origin") ?? "";
-  const allowedOrigin = ALLOWED_ORIGINS.includes(origin as typeof ALLOWED_ORIGINS[number])
-    ? origin
-    : PRODUCTION_ORIGINS[0];
+  const allowedOrigins = getAllowedOrigins();
+  const allowedOrigin = allowedOrigins.includes(origin) ? origin : PRODUCTION_ORIGINS[0];
 
   return {
     "Access-Control-Allow-Origin": allowedOrigin,
