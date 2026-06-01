@@ -6,7 +6,6 @@ import { Loader2 } from 'lucide-react';
 import { SectionReveal } from '@/components/ui/SectionReveal';
 import { useState, useEffect } from 'react';
 import type { LegalTemplates } from '@/data/legalTemplates';
-import Footer from '@/components/footer/Footer';
 
 const PrivacyPolicy = () => {
   const { language, t } = useLanguageContext();
@@ -61,7 +60,6 @@ const PrivacyPolicy = () => {
           </div>
         </SectionReveal>
       </div>
-      <Footer />
     </div>
   );
 };

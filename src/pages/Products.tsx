@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { Palette, GraduationCap, Briefcase, Cpu } from 'lucide-react';
 import VideoHeroSection from '@/components/common/VideoHeroSection';
 import SectionHeader from '@/components/ui/SectionHeader';
-import Footer from '../components/footer/Footer';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { subscribeToNewsletter } from '@/services/newsletter';
 import { toast } from 'sonner';
@@ -143,8 +142,6 @@ const Products = () => {
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 };

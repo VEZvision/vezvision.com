@@ -3,7 +3,6 @@ import LegalMarkdown from '@/components/legal/LegalMarkdown';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { useLegalContent } from '@/hooks/useLegalContent';
 import { ArrowLeft, Loader2 } from 'lucide-react';
-import Footer from '@/components/footer/Footer';
 import PageSeo from '@/components/seo/PageSeo';
 import { SectionReveal } from '@/components/ui/SectionReveal';
 import { useState, useEffect } from 'react';
@@ -72,7 +71,6 @@ const Terms = () => {
                     </div>
                 </SectionReveal>
             </div>
-            <Footer />
         </>
     );
 };

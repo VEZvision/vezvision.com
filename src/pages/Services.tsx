@@ -7,7 +7,6 @@ import Group23Section from '@/components/services/group23/Group23Section';
 import WorkflowSection from '@/components/services/workflow/WorkflowSection';
 import ContactSection from '../components/contact/ContactSection';
 import NewsletterSection from '@/components/newsletter/NewsletterSection';
-import Footer from '@/components/footer/Footer';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { useSettings } from '@/hooks/useSettings';
 import { Briefcase } from 'lucide-react';
@@ -66,7 +65,6 @@ const Services = () => {
       <ServicesSection />
       <NewsletterSection />
       <ContactSection />
-      <Footer />
     </div>
   );
 };

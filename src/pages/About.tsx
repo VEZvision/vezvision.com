@@ -9,7 +9,6 @@ import WhyChooseSection from '@/components/why-choose/WhyChooseSection';
 import AboutComparison from '../components/about/AboutComparison';
 import FaqSection from '@/components/faq/FaqSection';
 import { ContactSection } from '@/components/contact';
-import Footer from '@/components/footer/Footer';
 import { usePageSections } from '@/hooks/usePageSection';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { useSettings } from '@/hooks/useSettings';
@@ -88,7 +87,6 @@ const About = () => {
         const Component = SECTION_COMPONENTS[section.section_key as keyof typeof SECTION_COMPONENTS];
         return Component ? <Component key={section.section_key} /> : null;
       })}
-      <Footer />
     </div>
   );
 };

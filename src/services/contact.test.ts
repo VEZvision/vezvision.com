@@ -41,4 +41,9 @@ describe('ContactFormError', () => {
     const error = new ContactFormError('Invalid', 'full_name')
     expect(error.field).toBe('fullName')
   })
+
+  it('maps generic form errors without a field key', () => {
+    const error = new ContactFormError('Invalid payload', 'form')
+    expect(error.field).toBe('form')
+  })
 })

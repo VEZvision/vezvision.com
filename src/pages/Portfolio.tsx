@@ -9,7 +9,6 @@ import PageSeo from '@/components/seo/PageSeo';
 import VideoHeroSection from '@/components/common/VideoHeroSection';
 import PortfolioFeatures from '../components/portfolio/PortfolioFeatures';
 import ContactSection from '../components/contact/ContactSection';
-import Footer from '../components/footer/Footer';
 import { SectionReveal, StaggerItem, StaggerReveal } from '@/components/ui/SectionReveal';
 import styles from './Portfolio.module.css';
 import socialX from '@/assets/social-x.svg';
@@ -215,7 +214,6 @@ const Portfolio = () => {
       </section>
 
       <ContactSection />
-      <Footer />
     </div>
   );
 };

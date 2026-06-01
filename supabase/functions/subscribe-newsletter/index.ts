@@ -58,7 +58,7 @@ Deno.serve(async (req: Request) => {
       p_email: email,
       p_client_ip: clientIp,
       p_language: language,
-      p_source: source,
+      ...(source ? { p_source: source } : {}),
     });
 
     if (error) {

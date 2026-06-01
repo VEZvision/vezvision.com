@@ -6,7 +6,6 @@ import BlogFounderNote from '@/components/blog/BlogFounderNote';
 import BlogArticlesWithData from '@/components/blog/BlogArticlesWithData';
 import { ContactSection } from '@/components/contact';
 import NewsletterSection from '@/components/newsletter/NewsletterSection';
-import Footer from '@/components/footer/Footer';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { BookOpen } from 'lucide-react';
 import socialX from '@/assets/social-x.svg';
@@ -56,7 +55,6 @@ const Blog = () => {
       <BlogArticlesWithData />
       <NewsletterSection />
       <ContactSection />
-      <Footer />
     </div>
   );
 };

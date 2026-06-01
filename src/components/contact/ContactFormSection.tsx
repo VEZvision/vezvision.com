@@ -141,9 +141,12 @@ const ContactFormSection = ({ t }: Props) => {
       } catch (err) {
         logError('contactForm.submit', err);
 
-        if (err instanceof ContactFormError && err.field) {
-          const fieldErrors: FormErrors = { [err.field]: err.message };
-          setErrors(fieldErrors);
+        if (err instanceof ContactFormError) {
+          if (err.field && err.field !== 'form') {
+            setErrors({ [err.field]: err.message });
+          } else {
+            setErrors({});
+          }
           toast.error(err.message);
           return;
         }

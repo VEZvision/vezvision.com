@@ -13,6 +13,7 @@ import { SettingsProvider } from "@/contexts/SettingsContext";
 import CookieBanner from "@/components/cookies/CookieBanner";
 import { LoadingScreen } from "@/components/loading";
 import SEO from "@/components/seo/SEO";
+import Footer from "@/components/footer/Footer";
 
 // Lazy load pages for better performance
 const Home = lazy(() => import("@/pages/Home"));
@@ -77,6 +78,7 @@ const Layout = memo(() => {
           <Outlet />
         </Suspense>
       </main>
+      <Footer />
     </>
   );
 });

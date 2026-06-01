@@ -3,7 +3,6 @@ import VideoHeroSection from '@/components/common/VideoHeroSection';
 import ContactFormSection from '@/components/contact/ContactFormSection';
 import FaqSection from '@/components/faq/FaqSection';
 import { ContactSection } from '@/components/contact';
-import Footer from '@/components/footer/Footer';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import PageSeo from '@/components/seo/PageSeo';
 import { usePageSections } from '@/hooks/usePageSection';
@@ -79,7 +78,6 @@ const Contact = () => {
         const Component = SECTION_COMPONENTS[section.section_key as keyof typeof SECTION_COMPONENTS];
         return Component ? <Component key={section.section_key} /> : null;
       })}
-      <Footer />
     </div>
   );
 };

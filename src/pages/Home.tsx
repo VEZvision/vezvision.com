@@ -12,7 +12,6 @@ import ProductsSection from '../components/products/ProductsSection';
 import ContactSection from '../components/contact/ContactSection';
 
 import NewsletterSection from '../components/newsletter/NewsletterSection';
-import Footer from '../components/footer/Footer';
 import { usePageSections } from '@/hooks/usePageSection';
 
 const SECTION_COMPONENTS = {
@@ -44,7 +43,6 @@ const Home = () => {
         const Component = SECTION_COMPONENTS[section.section_key as keyof typeof SECTION_COMPONENTS];
         return Component ? <Component key={section.section_key} /> : null;
       })}
-      <Footer />
     </div>
   );
 };

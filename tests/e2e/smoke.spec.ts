@@ -29,3 +29,9 @@ test('legal pages include site footer navigation', async ({ page }) => {
 
   await expect(page.getByRole('contentinfo')).toBeVisible()
 })
+
+test('not-found page includes site footer navigation', async ({ page }) => {
+  await page.goto('/definitely-not-a-real-page')
+
+  await expect(page.getByRole('contentinfo')).toBeVisible()
+})
