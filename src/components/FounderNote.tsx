@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, type CSSProperties } from 'react';
 import styles from './FounderNote.module.css';
 import { useLanguageContext } from '../hooks/useLanguage';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { runWhenScrollIdle } from '@/reveal/revealScheduler';
 
 const FounderNote: React.FC<{ className?: string }> = ({ className = '' }) => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -62,7 +61,7 @@ const FounderNote: React.FC<{ className?: string }> = ({ className = '' }) => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry?.isIntersecting) {
-          runWhenScrollIdle(reveal);
+          reveal();
           observer.disconnect();
         }
       },

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { revealImmediately, scheduleReveal } from '@/reveal/revealScheduler';
 import type { RevealOptions } from '@/reveal/types';
 
 export function useRevealInView<T extends HTMLElement>({
@@ -20,7 +19,7 @@ export function useRevealInView<T extends HTMLElement>({
     if (!node) return;
 
     if (reducedMotion) {
-      revealImmediately(node);
+      node.classList.add('vez-reveal--in');
       return;
     }
 
@@ -29,7 +28,7 @@ export function useRevealInView<T extends HTMLElement>({
     const markVisible = () => {
       if (revealed) return;
       revealed = true;
-      scheduleReveal(node);
+      node.classList.add('vez-reveal--in');
     };
 
     const observer = new IntersectionObserver(

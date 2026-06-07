@@ -24,7 +24,8 @@ export const SCROLL_IDLE_MS = 150;
 
 export const LENIS_OPTIONS: Omit<LenisOptions, 'wrapper' | 'content'> = {
   autoRaf: true,
-  lerp: 0.14,
+  duration: 1.05,
+  easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
   wheelMultiplier: 1,
   touchMultiplier: 1,
   smoothWheel: true,
