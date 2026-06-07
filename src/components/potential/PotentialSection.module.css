@@ -53,7 +53,7 @@
     display: flex;
     flex-direction: column;
     background: #f5f5f5;
-    border-radius: 32px;
+    border-radius: 24px;
     overflow: hidden;
     box-shadow: inset 0px 3px 1px 0px #ffffff,
         0px 1px 1px -1px rgba(0, 0, 0, 0.08),
@@ -114,121 +114,142 @@
     margin: 0;
 }
 
-/* --- Card 1: Connection Graphic --- */
-.connectionGraphic {
-    position: relative;
-    width: 200px;
-    height: 160px;
+/* --- Card 1: Technologia — wykres → VezVision --- */
+.techBridge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 300px;
+    padding: 8px 0;
 }
 
-/* Circle with bar chart icon - top left */
-.neumorphPlate {
-    position: absolute;
-    top: 0;
-    left: 10px;
-    width: 80px;
-    height: 80px;
-    background: #ffffff;
+.techOrb {
+    flex-shrink: 0;
+    width: 76px;
+    height: 76px;
     border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid rgba(16, 24, 40, 0.08);
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow:
-        0 4px 16px rgba(0, 0, 0, 0.08),
-        0 2px 4px rgba(0, 0, 0, 0.04);
-    z-index: 2;
+        inset 0 2px 1px rgba(255, 255, 255, 0.95),
+        0 6px 18px rgba(16, 24, 40, 0.08);
 }
 
+.techLogo {
+    display: block;
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+}
 
+.decorativeZone {
+    contain: layout style;
+}
+
+.techPath {
+    position: relative;
+    flex: 1;
+    min-width: 56px;
+    max-width: 96px;
+    height: 8px;
+    margin: 0 6px;
+    align-self: center;
+    display: flex;
+    align-items: center;
+}
+
+.techPathLine {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    margin-top: -1px;
+    border-radius: 999px;
+    background: linear-gradient(
+        90deg,
+        rgba(16, 185, 129, 0.2) 0%,
+        rgba(16, 185, 129, 0.85) 50%,
+        rgba(16, 185, 129, 0.2) 100%
+    );
+}
+
+.techPathDot {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    margin-top: -4px;
+    border-radius: 50%;
+    background: #10b981;
+    transform: translateX(-50%);
+    animation: techDotTravel 6.5s ease-in-out infinite;
+}
+
+.techPathDot::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    background: rgba(16, 185, 129, 0.14);
+    z-index: -1;
+}
+
+@keyframes techDotTravel {
+    0%,
+    100% {
+        left: 0%;
+    }
+
+    50% {
+        left: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .techPathDot {
+        left: 50% !important;
+        animation: none;
+    }
+}
+
+:global(html.vez-is-scrolling) .decorativeZone .techPathDot,
+:global(html.vez-is-scrolling) .decorativeZone .blinkingCursor,
+:global(html.vez-is-scrolling) .decorativeZone .floatingTagPill,
+:global(html.vez-is-scrolling) .decorativeZone .appCircle {
+    animation-play-state: paused !important;
+}
 
 .customBarIcon {
     display: flex;
-    gap: 4px;
+    gap: 5px;
     align-items: flex-end;
-    height: 28px;
+    height: 30px;
 }
 
 .barColumn {
-    width: 8px;
+    width: 9px;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
 }
 
-/* All bars are BLACK */
 .barMiddle {
-    background: #000000;
-    border-radius: 2px;
+    background: #344054;
+    border-radius: 3px;
     width: 100%;
 }
 
 .barFull {
-    height: 28px;
-    background: #000000;
-    border-radius: 2px;
+    height: 30px;
+    background: #10b981;
+    border-radius: 3px;
     width: 100%;
-}
-
-/* Round circle with logo - bottom right */
-.neumorphCircle {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    width: 90px;
-    height: 90px;
-    background: #ffffff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow:
-        0 4px 16px rgba(0, 0, 0, 0.08),
-        0 2px 4px rgba(0, 0, 0, 0.04);
-    z-index: 2;
-}
-
-/* Small decorative bubble */
-.smallBubble {
-    position: absolute;
-    border-radius: 50%;
-    background: #ffffff;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(0, 0, 0, 0.02);
-}
-
-.bubble1 {
-    width: 28px;
-    height: 28px;
-    top: 10px;
-    right: -10px;
-}
-
-.bubble2 {
-    width: 40px;
-    height: 40px;
-    bottom: 40px;
-    left: -15px;
-}
-
-.bubble3 {
-    width: 22px;
-    height: 22px;
-    top: 50%;
-    right: 5px;
-    transform: translateY(-50%);
-}
-
-/* Connecting line between bar chart and logo */
-.dashedConnector {
-    position: absolute;
-    top: 52%;
-    left: 36%;
-    width: 120px;
-    height: 4px;
-    background: linear-gradient(90deg, #f9fafb 0%, #e5e7eb 40%, #e5e7eb 60%, #f9fafb 100%);
-    border-radius: 999px;
-    transform: rotate(40deg);
-    z-index: 1;
 }
 
 /* --- Card 2: Interaction Mockup --- */
@@ -267,9 +288,22 @@
 }
 
 .blinkingCursor {
+    display: block;
     width: 1.5px;
     height: 20px;
     background: #888;
+    animation: cursorBlink 1s step-end infinite;
+}
+
+@keyframes cursorBlink {
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
 }
 
 .sendPillButton {
@@ -324,6 +358,18 @@
     box-shadow:
         0 4px 12px rgba(0, 0, 0, 0.04),
         0 1px 2px rgba(0, 0, 0, 0.02);
+    animation: tagFloat 4s ease-in-out infinite;
+}
+
+@keyframes tagFloat {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
 }
 
 .floatingTagPill span {
@@ -385,11 +431,14 @@
     z-index: 2;
 }
 
-/* App icons in rounded squares */
+/* Satellite icons — origin at center of central logo plate */
 .appCircle {
     position: absolute;
+    top: 65px;
+    left: 110px;
     width: 44px;
     height: 44px;
+    margin: -22px 0 0 -22px;
     background: #ffffff;
     border-radius: 14px;
     display: flex;
@@ -400,31 +449,15 @@
         0 1px 3px rgba(0, 0, 0, 0.03);
     z-index: 3;
     color: #222;
+    will-change: transform, opacity;
 }
 
-/* ChatGPT spiral - top left */
-.appGPT {
-    top: -10px;
-    left: 20px;
-}
-
-/* GitHub cat - far right */
-.appDiscord {
-    top: 30px;
-    right: -10px;
-}
-
-/* Discord robot - mid left */
-.appDrive {
-    top: 60px;
-    left: -10px;
-}
-
-/* Framer - bottom rightish */
-.appMore {
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(20px);
+@media (prefers-reduced-motion: reduce) {
+    .blinkingCursor,
+    .floatingTagPill,
+    .appCircle {
+        animation: none !important;
+    }
 }
 
 .dotCluster {

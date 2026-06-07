@@ -29,18 +29,27 @@ html {
   /* scroll-behavior managed by Lenis — do NOT set it here */
 }
 
-html.lenis {
+html.lenis,
+html.lenis body {
   height: auto;
 }
 
 html.lenis body {
-  overscroll-behavior: none;
   overflow-x: hidden;
 }
 
+html.vez-smooth-scroll {
+  scroll-behavior: auto !important;
+}
+
+/* backdrop-blur on fixed chrome is costly while Lenis is moving the page */
+html.vez-is-scrolling [class*='backdrop-blur'] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
 .lenis.lenis-smooth {
-  scroll-behavior: auto;
-  backface-visibility: hidden;
+  scroll-behavior: auto !important;
 }
 
 .lenis.lenis-smooth [data-lenis-prevent] {

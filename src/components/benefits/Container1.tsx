@@ -7,11 +7,13 @@ const Container1: React.FC = () => {
   return (
     <article className={styles.container} aria-label={t('benefits.container1.title')}>
       <div className={styles.visual} aria-hidden="true">
-        <div className={styles.orbit} />
-        <div className={styles.badge}>
-          <div className={styles.badgeInner}>
-            <div className={styles.pointer} />
-            <div className={styles.pointerDot} />
+        <div className={styles.dial}>
+          <div className={styles.orbit} />
+          <div className={styles.badge}>
+            <div className={styles.badgeInner}>
+              <div className={styles.pointer} />
+              <div className={styles.pointerDot} />
+            </div>
           </div>
         </div>
       </div>

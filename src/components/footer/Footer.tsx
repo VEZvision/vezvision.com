@@ -1,6 +1,7 @@
 import { Fragment, useRef, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { useInView } from 'framer-motion';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import styles from './Footer.module.css';
 import twitterIcon from '../../assets/footer/twitter-icon.svg';
 import instagramIcon from '../../assets/footer/instagram-icon.svg';
@@ -27,7 +28,10 @@ const Footer = memo(() => {
   const { t, language } = useLanguageContext();
   const { social, identity, footer, navigation } = useSettings();
   const { actions } = useCookieConsent();
-  const videoActive = useInView(footerRef, { once: true, amount: 0.1 });
+  const reducedMotion = useReducedMotion();
+  const footerInView = useInView(footerRef, { once: true, amount: 0.1 });
+  const footerVisible = reducedMotion || footerInView;
+  const showFooterVideo = !reducedMotion && footerInView;
 
   const socialLinks = [
     { href: social?.x || social?.facebook, icon: twitterIcon, alt: 'X (Twitter)', label: 'X' },
@@ -48,16 +52,15 @@ const Footer = memo(() => {
       ref={footerRef}
       className={styles.footer}
       style={{
-        opacity: videoActive ? 1 : 0,
-        transform: videoActive ? 'translateY(0)' : 'translateY(100px)',
-        transition: 'opacity 0.8s cubic-bezier(0.25,0.46,0.45,0.94), transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94)',
+        opacity: footerVisible ? 1 : 0,
+        transition: reducedMotion ? 'none' : 'opacity 0.6s ease-out',
       }}
     >
       <div className={styles.footerContainer}>
         <div className={styles.backgroundLayer}>
           {/* Video Background - lazy loaded */}
           <div className="absolute inset-0 z-0">
-            {videoActive && (
+            {showFooterVideo && (
               <video
                 muted
                 autoPlay

@@ -36,9 +36,9 @@ const Home = () => {
     : FALLBACK_SECTION_ORDER.map((section_key, order_index) => ({ page_key: 'home', section_key, order_index, enabled: true, content_pl: {}, content_en: {}, config: {}, updated_at: '' }));
 
   return (
-    <div style={{ backgroundColor: 'transparent', position: 'relative', zIndex: 1 }}>
+    <div className="home-page">
       <PageSeo pageKey="home" />
-      <div className="grid-background"></div>
+      <div className="grid-background" aria-hidden />
       {renderedSections.map((section) => {
         const Component = SECTION_COMPONENTS[section.section_key as keyof typeof SECTION_COMPONENTS];
         return Component ? <Component key={section.section_key} /> : null;

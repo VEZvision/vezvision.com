@@ -52,6 +52,14 @@ Install Playwright browsers before the first E2E run:
 npx playwright install chromium
 ```
 
+E2E builds enable a hidden probe route (`/__e2e__/error`) via `E2E_BUILD=1` so Playwright can verify `RouteErrorBoundary` without shipping that route in normal production builds (`npm run build` without `E2E_BUILD`).
+
+Optional live Supabase smoke (real project URL + anon key):
+
+```bash
+E2E_LIVE_SUPABASE=1 VITE_SUPABASE_URL=... VITE_SUPABASE_ANON_KEY=... npm run test:e2e:live
+```
+
 ## Security model
 
 - TypeScript strict mode is enabled.
@@ -99,6 +107,8 @@ It runs install, typecheck, lint, unit tests, production build, npm audit, and C
 | `submit-contact` | Contact form → DB + Resend |
 | `subscribe-newsletter` | Newsletter signup via `safe_insert_newsletter_subscriber` |
 | `unsubscribe-newsletter` | Token unsubscribe via `unsubscribe_by_token` |
+
+`send-newsletter` is an **admin-only** Edge Function (service role + Resend). It is not part of this public repo; deploy and rotate secrets from your internal ops tooling, not from the marketing site pipeline.
 
 Deploy from `supabase/functions/` (shared `_shared/cors.ts`, `_shared/clientIp.ts`). Use `import_map_path: deno.json` when deploying via Supabase API. Apply DB migrations before deploying when RPC signatures change.
 

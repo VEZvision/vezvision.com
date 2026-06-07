@@ -6,6 +6,7 @@ import SectionHeader from '@/components/ui/SectionHeader';
 import { MessageSquare } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Helmet } from 'react-helmet-async';
 import DOMPurify from 'dompurify';
 import { SectionReveal } from '@/components/ui/SectionReveal';
@@ -19,6 +20,7 @@ interface FaqSectionProps {
 }
 
 const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
+  const reducedMotion = useReducedMotion();
   const [openItem, setOpenItem] = useState<string | null>(null);
   const [dbFaqItems, setDbFaqItems] = useState<FaqItem[]>([]);
   const [faqLoading, setFaqLoading] = useState(true);
@@ -123,32 +125,52 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
                   <span className="text-lg font-medium text-gray-900 pr-8">
                     {faq.question}
                   </span>
-                  <motion.div
-                    animate={{ rotate: openItem === faq.id ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="flex-shrink-0 text-gray-400"
-                  >
-                    <ChevronDown className="w-5 h-5" />
-                  </motion.div>
-                </button>
-
-                <AnimatePresence initial={false}>
-                  {openItem === faq.id && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                  {reducedMotion ? (
+                    <div
+                      className="flex-shrink-0 text-gray-400"
+                      style={{ transform: openItem === faq.id ? 'rotate(180deg)' : undefined }}
                     >
-                      <div className="px-5 pb-5 pt-0">
-                        <div
-                          className="prose prose-sm max-w-none text-gray-600 prose-a:text-blue-600 border-t border-gray-100 pt-4"
-                          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(faq.answer) }}
-                        />
-                      </div>
+                      <ChevronDown className="w-5 h-5" />
+                    </div>
+                  ) : (
+                    <motion.div
+                      animate={{ rotate: openItem === faq.id ? 180 : 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="flex-shrink-0 text-gray-400"
+                    >
+                      <ChevronDown className="w-5 h-5" />
                     </motion.div>
                   )}
-                </AnimatePresence>
+                </button>
+
+                {reducedMotion ? (
+                  openItem === faq.id ? (
+                    <div className="px-5 pb-5 pt-0">
+                      <div
+                        className="prose prose-sm max-w-none text-gray-600 prose-a:text-blue-600 border-t border-gray-100 pt-4"
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(faq.answer) }}
+                      />
+                    </div>
+                  ) : null
+                ) : (
+                  <AnimatePresence initial={false}>
+                    {openItem === faq.id && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                      >
+                        <div className="px-5 pb-5 pt-0">
+                          <div
+                            className="prose prose-sm max-w-none text-gray-600 prose-a:text-blue-600 border-t border-gray-100 pt-4"
+                            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(faq.answer) }}
+                          />
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                )}
               </div>
             ))}
           </div>

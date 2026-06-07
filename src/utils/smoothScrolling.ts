@@ -1,18 +1,51 @@
 /**
- * Smooth scrolling powered by Lenis.
- *
- * Provides a cinematic, slow, silky-smooth scroll on desktop.
- * On mobile / touch devices Lenis runs in its default (non-smooth-touch)
- * mode so the OS native momentum scroll is preserved — no jank, no lag.
+ * Lenis smooth wheel — opt in via VITE_ENABLE_SMOOTH_SCROLL=true.
+ * Native scroll is default: on a long homepage it avoids Lenis + animation jank.
+ * Decorative motion pauses via html.vez-is-scrolling on .vez-decorative-motion zones.
  */
 
 import Lenis from 'lenis';
+import 'lenis/dist/lenis.css';
 
 let lenisInstance: Lenis | null = null;
-let rafId: number | null = null;
+let resizeListenerAttached = false;
+
+function scheduleLenisResize() {
+  requestAnimationFrame(() => {
+    lenisInstance?.resize();
+  });
+}
+
+function attachLenisResizeListeners() {
+  if (resizeListenerAttached || typeof window === 'undefined') return;
+  resizeListenerAttached = true;
+  window.addEventListener('load', scheduleLenisResize, { once: true });
+  window.addEventListener('resize', scheduleLenisResize, { passive: true });
+}
+
+function detachLenisResizeListeners() {
+  if (!resizeListenerAttached || typeof window === 'undefined') return;
+  resizeListenerAttached = false;
+  window.removeEventListener('load', scheduleLenisResize);
+  window.removeEventListener('resize', scheduleLenisResize);
+}
+
+export type SmoothScrollMode = 'off' | 'lenis';
+
+export function getSmoothScrollMode(): SmoothScrollMode {
+  return lenisInstance ? 'lenis' : 'off';
+}
+
+function isSmoothScrollEnabled(): boolean {
+  return import.meta.env.VITE_ENABLE_SMOOTH_SCROLL === 'true';
+}
 
 function shouldUseNativeScroll(): boolean {
   if (typeof window === 'undefined') {
+    return true;
+  }
+
+  if (!isSmoothScrollEnabled()) {
     return true;
   }
 
@@ -22,13 +55,6 @@ function shouldUseNativeScroll(): boolean {
   );
 }
 
-function tick(time: number): void {
-  lenisInstance?.raf(time);
-  rafId = requestAnimationFrame(tick);
-}
-
-// ─── Lifecycle ────────────────────────────────────────────────────────────────
-
 export function initSmoothScrolling(): Lenis | null {
   if (lenisInstance) return lenisInstance;
 
@@ -37,44 +63,47 @@ export function initSmoothScrolling(): Lenis | null {
   }
 
   lenisInstance = new Lenis({
-    lerp: 0.08,
-    // Keep native momentum scroll on touch screens (iOS / Android).
-    // syncTouch: false (default) means Lenis does NOT intercept touch events —
-    // the OS handles them natively for best mobile feel.
-    syncTouch: false,
-    // Slightly soften mouse wheel input without adding expensive scroll handlers.
-    wheelMultiplier: 0.9,
+    autoRaf: true,
+    lerp: 0.14,
+    wheelMultiplier: 1,
     touchMultiplier: 1,
-    // Allow inner scrollable areas to opt-out via data-lenis-prevent
-    prevent: (node: Element) => node.hasAttribute('data-lenis-prevent'),
     smoothWheel: true,
+    syncTouch: false,
+    autoResize: true,
+    stopInertiaOnNavigate: true,
+    prevent: (node: Element) => node.hasAttribute('data-lenis-prevent'),
   });
 
-  rafId = requestAnimationFrame(tick);
+  attachLenisResizeListeners();
+  scheduleLenisResize();
 
   return lenisInstance;
 }
 
 export function destroySmoothScrolling(): void {
-  if (rafId !== null) {
-    cancelAnimationFrame(rafId);
-    rafId = null;
-  }
   if (lenisInstance) {
     lenisInstance.destroy();
     lenisInstance = null;
   }
+  detachLenisResizeListeners();
 }
 
-// ─── Scroll helpers ───────────────────────────────────────────────────────────
+export function getSmoothScroll(): Lenis | null {
+  return lenisInstance;
+}
 
-/**
- * Jump to the top of the page instantly — used on route changes so the new
- * page always starts from y=0 without any scroll animation playing.
- */
+export function refreshSmoothScrolling(): void {
+  lenisInstance?.resize();
+}
+
+export function getScrollY(): number {
+  return lenisInstance?.scroll ?? (typeof window !== 'undefined' ? window.scrollY : 0);
+}
+
 export function scrollToTopInstant(): void {
   if (lenisInstance) {
-    lenisInstance.scrollTo(0, { immediate: true });
+    lenisInstance.scrollTo(0, { immediate: true, force: true });
+    refreshSmoothScrolling();
   } else if (typeof window !== 'undefined') {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
   }

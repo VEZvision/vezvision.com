@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback, memo } from 'react';
+import { useState, useEffect, useCallback, memo, useRef } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import logoNavbar from '@/assets/logo-navbar.svg';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { useSettings } from '@/hooks/useSettings';
 import { isSafeExternalHref, safePublicHref } from '@/utils/safeHref';
+import { getScrollY, getSmoothScroll } from '@/utils/smoothScrolling';
 
 function getLocalizedLabel(language: 'pl' | 'en', labelPl: string, labelEn: string) {
   return language === 'en' ? (labelEn || labelPl) : labelPl
@@ -25,6 +26,7 @@ const FALLBACK_NAV_LINKS = [
 const Navbar = memo(() => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const isScrolledRef = useRef(false);
   const { language, setLanguage, t } = useLanguageContext();
   const { navigation } = useSettings();
 
@@ -37,12 +39,23 @@ const Navbar = memo(() => {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+    const updateScrolled = () => {
+      const next = getScrollY() > 48;
+      if (next !== isScrolledRef.current) {
+        isScrolledRef.current = next;
+        setIsScrolled(next);
+      }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    updateScrolled();
+
+    const lenis = getSmoothScroll();
+    if (lenis) {
+      return lenis.on('scroll', updateScrolled);
+    }
+
+    window.addEventListener('scroll', updateScrolled, { passive: true });
+    return () => window.removeEventListener('scroll', updateScrolled);
   }, []);
 
   // Close mobile menu when clicking outside
@@ -73,14 +86,14 @@ const Navbar = memo(() => {
   const contactButtonHref = safePublicHref(navigation?.contactButtonHref, '/contact') || '/contact'
   const navTextClass = 'text-black'
   const navHoverClass = 'hover:bg-black/[0.05]'
-  const desktopGroupClass = isScrolled
-    ? 'bg-white/72 backdrop-blur-xl border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-xl'
-    : ''
+  const scrolledSurfaceClass =
+    'border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-xl';
+  const desktopGroupClass = isScrolled ? `bg-white/95 ${scrolledSurfaceClass}` : ''
   const mobileButtonTextClass = 'text-black'
 
   return (
-    <nav 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 [transform:translateZ(0)] ${
         isScrolled ? 'pt-2' : ''
       }`}
     >
@@ -90,7 +103,7 @@ const Navbar = memo(() => {
         }`}>
           {/* Left: Logo */}
           <div className={`transition-all duration-500 ${
-            isScrolled ? 'bg-white/72 backdrop-blur-xl border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-xl px-4' : ''
+            isScrolled ? `bg-white/95 ${scrolledSurfaceClass} px-4` : ''
           }`}>
             <div className="flex items-center">
               <div className="flex-shrink-0 py-3">

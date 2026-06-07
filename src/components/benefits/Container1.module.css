@@ -42,6 +42,16 @@
   z-index: 1;
 }
 
+.dial {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  width: 244px;
+  height: 218px;
+  transform: translateX(-50%) scale(0.86);
+  transform-origin: top center;
+}
+
 .orbit {
   position: absolute;
   top: -28px;
@@ -220,19 +230,18 @@
 
 @media (prefers-reduced-motion: reduce) {
   .badge,
-  .orbit,
+  .badge::after,
   .pointer,
   .pointerDot {
     animation: none !important;
   }
-}
 
-@media (prefers-reduced-motion: reduce) {
-  .badge,
-  .badge::after,
-  .pointer,
-  .pointerDot {
-    animation: none;
+  .dial {
+    transform: translateX(-50%) scale(0.86);
+  }
+
+  .container:hover {
+    transform: none;
   }
 }
 
@@ -244,6 +253,10 @@
 
   .visual {
     bottom: 142px;
+  }
+
+  .dial {
+    transform: translateX(-50%) scale(0.84);
   }
 
   .orbit {
@@ -298,6 +311,10 @@
     bottom: 136px;
   }
 
+  .dial {
+    transform: translateX(-50%) scale(0.82);
+  }
+
   .orbit {
     width: 208px;
     height: 208px;
@@ -350,6 +367,10 @@
 
   .visual {
     bottom: 126px;
+  }
+
+  .dial {
+    transform: translateX(-50%) scale(0.8);
   }
 
   .orbit {

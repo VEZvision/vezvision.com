@@ -13,6 +13,7 @@
     "test": "vitest",
     "test:unit": "vitest --run",
     "test:e2e": "playwright test",
+    "test:e2e:live": "E2E_LIVE_SUPABASE=1 playwright test tests/e2e/live-supabase.spec.ts --project=chromium",
     "test:ui": "vitest --ui",
     "generate-sitemap": "npx tsx --env-file=.env scripts/generate-sitemap.ts"
   },

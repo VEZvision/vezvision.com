@@ -7,6 +7,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { logError } from '@/lib/logger';
 import {
   ContactFormError,
@@ -45,6 +46,7 @@ function normalizeAddress(value: string | null | undefined): string | null {
 }
 
 const ContactFormSection = ({ t }: Props) => {
+  const reducedMotion = useReducedMotion();
   const { contact, loading, error } = useSettings();
   const [formData, setFormData] = useState<FormData>({
     fullName: '',
@@ -334,31 +336,45 @@ const ContactFormSection = ({ t }: Props) => {
             className={`${styles.submitButton} ${isSubmitting ? styles.submitting : ''}`}
             disabled={isSubmitting}
           >
-            <AnimatePresence mode="wait">
-              {isSubmitting ? (
-                <motion.div
-                  key="loading"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  className="flex items-center gap-2"
-                >
+            {reducedMotion ? (
+              isSubmitting ? (
+                <span className="flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin" strokeWidth={3} />
                   <span>{t('common.saving') || 'Wysyłanie...'}</span>
-                </motion.div>
+                </span>
               ) : (
-                <motion.div
-                  key="submit"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  className="flex items-center gap-2"
-                >
+                <span className="flex items-center gap-2">
                   <Send className="w-4 h-4" strokeWidth={2.5} />
                   <span>{t('contact.form.submit')}</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                </span>
+              )
+            ) : (
+              <AnimatePresence mode="wait">
+                {isSubmitting ? (
+                  <motion.div
+                    key="loading"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="flex items-center gap-2"
+                  >
+                    <Loader2 className="w-4 h-4 animate-spin" strokeWidth={3} />
+                    <span>{t('common.saving') || 'Wysyłanie...'}</span>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="submit"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="flex items-center gap-2"
+                  >
+                    <Send className="w-4 h-4" strokeWidth={2.5} />
+                    <span>{t('contact.form.submit')}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            )}
           </button>
           </form>
       </div>

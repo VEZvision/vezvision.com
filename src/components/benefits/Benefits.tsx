@@ -16,7 +16,7 @@ const Benefits: React.FC = () => {
   return (
     <section
       id="benefits"
-      className={styles.benefitsSection}
+      className={`${styles.benefitsSection} vez-decorative-motion`}
       aria-labelledby="benefits-heading"
     >
       <SectionReveal amount={0.25}>

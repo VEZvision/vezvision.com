@@ -1,0 +1,7 @@
+/* Pause decorative CSS loops while scrolling — scoped, not global. */
+html.vez-is-scrolling .vez-decorative-motion,
+html.vez-is-scrolling .vez-decorative-motion *,
+html.vez-is-scrolling .vez-decorative-motion *::before,
+html.vez-is-scrolling .vez-decorative-motion *::after {
+  animation-play-state: paused !important;
+}

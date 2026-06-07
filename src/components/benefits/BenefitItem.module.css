@@ -1,27 +1,52 @@
 .benefitItem {
-  display: flex;
+  display: inline-flex;
   flex-shrink: 0;
   align-items: center;
-  gap: 12px;
-  padding: 12px 24px;
-  border-radius: 60px;
-  background-color: #F5F5F5;
-  box-shadow: inset 0px 3px 1px 0px #ffffff;
-  transition: transform 0.3s ease;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid rgba(16, 24, 40, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 1px 2px rgba(16, 24, 40, 0.04);
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
-.benefitItem:hover {
-  transform: translateY(-5px);
+@media (hover: hover) {
+  .benefitItem:hover {
+    transform: translateY(-2px);
+    border-color: rgba(16, 185, 129, 0.22);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      0 6px 16px rgba(16, 24, 40, 0.07);
+  }
 }
 
 .icon {
   width: 20px;
   height: 20px;
+  flex-shrink: 0;
+  object-fit: contain;
 }
 
 .text {
-  font-size: 14px;
-  font-weight: 500;
-  color: #000000;
-  line-height: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: #101828;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .benefitItem {
+    transition: none;
+  }
+
+  .benefitItem:hover {
+    transform: none;
+  }
 }

@@ -1,20 +1,17 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { Toaster } from 'sonner';
-import { useEffect, memo, lazy, Suspense, useState } from "react";
+import { memo, lazy, Suspense, useState, useEffect } from "react";
 import RouteErrorBoundary from "@/components/layout/RouteErrorBoundary";
-import {
-  initSmoothScrolling,
-  destroySmoothScrolling,
-} from "@/utils/smoothScrolling";
+import { SmoothScrollProvider } from '@/contexts/SmoothScrollContext';
 import { CookieConsentProvider } from "@/contexts/CookieConsentContext";
 import { LanguageProvider } from "@/contexts/LanguageProvider";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import CookieBanner from "@/components/cookies/CookieBanner";
-import { LoadingScreen } from "@/components/loading";
 import PublicChrome from "@/components/layout/PublicChrome";
+import AppBootShell from "@/components/layout/AppBootShell";
+import Home from "@/pages/Home";
 
-// Lazy load pages for better performance
-const Home = lazy(() => import("@/pages/Home"));
+// Home is eager — default route; other pages stay lazy.
 const About = lazy(() => import("@/pages/About"));
 const Services = lazy(() => import("@/pages/Services"));
 const Portfolio = lazy(() => import("@/pages/Portfolio"));
@@ -32,39 +29,23 @@ const Unsubscribe = lazy(() => import("@/pages/Unsubscribe"));
 const CookiePreferences = lazy(() => import("@/components/cookies/CookiePreferences"));
 const PrivacyCenter = lazy(() => import("@/components/cookies/PrivacyCenter"));
 const MaintenancePage = lazy(() => import('@/pages/MaintenancePage'));
+const E2eErrorTrigger = lazy(() => import('@/pages/E2eErrorTrigger'));
+
+const enableE2eRoutes = import.meta.env.VITE_ENABLE_E2E_ROUTES === 'true';
 import { useSettings } from '@/hooks/useSettings';
 import CodeInjector from '@/components/system/CodeInjector';
 import { useScrollToTopOnRouteChange } from '@/hooks/useScrollToTopOnRouteChange';
 import { useCookieConsent } from '@/hooks/useCookieConsent';
+import { readPublicSettingsCache } from '@/lib/publicSettingsCache';
 import {
   fetchMaintenanceAccess,
   fetchMaintenanceEnabledFromDb,
   isSiteAccessible,
 } from '@/services/maintenanceAccess';
 
-// Simple fallback shown while lazy chunks load
-const PageLoader = memo(() => (
-  <LoadingScreen
-    message="Loading page..."
-    showProgress={false}
-  />
-));
-PageLoader.displayName = 'PageLoader';
-
-
 // ─── Layout ───────────────────────────────────────────────────────────────────
-// Mounted once for every public route. Initialises Lenis smooth scrolling and
-// handles a lightweight opacity fade on route changes.
 const Layout = memo(() => {
   useScrollToTopOnRouteChange();
-
-  // ── Initialise / destroy Lenis ──
-  useEffect(() => {
-    initSmoothScrolling();
-    return () => {
-      destroySmoothScrolling();
-    };
-  }, []);
 
   return (
     <PublicChrome>
@@ -74,7 +55,7 @@ const Layout = memo(() => {
         subtree on every frame, which causes serious jank on mobile devices.
       */}
       <main style={{ minHeight: '100vh' }}>
-        <Suspense fallback={<PageLoader />}>
+        <Suspense fallback={<AppBootShell />}>
           <Outlet />
         </Suspense>
       </main>
@@ -85,29 +66,32 @@ const Layout = memo(() => {
 Layout.displayName = 'Layout';
 
 // ─── Router ───────────────────────────────────────────────────────────────────
+const publicRoutes = [
+  { index: true, element: <Home /> },
+  { path: 'about', element: <About /> },
+  { path: 'services', element: <Services /> },
+  { path: 'portfolio', element: <Portfolio /> },
+  { path: 'portfolio/:slug', element: <ProjectDetails /> },
+  { path: 'blog', element: <Blog /> },
+  { path: 'blog/:slug', element: <BlogArticle /> },
+  { path: 'newsletter', element: <Newsletter /> },
+  { path: 'products', element: <Products /> },
+  { path: 'contact', element: <Contact /> },
+  { path: 'cookie-policy', element: <CookiePolicy /> },
+  { path: 'privacy-policy', element: <PrivacyPolicy /> },
+  { path: 'terms', element: <Terms /> },
+  { path: 'unsubscribe', element: <Unsubscribe /> },
+  { path: '404', element: <NotFound /> },
+  { path: '*', element: <NotFound /> },
+  ...(enableE2eRoutes ? [{ path: '__e2e__/error', element: <E2eErrorTrigger /> }] : []),
+];
+
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Layout />,
     errorElement: <RouteErrorBoundary />,
-    children: [
-      { index: true, element: <Home /> },
-      { path: 'about', element: <About /> },
-      { path: 'services', element: <Services /> },
-      { path: 'portfolio', element: <Portfolio /> },
-      { path: 'portfolio/:slug', element: <ProjectDetails /> },
-      { path: 'blog', element: <Blog /> },
-      { path: 'blog/:slug', element: <BlogArticle /> },
-      { path: 'newsletter', element: <Newsletter /> },
-      { path: 'products', element: <Products /> },
-      { path: 'contact', element: <Contact /> },
-      { path: 'cookie-policy', element: <CookiePolicy /> },
-      { path: 'privacy-policy', element: <PrivacyPolicy /> },
-      { path: 'terms', element: <Terms /> },
-      { path: 'unsubscribe', element: <Unsubscribe /> },
-      { path: '404', element: <NotFound /> },
-      { path: '*', element: <NotFound /> },
-    ],
+    children: [...publicRoutes],
   },
 ]);
 
@@ -115,13 +99,24 @@ type MaintenanceAccessState = 'loading' | 'allowed' | 'blocked';
 
 const MaintenanceGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { maintenance, loading: settingsLoading } = useSettings();
-  const [access, setAccess] = useState<MaintenanceAccessState>('loading');
+  const cachedMaintenance = readPublicSettingsCache()?.settings.maintenance;
+  const maintenanceEnabled =
+    maintenance?.enabled === true ||
+    (settingsLoading && cachedMaintenance?.enabled === true);
+  const [access, setAccess] = useState<MaintenanceAccessState>(() =>
+    maintenanceEnabled ? 'loading' : 'allowed',
+  );
   const maintenanceSettingsKey = JSON.stringify({
     enabled: maintenance?.enabled ?? false,
     allowedIps: maintenance?.allowedIps ?? [],
   });
 
   useEffect(() => {
+    if (!maintenance?.enabled) {
+      setAccess('allowed');
+      return;
+    }
+
     if (settingsLoading) return;
 
     let cancelled = false;
@@ -133,7 +128,7 @@ const MaintenanceGuard: React.FC<{ children: React.ReactNode }> = ({ children })
 
       const cmsMaintenanceEnabled = snapshot.unavailable
         ? await fetchMaintenanceEnabledFromDb()
-        : maintenance?.enabled === true;
+        : true;
 
       if (cancelled) return;
 
@@ -147,13 +142,13 @@ const MaintenanceGuard: React.FC<{ children: React.ReactNode }> = ({ children })
     };
   }, [maintenanceSettingsKey, settingsLoading, maintenance?.enabled]);
 
-  if (settingsLoading || access === 'loading') {
-    return <PageLoader />;
+  if (maintenanceEnabled && access === 'loading') {
+    return <AppBootShell />;
   }
 
   if (access === 'blocked') {
     return (
-      <Suspense fallback={<PageLoader />}>
+      <Suspense fallback={<AppBootShell />}>
         <MaintenancePage />
       </Suspense>
     );
@@ -184,16 +179,18 @@ export default function App() {
   return (
     <LanguageProvider>
       <SettingsProvider>
-        <Toaster richColors closeButton position="top-right" />
-        <CookieConsentProvider>
-          <MaintenanceGuard>
-            <CodeInjector />
+        <SmoothScrollProvider>
+          <Toaster richColors closeButton position="top-right" />
+          <CookieConsentProvider>
+            <MaintenanceGuard>
+              <CodeInjector />
               <RouterProvider router={router} />
-          </MaintenanceGuard>
+            </MaintenanceGuard>
 
-          <CookieBanner />
-          <CookieModalsGate />
-        </CookieConsentProvider>
+            <CookieBanner />
+            <CookieModalsGate />
+          </CookieConsentProvider>
+        </SmoothScrollProvider>
       </SettingsProvider>
     </LanguageProvider>
   );

@@ -3,6 +3,11 @@ import react from '@vitejs/plugin-react'
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
+  define: {
+    'import.meta.env.VITE_ENABLE_E2E_ROUTES': JSON.stringify(
+      process.env.E2E_BUILD === '1' ? 'true' : 'false',
+    ),
+  },
   server: {
     host: '0.0.0.0',
     port: 5174,

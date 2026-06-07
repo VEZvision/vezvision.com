@@ -1,4 +1,4 @@
-import { Fragment, memo, useEffect, useRef } from 'react';
+import { Fragment, memo, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import logoHero from '../../assets/logo-hero.svg';
 import arrowRight from '../../assets/arrow-right.svg';
@@ -13,6 +13,7 @@ import { Sparkles } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 import { usePageSectionConfig } from '@/hooks/usePageSection';
 import { safeCmsHref } from '@/utils/safeHref';
+import styles from './Hero.module.scss';
 
 const Hero = memo(() => {
   const { t } = useLanguageContext();
@@ -20,42 +21,47 @@ const Hero = memo(() => {
   const sectionConfig = usePageSectionConfig('home', 'hero');
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const sectionRef = useRef<HTMLElement | null>(null);
+  const [videoSrc, setVideoSrc] = useState<string | null>(null);
+  const HERO_VIDEO_SRC = '/aMPvRVYHFQxBoB0v2qyJln83jI.mp4';
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !sectionRef.current || !videoRef.current) {
-      return;
-    }
-
+    const sectionEl = sectionRef.current;
     const videoEl = videoRef.current;
+    if (!sectionEl || !videoEl) return;
+
+    const mountVideo = () => {
+      setVideoSrc((current) => current ?? HERO_VIDEO_SRC);
+    };
 
     const handleVisibilityChange = (entries: IntersectionObserverEntry[]) => {
       const [entry] = entries;
       if (!entry) return;
 
       if (entry.isIntersecting) {
-        videoEl.play().catch(() => {});
+        mountVideo();
+        void videoEl.play().catch(() => {});
       } else {
         videoEl.pause();
       }
     };
 
     let observer: IntersectionObserver | null = null;
-    const sectionEl = sectionRef.current;
 
     if ('IntersectionObserver' in window) {
       observer = new IntersectionObserver(handleVisibilityChange, {
-        threshold: 0.2,
+        threshold: 0.1,
+        rootMargin: '100px',
       });
       observer.observe(sectionEl);
+    } else {
+      mountVideo();
     }
 
     return () => {
-      if (observer && sectionEl) {
-        observer.unobserve(sectionEl);
-      }
+      observer?.disconnect();
       videoEl.pause();
     };
-  }, []);
+  }, [HERO_VIDEO_SRC]);
 
   const socialLinks = [
     { href: social?.x || social?.facebook, icon: socialX, label: 'X (Twitter)' },
@@ -66,26 +72,24 @@ const Hero = memo(() => {
   const secondaryHref = safeCmsHref(sectionConfig.secondaryHref, '/services');
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative flex min-h-[82vh] w-full items-center justify-center overflow-hidden bg-white px-4 pt-[112px] pb-[56px] md:min-h-[86vh] md:pt-[124px] md:pb-[72px]"
-    >
+    <section ref={sectionRef} className={styles.sectionHero}>
       <video
         ref={videoRef}
-        className="absolute inset-0 w-full h-full object-cover z-0"
+        className={styles.videoBg}
+        data-vez-bg-video
         autoPlay
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="none"
         aria-hidden="true"
       >
-        <source src="/aMPvRVYHFQxBoB0v2qyJln83jI.mp4" type="video/mp4" />
+        {videoSrc ? <source src={videoSrc} type="video/mp4" /> : null}
       </video>
 
-      <div className="absolute inset-0 bg-white/90 z-10" />
+      <div className="absolute inset-0 z-10 bg-white/90" aria-hidden="true" />
 
-      <div className="relative z-20 mx-auto max-w-[980px] text-center">
+      <div className={styles.heroInner}>
         <div className="flex flex-col items-center">
           {/* Logo */}
           <div className="mb-6 flex justify-center">

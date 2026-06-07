@@ -1,5 +1,17 @@
 /// <reference types="vite/client" />
 
+interface ImportMetaEnv {
+  readonly VITE_SUPABASE_URL: string
+  readonly VITE_SUPABASE_ANON_KEY: string
+  readonly VITE_SENTRY_DSN?: string
+  readonly VITE_GA_ID?: string
+  readonly VITE_ENABLE_E2E_ROUTES?: string
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}
+
 declare module '*.svg?react' {
   import React from 'react';
   const ReactComponent: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;

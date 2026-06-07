@@ -38,18 +38,10 @@ const PortfolioFeatures = () => {
     const { language } = useLanguageContext();
     const isPl = language === 'pl';
     const reducedMotion = useReducedMotion();
-
-    const pulseAnimation = {
-        scale: [1, 1.05, 1],
-        transition: {
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut" as const
-        }
-    };
+    const staticMotion = reducedMotion;
 
     return (
-        <section className={styles.section}>
+        <section className={`${styles.section} ${styles.motionZone} vez-decorative-motion`}>
             <div className={styles.container}>
                 {/* Section Header */}
                 <SectionReveal>
@@ -85,7 +77,7 @@ const PortfolioFeatures = () => {
                                         <motion.div
                                             key={i}
                                             className={styles.checklistItem}
-                                            whileHover={reducedMotion ? undefined : { x: 4, transition: { duration: 0.2 } }}
+                                            whileHover={staticMotion ? undefined : { x: 4, transition: { duration: 0.2 } }}
                                         >
                                             <div className={styles.checklistLeft}>
                                                 <item.icon className={styles.checklistIcon} />
@@ -116,29 +108,13 @@ const PortfolioFeatures = () => {
                         <StaggerItem className={styles.card}>
                             <div className={styles.visualArea}>
                                 <div className={styles.iconsContainer}>
-                                    <motion.div
-                                        className={styles.centerStar}
-                                        animate={reducedMotion ? undefined : pulseAnimation}
-                                    >
+                                    <div className={styles.centerStar}>
                                         <Star size={28} fill="currentColor" />
-                                    </motion.div>
+                                    </div>
                                     {[Mail, MessageSquare, FileUser, Layers, Zap, Code, Sparkles, Database, GitBranch, Star, Search, ArrowUpRight].map((Icon, i) => (
-                                        <motion.div
-                                            key={i}
-                                            className={styles.floatingIcon}
-                                            animate={reducedMotion ? undefined : {
-                                                y: [0, -6 - (i % 4) * 2, 0],
-                                                rotate: [0, i % 2 === 0 ? 5 : -5, 0]
-                                            }}
-                                            transition={reducedMotion ? undefined : {
-                                                duration: 2.5 + (i % 5) * 0.3,
-                                                repeat: Infinity,
-                                                ease: "easeInOut" as const,
-                                                delay: i * 0.15
-                                            }}
-                                        >
+                                        <div key={i} className={styles.floatingIcon}>
                                             <Icon size={18} />
-                                        </motion.div>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
@@ -166,8 +142,8 @@ const PortfolioFeatures = () => {
                                         <span className={styles.searchInput}>Research anything...</span>
                                         <motion.span
                                             className={styles.searchButton}
-                                            whileHover={reducedMotion ? undefined : { scale: 1.05 }}
-                                            whileTap={reducedMotion ? undefined : { scale: 0.95 }}
+                                            whileHover={staticMotion ? undefined : { scale: 1.05 }}
+                                            whileTap={staticMotion ? undefined : { scale: 0.95 }}
                                         >
                                             Research
                                         </motion.span>
@@ -181,7 +157,7 @@ const PortfolioFeatures = () => {
                                             <motion.div
                                                 key={i}
                                                 className={styles.suggestionItem}
-                                                whileHover={reducedMotion ? undefined : { x: 4, backgroundColor: '#fafafa' }}
+                                                whileHover={staticMotion ? undefined : { x: 4, backgroundColor: '#fafafa' }}
                                             >
                                                 <div className={styles.suggestionLeft}>
                                                     <Sparkles className={styles.suggestionIcon} />
@@ -226,12 +202,12 @@ const PortfolioFeatures = () => {
                                             <div
                                                 key={i}
                                                 className={styles.codeLine}
-                                                style={reducedMotion ? undefined : { animationDelay: `${i * 0.24}s` }}
+                                                style={staticMotion ? undefined : { animationDelay: `${i * 0.24}s` }}
                                             >
                                                 <span className={styles.lineNumber}>{line.num}</span>
                                                 <span
                                                     className={styles.lineContent}
-                                                    style={reducedMotion ? undefined : { animationDelay: `${i * 0.24 + 0.08}s` }}
+                                                    style={staticMotion ? undefined : { animationDelay: `${i * 0.24 + 0.08}s` }}
                                                 >
                                                     {line.content}
                                                 </span>
@@ -257,50 +233,26 @@ const PortfolioFeatures = () => {
                             <div className={styles.visualArea}>
                                 <div className={styles.integrationsGrid}>
                                     {/* Row 1 */}
-                                    <motion.div
-                                        className={styles.integrationIcon}
-                                        animate={reducedMotion ? undefined : { y: [0, -5, 0] }}
-                                        transition={reducedMotion ? undefined : { duration: 2.5, repeat: Infinity, delay: 0 }}
-                                    >
+                                    <div className={styles.integrationIcon}>
                                         <Layers size={24} />
-                                    </motion.div>
-                                    <motion.div
-                                        className={`${styles.integrationIcon} ${styles.featured}`}
-                                        animate={reducedMotion ? undefined : { scale: [1, 1.05, 1] }}
-                                        transition={reducedMotion ? undefined : { duration: 2, repeat: Infinity }}
-                                    >
+                                    </div>
+                                    <div className={`${styles.integrationIcon} ${styles.featured}`}>
                                         <Zap size={28} />
-                                    </motion.div>
-                                    <motion.div
-                                        className={styles.integrationIcon}
-                                        animate={reducedMotion ? undefined : { y: [0, -5, 0] }}
-                                        transition={reducedMotion ? undefined : { duration: 2.5, repeat: Infinity, delay: 0.3 }}
-                                    >
+                                    </div>
+                                    <div className={styles.integrationIcon}>
                                         <GitBranch size={24} />
-                                    </motion.div>
+                                    </div>
 
                                     {/* Row 2 */}
-                                    <motion.div
-                                        className={styles.integrationIcon}
-                                        animate={reducedMotion ? undefined : { y: [0, -5, 0] }}
-                                        transition={reducedMotion ? undefined : { duration: 2.5, repeat: Infinity, delay: 0.5 }}
-                                    >
+                                    <div className={styles.integrationIcon}>
                                         <Database size={24} />
-                                    </motion.div>
-                                    <motion.div
-                                        className={styles.integrationIcon}
-                                        animate={reducedMotion ? undefined : { y: [0, -5, 0] }}
-                                        transition={reducedMotion ? undefined : { duration: 2.5, repeat: Infinity, delay: 0.7 }}
-                                    >
+                                    </div>
+                                    <div className={styles.integrationIcon}>
                                         <MessageSquare size={24} />
-                                    </motion.div>
-                                    <motion.div
-                                        className={styles.integrationIcon}
-                                        animate={reducedMotion ? undefined : { y: [0, -5, 0] }}
-                                        transition={reducedMotion ? undefined : { duration: 2.5, repeat: Infinity, delay: 0.9 }}
-                                    >
+                                    </div>
+                                    <div className={styles.integrationIcon}>
                                         <Code size={24} />
-                                    </motion.div>
+                                    </div>
                                 </div>
                             </div>
                             <div className={styles.content}>

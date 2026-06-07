@@ -8,8 +8,7 @@
 .slider {
   position: relative;
   width: 100%;
-  display: flex;
-  align-items: center;
+  overflow: hidden;
 }
 
 .slider::before,
@@ -18,59 +17,84 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 100px;
-  z-index: 1;
+  width: 88px;
+  z-index: 2;
   pointer-events: none;
 }
 
 .slider::before {
   left: 0;
-  background: linear-gradient(to right, #f5f5f5, transparent);
+  background: linear-gradient(to right, #ffffff 25%, transparent);
 }
 
 .slider::after {
   right: 0;
-  background: linear-gradient(to left, #f5f5f5, transparent);
+  background: linear-gradient(to left, #ffffff 25%, transparent);
 }
 
 .slideTrack {
   display: flex;
-  gap: 24px;
-  animation: scroll 40s linear infinite;
+  width: max-content;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0;
+  transform: translateX(0);
 }
 
-.slideTrack.reducedMotion {
-  animation: none;
+.slideTrackActive {
+  animation: marquee var(--marquee-duration, 40s) linear infinite;
+}
+
+.marqueeSet {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 20px;
+  padding-right: 20px;
+}
+
+.slideTrackStatic {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
   flex-wrap: wrap;
   justify-content: center;
+  gap: 12px 16px;
 }
 
-@keyframes scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+.slideTrackStatic .marqueeSet {
+  padding-right: 0;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .slideTrack {
-    animation: none;
-    flex-wrap: wrap;
-    justify-content: center;
+@keyframes marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(calc(-1 * var(--marquee-shift, 0px)), 0, 0);
   }
 }
 
-/* Responsive Design */
+@media (prefers-reduced-motion: reduce) {
+  .slideTrackActive {
+    animation: none;
+  }
+}
+
 @media (max-width: 1024px) {
   .moreBenefitsContainer {
     padding: 16px 0 60px;
   }
 
-  .slideTrack {
-    gap: 20px;
+  .marqueeSet {
+    gap: 16px;
+    padding-right: 16px;
   }
 
   .slider::before,
   .slider::after {
-    width: 80px;
+    width: 72px;
   }
 }
 
@@ -79,12 +103,13 @@
     padding: 12px 0 40px;
   }
 
-  .slideTrack {
-    gap: 16px;
+  .marqueeSet {
+    gap: 12px;
+    padding-right: 12px;
   }
 
   .slider::before,
   .slider::after {
-    width: 60px;
+    width: 48px;
   }
 }
