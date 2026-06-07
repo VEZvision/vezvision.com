@@ -8,6 +8,10 @@ import {
 } from 'react';
 
 import {
+  attachRevealScrollSource,
+  detachRevealScrollSource,
+} from '@/reveal/revealScheduler';
+import {
   destroyLenis,
   getScrollMode,
   initLenis,
@@ -35,12 +39,15 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     const activeMode = getScrollMode();
     setMode(activeMode);
 
+    attachRevealScrollSource(lenis);
+
     if (lenis) {
       root.classList.add('vez-smooth-scroll');
       requestAnimationFrame(() => lenis.resize());
     }
 
     return () => {
+      detachRevealScrollSource();
       root.classList.remove('vez-smooth-scroll');
       destroyLenis();
       setMode('native');

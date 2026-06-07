@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { revealImmediately, scheduleReveal } from '@/reveal/revealScheduler';
 import type { RevealOptions } from '@/reveal/types';
 
 export function useRevealInView<T extends HTMLElement>({
@@ -10,28 +11,36 @@ export function useRevealInView<T extends HTMLElement>({
 }: RevealOptions = {}) {
   const reducedMotion = useReducedMotion();
   const [node, setNode] = useState<T | null>(null);
-  const [visible, setVisible] = useState(false);
 
   const ref = useCallback((element: T | null) => {
     setNode(element);
   }, []);
 
   useEffect(() => {
+    if (!node) return;
+
     if (reducedMotion) {
-      setVisible(true);
+      revealImmediately(node);
       return;
     }
 
-    if (!node) return;
+    let revealed = false;
+
+    const markVisible = () => {
+      if (revealed) return;
+      revealed = true;
+      scheduleReveal(node);
+    };
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry) return;
         if (entry.isIntersecting) {
-          setVisible(true);
+          markVisible();
           if (once) observer.disconnect();
         } else if (!once) {
-          setVisible(false);
+          revealed = false;
+          node.classList.remove('vez-reveal--in');
         }
       },
       { threshold: amount, rootMargin },
@@ -42,5 +51,5 @@ export function useRevealInView<T extends HTMLElement>({
     return () => observer.disconnect();
   }, [amount, node, once, reducedMotion, rootMargin]);
 
-  return { ref, visible: visible || reducedMotion };
+  return { ref };
 }

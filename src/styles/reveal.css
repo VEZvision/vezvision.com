@@ -1,38 +1,29 @@
-/* Reveal system — CSS transitions only (Lenis-safe, no Framer Motion on scroll). */
+/* Reveal — opacity only (cheap during Lenis scroll; no React re-renders). */
 
 .vez-reveal {
   opacity: 0;
-  transform: translate3d(0, 22px, 0);
-  transition:
-    opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1);
   transition-delay: var(--vez-reveal-delay, 0s);
 }
 
 .vez-reveal--in {
   opacity: 1;
-  transform: none;
 }
 
 .vez-stagger-item {
   opacity: 0;
-  transform: translate3d(0, 18px, 0);
-  transition:
-    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-  transition-delay: calc(var(--vez-reveal-delay, 0s) + (var(--vez-stagger-i, 0) * 0.09s));
+  transition: opacity 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--vez-reveal-delay, 0s) + (var(--vez-stagger-i, 0) * 0.08s));
 }
 
 .vez-reveal--in .vez-stagger-item {
   opacity: 1;
-  transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .vez-reveal,
   .vez-stagger-item {
     opacity: 1 !important;
-    transform: none !important;
     transition: none !important;
   }
 }

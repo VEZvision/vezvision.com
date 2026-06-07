@@ -12,14 +12,9 @@ export function Reveal({
   amount = 0.12,
   rootMargin,
 }: RevealProps) {
-  const { ref, visible } = useRevealInView<HTMLDivElement>({ once, amount, rootMargin });
+  const { ref } = useRevealInView<HTMLDivElement>({ once, amount, rootMargin });
 
-  const classes = [
-    'vez-reveal',
-    visible ? 'vez-reveal--in' : '',
-    stagger ? 'vez-stagger-parent' : '',
-    className,
-  ]
+  const classes = ['vez-reveal', stagger ? 'vez-stagger-parent' : '', className]
     .filter(Boolean)
     .join(' ');
 
