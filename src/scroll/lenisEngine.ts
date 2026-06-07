@@ -1,7 +1,7 @@
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 
-import { LENIS_OPTIONS, shouldUseNativeScroll, type ScrollMode } from '@/scroll/config';
+import { getLenisOptions, shouldUseNativeScroll, type ScrollMode } from '@/scroll/config';
 
 let lenis: Lenis | null = null;
 let resizeListenersAttached = false;
@@ -32,7 +32,7 @@ export function initLenis(): Lenis | null {
   if (lenis) return lenis;
   if (shouldUseNativeScroll()) return null;
 
-  lenis = new Lenis(LENIS_OPTIONS);
+  lenis = new Lenis(getLenisOptions());
   attachResizeListeners();
   scheduleResize();
 
