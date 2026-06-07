@@ -34,6 +34,10 @@ html.lenis body {
   height: auto;
 }
 
+body.lenis {
+  height: auto;
+}
+
 html.lenis body {
   overflow-x: clip;
 }
@@ -42,6 +46,7 @@ html.vez-smooth-scroll {
   scroll-behavior: auto !important;
 }
 
+.lenis,
 .lenis.lenis-smooth {
   scroll-behavior: auto !important;
 }
@@ -63,7 +68,7 @@ html.vez-smooth-scroll {
 }
 
 body {
-  overflow-x: hidden;
+  overflow-x: clip;
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }

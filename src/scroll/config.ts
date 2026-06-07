@@ -22,8 +22,12 @@ export function shouldUseNativeScroll(): boolean {
 
 export const SCROLL_IDLE_MS = 150;
 
-export function getLenisOptions(): Omit<LenisOptions, 'wrapper' | 'content'> {
+export function getLenisOptions(): LenisOptions {
+  const body = typeof document !== 'undefined' ? document.body : undefined;
+
   return {
+    wrapper: body,
+    content: typeof document !== 'undefined' ? document.documentElement : undefined,
     autoRaf: true,
     lerp: 0.075,
     wheelMultiplier: 0.92,
@@ -33,7 +37,7 @@ export function getLenisOptions(): Omit<LenisOptions, 'wrapper' | 'content'> {
     autoResize: true,
     anchors: true,
     stopInertiaOnNavigate: true,
-    eventsTarget: typeof document !== 'undefined' ? document.body : undefined,
+    eventsTarget: body,
     prevent: (node: Element) => node.hasAttribute('data-lenis-prevent'),
   };
 }

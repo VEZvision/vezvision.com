@@ -6,7 +6,7 @@ type MotionActiveOptions = {
 };
 
 export function useMotionActive<T extends HTMLElement>({
-  rootMargin = '180px 0px',
+  rootMargin = '640px 0px',
   threshold = 0,
 }: MotionActiveOptions = {}) {
   const [node, setNode] = useState<T | null>(null);

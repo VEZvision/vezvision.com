@@ -6,7 +6,7 @@ import type { RevealOptions } from '@/reveal/types';
 export function useRevealInView<T extends HTMLElement>({
   once = true,
   amount = 0.12,
-  rootMargin = '180px 0px 180px 0px',
+  rootMargin = '520px 0px 240px 0px',
 }: RevealOptions = {}) {
   const reducedMotion = useReducedMotion();
   const [node, setNode] = useState<T | null>(null);
