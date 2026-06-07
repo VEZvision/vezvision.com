@@ -43,7 +43,12 @@
 
 .slideTrackActive {
   animation: marquee var(--marquee-duration, 40s) linear infinite;
+  animation-play-state: paused;
   will-change: transform;
+}
+
+.slideTrackActive[data-marquee-active='true'] {
+  animation-play-state: running;
 }
 
 .marqueeSet {

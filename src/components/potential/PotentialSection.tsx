@@ -2,6 +2,7 @@ import styles from './PotentialSection.module.css';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { Sparkles, Users } from 'lucide-react';
 import { useLanguageContext } from '@/hooks/useLanguage';
+import { useMotionActive } from '@/hooks/useMotionActive';
 import { SectionReveal, StaggerReveal, StaggerItem } from '@/components/ui/SectionReveal';
 import logoIcon from '@/assets/services/logo-icon.svg';
 import IdeaIconCluster from '@/components/potential/IdeaIconCluster';
@@ -22,8 +23,16 @@ const BarChartIcon = () => (
 
 const PotentialSection: React.FC = () => {
     const { t } = useLanguageContext();
+    const { ref, active } = useMotionActive<HTMLElement>();
+
     return (
-        <section id="potential" className={`${styles.section} ${styles.decorativeZone} vez-decorative-motion`} aria-labelledby="potential-heading">
+        <section
+            ref={ref}
+            id="potential"
+            className={`${styles.section} ${styles.decorativeZone} vez-decorative-motion`}
+            data-motion-active={active ? 'true' : undefined}
+            aria-labelledby="potential-heading"
+        >
             <div className={styles.container}>
                 <SectionReveal amount={0.1}>
                 <SectionHeader

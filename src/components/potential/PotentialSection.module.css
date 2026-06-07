@@ -150,6 +150,13 @@
     contain: layout style;
 }
 
+.decorativeZone:not([data-motion-active='true']) .techPathDot,
+.decorativeZone:not([data-motion-active='true']) .blinkingCursor,
+.decorativeZone:not([data-motion-active='true']) .floatingTagPill,
+.decorativeZone:not([data-motion-active='true']) .appCircle {
+    animation-play-state: paused !important;
+}
+
 .techPath {
     position: relative;
     flex: 1;

@@ -11,6 +11,13 @@
   z-index: 1;
 }
 
+.benefitsSection:not([data-motion-active='true']) :global(.vez-decorative-motion),
+.benefitsSection:not([data-motion-active='true']) :global(.vez-decorative-motion *),
+.benefitsSection:not([data-motion-active='true']) :global(.vez-decorative-motion *::before),
+.benefitsSection:not([data-motion-active='true']) :global(.vez-decorative-motion *::after) {
+  animation-play-state: paused !important;
+}
+
 .container {
   display: flex;
   flex-direction: column;

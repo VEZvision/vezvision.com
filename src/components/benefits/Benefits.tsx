@@ -9,14 +9,18 @@ import styles from './Benefits.module.css';
 import MoreBenefits from './MoreBenefits';
 import { SectionReveal, StaggerItem, StaggerReveal } from '@/components/ui/SectionReveal';
 import { useLanguageContext } from '@/hooks/useLanguage';
+import { useMotionActive } from '@/hooks/useMotionActive';
 
 const Benefits: React.FC = () => {
   const { t } = useLanguageContext();
+  const { ref, active } = useMotionActive<HTMLElement>();
 
   return (
     <section
+      ref={ref}
       id="benefits"
       className={styles.benefitsSection}
+      data-motion-active={active ? 'true' : undefined}
       aria-labelledby="benefits-heading"
     >
       <SectionReveal amount={0.25}>
@@ -38,7 +42,7 @@ const Benefits: React.FC = () => {
               <Container1 />
             </StaggerItem>
             <StaggerItem>
-              <Container2 />
+              <Container2 active={active} />
             </StaggerItem>
             <StaggerItem>
               <BenefitsMultifunction />
@@ -47,7 +51,7 @@ const Benefits: React.FC = () => {
         </div>
       </SectionReveal>
 
-      <MoreBenefits />
+      <MoreBenefits active={active} />
     </section>
   );
 };

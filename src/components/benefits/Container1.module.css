@@ -16,7 +16,6 @@
   overflow: hidden;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   isolation: isolate;
-  transform: translateZ(0);
 }
 
 .container::before {

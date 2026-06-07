@@ -5,7 +5,6 @@ import logoNavbar from '@/assets/logo-navbar.svg';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { useSettings } from '@/hooks/useSettings';
 import { isSafeExternalHref, safePublicHref } from '@/utils/safeHref';
-import { getScrollY, getSmoothScroll } from '@/utils/smoothScrolling';
 
 function getLocalizedLabel(language: 'pl' | 'en', labelPl: string, labelEn: string) {
   return language === 'en' ? (labelEn || labelPl) : labelPl
@@ -39,23 +38,29 @@ const Navbar = memo(() => {
   }, []);
 
   useEffect(() => {
+    let frameId: number | null = null;
+
     const updateScrolled = () => {
-      const next = getScrollY() > 48;
+      frameId = null;
+      const next = window.scrollY > 48;
       if (next !== isScrolledRef.current) {
         isScrolledRef.current = next;
         setIsScrolled(next);
       }
     };
 
+    const handleScroll = () => {
+      if (frameId !== null) return;
+      frameId = window.requestAnimationFrame(updateScrolled);
+    };
+
     updateScrolled();
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
-    const lenis = getSmoothScroll();
-    if (lenis) {
-      return lenis.on('scroll', updateScrolled);
-    }
-
-    window.addEventListener('scroll', updateScrolled, { passive: true });
-    return () => window.removeEventListener('scroll', updateScrolled);
+    return () => {
+      if (frameId !== null) window.cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   // Close mobile menu when clicking outside

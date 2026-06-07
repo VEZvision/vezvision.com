@@ -3,13 +3,17 @@ import styles from './Container2.module.css';
 import { useLanguageContext } from '../../hooks/useLanguage';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 
-const Container2: React.FC = () => {
+type Container2Props = {
+  active?: boolean;
+};
+
+const Container2: React.FC<Container2Props> = ({ active = true }) => {
   const [isBefore, setIsBefore] = useState(false);
   const { t } = useLanguageContext();
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    if (reducedMotion) {
+    if (reducedMotion || !active) {
       setIsBefore(false);
       return;
     }
@@ -18,7 +22,7 @@ const Container2: React.FC = () => {
       setIsBefore((prev) => !prev);
     }, 3000);
     return () => clearInterval(interval);
-  }, [reducedMotion]);
+  }, [active, reducedMotion]);
 
   return (
     <article
