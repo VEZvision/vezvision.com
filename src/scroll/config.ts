@@ -4,10 +4,9 @@ export type ScrollMode = 'native' | 'lenis';
 
 const LENIS_FLAG = import.meta.env.VITE_ENABLE_SMOOTH_SCROLL;
 
-/** Lenis on by default on desktop; set VITE_ENABLE_SMOOTH_SCROLL=false to disable. */
+/** Lenis is opt-in. Native wheel scroll is smoother on this long, media-rich homepage. */
 export function isLenisRequested(): boolean {
-  if (LENIS_FLAG === 'false') return false;
-  return true;
+  return LENIS_FLAG === 'true';
 }
 
 export function shouldUseNativeScroll(): boolean {
