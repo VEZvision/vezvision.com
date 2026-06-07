@@ -54,7 +54,7 @@ const Layout = memo(() => {
         Avoid filter:blur() here: it forces GPU compositing for the *entire*
         subtree on every frame, which causes serious jank on mobile devices.
       */}
-      <main style={{ minHeight: '100vh' }}>
+      <main data-lenis-events style={{ minHeight: '100vh' }}>
         <Suspense fallback={<AppBootShell />}>
           <Outlet />
         </Suspense>
