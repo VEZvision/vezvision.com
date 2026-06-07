@@ -3,26 +3,27 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from 'react';
 
 import {
-  destroySmoothScrolling,
-  getSmoothScrollMode,
-  initSmoothScrolling,
-  type SmoothScrollMode,
-} from '@/utils/smoothScrolling';
-
-const SCROLL_IDLE_MS = 150;
+  attachScrollBus,
+  createScrollIdleTracker,
+  destroyLenis,
+  detachScrollBus,
+  getScrollMode,
+  initLenis,
+  subscribeScroll,
+  type ScrollMode,
+} from '@/scroll';
 
 type SmoothScrollContextValue = {
-  mode: SmoothScrollMode;
+  mode: ScrollMode;
 };
 
 const SmoothScrollContext = createContext<SmoothScrollContextValue>({
-  mode: 'off',
+  mode: 'native',
 });
 
 export function useSmoothScroll(): SmoothScrollContextValue {
@@ -30,14 +31,12 @@ export function useSmoothScroll(): SmoothScrollContextValue {
 }
 
 export function SmoothScrollProvider({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<SmoothScrollMode>('off');
-  const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const scrollingRef = useRef(false);
+  const [mode, setMode] = useState<ScrollMode>('native');
 
   useEffect(() => {
     const root = document.documentElement;
-    const lenis = initSmoothScrolling();
-    const activeMode = getSmoothScrollMode();
+    const lenis = initLenis();
+    const activeMode = getScrollMode();
     setMode(activeMode);
 
     if (lenis) {
@@ -45,36 +44,17 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
       requestAnimationFrame(() => lenis.resize());
     }
 
-    const endScrolling = () => {
-      scrollingRef.current = false;
-      root.classList.remove('vez-is-scrolling');
-      idleTimerRef.current = null;
-    };
-
-    const markScrolling = () => {
-      if (!scrollingRef.current) {
-        scrollingRef.current = true;
-        root.classList.add('vez-is-scrolling');
-      }
-      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
-      idleTimerRef.current = setTimeout(endScrolling, SCROLL_IDLE_MS);
-    };
-
-    const unsubscribeLenis = lenis?.on('scroll', markScrolling);
-    if (!lenis) {
-      window.addEventListener('scroll', markScrolling, { passive: true });
-    }
+    const idle = createScrollIdleTracker();
+    attachScrollBus(lenis);
+    const unsubscribeIdle = subscribeScroll(() => idle.ping());
 
     return () => {
-      unsubscribeLenis?.();
-      if (!lenis) {
-        window.removeEventListener('scroll', markScrolling);
-      }
-      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      unsubscribeIdle();
+      detachScrollBus();
+      idle.dispose();
       root.classList.remove('vez-smooth-scroll', 'vez-is-scrolling');
-      destroySmoothScrolling();
-      setMode('off');
-      scrollingRef.current = false;
+      destroyLenis();
+      setMode('native');
     };
   }, []);
 
