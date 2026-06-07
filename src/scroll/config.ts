@@ -4,9 +4,10 @@ export type ScrollMode = 'native' | 'lenis';
 
 const LENIS_FLAG = import.meta.env.VITE_ENABLE_SMOOTH_SCROLL;
 
-/** Lenis is opt-in — native scroll is smoother on long pages unless explicitly enabled. */
+/** Lenis on by default on desktop; set VITE_ENABLE_SMOOTH_SCROLL=false to disable. */
 export function isLenisRequested(): boolean {
-  return LENIS_FLAG === 'true';
+  if (LENIS_FLAG === 'false') return false;
+  return true;
 }
 
 export function shouldUseNativeScroll(): boolean {
@@ -23,7 +24,7 @@ export const SCROLL_IDLE_MS = 150;
 
 export const LENIS_OPTIONS: Omit<LenisOptions, 'wrapper' | 'content'> = {
   autoRaf: true,
-  lerp: 0.1,
+  lerp: 0.12,
   wheelMultiplier: 1,
   touchMultiplier: 1,
   smoothWheel: true,
