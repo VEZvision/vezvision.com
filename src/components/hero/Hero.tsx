@@ -1,4 +1,4 @@
-import { Fragment, memo, useEffect, useRef, useState } from 'react';
+import { Fragment, memo, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import logoHero from '../../assets/logo-hero.svg';
 import arrowRight from '../../assets/arrow-right.svg';
@@ -15,53 +15,56 @@ import { usePageSectionConfig } from '@/hooks/usePageSection';
 import { safeCmsHref } from '@/utils/safeHref';
 import styles from './Hero.module.scss';
 
+const HERO_VIDEO_SRC = '/aMPvRVYHFQxBoB0v2qyJln83jI.mp4';
+
 const Hero = memo(() => {
   const { t } = useLanguageContext();
   const { social } = useSettings();
   const sectionConfig = usePageSectionConfig('home', 'hero');
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const sectionRef = useRef<HTMLElement | null>(null);
-  const [videoSrc, setVideoSrc] = useState<string | null>(null);
-  const HERO_VIDEO_SRC = '/aMPvRVYHFQxBoB0v2qyJln83jI.mp4';
 
   useEffect(() => {
     const sectionEl = sectionRef.current;
     const videoEl = videoRef.current;
-    if (!sectionEl || !videoEl) return;
+    if (!videoEl) return;
 
-    const mountVideo = () => {
-      setVideoSrc((current) => current ?? HERO_VIDEO_SRC);
+    const playVideo = () => {
+      void videoEl.play().catch(() => {});
     };
 
-    const handleVisibilityChange = (entries: IntersectionObserverEntry[]) => {
-      const [entry] = entries;
-      if (!entry) return;
-
-      if (entry.isIntersecting) {
-        mountVideo();
-        void videoEl.play().catch(() => {});
-      } else {
-        videoEl.pause();
-      }
-    };
-
-    let observer: IntersectionObserver | null = null;
-
-    if ('IntersectionObserver' in window) {
-      observer = new IntersectionObserver(handleVisibilityChange, {
-        threshold: 0.1,
-        rootMargin: '100px',
-      });
-      observer.observe(sectionEl);
-    } else {
-      mountVideo();
+    videoEl.addEventListener('loadeddata', playVideo);
+    if (videoEl.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      playVideo();
     }
 
+    if (!sectionEl || !('IntersectionObserver' in window)) {
+      return () => {
+        videoEl.removeEventListener('loadeddata', playVideo);
+        videoEl.pause();
+      };
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry) return;
+        if (entry.isIntersecting) {
+          playVideo();
+        } else {
+          videoEl.pause();
+        }
+      },
+      { threshold: 0.05, rootMargin: '80px' },
+    );
+
+    observer.observe(sectionEl);
+
     return () => {
-      observer?.disconnect();
+      observer.disconnect();
+      videoEl.removeEventListener('loadeddata', playVideo);
       videoEl.pause();
     };
-  }, [HERO_VIDEO_SRC]);
+  }, []);
 
   const socialLinks = [
     { href: social?.x || social?.facebook, icon: socialX, label: 'X (Twitter)' },
@@ -76,18 +79,16 @@ const Hero = memo(() => {
       <video
         ref={videoRef}
         className={styles.videoBg}
-        data-vez-bg-video
+        src={HERO_VIDEO_SRC}
         autoPlay
         muted
         loop
         playsInline
-        preload="none"
+        preload="metadata"
         aria-hidden="true"
-      >
-        {videoSrc ? <source src={videoSrc} type="video/mp4" /> : null}
-      </video>
+      />
 
-      <div className="absolute inset-0 z-10 bg-white/90" aria-hidden="true" />
+      <div className={styles.videoOverlay} aria-hidden="true" />
 
       <div className={styles.heroInner}>
         <div className="flex flex-col items-center">

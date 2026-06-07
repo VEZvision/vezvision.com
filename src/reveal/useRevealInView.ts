@@ -1,16 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { subscribeScroll } from '@/scroll/scrollBus';
 import type { RevealOptions } from '@/reveal/types';
-
-function isNodeInView(node: HTMLElement, amount: number): boolean {
-  const rect = node.getBoundingClientRect();
-  const viewport = window.innerHeight;
-  const visibleHeight = Math.min(rect.bottom, viewport) - Math.max(rect.top, 0);
-  const ratio = visibleHeight / Math.max(rect.height, 1);
-  return ratio >= amount && rect.bottom > 0 && rect.top < viewport;
-}
 
 export function useRevealInView<T extends HTMLElement>({
   once = true,
@@ -33,27 +24,13 @@ export function useRevealInView<T extends HTMLElement>({
 
     if (!node) return;
 
-    let revealed = false;
-
-    const markVisible = () => {
-      if (revealed) return true;
-      revealed = true;
-      setVisible(true);
-      return true;
-    };
-
-    if (isNodeInView(node, amount) && markVisible() && once) {
-      return;
-    }
-
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry) return;
         if (entry.isIntersecting) {
-          markVisible();
+          setVisible(true);
           if (once) observer.disconnect();
         } else if (!once) {
-          revealed = false;
           setVisible(false);
         }
       },
@@ -62,17 +39,7 @@ export function useRevealInView<T extends HTMLElement>({
 
     observer.observe(node);
 
-    const unsubscribeScroll = subscribeScroll(() => {
-      if (isNodeInView(node, amount) && markVisible() && once) {
-        observer.disconnect();
-        unsubscribeScroll();
-      }
-    });
-
-    return () => {
-      observer.disconnect();
-      unsubscribeScroll();
-    };
+    return () => observer.disconnect();
   }, [amount, node, once, reducedMotion, rootMargin]);
 
   return { ref, visible: visible || reducedMotion };

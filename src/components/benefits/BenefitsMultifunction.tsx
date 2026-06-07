@@ -12,7 +12,7 @@ const BenefitsMultifunction: React.FC = () => {
       role="region"
       aria-labelledby="container3-title"
     >
-      <div className={styles.visual} aria-hidden="true">
+      <div className={`${styles.visual} vez-decorative-motion`} aria-hidden="true">
         <div className={styles.dial}>
           <div className={styles.shape} role="presentation" />
 

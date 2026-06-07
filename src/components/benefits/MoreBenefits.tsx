@@ -24,6 +24,7 @@ const MoreBenefits: React.FC = () => {
   const setRef = useRef<HTMLDivElement>(null);
   const [loopShiftPx, setLoopShiftPx] = useState(0);
   const [copyCount, setCopyCount] = useState(MIN_MARQUEE_COPIES);
+  const [marqueeReady, setMarqueeReady] = useState(false);
 
   const benefits = useMemo(
     () => [
@@ -42,25 +43,36 @@ const MoreBenefits: React.FC = () => {
     const slider = sliderRef.current;
     if (!node || !slider) return;
 
+    let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+
     const measure = () => {
       const setWidthPx = Math.ceil(node.getBoundingClientRect().width);
       if (setWidthPx <= 0) return;
 
       const viewportWidthPx = slider.clientWidth;
+      const nextCopyCount = getMarqueeCopyCount(setWidthPx, viewportWidthPx);
+
       setLoopShiftPx(setWidthPx);
-      setCopyCount(getMarqueeCopyCount(setWidthPx, viewportWidthPx));
+      setCopyCount((current) => Math.max(current, nextCopyCount));
+      setMarqueeReady(true);
+    };
+
+    const scheduleMeasure = () => {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(measure, 120);
     };
 
     measure();
 
-    const resizeObserver = new ResizeObserver(measure);
+    const resizeObserver = new ResizeObserver(scheduleMeasure);
     resizeObserver.observe(node);
     resizeObserver.observe(slider);
-    window.addEventListener('resize', measure);
+    window.addEventListener('resize', scheduleMeasure);
 
     return () => {
+      if (resizeTimer) clearTimeout(resizeTimer);
       resizeObserver.disconnect();
-      window.removeEventListener('resize', measure);
+      window.removeEventListener('resize', scheduleMeasure);
     };
   }, [benefits, reducedMotion]);
 
@@ -93,7 +105,7 @@ const MoreBenefits: React.FC = () => {
     <div className={styles.moreBenefitsContainer}>
       <div ref={sliderRef} className={styles.slider}>
         <div
-          className={`${styles.slideTrack} ${loopShiftPx > 0 ? styles.slideTrackActive : ''}`}
+          className={`${styles.slideTrack} ${marqueeReady ? styles.slideTrackActive : ''}`}
           style={marqueeStyle}
         >
           {Array.from({ length: copyCount }, (_, copyIndex) => (

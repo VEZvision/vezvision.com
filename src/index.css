@@ -35,17 +35,11 @@ html.lenis body {
 }
 
 html.lenis body {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 html.vez-smooth-scroll {
   scroll-behavior: auto !important;
-}
-
-/* backdrop-blur on fixed chrome is costly while Lenis is moving the page */
-html.vez-is-scrolling [class*='backdrop-blur'] {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
 }
 
 .lenis.lenis-smooth {

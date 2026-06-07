@@ -16,40 +16,38 @@ const Benefits: React.FC = () => {
   return (
     <section
       id="benefits"
-      className={`${styles.benefitsSection} vez-decorative-motion`}
+      className={styles.benefitsSection}
       aria-labelledby="benefits-heading"
     >
       <SectionReveal amount={0.25}>
         <div className={styles.container}>
-        <SectionHeader
-          badgeText={t('benefits.badge')}
-          badgeIcon={<ThumbsUp className="w-3.5 h-3.5" />}
-          title={
-            <>
-              {t('benefits.title.line1')} <span className="font-playfair italic">{t('benefits.title.line2.italic')}</span>
-            </>
-          }
-          subtitle={t('benefits.subtitle')}
-          id="benefits-heading"
-        />
+          <SectionHeader
+            badgeText={t('benefits.badge')}
+            badgeIcon={<ThumbsUp className="w-3.5 h-3.5" />}
+            title={
+              <>
+                {t('benefits.title.line1')} <span className="font-playfair italic">{t('benefits.title.line2.italic')}</span>
+              </>
+            }
+            subtitle={t('benefits.subtitle')}
+            id="benefits-heading"
+          />
 
-        <StaggerReveal className={styles.benefitsGrid} amount={0.18}>
-          <StaggerItem>
-            <Container1 />
-          </StaggerItem>
-          <StaggerItem>
-            <Container2 />
-          </StaggerItem>
-          <StaggerItem>
-            <BenefitsMultifunction />
-          </StaggerItem>
-        </StaggerReveal>
-
-        <SectionReveal delay={0.12} amount={0.2}>
-          <MoreBenefits />
-        </SectionReveal>
+          <StaggerReveal className={styles.benefitsGrid} amount={0.18}>
+            <StaggerItem>
+              <Container1 />
+            </StaggerItem>
+            <StaggerItem>
+              <Container2 />
+            </StaggerItem>
+            <StaggerItem>
+              <BenefitsMultifunction />
+            </StaggerItem>
+          </StaggerReveal>
         </div>
       </SectionReveal>
+
+      <MoreBenefits />
     </section>
   );
 };

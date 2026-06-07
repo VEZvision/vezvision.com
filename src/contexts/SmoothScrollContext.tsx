@@ -8,13 +8,9 @@ import {
 } from 'react';
 
 import {
-  attachScrollBus,
-  createScrollIdleTracker,
   destroyLenis,
-  detachScrollBus,
   getScrollMode,
   initLenis,
-  subscribeScroll,
   type ScrollMode,
 } from '@/scroll';
 
@@ -44,15 +40,8 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
       requestAnimationFrame(() => lenis.resize());
     }
 
-    const idle = createScrollIdleTracker();
-    attachScrollBus(lenis);
-    const unsubscribeIdle = subscribeScroll(() => idle.ping());
-
     return () => {
-      unsubscribeIdle();
-      detachScrollBus();
-      idle.dispose();
-      root.classList.remove('vez-smooth-scroll', 'vez-is-scrolling');
+      root.classList.remove('vez-smooth-scroll');
       destroyLenis();
       setMode('native');
     };
