@@ -1,4 +1,11 @@
-import { Children, cloneElement, isValidElement, type CSSProperties } from 'react';
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  type ReactElement,
+  type ReactNode,
+  type CSSProperties,
+} from 'react';
 
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Reveal } from '@/reveal/Reveal';
@@ -19,7 +26,7 @@ export function SectionReveal({
   className = '',
   delay = 0,
   once = true,
-  amount = 0.14,
+  amount = 0,
   rootMargin,
 }: SectionRevealProps) {
   const reducedMotion = useReducedMotion();
@@ -46,11 +53,43 @@ type StaggerRevealProps = RevealOptions & {
   className?: string;
 };
 
+function isStaggerItem(element: ReactElement): element is ReactElement<StaggerItemProps> {
+  return element.type === StaggerItem;
+}
+
+/** Walk the tree so StaggerItems nested in layout wrappers still get unique indices. */
+function assignStaggerIndices(
+  children: ReactNode,
+  startIndex = 0,
+): { children: ReactNode; nextIndex: number } {
+  let index = startIndex;
+
+  const mapped = Children.map(children, (child) => {
+    if (!isValidElement(child)) return child;
+
+    if (isStaggerItem(child)) {
+      const el = cloneElement(child, { staggerIndex: index });
+      index += 1;
+      return el;
+    }
+
+    if (child.props.children != null) {
+      const nested = assignStaggerIndices(child.props.children, index);
+      index = nested.nextIndex;
+      return cloneElement(child, undefined, nested.children);
+    }
+
+    return child;
+  });
+
+  return { children: mapped, nextIndex: index };
+}
+
 export function StaggerReveal({
   children,
   className = '',
   once = true,
-  amount = 0.1,
+  amount = 0,
   rootMargin,
 }: StaggerRevealProps) {
   const reducedMotion = useReducedMotion();
@@ -59,7 +98,7 @@ export function StaggerReveal({
     return <div className={className}>{children}</div>;
   }
 
-  const items = Children.toArray(children);
+  const { children: staggeredChildren } = assignStaggerIndices(children);
 
   return (
     <Reveal
@@ -69,10 +108,7 @@ export function StaggerReveal({
       amount={amount}
       rootMargin={rootMargin}
     >
-      {items.map((child, index) => {
-        if (!isValidElement<StaggerItemProps>(child)) return child;
-        return cloneElement(child, { staggerIndex: index });
-      })}
+      {staggeredChildren}
     </Reveal>
   );
 }

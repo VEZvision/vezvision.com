@@ -104,8 +104,8 @@ const ProductsSection = () => {
 
   return (
     <section id="products" className={styles.section} aria-labelledby="products-heading">
-      <SectionReveal amount={0.1}>
       <div className={styles.container}>
+        <SectionReveal>
         <SectionHeader
           badgeText={t('products.badge')}
           badgeIcon={<Package className="w-3.5 h-3.5" />}
@@ -113,14 +113,14 @@ const ProductsSection = () => {
           subtitle={t('products.subtitle')}
           id="products-heading"
         />
+        </SectionReveal>
 
-        <StaggerReveal className={styles.productsGrid} amount={0.1}>
+        <StaggerReveal className={styles.productsGrid}>
           <StaggerItem><ProductCard index={0} social={social} /></StaggerItem>
           <StaggerItem><ProductCard index={1} social={social} /></StaggerItem>
           <StaggerItem><ProductCard index={2} social={social} /></StaggerItem>
         </StaggerReveal>
       </div>
-      </SectionReveal>
     </section>
   );
 };

@@ -1,6 +1,5 @@
-import { Fragment, useRef, memo } from 'react';
+import { Fragment, useRef, useEffect, memo } from 'react';
 import { Link } from 'react-router-dom';
-import { useInView } from 'framer-motion';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import styles from './Footer.module.css';
 import twitterIcon from '../../assets/footer/twitter-icon.svg';
@@ -25,13 +24,63 @@ function isExternalHref(href: string) {
 
 const Footer = memo(() => {
   const footerRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const { t, language } = useLanguageContext();
   const { social, identity, footer, navigation } = useSettings();
   const { actions } = useCookieConsent();
   const reducedMotion = useReducedMotion();
-  const footerInView = useInView(footerRef, { once: true, amount: 0.1 });
-  const footerVisible = reducedMotion || footerInView;
-  const showFooterVideo = !reducedMotion && footerInView;
+
+  // The video is always mounted (so it decodes well before the user reaches the
+  // footer — no mount/decode hitch on arrival). Playback is started/stopped via
+  // IntersectionObserver with a head-start margin and paused when off-screen to
+  // save CPU. No colour/filter changes here.
+  useEffect(() => {
+    const videoEl = videoRef.current;
+    if (!videoEl) return;
+
+    let isNear = false;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isNear = Boolean(entry?.isIntersecting);
+        if (isNear) {
+          void videoEl.play().catch(() => {});
+        } else {
+          videoEl.pause();
+        }
+      },
+      { rootMargin: '700px 0px', threshold: 0 },
+    );
+
+    observer.observe(videoEl);
+
+    // Prime the decoder while the browser is idle so the first play() as the
+    // user nears the footer doesn't trigger a first-frame decode that blocks
+    // the main thread mid-scroll (measured ~230ms cold hitch otherwise).
+    const warmUp = () => {
+      if (isNear) return;
+      videoEl
+        .play()
+        .then(() => {
+          if (!isNear) videoEl.pause();
+        })
+        .catch(() => {});
+    };
+
+    const win = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    const warmId = win.requestIdleCallback
+      ? win.requestIdleCallback(warmUp, { timeout: 3000 })
+      : window.setTimeout(warmUp, 2500);
+
+    return () => {
+      observer.disconnect();
+      if (win.cancelIdleCallback) win.cancelIdleCallback(warmId as number);
+      else window.clearTimeout(warmId as number);
+    };
+  }, []);
 
   const socialLinks = [
     { href: social?.x || social?.facebook, icon: twitterIcon, alt: 'X (Twitter)', label: 'X' },
@@ -48,25 +97,18 @@ const Footer = memo(() => {
   const brandName = identity?.siteName || 'VezVision';
 
   return (
-    <footer
-      ref={footerRef}
-      className={styles.footer}
-      style={{
-        opacity: footerVisible ? 1 : 0,
-        transition: reducedMotion ? 'none' : 'opacity 0.6s ease-out',
-      }}
-    >
+    <footer ref={footerRef} className={styles.footer}>
       <div className={styles.footerContainer}>
         <div className={styles.backgroundLayer}>
-          {/* Video Background - lazy loaded */}
+          {/* Video Background — always mounted, playback gated by IO */}
           <div className="absolute inset-0 z-0">
-            {showFooterVideo && (
+            {!reducedMotion && (
               <video
+                ref={videoRef}
                 muted
-                autoPlay
                 loop
                 playsInline
-                preload="none"
+                preload="metadata"
                 aria-hidden="true"
                 className="w-full h-full object-cover filter grayscale brightness-200"
               >

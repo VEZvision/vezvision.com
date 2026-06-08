@@ -29,8 +29,10 @@ export function getLenisOptions(): LenisOptions {
 
   return {
     autoRaf: true,
-    lerp: 0.075,
-    wheelMultiplier: 0.92,
+    // Snappy smooth scroll — minimal inertia, stays close to native feel.
+    duration: 0.6,
+    easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    wheelMultiplier: 1,
     touchMultiplier: 1,
     smoothWheel: true,
     syncTouch: false,

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, type CSSProperties } from 'react';
 import styles from './FounderNote.module.css';
 import { useLanguageContext } from '../hooks/useLanguage';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { registerRevealElement } from '@/reveal/revealRegistry';
 
 const FounderNote: React.FC<{ className?: string }> = ({ className = '' }) => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -49,28 +50,16 @@ const FounderNote: React.FC<{ className?: string }> = ({ className = '' }) => {
     const target = sectionRef.current;
     if (!target) return;
 
-    if (reducedMotion) {
-      target.dataset.visible = 'true';
-      return;
-    }
-
-    const reveal = () => {
+    const applyVisible = () => {
       target.dataset.visible = 'true';
     };
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          reveal();
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.08, rootMargin: '80px 0px -4% 0px' },
-    );
+    if (reducedMotion) {
+      applyVisible();
+      return;
+    }
 
-    observer.observe(target);
-
-    return () => observer.disconnect();
+    return registerRevealElement(target, { once: true });
   }, [reducedMotion]);
 
   return (

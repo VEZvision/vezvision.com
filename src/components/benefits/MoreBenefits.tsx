@@ -17,11 +17,7 @@ function getMarqueeCopyCount(setWidthPx: number, viewportWidthPx: number): numbe
   return Math.max(MIN_MARQUEE_COPIES, Math.ceil((viewportWidthPx + setWidthPx) / setWidthPx));
 }
 
-type MoreBenefitsProps = {
-  active?: boolean;
-};
-
-const MoreBenefits: React.FC<MoreBenefitsProps> = ({ active = true }) => {
+const MoreBenefits: React.FC = () => {
   const { t } = useLanguageContext();
   const reducedMotion = useReducedMotion();
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -110,7 +106,7 @@ const MoreBenefits: React.FC<MoreBenefitsProps> = ({ active = true }) => {
       <div ref={sliderRef} className={styles.slider}>
         <div
           className={`${styles.slideTrack} ${marqueeReady ? styles.slideTrackActive : ''}`}
-          data-marquee-active={active ? 'true' : undefined}
+          data-marquee-active={marqueeReady ? 'true' : undefined}
           style={marqueeStyle}
         >
           {Array.from({ length: copyCount }, (_, copyIndex) => (

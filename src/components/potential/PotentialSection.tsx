@@ -2,7 +2,6 @@ import styles from './PotentialSection.module.css';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { Sparkles, Users } from 'lucide-react';
 import { useLanguageContext } from '@/hooks/useLanguage';
-import { useMotionActive } from '@/hooks/useMotionActive';
 import { SectionReveal, StaggerReveal, StaggerItem } from '@/components/ui/SectionReveal';
 import logoIcon from '@/assets/services/logo-icon.svg';
 import IdeaIconCluster from '@/components/potential/IdeaIconCluster';
@@ -23,18 +22,15 @@ const BarChartIcon = () => (
 
 const PotentialSection: React.FC = () => {
     const { t } = useLanguageContext();
-    const { ref, active } = useMotionActive<HTMLElement>();
 
     return (
         <section
-            ref={ref}
             id="potential"
-            className={`${styles.section} ${styles.decorativeZone} vez-decorative-motion`}
-            data-motion-active={active ? 'true' : undefined}
+            className={styles.section}
             aria-labelledby="potential-heading"
         >
             <div className={styles.container}>
-                <SectionReveal amount={0.1}>
+                <SectionReveal>
                 <SectionHeader
                     badgeText={t('potential.badge')}
                     badgeIcon={<Sparkles className="w-3.5 h-3.5" />}
@@ -48,12 +44,12 @@ const PotentialSection: React.FC = () => {
                 />
                 </SectionReveal>
 
-                <StaggerReveal className={styles.bentoGrid} amount={0.12}>
-                    {/* Row 1 */}
-                    <div className={styles.bentoRow}>
-                        {/* Card 1: Technologia */}
-                        <StaggerItem>
-                        <div className={`${styles.card} ${styles.cardSmall}`}>
+                <StaggerReveal
+                    className={styles.bentoGrid}
+                    rootMargin="450px 0px 150px 0px"
+                >
+                        <StaggerItem className={styles.cardSmall}>
+                        <div className={styles.card}>
                             <div className={styles.graphicArea}>
                                 <div className={styles.techBridge}>
                                     <div className={styles.techOrb}>
@@ -81,9 +77,8 @@ const PotentialSection: React.FC = () => {
                         </div>
                         </StaggerItem>
 
-                        {/* Card 2: Siła synergii */}
-                        <StaggerItem>
-                        <div className={`${styles.card} ${styles.cardLarge}`}>
+                        <StaggerItem className={styles.cardLarge}>
+                        <div className={styles.card}>
                             <div className={styles.graphicArea}>
                                 <div className={styles.interactionMockup}>
                                     <div className={styles.mockupHeader}>
@@ -108,13 +103,9 @@ const PotentialSection: React.FC = () => {
                             </div>
                         </div>
                         </StaggerItem>
-                    </div>
 
-                    {/* Row 2 */}
-                    <div className={styles.bentoRow}>
-                        {/* Card 3: Wspólnie przekraczamy */}
-                        <StaggerItem>
-                        <div className={`${styles.card} ${styles.cardLarge}`}>
+                        <StaggerItem className={styles.cardLarge}>
+                        <div className={styles.card}>
                             <div className={styles.graphicArea}>
                                 <div className={styles.pillLayout}>
                                     <div className={styles.floatingTagPill}>
@@ -135,9 +126,8 @@ const PotentialSection: React.FC = () => {
                         </div>
                         </StaggerItem>
 
-                        {/* Card 4: Od pomysłu do efektu */}
-                        <StaggerItem>
-                        <div className={`${styles.card} ${styles.cardSmall}`}>
+                        <StaggerItem className={styles.cardSmall}>
+                        <div className={styles.card}>
                             <div className={styles.graphicArea}>
                                 <IdeaIconCluster />
                             </div>
@@ -147,7 +137,6 @@ const PotentialSection: React.FC = () => {
                             </div>
                         </div>
                         </StaggerItem>
-                    </div>
                 </StaggerReveal>
             </div>
         </section>

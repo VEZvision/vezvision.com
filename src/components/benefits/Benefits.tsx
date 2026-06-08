@@ -9,22 +9,14 @@ import styles from './Benefits.module.css';
 import MoreBenefits from './MoreBenefits';
 import { SectionReveal, StaggerItem, StaggerReveal } from '@/components/ui/SectionReveal';
 import { useLanguageContext } from '@/hooks/useLanguage';
-import { useMotionActive } from '@/hooks/useMotionActive';
 
 const Benefits: React.FC = () => {
   const { t } = useLanguageContext();
-  const { ref, active } = useMotionActive<HTMLElement>();
 
   return (
-    <section
-      ref={ref}
-      id="benefits"
-      className={styles.benefitsSection}
-      data-motion-active={active ? 'true' : undefined}
-      aria-labelledby="benefits-heading"
-    >
-      <SectionReveal amount={0.25}>
-        <div className={styles.container}>
+    <section id="benefits" className={styles.benefitsSection} aria-labelledby="benefits-heading">
+      <div className={styles.container}>
+        <SectionReveal>
           <SectionHeader
             badgeText={t('benefits.badge')}
             badgeIcon={<ThumbsUp className="w-3.5 h-3.5" />}
@@ -36,22 +28,22 @@ const Benefits: React.FC = () => {
             subtitle={t('benefits.subtitle')}
             id="benefits-heading"
           />
+        </SectionReveal>
 
-          <StaggerReveal className={styles.benefitsGrid} amount={0.18}>
-            <StaggerItem>
-              <Container1 />
-            </StaggerItem>
-            <StaggerItem>
-              <Container2 active={active} />
-            </StaggerItem>
-            <StaggerItem>
-              <BenefitsMultifunction />
-            </StaggerItem>
-          </StaggerReveal>
-        </div>
-      </SectionReveal>
+        <StaggerReveal className={styles.benefitsGrid}>
+          <StaggerItem>
+            <Container1 />
+          </StaggerItem>
+          <StaggerItem>
+            <Container2 />
+          </StaggerItem>
+          <StaggerItem>
+            <BenefitsMultifunction />
+          </StaggerItem>
+        </StaggerReveal>
+      </div>
 
-      <MoreBenefits active={active} />
+      <MoreBenefits />
     </section>
   );
 };

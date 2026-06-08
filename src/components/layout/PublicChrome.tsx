@@ -12,9 +12,17 @@ export default function PublicChrome({ children }: PublicChromeProps) {
   return (
     <>
       <SEO />
-      <Navbar />
-      {children}
-      <Footer />
+      {/*
+        Lenis event surface wraps the WHOLE page (nav + main + footer) so wheel
+        events anywhere — including over the footer — are smoothed. If only <main>
+        is the target, scrolling over the footer falls back to native scroll and
+        fights Lenis, which causes the footer stutter.
+      */}
+      <div data-lenis-events>
+        <Navbar />
+        {children}
+        <Footer />
+      </div>
     </>
   )
 }

@@ -98,17 +98,15 @@ const Navbar = memo(() => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 [transform:translateZ(0)] ${
-        isScrolled ? 'pt-2' : ''
-      }`}
+      className="fixed top-0 left-0 right-0 z-50 pt-2"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 tablet:px-8 lg:px-8">
-        <div className={`flex items-center justify-between h-16 tablet:h-18 lg:h-18 transition-all duration-500 ${
+        <div className={`flex items-center justify-between h-16 tablet:h-18 lg:h-18 ${
           isScrolled ? '' : 'border-b border-transparent'
         }`}>
           {/* Left: Logo */}
-          <div className={`transition-all duration-500 ${
-            isScrolled ? `bg-white/95 ${scrolledSurfaceClass} px-4` : ''
+          <div className={`px-4 ${
+            isScrolled ? `bg-white/95 ${scrolledSurfaceClass}` : ''
           }`}>
             <div className="flex items-center">
               <div className="flex-shrink-0 py-3">
@@ -124,8 +122,8 @@ const Navbar = memo(() => {
           </div>
 
           {/* Center: Desktop Navigation */}
-          <div className={`hidden tablet-lg:flex items-center justify-center transition-all duration-500 ${desktopGroupClass} ${isScrolled ? 'px-2' : ''}`}>
-              <div className={`flex items-center space-x-2 ${isScrolled ? 'py-1' : ''}`}>
+          <div className={`hidden tablet-lg:flex items-center justify-center px-2 ${desktopGroupClass}`}>
+              <div className="flex items-center space-x-2 py-1">
               {navLinks.map((item) => (
                 isExternalHref(item.href) ? (
                   <a
@@ -153,7 +151,7 @@ const Navbar = memo(() => {
           {/* Right: Language, Contact & Mobile Menu Button */}
           <div className="flex items-center space-x-2">
             {/* Desktop Language Toggle */}
-            <div className={`hidden tablet-lg:flex items-center transition-all duration-500 ${desktopGroupClass} ${isScrolled ? 'px-2 py-2' : ''}`}>
+            <div className={`hidden tablet-lg:flex items-center px-2 py-2 ${desktopGroupClass}`}>
               <button
                 onClick={() => setLanguage(language === 'en' ? 'pl' : 'en')}
                 className={`px-3 py-1 text-sm rounded-md transition-colors ${navTextClass} ${navHoverClass}`}
@@ -164,7 +162,7 @@ const Navbar = memo(() => {
             </div>
 
             {/* Desktop Contact Button */}
-            <div className={`hidden tablet-lg:flex items-center transition-all duration-500 ${desktopGroupClass} ${isScrolled ? 'px-3 py-2' : ''}`}>
+            <div className={`hidden tablet-lg:flex items-center px-3 py-2 ${desktopGroupClass}`}>
               {isExternalHref(contactButtonHref) ? (
                 <a href={contactButtonHref} className="inline-flex items-center px-5 py-2 bg-black text-white text-sm font-medium rounded-lg shadow-lg hover:bg-gray-800 transition-colors" target="_blank" rel="noopener noreferrer">
                   {contactButtonLabel}
@@ -179,7 +177,7 @@ const Navbar = memo(() => {
             
 
             {/* Mobile menu button */}
-            <div className={`tablet-lg:hidden flex items-center transition-all duration-500 ${isScrolled ? 'bg-white/72 backdrop-blur-xl border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-xl' : ''}`}>
+            <div className={`tablet-lg:hidden flex items-center ${isScrolled ? 'bg-white/72 border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-xl' : ''}`}>
               <button
                 onClick={toggleMenu}
                 className={`inline-flex items-center justify-center p-2 rounded-md ${mobileButtonTextClass} transition-colors`}

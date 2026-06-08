@@ -1,54 +1,39 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { registerRevealElement, revealImmediately } from '@/reveal/revealRegistry';
 import type { RevealOptions } from '@/reveal/types';
 
+/** @deprecated rootMargin/amount are handled by the shared registry. */
 export function useRevealInView<T extends HTMLElement>({
   once = true,
-  amount = 0.12,
-  rootMargin = '520px 0px 240px 0px',
 }: RevealOptions = {}) {
   const reducedMotion = useReducedMotion();
-  const [node, setNode] = useState<T | null>(null);
+  const nodeRef = useRef<T | null>(null);
+  const cleanupRef = useRef<(() => void) | null>(null);
 
   const ref = useCallback((element: T | null) => {
-    setNode(element);
+    nodeRef.current = element;
   }, []);
 
   useEffect(() => {
+    const node = nodeRef.current;
     if (!node) return;
 
+    cleanupRef.current?.();
+
     if (reducedMotion) {
-      node.classList.add('vez-reveal--in');
+      revealImmediately(node);
       return;
     }
 
-    let revealed = false;
+    cleanupRef.current = registerRevealElement(node, { once });
 
-    const markVisible = () => {
-      if (revealed) return;
-      revealed = true;
-      node.classList.add('vez-reveal--in');
+    return () => {
+      cleanupRef.current?.();
+      cleanupRef.current = null;
     };
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry) return;
-        if (entry.isIntersecting) {
-          markVisible();
-          if (once) observer.disconnect();
-        } else if (!once) {
-          revealed = false;
-          node.classList.remove('vez-reveal--in');
-        }
-      },
-      { threshold: amount, rootMargin },
-    );
-
-    observer.observe(node);
-
-    return () => observer.disconnect();
-  }, [amount, node, once, reducedMotion, rootMargin]);
+  }, [once, reducedMotion]);
 
   return { ref };
 }

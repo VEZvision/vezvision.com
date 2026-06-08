@@ -62,7 +62,7 @@ const AboutComparison: React.FC = () => {
 
       <div className={styles.comparisonGrid}>
         {/* VezVision Column */}
-        <SectionReveal delay={0} amount={0.25}>
+        <SectionReveal>
           <div className={styles.comparisonCard}>
             <div className={styles.cardHeader}>
               <h3 className={styles.cardTitle}>{t('comparison.left.title')}</h3>
@@ -106,7 +106,7 @@ const AboutComparison: React.FC = () => {
         </SectionReveal>
 
         {/* Other Companies Column */}
-        <SectionReveal delay={0.12} amount={0.25}>
+        <SectionReveal delay={0.12}>
           <div className={styles.comparisonCard}>
             <div className={styles.cardHeader}>
               <h3 className={styles.cardTitle}>{t('comparison.right.title')}</h3>

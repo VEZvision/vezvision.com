@@ -14,8 +14,8 @@ const ProcessSection: React.FC = () => {
 
     return (
         <section id="process" className={styles.section} aria-labelledby="process-heading">
-            <SectionReveal amount={0.1}>
             <div className={styles.container}>
+                <SectionReveal>
                 <SectionHeader
                     badgeText={t('process.badge')}
                     badgeIcon={<Layers className="w-3.5 h-3.5" />}
@@ -27,8 +27,9 @@ const ProcessSection: React.FC = () => {
                     subtitle={t('process.subtitle')}
                     id="process-heading"
                 />
+                </SectionReveal>
 
-                <StaggerReveal className={styles.bentoGrid} amount={0.1}>
+                <StaggerReveal className={styles.bentoGrid}>
                     {/* Left Column - Tall Card 1 */}
                     <div className={styles.leftColumn}>
                         <StaggerItem>
@@ -134,7 +135,6 @@ const ProcessSection: React.FC = () => {
                     </div>
                 </StaggerReveal>
             </div>
-            </SectionReveal>
         </section>
     );
 };

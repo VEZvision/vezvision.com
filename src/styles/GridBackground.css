@@ -17,13 +17,13 @@
 }
 
 .grid-background {
-  position: absolute;
+  /* Fixed grid — does not repaint on every Lenis scroll tick (home-only layer). */
+  position: fixed;
   inset: 0;
   width: 100%;
-  min-height: 100%;
+  height: 100%;
   pointer-events: none;
   z-index: 0;
-  contain: paint;
   --grid-size: 150px;
   --grid-color: rgba(128, 128, 128, 0.12);
   background-color: #ffffff;
