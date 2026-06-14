@@ -2,7 +2,7 @@ export const founder_noteTranslations = {
     'founder.line1.a': '„Najlepszym sposobem ',
     'founder.line1.b': 'przewidywania',
     'founder.line1.c': ' przyszłości',
-    'founder.line2.a': 'jest jej ',
+    'founder.line2.a': ' jest jej ',
     'founder.line2.b': 'tworzenie',
     'founder.line2.c': '.”',
     'founder.line3.a': '',
