@@ -9,7 +9,7 @@ import { usePageSectionConfig } from '@/hooks/usePageSection';
 import { scrollToElement } from '@/scroll';
 import { CmsPage } from '@/pagekit';
 import FacebookIcon from '@/assets/social-facebook';
-import socialLinkedin from '@/assets/social-linkedin.svg';
+import LinkedInIcon from '@/assets/social-linkedin';
 import socialInstagram from '@/assets/products/social-instagram.svg';
 import FaqSection from '@/components/faq/FaqSection';
 import ContactSection from '@/components/contact/ContactSection';
@@ -31,7 +31,7 @@ function ContactHero() {
   const socialLinks = [
     { href: social?.facebook || social?.x, icon: <FacebookIcon />, label: 'Facebook' },
     { href: social?.instagram, icon: <img src={socialInstagram} className="w-6 h-6" alt="" />, label: 'Instagram' },
-    { href: social?.linkedin, icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: 'LinkedIn' },
+    { href: social?.linkedin, icon: <LinkedInIcon />, label: 'LinkedIn' },
   ];
 
   return (

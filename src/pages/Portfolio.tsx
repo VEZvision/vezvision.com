@@ -13,7 +13,7 @@ import { SectionReveal, StaggerItem, StaggerReveal } from '@/components/ui/Secti
 import styles from './Portfolio.module.css';
 import { useSettings } from '@/hooks/useSettings';
 import FacebookIcon from '@/assets/social-facebook';
-import socialLinkedin from '@/assets/social-linkedin.svg';
+import LinkedInIcon from '@/assets/social-linkedin';
 import socialInstagram from '@/assets/products/social-instagram.svg';
 
 const Portfolio = () => {
@@ -72,7 +72,7 @@ const Portfolio = () => {
         socialLinks={[
           { href: social?.facebook || social?.x, icon: <FacebookIcon />, label: 'Facebook' },
           { href: social?.instagram, icon: <img src={socialInstagram} className="w-6 h-6" alt="" />, label: 'Instagram' },
-          { href: social?.linkedin, icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: 'LinkedIn' },
+          { href: social?.linkedin, icon: <LinkedInIcon />, label: 'LinkedIn' },
         ]}
         ariaLabelledBy="portfolio-hero-title"
       />

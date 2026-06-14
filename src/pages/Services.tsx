@@ -8,7 +8,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { StaticPage } from '@/pagekit';
 import FacebookIcon from '@/assets/social-facebook';
 import socialInstagram from '@/assets/products/social-instagram.svg';
-import socialLinkedin from '@/assets/social-linkedin.svg';
+import LinkedInIcon from '@/assets/social-linkedin';
 import Group23Section from '@/components/services/group23/Group23Section';
 import WorkflowSection from '@/components/services/workflow/WorkflowSection';
 import ServicesSection from '@/components/services/ServicesSection';
@@ -38,7 +38,7 @@ function ServicesHero() {
       socialLinks={[
         { href: social?.facebook || social?.x, icon: <FacebookIcon />, label: 'Facebook' },
         { href: social?.instagram, icon: <img src={socialInstagram} className="w-6 h-6" alt="" />, label: 'Instagram' },
-        { href: social?.linkedin, icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: 'LinkedIn' },
+        { href: social?.linkedin, icon: <LinkedInIcon />, label: 'LinkedIn' },
       ]}
     />
   );

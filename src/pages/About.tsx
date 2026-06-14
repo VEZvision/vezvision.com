@@ -9,7 +9,7 @@ import { CmsPage } from '@/pagekit';
 import { useHeroContactAction } from '@/hooks/useHeroContactAction';
 import FacebookIcon from '@/assets/social-facebook';
 import socialInstagram from '@/assets/products/social-instagram.svg';
-import socialLinkedin from '@/assets/social-linkedin.svg';
+import LinkedInIcon from '@/assets/social-linkedin';
 import AboutHeader from '@/components/about/AboutHeader';
 import AboutCards from '@/components/about/AboutCards';
 import ValuesSection from '@/components/about/ValuesSection';
@@ -43,7 +43,7 @@ function AboutHero() {
       socialLinks={[
         { href: social?.facebook || social?.x, icon: <FacebookIcon />, label: 'Facebook' },
         { href: social?.instagram, icon: <img src={socialInstagram} className="w-6 h-6" alt="" />, label: 'Instagram' },
-        { href: social?.linkedin, icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: 'LinkedIn' },
+        { href: social?.linkedin, icon: <LinkedInIcon />, label: 'LinkedIn' },
       ]}
     />
   );

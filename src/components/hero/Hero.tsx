@@ -5,7 +5,7 @@ import logoHero from '../../assets/logo-hero.svg';
 
 import FacebookIcon from '@/assets/social-facebook';
 import socialInstagram from '@/assets/products/social-instagram.svg';
-import socialLinkedin from '@/assets/social-linkedin.svg';
+import LinkedInIcon from '@/assets/social-linkedin';
 import { useLanguageContext } from '../../hooks/useLanguage';
 import { usePrefersReducedData } from '@/hooks/usePrefersReducedData';
 import SectionBadge from '@/components/ui/SectionBadge';
@@ -71,7 +71,7 @@ const Hero = memo(() => {
   const socialLinks = [
     { href: social?.facebook || social?.x, icon: <FacebookIcon /> as React.ReactNode, label: 'Facebook' },
     { href: social?.instagram, icon: <img src={socialInstagram} className="w-6 h-6" alt="" loading="lazy" decoding="async" /> as React.ReactNode, label: 'Instagram' },
-    { href: social?.linkedin, icon: <img src={socialLinkedin} className="w-6 h-6" alt="" loading="lazy" decoding="async" /> as React.ReactNode, label: 'LinkedIn' }
+    { href: social?.linkedin, icon: <LinkedInIcon /> as React.ReactNode, label: 'LinkedIn' }
   ];
   const primaryHref = localizeInternalHref(safeCmsHref(sectionConfig.primaryHref, '/contact'), language);
   const secondaryHref = localizeInternalHref(safeCmsHref(sectionConfig.secondaryHref, '/services'), language);

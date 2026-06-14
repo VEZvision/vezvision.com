@@ -7,7 +7,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { StaticPage } from '@/pagekit';
 import FacebookIcon from '@/assets/social-facebook';
 import socialInstagram from '@/assets/products/social-instagram.svg';
-import socialLinkedin from '@/assets/social-linkedin.svg';
+import LinkedInIcon from '@/assets/social-linkedin';
 import ProductsCatalogSection from '@/components/products/ProductsCatalogSection';
 
 function ProductsHero() {
@@ -25,7 +25,7 @@ function ProductsHero() {
       socialLinks={[
         { href: social?.facebook || social?.x, icon: <FacebookIcon />, label: 'Facebook' },
         { href: social?.instagram, icon: <img src={socialInstagram} className="w-6 h-6" alt="" />, label: 'Instagram' },
-        { href: social?.linkedin, icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: 'LinkedIn' },
+        { href: social?.linkedin, icon: <LinkedInIcon />, label: 'LinkedIn' },
       ]}
       className="relative flex min-h-[85vh] w-full items-center justify-center overflow-hidden bg-white px-4 pt-[120px] pb-[80px]"
       contentClassName="max-w-[1024px]"
