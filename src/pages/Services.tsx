@@ -36,9 +36,9 @@ function ServicesHero() {
       badge={t('services.hero.badge')}
       icon={<Briefcase className="w-3.5 h-3.5" />}
       socialLinks={[
-        ...(social?.facebook ? [{ href: social.facebook, icon: <FacebookIcon />, label: 'Follow us on Facebook' }] : social?.x ? [{ href: social.x, icon: <FacebookIcon />, label: 'Follow us on Facebook' }] : []),
-        ...(social?.instagram ? [{ href: social.instagram, icon: <img src={socialInstagram} className="w-6 h-6" alt="" />, label: 'Follow us on Instagram' }] : []),
-        ...(social?.linkedin ? [{ href: social.linkedin, icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: 'Connect with us on LinkedIn' }] : []),
+        { href: social?.facebook || social?.x, icon: <FacebookIcon />, label: 'Facebook' },
+        { href: social?.instagram, icon: <img src={socialInstagram} className="w-6 h-6" alt="" />, label: 'Instagram' },
+        { href: social?.linkedin, icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: 'LinkedIn' },
       ]}
     />
   );

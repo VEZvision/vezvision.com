@@ -70,9 +70,9 @@ const Portfolio = () => {
         badge={t('portfolio.hero.badge')}
         icon={<FolderOpen className="w-3.5 h-3.5" />}
         socialLinks={[
-          ...(social?.facebook ? [{ href: social.facebook, icon: <FacebookIcon />, label: 'Facebook' }] : social?.x ? [{ href: social.x, icon: <FacebookIcon />, label: 'Facebook' }] : []),
-          ...(social?.linkedin ? [{ href: social.linkedin, icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: t('about.hero.social.linkedinAlt') }] : []),
-          ...(social?.instagram ? [{ href: social.instagram, icon: <img src={socialInstagram} className="w-6 h-6" alt="" />, label: t('about.hero.social.instagramAlt') }] : []),
+          { href: social?.facebook || social?.x, icon: <FacebookIcon />, label: 'Facebook' },
+          { href: social?.instagram, icon: <img src={socialInstagram} className="w-6 h-6" alt="" />, label: 'Instagram' },
+          { href: social?.linkedin, icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: 'LinkedIn' },
         ]}
         ariaLabelledBy="portfolio-hero-title"
       />
