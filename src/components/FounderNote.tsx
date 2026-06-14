@@ -25,7 +25,6 @@ const quoteLines = useMemo(() => {
     {
       id: 'line-one',
       segments: [
-        { text: '"', quote: true },
         { text: t(`${prefix}.line1.a`) },
         { text: t(`${prefix}.line1.b`), highlight: true },
         { text: t(`${prefix}.line1.c`) },
@@ -45,7 +44,6 @@ const quoteLines = useMemo(() => {
         { text: t(`${prefix}.line3.a`) },
         { text: t(`${prefix}.line3.b`), highlight: true },
         { text: t(`${prefix}.line3.c`) },
-        { text: '"', quote: true },
       ],
     },
   ];
@@ -56,7 +54,6 @@ const preparedLines = useMemo(() => {
     const characters: Array<{
       char: string;
       highlight: boolean;
-      quote: boolean;
       key: string;
     }> = [];
 
@@ -65,7 +62,6 @@ const preparedLines = useMemo(() => {
         characters.push({
           char,
           highlight: Boolean(segment.highlight),
-          quote: Boolean(segment.quote),
           key: `${line.id}-seg${segmentIndex}-char${charIndex}`,
         });
       });
@@ -120,7 +116,6 @@ return (
             const characterClassName = [
               styles.char,
               character.highlight ? styles.charHighlight : '',
-              character.quote ? styles.charQuote : '',
             ]
               .filter(Boolean)
               .join(' ');

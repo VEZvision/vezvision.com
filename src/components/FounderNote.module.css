@@ -34,6 +34,30 @@
 .char {
   display: inline;
   white-space: pre;
+  opacity: 0;
+}
+
+.line[data-visible="true"] .char {
+  animation: charTypeIn 0.35s ease-out forwards;
+  animation-delay: calc(var(--line) * 0.25s + var(--i) * 0.045s);
+}
+
+@keyframes charTypeIn {
+  0% {
+    opacity: 0;
+    filter: brightness(2.2) blur(1px);
+    transform: translateY(2px);
+  }
+  40% {
+    opacity: 1;
+    filter: brightness(1.5) blur(0);
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+    transform: translateY(0);
+  }
 }
 
 .line {
@@ -46,23 +70,6 @@
   color: #0f172a;
   letter-spacing: -0.01em;
   white-space: nowrap;
-  opacity: 0;
-  transform: translateY(8px);
-}
-
-.line[data-visible="true"] {
-  animation: lineReveal 0.8s ease-out forwards;
-}
-
-.line:nth-child(1)[data-visible="true"] { animation-delay: 0.15s; }
-.line:nth-child(2)[data-visible="true"] { animation-delay: 0.3s; }
-.line:nth-child(3)[data-visible="true"] { animation-delay: 0.45s; }
-
-@keyframes lineReveal {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .charHighlight {
@@ -121,19 +128,19 @@
   color: #0f172a;
   letter-spacing: -0.01em;
   white-space: nowrap;
+}
+
+.blogLine .char {
   opacity: 0;
-  transform: translateY(8px);
 }
 
-.blogLine[data-visible='true'] {
-  animation: lineReveal 0.7s ease-out forwards;
+.blogLine[data-visible='true'] .char {
+  animation: charTypeIn 0.3s ease-out forwards;
+  animation-delay: calc(var(--line) * 0.25s + var(--i) * 0.045s);
 }
-
-.blogLine:nth-child(1)[data-visible='true'] { animation-delay: 0.15s; }
-.blogLine:nth-child(2)[data-visible='true'] { animation-delay: 0.28s; }
-.blogLine:nth-child(3)[data-visible='true'] { animation-delay: 0.41s; }
 
 @media (max-width: 680px) {
+  .line,
   .blogLine {
     white-space: normal;
   }
@@ -144,10 +151,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .line,
-  .blogLine {
+  .char {
     opacity: 1;
-    transform: none;
-    animation: none;
+    animation: none !important;
+    filter: none !important;
+    transform: none !important;
   }
 }
