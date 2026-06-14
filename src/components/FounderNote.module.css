@@ -42,6 +42,7 @@
   font-weight: 400;
   color: #0f172a;
   letter-spacing: -0.01em;
+  white-space: nowrap;
   opacity: 0;
   transform: translateY(8px);
 }
@@ -127,7 +128,6 @@
 .blogLine:nth-child(3)[data-visible='true'] { animation-delay: 0.41s; }
 
 @media (max-width: 680px) {
-  .line,
   .blogLine {
     white-space: normal;
   }
