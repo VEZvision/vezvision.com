@@ -1,8 +1,4 @@
-/* Lenis adds this class during eased momentum. Keep decorative loops off that frame budget. */
-html.lenis-scrolling .vez-decorative-motion,
-html.lenis-scrolling .vez-decorative-motion *,
-html.lenis-scrolling .vez-decorative-motion *::before,
-html.lenis-scrolling .vez-decorative-motion *::after,
-html.lenis-scrolling [data-marquee-active='true'] {
+/* Pause marquee when off-screen (set by MoreBenefits IO). */
+[data-marquee-paused='true'] {
   animation-play-state: paused !important;
 }

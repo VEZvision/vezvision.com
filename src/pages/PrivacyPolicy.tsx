@@ -1,4 +1,6 @@
 import PageSeo from '@/components/seo/PageSeo';
+import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
+import type { BreadcrumbItem } from '@/components/seo/Breadcrumbs';
 import LegalMarkdown from '@/components/legal/LegalMarkdown';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { useLegalContent } from '@/hooks/useLegalContent';
@@ -40,12 +42,18 @@ const PrivacyPolicy = () => {
   const renderedTitle = title || fallbackTitle;
   const effectiveDate = lastUpdated ? new Date(lastUpdated) : new Date('2026-03-31');
 
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: t('nav.home'), href: '/' },
+    { label: renderedTitle },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50 py-16">
       <PageSeo pageKey="privacy-policy" />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Breadcrumbs items={breadcrumbItems} />
         <SectionReveal>
-          <div className="rounded-lg bg-white p-8 shadow-lg">
+          <div className="rounded-lg bg-white p-8 shadow-lg mt-4">
             <h1 className="mb-6 text-3xl font-bold text-gray-900">
               {renderedTitle}
             </h1>

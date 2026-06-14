@@ -5,43 +5,29 @@ import PageSeo from '@/components/seo/PageSeo';
 import NewsletterSection from '@/components/newsletter/NewsletterSection';
 import SectionReveal from '@/components/ui/SectionReveal';
 import { useLanguageContext } from '@/hooks/useLanguage';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 
-const COPY = {
-  pl: {
-    title: 'Newsletter VezVision',
-    eyebrow: 'Wiedza bez spamu',
-    description: 'Zapisz się, jeśli chcesz dostawać konkretne materiały o stronach, aplikacjach, AI i pracy z technologią.',
-    back: 'Wróć do bloga',
-    highlights: [
-      { title: 'Nowe artykuły', description: 'Napiszemy, gdy pojawi się nowy tekst na blogu.' },
-      { title: 'Praktyczne wskazówki', description: 'Krótko, konkretnie i bez marketingowego szumu.' },
-      { title: 'Pełna kontrola', description: 'Możesz wypisać się w każdej chwili z linku w wiadomości.' },
-    ],
+const HIGHLIGHT_KEYS = [
+  {
+    titleKey: 'newsletter.page.highlight.new.title',
+    descriptionKey: 'newsletter.page.highlight.new.description',
+    icon: Mail,
   },
-  en: {
-    title: 'VezVision Newsletter',
-    eyebrow: 'Useful notes, no spam',
-    description: 'Leave your email if you want practical notes about websites, apps, AI and working with technology.',
-    back: 'Back to blog',
-    highlights: [
-      { title: 'New articles', description: 'We will write when there is a new blog post.' },
-      { title: 'Practical notes', description: 'Short, concrete and free from marketing noise.' },
-      { title: 'Full control', description: 'Unsubscribe anytime from the link in each message.' },
-    ],
+  {
+    titleKey: 'newsletter.page.highlight.tips.title',
+    descriptionKey: 'newsletter.page.highlight.tips.description',
+    icon: Newspaper,
   },
-} as const;
-
-const ICONS = [Mail, Newspaper, ShieldCheck] as const;
-
-interface HighlightItem {
-  title: string;
-  description: string;
-}
+  {
+    titleKey: 'newsletter.page.highlight.control.title',
+    descriptionKey: 'newsletter.page.highlight.control.description',
+    icon: ShieldCheck,
+  },
+] as const;
 
 const Newsletter = () => {
-  const { language } = useLanguageContext();
-  const copy = COPY[language];
-  const highlights: readonly HighlightItem[] = copy.highlights;
+  const { language, t } = useLanguageContext();
+  const { toLocalizedPath } = useLocalizedPath();
 
   return (
     <div className="min-h-screen bg-white text-slate-950">
@@ -53,25 +39,25 @@ const Newsletter = () => {
           <SectionReveal>
             <div className="mx-auto max-w-5xl text-center">
               <Link
-                to="/blog"
+                to={toLocalizedPath('blog')}
                 className="mb-8 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 transition-colors hover:border-slate-950 hover:text-slate-950"
               >
                 <ArrowLeft className="h-4 w-4" />
-                {copy.back}
+                {t('newsletter.page.back')}
               </Link>
 
               <p className="mb-4 text-sm font-semibold uppercase tracking-[0.28em] text-slate-500">
-                {copy.eyebrow}
+                {t('newsletter.page.eyebrow')}
               </p>
               <h1
-                className="mx-auto mb-5 max-w-3xl font-inter text-[clamp(38px,6.5vw,80px)] font-normal leading-[1.05] tracking-[-1.6px] text-black"
-                aria-label={copy.title}
+                className="mx-auto mb-5 max-w-3xl font-sans text-[clamp(38px,6.5vw,80px)] font-normal leading-[1.05] tracking-[-1.6px] text-black"
+                aria-label={t('newsletter.page.title')}
               >
                 {language === 'pl' ? 'Newsletter ' : 'VezVision '}
-                <span className="font-serif italic">{language === 'pl' ? 'VezVision' : 'Newsletter'}</span>
+                <span className="font-sans">{language === 'pl' ? 'VezVision' : 'Newsletter'}</span>
               </h1>
               <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600 md:text-xl">
-                {copy.description}
+                {t('newsletter.page.description')}
               </p>
             </div>
           </SectionReveal>
@@ -79,16 +65,16 @@ const Newsletter = () => {
 
         <section className="px-6 pb-4">
           <div className="mx-auto grid max-w-5xl gap-4 md:grid-cols-3">
-            {highlights.map((item, index) => {
-              const Icon = ICONS[index];
+            {HIGHLIGHT_KEYS.map((item, index) => {
+              const Icon = item.icon;
               return (
-                <SectionReveal key={item.title} delay={index * 0.08}>
+                <SectionReveal key={item.titleKey} delay={index * 0.08}>
                   <div className="h-full rounded-3xl border border-slate-200 bg-white/75 p-6 shadow-sm backdrop-blur-sm">
                     <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-950 text-white">
                       <Icon className="h-5 w-5" />
                     </div>
-                    <h2 className="text-lg font-bold text-slate-950">{item.title}</h2>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
+                    <h2 className="text-lg font-bold text-slate-950">{t(item.titleKey)}</h2>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">{t(item.descriptionKey)}</p>
                   </div>
                 </SectionReveal>
               );

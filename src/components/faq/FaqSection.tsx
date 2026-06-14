@@ -1,17 +1,18 @@
-import { useState, useMemo, useEffect, FC } from 'react';
+import { useState, useMemo, FC } from 'react';
+import { Link } from 'react-router-dom';
 import styles from './FaqSection.module.css';
 import { useLanguageContext } from '@/hooks/useLanguage';
-import arrowRight from '@/assets/arrow-right.svg';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { MessageSquare } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
-import { AnimatePresence, motion } from 'framer-motion';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Helmet } from 'react-helmet-async';
-import DOMPurify from 'dompurify';
 import { SectionReveal } from '@/components/ui/SectionReveal';
 import { safeJsonLd } from '@/utils/safeJsonLd';
-import { listActiveFaqItems, type FaqItem } from '@/services/faq';
+import { sanitizeCmsHtml } from '@/utils/sanitizeCmsHtml';
+import { stripHtmlForJsonLd } from '@/utils/stripHtmlForJsonLd';
+import { useFaqItems } from '@/hooks/useFaqItems';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 
 import { ChevronDown, Mail } from 'lucide-react';
 
@@ -22,20 +23,19 @@ interface FaqSectionProps {
 const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
   const reducedMotion = useReducedMotion();
   const [openItem, setOpenItem] = useState<string | null>(null);
-  const [dbFaqItems, setDbFaqItems] = useState<FaqItem[]>([]);
-  const [faqLoading, setFaqLoading] = useState(true);
+  const { t, language } = useLanguageContext();
+  const { toLocalizedPath } = useLocalizedPath();
+  const { data: dbFaqItems = [], isLoading: faqLoading } = useFaqItems(language);
 
   const toggleItem = (id: string) => {
     setOpenItem(openItem === id ? null : id);
   };
-
-  const { t, language } = useLanguageContext();
   const { contact, loading: settingsLoading, error } = useSettings();
   const contactEmail = contact?.email || '';
 
   const title = (
     <>
-      {t('faq.title.line1')} <span className="font-playfair italic font-medium">{t('faq.title.line2.italic')}</span>
+      {t('faq.title.line1')} <span className="font-sans font-semibold">{t('faq.title.line2.italic')}</span>
     </>
   );
 
@@ -50,31 +50,6 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
     return fallbackItems;
   }, [dbFaqItems, t]);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const fetchFaqFromDb = async () => {
-      try {
-        setFaqLoading(true);
-
-        const mapped = await listActiveFaqItems(language);
-
-        if (!cancelled) {
-          setDbFaqItems(mapped);
-        }
-      } finally {
-        if (!cancelled) setFaqLoading(false);
-      }
-    };
-
-    void fetchFaqFromDb();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [language]);
-
-  // Generate JSON-LD schema
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -83,15 +58,15 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
       "name": item.question,
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": item.answer
+        "text": stripHtmlForJsonLd(item.answer),
       }
     }))
   };
 
   return (
     <section className={styles.faqSection} aria-labelledby="faq-heading">
-      {/* Heading */}
       <SectionHeader
+        id="faq-heading"
         badgeText={t('faq.badge')}
         badgeIcon={<MessageSquare className="w-3.5 h-3.5" />}
         title={title}
@@ -99,8 +74,7 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
         className="mb-16"
       />
 
-      {/* Accordion */}
-      <SectionReveal className={styles.accordion} delay={0.1} y={24}>
+      <SectionReveal className={styles.accordion} delay={0.1}>
         <Helmet>
           <script type="application/ld+json">
             {safeJsonLd(jsonLd)}
@@ -112,74 +86,61 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
             {faqLoading && faqItems.length === 0 && (
               <div className="text-center py-8 text-gray-500">{t('faq.loading')}</div>
             )}
-            {faqItems.map((faq) => (
-              <div
-                key={faq.id}
-                className="border border-gray-200 rounded-2xl bg-white overflow-hidden transition-shadow hover:shadow-sm"
-              >
-                <button
-                  onClick={() => toggleItem(faq.id)}
-                  className="w-full flex items-center justify-between p-5 text-left bg-white cursor-pointer select-none focus:outline-none"
-                  aria-expanded={openItem === faq.id}
-                >
-                  <span className="text-lg font-medium text-gray-900 pr-8">
-                    {faq.question}
-                  </span>
-                  {reducedMotion ? (
-                    <div
-                      className="flex-shrink-0 text-gray-400"
-                      style={{ transform: openItem === faq.id ? 'rotate(180deg)' : undefined }}
-                    >
-                      <ChevronDown className="w-5 h-5" />
-                    </div>
-                  ) : (
-                    <motion.div
-                      animate={{ rotate: openItem === faq.id ? 180 : 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="flex-shrink-0 text-gray-400"
-                    >
-                      <ChevronDown className="w-5 h-5" />
-                    </motion.div>
-                  )}
-                </button>
+            {faqItems.map((faq) => {
+              const isOpen = openItem === faq.id;
 
-                {reducedMotion ? (
-                  openItem === faq.id ? (
-                    <div className="px-5 pb-5 pt-0">
-                      <div
-                        className="prose prose-sm max-w-none text-gray-600 prose-a:text-blue-600 border-t border-gray-100 pt-4"
-                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(faq.answer) }}
-                      />
-                    </div>
-                  ) : null
-                ) : (
-                  <AnimatePresence initial={false}>
-                    {openItem === faq.id && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: 'easeInOut' }}
-                      >
+              return (
+                <div
+                  key={faq.id}
+                  className="border border-gray-200 rounded-2xl bg-white overflow-hidden transition-shadow hover:shadow-sm"
+                >
+                  <button
+                    onClick={() => toggleItem(faq.id)}
+                    className="w-full flex items-center justify-between p-5 text-left bg-white cursor-pointer select-none focus:outline-none"
+                    aria-expanded={isOpen}
+                  >
+                    <span className="text-lg font-medium text-gray-900 pr-8">
+                      {faq.question}
+                    </span>
+                    <ChevronDown
+                      className={`${styles.chevron} w-5 h-5 ${isOpen ? styles.chevronOpen : ''}`}
+                      style={reducedMotion ? { transform: isOpen ? 'rotate(180deg)' : undefined } : undefined}
+                    />
+                  </button>
+
+                  {reducedMotion ? (
+                    isOpen ? (
+                      <div className="px-5 pb-5 pt-0">
+                        <div
+                          className="prose prose-sm max-w-none text-gray-600 prose-a:text-blue-600 border-t border-gray-100 pt-4"
+                          dangerouslySetInnerHTML={{ __html: sanitizeCmsHtml(faq.answer) }}
+                        />
+                      </div>
+                    ) : null
+                  ) : (
+                    <div
+                      className={`${styles.answerPanel} ${isOpen ? styles.answerPanelOpen : ''}`}
+                      aria-hidden={!isOpen}
+                    >
+                      <div className={styles.answerPanelInner}>
                         <div className="px-5 pb-5 pt-0">
                           <div
                             className="prose prose-sm max-w-none text-gray-600 prose-a:text-blue-600 border-t border-gray-100 pt-4"
-                            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(faq.answer) }}
+                            dangerouslySetInnerHTML={{ __html: sanitizeCmsHtml(faq.answer) }}
                           />
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                )}
-              </div>
-            ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </SectionReveal>
 
-      {/* Contact and CTA */}
       {showContactCta && (
-        <SectionReveal delay={0.2} y={20}>
+        <SectionReveal delay={0.2}>
           <div className={styles.contactRow}>
             <Mail className="w-5 h-5 text-gray-900" />
             <span className={styles.contactText}>
@@ -198,14 +159,13 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
             </span>
           </div>
           <div className={styles.ctaWrap}>
-            <a
+            <Link
               className={styles.ctaButton}
-              href="/contact"
+              to={toLocalizedPath('contact')}
               aria-label={t('faq.cta.aria')}
             >
               <span>{t('nav.contact')}</span>
-              <img src={arrowRight} alt={t('comparison.alt.arrow')} className={styles.ctaIcon} />
-            </a>
+            </Link>
           </div>
         </SectionReveal>
       )}

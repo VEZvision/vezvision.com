@@ -14,9 +14,13 @@ const Benefits: React.FC = () => {
   const { t } = useLanguageContext();
 
   return (
-    <section id="benefits" className={styles.benefitsSection} aria-labelledby="benefits-heading">
-      <div className={styles.container}>
-        <SectionReveal>
+    <section
+      id="benefits"
+      className={styles.benefitsSection}
+      aria-labelledby="benefits-heading"
+    >
+      <SectionReveal amount={0.25}>
+        <div className={styles.container}>
           <SectionHeader
             badgeText={t('benefits.badge')}
             badgeIcon={<ThumbsUp className="w-3.5 h-3.5" />}
@@ -28,20 +32,20 @@ const Benefits: React.FC = () => {
             subtitle={t('benefits.subtitle')}
             id="benefits-heading"
           />
-        </SectionReveal>
 
-        <StaggerReveal className={styles.benefitsGrid}>
-          <StaggerItem>
-            <Container1 />
-          </StaggerItem>
-          <StaggerItem>
-            <Container2 />
-          </StaggerItem>
-          <StaggerItem>
-            <BenefitsMultifunction />
-          </StaggerItem>
-        </StaggerReveal>
-      </div>
+          <StaggerReveal className={styles.benefitsGrid} amount={0.18}>
+            <StaggerItem>
+              <Container1 />
+            </StaggerItem>
+            <StaggerItem>
+              <Container2 />
+            </StaggerItem>
+            <StaggerItem>
+              <BenefitsMultifunction />
+            </StaggerItem>
+          </StaggerReveal>
+        </div>
+      </SectionReveal>
 
       <MoreBenefits />
     </section>

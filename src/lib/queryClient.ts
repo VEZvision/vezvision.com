@@ -5,7 +5,7 @@ export const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: false,
       retry: 1,
-      staleTime: 60_000,
+      staleTime: 5 * 60 * 1000, // 5 min — CMS data rarely changes mid-session
     },
   },
 })

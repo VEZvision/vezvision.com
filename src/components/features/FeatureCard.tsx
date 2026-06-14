@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { ResponsiveImage } from '@/components/ui/ResponsiveImage';
 import styles from './FeatureCard.module.css';
 
 interface FeatureCardProps {
@@ -7,46 +8,49 @@ interface FeatureCardProps {
   title: string;
   description: string;
   image?: string;
+  imageSrcSet?: string;
+  imageAvifSrcSet?: string;
   imageAlt?: string;
 }
 
-const FeatureCard: React.FC<FeatureCardProps> = ({
+function FeatureCard({
   variant,
   icon,
   title,
   description,
   image,
+  imageSrcSet,
+  imageAvifSrcSet,
   imageAlt
-}) => {
-  return (
-    <article className={`${styles.card} ${styles[variant]}`}>
-      {image && (
-        <div className={styles.imageContainer}>
-          <img
-            src={image}
-            alt={imageAlt || ''}
-            className={styles.cardImage}
-            loading="lazy"
-            decoding="async"
-            draggable={false}
-          />
-          <div className={styles.imageOverlay} />
-        </div>
-      )}
-
-      <div className={styles.content}>
-        <div className={styles.iconContainer}>
-          <img src={icon} alt="" className={styles.icon} loading="lazy" decoding="async" draggable={false} aria-hidden="true" />
-        </div>
-
-        <div className={styles.textContent}>
-          <h3 className={styles.title}>{title}</h3>
-          <p className={styles.description}>{description}</p>
-        </div>
+}: FeatureCardProps) { return (
+  <article className={`${styles.card} ${styles[variant]}`}>
+    {image && (
+      <div className={styles.imageContainer}>
+        <ResponsiveImage
+          src={image}
+          srcSet={imageSrcSet}
+          avifSrcSet={imageAvifSrcSet}
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          alt={imageAlt || ''}
+          className={styles.cardImage}
+          draggable={false}
+        />
+        <div className={styles.imageOverlay} />
       </div>
-    </article>
-  );
-};
+    )}
+
+    <div className={styles.content}>
+      <div className={styles.iconContainer}>
+        <img src={icon} alt="" className={styles.icon} loading="lazy" decoding="async" draggable={false} aria-hidden="true" />
+      </div>
+
+      <div className={styles.textContent}>
+        <h3 className={styles.title}>{title}</h3>
+        <p className={styles.description}>{description}</p>
+      </div>
+    </div>
+  </article>
+); };
 
 const areEqual = (prev: FeatureCardProps, next: FeatureCardProps) => {
   return (
@@ -55,6 +59,7 @@ const areEqual = (prev: FeatureCardProps, next: FeatureCardProps) => {
     prev.title === next.title &&
     prev.description === next.description &&
     prev.image === next.image &&
+    prev.imageSrcSet === next.imageSrcSet &&
     prev.imageAlt === next.imageAlt
   );
 };

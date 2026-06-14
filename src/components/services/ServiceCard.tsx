@@ -1,5 +1,6 @@
 import styles from './ServiceCard.module.css';
 import { Zap, LucideIcon, Globe, Smartphone, Database, ScanLine } from 'lucide-react';
+import { safeImageUrl } from '@/utils/safeHref';
 
 interface ServiceCardProps {
     title: string;
@@ -9,13 +10,7 @@ interface ServiceCardProps {
 }
 
 function isImageSource(value: string): boolean {
-    const normalized = value.trim().toLowerCase();
-    return (
-        normalized.startsWith('http://') ||
-        normalized.startsWith('https://') ||
-        normalized.startsWith('/') ||
-        normalized.startsWith('data:image/')
-    );
+    return safeImageUrl(value) === value.trim();
 }
 
 const iconMap: Record<string, LucideIcon> = {
@@ -49,41 +44,38 @@ function isRenderableLucideIcon(value: unknown): value is LucideIcon {
  * ServiceCard Component - Premium v3
  * Displays a professional service card with an icon, title, and description.
  */
-const ServiceCard: React.FC<ServiceCardProps> = ({
+function ServiceCard({
     title,
     description,
     className,
     icon
-}) => {
-    const normalizedIcon = icon?.trim() ?? '';
-    const LucideResolvedIcon = normalizedIcon ? resolveLucideIcon(normalizedIcon) : null;
-    const shouldRenderImage = normalizedIcon.length > 0 && isImageSource(normalizedIcon);
+}: ServiceCardProps) { const normalizedIcon = icon?.trim() ?? '';
+const LucideResolvedIcon = normalizedIcon ? resolveLucideIcon(normalizedIcon) : null;
+const shouldRenderImage = normalizedIcon.length > 0 && isImageSource(normalizedIcon);
 
-    return (
-        <article
-            className={`${styles.card} ${className || ''}`}
-        >
-            <div className={styles.header}>
-                <div className={styles.iconBox}>
-                    {LucideResolvedIcon ? (
-                        <LucideResolvedIcon />
-                    ) : shouldRenderImage ? (
-                        <img src={normalizedIcon} alt="" aria-hidden="true" loading="lazy" decoding="async" />
-                    ) : normalizedIcon ? (
-                        <span className={styles.iconText}>{normalizedIcon}</span>
-                    ) : (
-                        <Zap />
-                    )}
-                </div>
-                <span className={styles.arrow} aria-hidden="true">↗</span>
+return (
+    <article
+        className={`${styles.card} ${className || ''}`}
+    >
+        <div className={styles.header}>
+            <div className={styles.iconBox}>
+                {LucideResolvedIcon ? (
+                    <LucideResolvedIcon />
+                ) : shouldRenderImage ? (
+                    <img src={safeImageUrl(normalizedIcon)} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+                ) : normalizedIcon ? (
+                    <span className={styles.iconText}>{normalizedIcon}</span>
+                ) : (
+                    <Zap />
+                )}
             </div>
+        </div>
 
-            <div className={styles.content}>
-                <h3 className={styles.title}>{title}</h3>
-                <p className={styles.desc}>{description}</p>
-            </div>
-        </article>
-    );
-};
+        <div className={styles.content}>
+            <h3 className={styles.title}>{title}</h3>
+            <p className={styles.desc}>{description}</p>
+        </div>
+    </article>
+); };
 
 export default ServiceCard;

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { unsubscribeByToken } from '@/services/newsletter';
 import { useLanguageContext } from '@/hooks/useLanguage';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import logoHero from '@/assets/logo-hero.svg';
 import PageSeo from '@/components/seo/PageSeo';
 
@@ -9,6 +10,7 @@ const Unsubscribe = () => {
     const [searchParams] = useSearchParams();
     const token = searchParams.get('token');
     const { t } = useLanguageContext();
+    const { toLocalizedPath } = useLocalizedPath();
 
     const [status, setStatus] = useState<'idle' | 'confirming' | 'loading' | 'success' | 'error'>('idle');
     const [message, setMessage] = useState('');
@@ -69,7 +71,7 @@ const Unsubscribe = () => {
                                 {t('unsubscribe.confirm_yes')}
                             </button>
                             <Link
-                                to="/"
+                                to={toLocalizedPath()}
                                 className="w-full px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
                             >
                                 {t('unsubscribe.confirm_no')}
@@ -87,7 +89,7 @@ const Unsubscribe = () => {
                         </div>
                         <p className="text-gray-600 mb-8">{message}</p>
                         <Link
-                            to="/"
+                            to={toLocalizedPath()}
                             className="inline-block px-6 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
                         >
                             {t('unsubscribe.back_home')}
@@ -118,7 +120,7 @@ const Unsubscribe = () => {
                             {t('unsubscribe.no_token')}
                         </p>
                         <Link
-                            to="/"
+                            to={toLocalizedPath()}
                             className="w-full px-6 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
                         >
                             {t('unsubscribe.back_home')}

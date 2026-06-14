@@ -3,10 +3,12 @@ import styles from './NotFound.module.scss';
 import logoHero from '@/assets/logo-hero.svg';
 import arrowRight from '@/assets/arrow-right.svg';
 import { useLanguageContext } from '@/hooks/useLanguage';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import PageSeo from '@/components/seo/PageSeo';
 
 const NotFound = () => {
   const { t } = useLanguageContext();
+  const { toLocalizedPath } = useLocalizedPath();
   return (
     <div className={styles.notFoundContainer}>
       <PageSeo pageKey="not-found" />
@@ -27,12 +29,12 @@ const NotFound = () => {
         </div>
 
         <div className={styles.actionSection}>
-          <Link to="/" className={styles.primaryButton}>
+          <Link to={toLocalizedPath()} className={styles.primaryButton}>
             <span className={styles.buttonText}>{t('notfound.cta.home')}</span>
             <img className={styles.arrowIcon} src={arrowRight} alt="" />
           </Link>
 
-          <Link to="/contact" className={styles.secondaryButton}>
+          <Link to={toLocalizedPath('contact')} className={styles.secondaryButton}>
             <span className={styles.buttonText}>{t('notfound.cta.contact')}</span>
           </Link>
         </div>
@@ -40,9 +42,9 @@ const NotFound = () => {
         <div className={styles.helpSection}>
           <p className={styles.helpText}>{t('notfound.help.text')}</p>
           <div className={styles.helpLinks}>
-            <Link to="/services" className={styles.helpLink}>{t('notfound.help.services')}</Link>
-            <Link to="/portfolio" className={styles.helpLink}>{t('notfound.help.portfolio')}</Link>
-            <Link to="/blog" className={styles.helpLink}>{t('notfound.help.blog')}</Link>
+            <Link to={toLocalizedPath('services')} className={styles.helpLink}>{t('notfound.help.services')}</Link>
+            <Link to={toLocalizedPath('portfolio')} className={styles.helpLink}>{t('notfound.help.portfolio')}</Link>
+            <Link to={toLocalizedPath('blog')} className={styles.helpLink}>{t('notfound.help.blog')}</Link>
           </div>
         </div>
       </div>

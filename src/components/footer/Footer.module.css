@@ -1,8 +1,34 @@
 /* Footer Component Styles */
 .footer {
   position: relative;
+  z-index: 1;
   width: 100%;
-  overflow: hidden;
+  background: #ffffff;
+}
+
+.videoBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.footerVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  filter: grayscale(100%) brightness(2);
+  backface-visibility: hidden;
+}
+
+.videoOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .footerContainer {
@@ -11,7 +37,6 @@
   height: 100%;
   display: flex;
   align-items: flex-start;
-  overflow: hidden;
 }
 
 .backgroundLayer {
@@ -21,7 +46,8 @@
   flex-direction: column;
   align-items: center;
   padding: 160px 60px 40px;
-  overflow: hidden;
+  padding-bottom: max(40px, env(safe-area-inset-bottom));
+  background: #ffffff;
 }
 
 .backgroundVideo {
@@ -33,6 +59,7 @@
   object-fit: cover;
   z-index: 0;
   filter: invert(1);
+  backface-visibility: hidden;
 }
 
 .contentWrapper {
@@ -65,7 +92,7 @@
   border-radius: 8px;
   box-shadow: inset 0px 0px 9px 0px rgba(255, 255, 255, 0.5);
   background: rgba(255, 255, 255, 0.3);
-  transition: all 0.3s ease;
+  transition: background 0.3s ease, transform 0.3s ease;
   text-decoration: none;
 }
 
@@ -110,7 +137,7 @@
 }
 
 .subtitle {
-  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-family: 'Satoshi', "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
   font-size: 16px;
   line-height: 24px;
   letter-spacing: 0;
@@ -138,27 +165,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 100px;
-  box-shadow: 0px 1px 1px -1px rgba(122, 122, 122, 0.58),
-    0px 2px 3px -1px rgba(122, 122, 122, 0.57),
-    0px 4px 5px -2px rgba(122, 122, 122, 0.55),
-    0px 7px 10px -2px rgba(122, 122, 122, 0.52),
-    0px 14px 19px -3px rgba(122, 122, 122, 0.46),
-    0px 30px 42px -3px rgba(122, 122, 122, 0.32);
+  border-radius: 16px;
+  background: #111827;
   padding: 10px;
-  background: linear-gradient(180deg, #000000 0%, #ffffff 100%);
-  overflow: hidden;
+  box-shadow:
+    0px 1px 1px -1px rgba(64, 120, 168, 0.37),
+    0px 2px 2px -1px rgba(64, 120, 168, 0.36),
+    0px 4px 4px -2px rgba(64, 120, 168, 0.34),
+    0px 7px 7px -3px rgba(64, 120, 168, 0.31),
+    0px 14px 14px -3px rgba(64, 120, 168, 0.25),
+    0px 30px 30px -4px rgba(64, 120, 168, 0.15);
 }
 
 .logoImage {
   width: 83px;
   height: 83px;
-  border-radius: 100px;
-  overflow: hidden;
+  border-radius: 16px;
 }
 
 .logoText {
-  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-family: 'Satoshi', "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
   font-size: 100px;
   line-height: 120px;
   letter-spacing: -6px;
@@ -178,7 +204,7 @@
 }
 
 .tagline {
-  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-family: 'Satoshi', "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
   font-size: 16px;
   line-height: 24px;
   letter-spacing: 0;
@@ -211,7 +237,7 @@
   background: #000000;
   padding: 11px 24px 12px;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: background 0.3s ease, transform 0.3s ease;
 }
 
 .ctaButton:hover {
@@ -227,7 +253,7 @@
 }
 
 .ctaText {
-  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-family: 'Satoshi', "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
   font-size: 14px;
   font-weight: 500;
   line-height: 22px;
@@ -259,13 +285,13 @@
 }
 
 .navLink {
-  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-family: 'Satoshi', "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
   font-size: 16px;
   line-height: 24px;
   letter-spacing: 0;
   color: #000000;
   text-decoration: underline;
-  transition: all 0.3s ease;
+  transition: background 0.3s ease, transform 0.3s ease;
 }
 
 .navLink:hover {
@@ -282,7 +308,7 @@
 }
 
 .copyrightText {
-  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-family: 'Satoshi', "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
   font-size: 16px;
   line-height: 24px;
   letter-spacing: 0;
@@ -301,7 +327,7 @@
 }
 
 .legalLink {
-  font-family: Inter, sans-serif;
+  font-family: 'Satoshi', sans-serif;
   font-size: 13px;
   color: #666666;
   text-decoration: none;
@@ -327,6 +353,7 @@
 @media (max-width: 1200px) {
   .backgroundLayer {
     padding: 120px 40px 40px;
+    padding-bottom: max(40px, env(safe-area-inset-bottom));
   }
 
   .logoText {
@@ -344,6 +371,7 @@
 @media (max-width: 1024px) {
   .backgroundLayer {
     padding: 100px 32px 40px;
+    padding-bottom: max(40px, env(safe-area-inset-bottom));
   }
 
   .logoText {

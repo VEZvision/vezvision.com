@@ -1,6 +1,13 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tsconfigPaths from "vite-tsconfig-paths";
+import { cspNoncePlugin } from './scripts/vite-plugin-csp-nonce.ts'
+import { imagetools } from 'vite-imagetools'
+import { compression } from 'vite-plugin-compression2'
+
+const rootDir = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   define: {
@@ -13,13 +20,20 @@ export default defineConfig({
     port: 5174,
   },
   resolve: {
-    dedupe: ['react', 'react-dom']
+    dedupe: ['react', 'react-dom'],
+    alias: {
+      '@shared': path.resolve(rootDir, 'shared'),
+    },
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
   },
+  css: {
+    minify: 'lightningcss',
+  },
   build: {
-    sourcemap: 'hidden',
+    target: 'es2022',
+    sourcemap: false,
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
@@ -29,8 +43,11 @@ export default defineConfig({
             if (id.includes('react-router')) return 'vendor-router';
             if (id.includes('react-helmet')) return 'vendor-helmet';
             if (id.includes('react-markdown') || id.includes('remark') || id.includes('rehype') || id.includes('micromark') || id.includes('unified')) return 'vendor-markdown';
-            if (id.includes('framer-motion')) return 'vendor-motion';
             if (id.includes('@supabase')) return 'vendor-supabase';
+            if (id.includes('@tanstack/react-query')) return 'vendor-query';
+            if (id.includes('dompurify')) return 'vendor-dompurify';
+            if (id.includes('sonner')) return 'vendor-sonner';
+            if (id.includes('zod')) return 'vendor-zod';
             if (id.includes('lenis')) return 'vendor-lenis';
             if (id.includes('lucide-react')) return 'vendor-icons';
           }
@@ -40,6 +57,13 @@ export default defineConfig({
   },
   plugins: [
     react(),
-    tsconfigPaths()
+    tsconfigPaths(),
+    cspNoncePlugin(),
+    imagetools(),
+    compression({
+      include: [/\.(js|css|html|svg|json)$/],
+      algorithm: 'brotliCompress',
+      threshold: 1024,
+    }),
   ],
 });

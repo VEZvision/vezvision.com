@@ -12,7 +12,6 @@ import {
     SeoSettings,
     MaintenanceSettings,
     IdentitySettings,
-    CodeInjectionSettings,
     SeoFilesSettings,
     CompanySettings,
     NavigationSettings,
@@ -23,14 +22,15 @@ import {
 import { getAllPageSeo, PageSeoMap } from '@/services/pageSeo';
 import { flattenCmsTranslations, normalizePageSections, PageSectionsMap, getPublicPageSections } from '@/services/pageSections';
 import { setCmsTranslationsRegistry } from '@/services/cmsTranslationsRegistry';
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@/types/database.types';
 
 export interface SettingsState {
     identity: IdentitySettings | null;
     contact: ContactSettings | null;
     social: SocialSettings | null;
     seo: SeoSettings | null;
-    code: CodeInjectionSettings | null;
     maintenance: MaintenanceSettings | null;
     seo_files: SeoFilesSettings | null;
     company: CompanySettings | null;
@@ -40,28 +40,42 @@ export interface SettingsState {
     pageSections: PageSectionsMap;
 }
 
-interface SettingsContextType extends SettingsState {
+interface EnrichedSettingsSnapshot extends Pick<SettingsState, 'pageSeo' | 'pageSections'> {
+    degraded: boolean;
+}
+
+export interface SettingsContextType extends SettingsState {
     settings: SettingsState;
     /** True only until core CMS settings (nav, identity, maintenance) are available. */
     loading: boolean;
-    /** Page SEO / sections still fetching (home can use fallbacks). */
-    enriching: boolean;
     error: unknown;
+    /** True when core or enriched CMS data failed partially or fully. */
+    degraded: boolean;
     refreshSettings: () => Promise<void>;
 }
 
 const defaultState: SettingsState = {
     identity: null, contact: null, social: null,
-    seo: null, code: null, maintenance: null, seo_files: null, company: null, navigation: null, footer: null, pageSeo: {}, pageSections: {},
+    seo: null, maintenance: null, seo_files: null, company: null, navigation: null, footer: null, pageSeo: {}, pageSections: {},
 };
 
-const CORE_SETTINGS_QUERY_KEY = ['public-settings', 'core'] as const;
-const ENRICHED_SETTINGS_QUERY_KEY = ['public-settings', 'enriched'] as const;
+const SETTINGS_QUERY_KEY = ['public-settings'] as const;
 
 interface CoreSettingsSnapshot {
     settings: SettingsState;
     error: unknown;
 }
+
+interface SettingsSnapshot extends SettingsState {
+    error: unknown;
+    degraded: boolean;
+}
+
+const defaultSnapshot: SettingsSnapshot = {
+    ...defaultState,
+    error: null,
+    degraded: false,
+};
 
 function buildCoreSettings(entries: SettingEntry[]): SettingsState {
     const normalized = normalizeSettingsEntries(entries);
@@ -70,7 +84,6 @@ function buildCoreSettings(entries: SettingEntry[]): SettingsState {
         contact: normalized.contact,
         social: normalized.social,
         seo: normalized.seo,
-        code: normalized.code,
         maintenance: normalized.maintenance,
         seo_files: normalized.seo_files,
         company: normalized.company,
@@ -91,7 +104,7 @@ async function loadCoreSettingsSnapshot(): Promise<CoreSettingsSnapshot> {
     }
 }
 
-async function loadEnrichedSettingsSnapshot(): Promise<Pick<SettingsState, 'pageSeo' | 'pageSections'>> {
+async function loadEnrichedSettingsSnapshot(): Promise<EnrichedSettingsSnapshot> {
     const [pageSeoResult, pageSectionsResult] = await Promise.allSettled([
         getAllPageSeo(),
         getPublicPageSections(),
@@ -115,15 +128,35 @@ async function loadEnrichedSettingsSnapshot(): Promise<Pick<SettingsState, 'page
     const pageSections = normalizePageSections(pageSectionsPayload.data);
     setCmsTranslationsRegistry(flattenCmsTranslations(pageSections));
 
-    return { pageSeo, pageSections };
+    const degraded =
+        pageSeoResult.status === 'rejected' ||
+        pageSectionsResult.status === 'rejected' ||
+        Boolean(pageSectionsPayload.error);
+
+    return { pageSeo, pageSections, degraded };
+}
+
+async function loadSettingsSnapshot(): Promise<SettingsSnapshot> {
+    const [core, enriched] = await Promise.all([
+        loadCoreSettingsSnapshot(),
+        loadEnrichedSettingsSnapshot(),
+    ]);
+
+    return {
+        ...core.settings,
+        pageSeo: enriched.pageSeo,
+        pageSections: enriched.pageSections,
+        error: core.error,
+        degraded: enriched.degraded,
+    };
 }
 
 const SettingsContext = createContext<SettingsContextType>({
     ...defaultState,
     settings: defaultState,
     loading: true,
-    enriching: true,
     error: null,
+    degraded: false,
     refreshSettings: async () => {},
 });
 
@@ -131,84 +164,69 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     const queryClient = useQueryClient();
     const cachedSnapshot = readPublicSettingsCache();
 
-    const coreQuery = useQuery({
-        queryKey: CORE_SETTINGS_QUERY_KEY,
-        queryFn: loadCoreSettingsSnapshot,
+    const query = useQuery({
+        queryKey: SETTINGS_QUERY_KEY,
+        queryFn: loadSettingsSnapshot,
         initialData: cachedSnapshot
-            ? { settings: { ...cachedSnapshot.settings, pageSeo: {}, pageSections: {} }, error: null }
+            ? { ...cachedSnapshot.settings, error: null, degraded: false }
             : undefined,
         staleTime: 5 * 60 * 1000,
     });
 
-    const enrichedQuery = useQuery({
-        queryKey: ENRICHED_SETTINGS_QUERY_KEY,
-        queryFn: loadEnrichedSettingsSnapshot,
-        initialData: cachedSnapshot
-            ? { pageSeo: cachedSnapshot.settings.pageSeo, pageSections: cachedSnapshot.settings.pageSections }
-            : undefined,
-        staleTime: 5 * 60 * 1000,
-    });
+    const snapshot = query.data ?? defaultSnapshot;
+    const { error, degraded, ...settings } = snapshot;
 
-    const settings = useMemo<SettingsState>(() => {
-        const core = coreQuery.data?.settings ?? defaultState;
-        const enriched = enrichedQuery.data;
-        return {
-            ...core,
-            pageSeo: enriched?.pageSeo ?? core.pageSeo,
-            pageSections: enriched?.pageSections ?? core.pageSections,
-        };
-    }, [coreQuery.data, enrichedQuery.data]);
-
-    const loading = !coreQuery.data && coreQuery.isLoading;
-    const enriching = !enrichedQuery.data && enrichedQuery.isFetching;
-    const error = coreQuery.data?.error ?? coreQuery.error ?? null;
+    const loading = query.isLoading && !query.data;
 
     useEffect(() => {
-        if (!coreQuery.data?.settings || !enrichedQuery.data) return;
-        writePublicSettingsCache({
-            ...coreQuery.data.settings,
-            pageSeo: enrichedQuery.data.pageSeo,
-            pageSections: enrichedQuery.data.pageSections,
-        });
-    }, [coreQuery.data, enrichedQuery.data]);
+        if (!query.data) return;
+        const { error: _, degraded: __, ...settingsToCache } = query.data;
+        void _;
+        void __;
+        writePublicSettingsCache(settingsToCache);
+    }, [query.data]);
 
     const refreshSettings = useCallback(async () => {
-        await Promise.all([coreQuery.refetch(), enrichedQuery.refetch()]);
-    }, [coreQuery, enrichedQuery]);
+        await query.refetch();
+    }, [query]);
 
     useEffect(() => {
         let removed = false;
-        let channel: ReturnType<typeof supabase.channel> | null = null;
+        let channel: ReturnType<SupabaseClient<Database>['channel']> | null = null;
+        let supabaseClient: SupabaseClient<Database> | null = null;
 
-        const subscribe = () => {
+        const subscribe = async () => {
             if (removed) return;
-            channel = supabase
+            supabaseClient = await getSupabase();
+            if (removed) return;
+
+            channel = supabaseClient
                 .channel('vezvision-public-settings-sync')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'vv_site_settings' }, () => {
-                    void queryClient.invalidateQueries({ queryKey: CORE_SETTINGS_QUERY_KEY });
+                    void queryClient.invalidateQueries({ queryKey: SETTINGS_QUERY_KEY });
                 })
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'vv_page_seo' }, () => {
-                    void queryClient.invalidateQueries({ queryKey: ENRICHED_SETTINGS_QUERY_KEY });
+                    void queryClient.invalidateQueries({ queryKey: SETTINGS_QUERY_KEY });
                 })
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'vv_page_sections' }, () => {
-                    void queryClient.invalidateQueries({ queryKey: ENRICHED_SETTINGS_QUERY_KEY });
+                    void queryClient.invalidateQueries({ queryKey: SETTINGS_QUERY_KEY });
                 })
                 .subscribe();
         };
 
         if (typeof window.requestIdleCallback === 'function') {
-            const idleId = window.requestIdleCallback(subscribe, { timeout: 5000 });
+            const idleId = window.requestIdleCallback(() => { void subscribe() }, { timeout: 5000 });
             return () => {
                 removed = true;
                 window.cancelIdleCallback(idleId);
-                if (channel) void supabase.removeChannel(channel);
+                if (channel && supabaseClient) void supabaseClient.removeChannel(channel);
             };
         }
 
-        subscribe();
+        void subscribe();
         return () => {
             removed = true;
-            if (channel) void supabase.removeChannel(channel);
+            if (channel && supabaseClient) void supabaseClient.removeChannel(channel);
         };
     }, [queryClient]);
 
@@ -216,10 +234,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
         ...settings,
         settings,
         loading,
-        enriching,
         error,
+        degraded,
         refreshSettings,
-    }), [settings, loading, enriching, error, refreshSettings]);
+    }), [settings, loading, error, degraded, refreshSettings]);
 
     return (
         <SettingsContext.Provider value={value}>

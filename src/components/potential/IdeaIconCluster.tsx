@@ -46,18 +46,16 @@ const SATELLITES = [
   },
 ] as const;
 
-/** Pure CSS cluster — no Framer Motion (breaks with Lenis + stays at opacity:0). */
-const IdeaIconCluster: React.FC = () => (
-  <div className={styles.iconCluster} aria-hidden>
-    <div className={styles.centralLogoPlate}>
-      <img src={logoNavbar} alt="" className="w-10 h-10 object-contain" />
-    </div>
-    {SATELLITES.map((sat) => (
-      <div key={sat.id} className={`${styles.appCircle} ${sat.className}`}>
-        {sat.children}
-      </div>
-    ))}
+/** Pure CSS cluster — no Framer Motion. */
+function IdeaIconCluster() { return (<div className={styles.iconCluster} aria-hidden>
+  <div className={styles.centralLogoPlate}>
+    <img src={logoNavbar} alt="" className="w-10 h-10 object-contain" loading="lazy" decoding="async" />
   </div>
-);
+  {SATELLITES.map((sat) => (
+    <div key={sat.id} className={`${styles.appCircle} ${sat.className}`}>
+      {sat.children}
+    </div>
+  ))}
+</div>); }
 
 export default IdeaIconCluster;

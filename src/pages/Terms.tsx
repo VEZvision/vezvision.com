@@ -1,15 +1,19 @@
 import { Link } from 'react-router-dom';
 import LegalMarkdown from '@/components/legal/LegalMarkdown';
 import { useLanguageContext } from '@/hooks/useLanguage';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import { useLegalContent } from '@/hooks/useLegalContent';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import PageSeo from '@/components/seo/PageSeo';
+import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
+import type { BreadcrumbItem } from '@/components/seo/Breadcrumbs';
 import { SectionReveal } from '@/components/ui/SectionReveal';
 import { useState, useEffect } from 'react';
 import type { LegalTemplates } from '@/data/legalTemplates';
 
 const Terms = () => {
     const { language, t } = useLanguageContext();
+    const { toLocalizedPath } = useLocalizedPath();
     const { content, title, loading, lastUpdated } = useLegalContent('terms', language);
     const [templates, setTemplates] = useState<LegalTemplates | null>(null);
 
@@ -41,15 +45,21 @@ const Terms = () => {
         );
     }
 
+    const breadcrumbItems: BreadcrumbItem[] = [
+        { label: t('nav.home'), href: '/' },
+        { label: renderedTitle },
+    ];
+
     return (
         <>
             <PageSeo pageKey="terms" />
 
             <div className="min-h-screen bg-white pt-24 pb-16">
                 <SectionReveal className="mx-auto max-w-3xl px-6">
+                    <Breadcrumbs items={breadcrumbItems} />
                     {/* Back Link */}
                     <Link
-                        to="/"
+                        to={toLocalizedPath()}
                         className="mb-8 inline-flex items-center gap-2 text-gray-500 transition-colors hover:text-gray-900"
                     >
                         <ArrowLeft size={18} />

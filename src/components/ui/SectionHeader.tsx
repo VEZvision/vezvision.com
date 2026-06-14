@@ -10,29 +10,27 @@ interface SectionHeaderProps {
     id?: string;
 }
 
-const SectionHeader: React.FC<SectionHeaderProps> = ({
+function SectionHeader({
     badgeText,
     badgeIcon,
     title,
     subtitle,
     className = '',
     id
-}) => {
-    return (
-        <header className={`${styles.header} ${className}`}>
-            {badgeText && (
-                <div className={styles.badgeWrapper}>
-                    <SectionBadge text={badgeText} icon={badgeIcon} />
-                </div>
-            )}
-            <h2 id={id} className={styles.title}>
-                {title}
-            </h2>
-            <p className={styles.subtitle}>
-                {subtitle}
-            </p>
-        </header>
-    );
-};
+}: SectionHeaderProps) { return (
+    <header className={`${styles.header} ${className}`}>
+        {badgeText && (
+            <div className={styles.badgeWrapper}>
+                <SectionBadge text={badgeText} icon={badgeIcon} />
+            </div>
+        )}
+        <h2 id={id} className={styles.title}>
+            {title}
+        </h2>
+        <p className={styles.subtitle}>
+            {subtitle}
+        </p>
+    </header>
+); };
 
 export default SectionHeader;

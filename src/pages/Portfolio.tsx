@@ -11,7 +11,7 @@ import PortfolioFeatures from '../components/portfolio/PortfolioFeatures';
 import ContactSection from '../components/contact/ContactSection';
 import { SectionReveal, StaggerItem, StaggerReveal } from '@/components/ui/SectionReveal';
 import styles from './Portfolio.module.css';
-import socialX from '@/assets/social-x.svg';
+import FacebookIcon from '@/assets/social-facebook';
 import socialLinkedin from '@/assets/social-linkedin.svg';
 import socialInstagram from '@/assets/products/social-instagram.svg';
 
@@ -51,7 +51,7 @@ const Portfolio = () => {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'transparent' }}>
+    <div className="min-h-screen">
       <div className="grid-background"></div>
       <PageSeo pageKey="portfolio" />
 
@@ -59,7 +59,7 @@ const Portfolio = () => {
         title={
           <>
             <span className="block">{t('portfolio.hero.title.line1')}</span>
-            <span className="block font-serif italic">{t('portfolio.hero.title.line2.italic')}</span>
+            <span className="block font-sans">{t('portfolio.hero.title.line2.italic')}</span>
           </>
         }
         subtitle={t('portfolio.hero.description')}
@@ -68,9 +68,9 @@ const Portfolio = () => {
         badge={t('portfolio.hero.badge')}
         icon={<FolderOpen className="w-3.5 h-3.5" />}
         socialLinks={[
-          { icon: socialX, label: t('about.hero.social.xAlt') },
-          { icon: socialLinkedin, label: t('about.hero.social.linkedinAlt') },
-          { icon: socialInstagram, label: t('about.hero.social.instagramAlt') },
+          { icon: <FacebookIcon />, label: 'Facebook' },
+          { icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: t('about.hero.social.linkedinAlt') },
+          { icon: <img src={socialInstagram} className="w-6 h-6" alt="" />, label: t('about.hero.social.instagramAlt') },
         ]}
         ariaLabelledBy="portfolio-hero-title"
       />
@@ -87,7 +87,7 @@ const Portfolio = () => {
               </div>
               <h2 className={styles.title}>
                 {t('portfolio.projects.title.line1')}{' '}
-                <span className="font-playfair italic font-medium">
+                <span className="font-sans font-semibold">
                   {t('portfolio.projects.title.line2.italic')}
                 </span>
               </h2>
@@ -119,13 +119,13 @@ const Portfolio = () => {
 
           <div>
             {loading ? (
-              [...Array(6)].map((_, i) => (
+              Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className={styles.skeleton}>
                   <div className={styles.skeletonImage} />
                   <div className={styles.skeletonContent}>
-                    <div className={styles.skeletonLine} style={{ width: '30%' }} />
-                    <div className={styles.skeletonLine} style={{ width: '80%' }} />
-                    <div className={styles.skeletonLine} style={{ width: '60%' }} />
+                    <div className={`${styles.skeletonLine} ${styles.skeletonLineShort}`} />
+                    <div className={`${styles.skeletonLine} ${styles.skeletonLineLong}`} />
+                    <div className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`} />
                   </div>
                 </div>
               ))
@@ -135,7 +135,7 @@ const Portfolio = () => {
                 <h3 className={styles.emptyTitle}>
                   {t('portfolio.grid.error')}
                 </h3>
-                <p className={styles.emptyDesc}>{error}</p>
+                <p className={styles.emptyDesc}>{error.message}</p>
               </div>
             ) : filteredProjects.length === 0 ? (
               <div className={styles.empty}>

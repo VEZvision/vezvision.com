@@ -3,12 +3,14 @@
   overflow: hidden;
   padding: 20px 0 80px;
   position: relative;
+  contain: paint layout;
 }
 
 .slider {
   position: relative;
   width: 100%;
   overflow: hidden;
+  contain: paint layout;
 }
 
 .slider::before,

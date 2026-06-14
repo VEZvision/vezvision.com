@@ -1,9 +1,7 @@
-import { motion } from 'framer-motion';
 import {
     X,
     Clock,
     Check,
-    RotateCcw,
     DollarSign,
     Mail,
     Star,
@@ -22,6 +20,7 @@ import styles from './PortfolioFeatures.module.css';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { SectionReveal, StaggerItem, StaggerReveal } from '@/components/ui/SectionReveal';
+import logoIcon from '@/assets/services/logo-icon.svg';
 
 const CODE_LINES = [
     { num: '1', content: <><span className={styles.keyword}>def</span> __init_(self,</> },
@@ -38,7 +37,6 @@ const PortfolioFeatures = () => {
     const { language } = useLanguageContext();
     const isPl = language === 'pl';
     const reducedMotion = useReducedMotion();
-    const staticMotion = reducedMotion;
 
     return (
         <section className={`${styles.section} ${styles.motionZone} vez-decorative-motion`}>
@@ -70,25 +68,20 @@ const PortfolioFeatures = () => {
                                 <div className={styles.checklistContainer}>
                                     {[
                                         { icon: X, text: isPl ? 'Pełna kontrola' : 'Full control', done: true },
-                                        { icon: Sparkles, text: isPl ? 'Bez zbędnych formalności' : 'No unnecessary formalities', done: false },
+                                        { icon: Sparkles, text: isPl ? 'Bez zbędnych formalności' : 'No unnecessary formalities', done: true },
                                         { icon: Clock, text: isPl ? 'Więcej czasu na rozwój' : 'More time for growth', done: true },
-                                        { icon: DollarSign, text: isPl ? 'Szybsze procesy' : 'Faster processes', done: false },
+                                        { icon: DollarSign, text: isPl ? 'Szybsze procesy' : 'Faster processes', done: true },
                                     ].map((item, i) => (
-                                        <motion.div
+                                        <div
                                             key={i}
                                             className={styles.checklistItem}
-                                            whileHover={staticMotion ? undefined : { x: 4, transition: { duration: 0.2 } }}
                                         >
                                             <div className={styles.checklistLeft}>
                                                 <item.icon className={styles.checklistIcon} />
                                                 <span className={styles.checklistText}>{item.text}</span>
                                             </div>
-                                            {item.done ? (
-                                                <Check className={`${styles.checklistStatus} ${styles.checked}`} size={16} />
-                                            ) : (
-                                                <RotateCcw className={styles.checklistStatus} size={16} />
-                                            )}
-                                        </motion.div>
+                                            <Check className={`${styles.checklistStatus} ${styles.checked}`} size={16} />
+                                        </div>
                                     ))}
                                 </div>
                             </div>
@@ -109,7 +102,7 @@ const PortfolioFeatures = () => {
                             <div className={styles.visualArea}>
                                 <div className={styles.iconsContainer}>
                                     <div className={styles.centerStar}>
-                                        <Star size={28} fill="currentColor" />
+                                        <img src={logoIcon} alt="" className={styles.centerLogo} loading="lazy" decoding="async" />
                                     </div>
                                     {[Mail, MessageSquare, FileUser, Layers, Zap, Code, Sparkles, Database, GitBranch, Star, Search, ArrowUpRight].map((Icon, i) => (
                                         <div key={i} className={styles.floatingIcon}>
@@ -140,13 +133,9 @@ const PortfolioFeatures = () => {
                                     <div className={styles.searchBar}>
                                         <Search size={16} style={{ color: '#98a2b3' }} />
                                         <span className={styles.searchInput}>Research anything...</span>
-                                        <motion.span
-                                            className={styles.searchButton}
-                                            whileHover={staticMotion ? undefined : { scale: 1.05 }}
-                                            whileTap={staticMotion ? undefined : { scale: 0.95 }}
-                                        >
+                                        <span className={styles.searchButton}>
                                             Research
-                                        </motion.span>
+                                        </span>
                                     </div>
                                     <div className={styles.suggestions}>
                                         {[
@@ -154,17 +143,16 @@ const PortfolioFeatures = () => {
                                             isPl ? 'Analiza UX oraz zachowań użytkowników' : 'UX and user behavior analysis',
                                             isPl ? 'Wskaźniki zwiększające konwersję...' : 'Conversion-boosting metrics...',
                                         ].map((text, i) => (
-                                            <motion.div
+                                            <div
                                                 key={i}
                                                 className={styles.suggestionItem}
-                                                whileHover={staticMotion ? undefined : { x: 4, backgroundColor: '#fafafa' }}
                                             >
                                                 <div className={styles.suggestionLeft}>
                                                     <Sparkles className={styles.suggestionIcon} />
                                                     <span className={styles.suggestionText}>{text}</span>
                                                 </div>
                                                 <ArrowUpRight className={styles.suggestionArrow} />
-                                            </motion.div>
+                                            </div>
                                         ))}
                                     </div>
                                 </div>
@@ -202,12 +190,12 @@ const PortfolioFeatures = () => {
                                             <div
                                                 key={i}
                                                 className={styles.codeLine}
-                                                style={staticMotion ? undefined : { animationDelay: `${i * 0.24}s` }}
+                                                style={reducedMotion ? undefined : { animationDelay: `${i * 0.24}s` }}
                                             >
                                                 <span className={styles.lineNumber}>{line.num}</span>
                                                 <span
                                                     className={styles.lineContent}
-                                                    style={staticMotion ? undefined : { animationDelay: `${i * 0.24 + 0.08}s` }}
+                                                    style={reducedMotion ? undefined : { animationDelay: `${i * 0.24 + 0.08}s` }}
                                                 >
                                                     {line.content}
                                                 </span>
@@ -237,7 +225,7 @@ const PortfolioFeatures = () => {
                                         <Layers size={24} />
                                     </div>
                                     <div className={`${styles.integrationIcon} ${styles.featured}`}>
-                                        <Zap size={28} />
+                                        <img src={logoIcon} alt="" className={styles.integrationLogo} />
                                     </div>
                                     <div className={styles.integrationIcon}>
                                         <GitBranch size={24} />

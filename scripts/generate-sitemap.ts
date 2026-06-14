@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import { generateSitemap } from '../src/utils/sitemap'
+import { generateSitemap } from './lib/sitemap'
 
 async function main() {
   const xml = await generateSitemap()

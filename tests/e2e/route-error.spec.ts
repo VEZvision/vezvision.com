@@ -10,6 +10,6 @@ test.describe('Route error boundary', () => {
       page.getByRole('heading', { name: /coś poszło nie tak|something went wrong/i }),
     ).toBeVisible()
     await expect(page.getByRole('button', { name: /strona główna|home/i })).toBeVisible()
-    await expect(page.getByRole('button', { name: /odśwież|retry|refresh/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /odśwież|retry|refresh|spróbuj ponownie|try again/i })).toBeVisible()
   })
 })

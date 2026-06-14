@@ -1,50 +1,49 @@
 import '../styles/GridBackground.css';
-import PageSeo from '@/components/seo/PageSeo';
-import Hero from '../components/hero/Hero';
-import FounderNote from '../components/FounderNote';
-import Benefits from '../components/benefits/Benefits';
-import Features from '../components/features/Features';
-import PotentialSection from '../components/potential/PotentialSection';
-import ProcessSection from '../components/process/ProcessSection';
-import AboutComparison from '../components/about/AboutComparison';
-import ProductsSection from '../components/products/ProductsSection';
+import Hero from '@/components/hero/Hero';
+import FounderNote from '@/components/FounderNote';
+import Benefits from '@/components/benefits/Benefits';
+import Features from '@/components/features/Features';
+import PotentialSection from '@/components/potential/PotentialSection';
+import ProcessSection from '@/components/process/ProcessSection';
+import AboutComparison from '@/components/about/AboutComparison';
+import ProductsSection from '@/components/products/ProductsSection';
+import NewsletterSection from '@/components/newsletter/NewsletterSection';
+import ContactSection from '@/components/contact/ContactSection';
+import { CmsPage } from '@/pagekit';
 
-import ContactSection from '../components/contact/ContactSection';
-
-import NewsletterSection from '../components/newsletter/NewsletterSection';
-import { usePageSections } from '@/hooks/usePageSection';
-
-const SECTION_COMPONENTS = {
-  hero: Hero,
-  founder_note: FounderNote,
-  benefits: Benefits,
-  features: Features,
-  potential: PotentialSection,
-  process: ProcessSection,
-  about_comparison: AboutComparison,
-  products_teaser: ProductsSection,
-  newsletter: NewsletterSection,
-  contact: ContactSection,
+const HOME_SECTIONS = {
+  hero: { Component: Hero, eager: true },
+  founder_note: { Component: FounderNote, eager: true },
+  benefits: { Component: Benefits, eager: true },
+  features: { Component: Features, eager: true },
+  potential: { Component: PotentialSection, eager: true },
+  process: { Component: ProcessSection, eager: true },
+  about_comparison: { Component: AboutComparison, eager: true },
+  products_teaser: { Component: ProductsSection, eager: true },
+  newsletter: { Component: NewsletterSection, eager: true },
+  contact: { Component: ContactSection, eager: true },
 } as const;
 
-const FALLBACK_SECTION_ORDER = ['hero', 'founder_note', 'benefits', 'features', 'potential', 'process', 'about_comparison', 'products_teaser', 'newsletter', 'contact'] as const;
+const HOME_FALLBACK = [
+  'hero',
+  'founder_note',
+  'benefits',
+  'features',
+  'potential',
+  'process',
+  'about_comparison',
+  'products_teaser',
+  'newsletter',
+  'contact',
+] as const;
 
-const Home = () => {
-  const sections = usePageSections('home');
-  const renderedSections = sections.length > 0
-    ? sections
-    : FALLBACK_SECTION_ORDER.map((section_key, order_index) => ({ page_key: 'home', section_key, order_index, enabled: true, content_pl: {}, content_en: {}, config: {}, updated_at: '' }));
-
+export default function Home() {
   return (
-    <div className="home-page">
-      <PageSeo pageKey="home" />
-      <div className="grid-background" aria-hidden />
-      {renderedSections.map((section) => {
-        const Component = SECTION_COMPONENTS[section.section_key as keyof typeof SECTION_COMPONENTS];
-        return Component ? <Component key={section.section_key} /> : null;
-      })}
-    </div>
+    <CmsPage
+      pageKey="home"
+      fallbackKeys={HOME_FALLBACK}
+      sections={HOME_SECTIONS}
+      shell={{ className: 'home-page' }}
+    />
   );
-};
-
-export default Home;
+}

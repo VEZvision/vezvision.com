@@ -1,40 +1,28 @@
 import '../styles/GridBackground.css';
-import { useNavigate } from 'react-router-dom';
-import PageSeo from '@/components/seo/PageSeo';
+import { Info } from 'lucide-react';
+
 import VideoHeroSection from '@/components/common/VideoHeroSection';
+import { useLanguageContext } from '@/hooks/useLanguage';
+import { useSettings } from '@/hooks/useSettings';
+import { usePageSectionConfig } from '@/hooks/usePageSection';
+import { CmsPage } from '@/pagekit';
+import { useHeroContactAction } from '@/hooks/useHeroContactAction';
+import FacebookIcon from '@/assets/social-facebook';
+import socialInstagram from '@/assets/products/social-instagram.svg';
+import socialLinkedin from '@/assets/social-linkedin.svg';
 import AboutHeader from '@/components/about/AboutHeader';
 import AboutCards from '@/components/about/AboutCards';
 import ValuesSection from '@/components/about/ValuesSection';
 import WhyChooseSection from '@/components/why-choose/WhyChooseSection';
-import AboutComparison from '../components/about/AboutComparison';
+import AboutComparison from '@/components/about/AboutComparison';
 import FaqSection from '@/components/faq/FaqSection';
-import { ContactSection } from '@/components/contact';
-import { usePageSections } from '@/hooks/usePageSection';
-import { useLanguageContext } from '@/hooks/useLanguage';
-import { useSettings } from '@/hooks/useSettings';
-import { usePageSectionConfig } from '@/hooks/usePageSection';
-import { Info } from 'lucide-react';
-import socialX from '@/assets/social-x.svg';
-import socialInstagram from '@/assets/products/social-instagram.svg';
-import socialLinkedin from '@/assets/social-linkedin.svg';
-import { safeCmsHref } from '@/utils/safeHref';
+import ContactSection from '@/components/contact/ContactSection';
 
-const AboutHeroWrapper = () => {
+function AboutHero() {
   const { t } = useLanguageContext();
   const { social } = useSettings();
   const sectionConfig = usePageSectionConfig('about', 'hero');
-  const navigate = useNavigate();
-
-  const handleContactClick = () => {
-    if (typeof document === 'undefined') return;
-
-    const contactSection = document.getElementById('kontakt') ?? document.getElementById('contact-form-section');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      void navigate(safeCmsHref(sectionConfig.contactHref, '/contact#kontakt'));
-    }
-  };
+  const handleContactClick = useHeroContactAction(sectionConfig.contactHref);
 
   return (
     <VideoHeroSection
@@ -42,7 +30,8 @@ const AboutHeroWrapper = () => {
         <>
           <span className="block">{t('about.hero.title.line1')}</span>
           <span className="block">
-            {t('about.hero.title.line2.before')} <span className="font-serif italic">{t('about.hero.title.line2.italic')}</span>
+            {t('about.hero.title.line2.before')}{' '}
+            <span className="font-sans">{t('about.hero.title.line2.italic')}</span>
           </span>
         </>
       }
@@ -52,43 +41,43 @@ const AboutHeroWrapper = () => {
       badge={t('about.hero.badge')}
       icon={<Info className="w-3.5 h-3.5" />}
       socialLinks={[
-        ...(social?.x ? [{ href: social.x, icon: socialX, label: t('about.hero.social.xAlt') }] : []),
-        ...(social?.instagram ? [{ href: social.instagram, icon: socialInstagram, label: t('about.hero.social.instagramAlt') }] : []),
-        ...(social?.linkedin ? [{ href: social.linkedin, icon: socialLinkedin, label: t('about.hero.social.linkedinAlt') }] : []),
+        ...(social?.facebook ? [{ href: social.facebook, icon: <FacebookIcon />, label: 'Facebook' }] : social?.x ? [{ href: social.x, icon: <FacebookIcon />, label: 'Facebook' }] : []),
+        ...(social?.instagram ? [{ href: social.instagram, icon: <img src={socialInstagram} className="w-6 h-6" alt="" />, label: t('about.hero.social.instagramAlt') }] : []),
+        ...(social?.linkedin ? [{ href: social.linkedin, icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: t('about.hero.social.linkedinAlt') }] : []),
       ]}
     />
   );
-};
+}
 
-const SECTION_COMPONENTS = {
-  hero: AboutHeroWrapper,
-  header: AboutHeader,
-  cards: AboutCards,
-  values: ValuesSection,
-  about_comparison: AboutComparison,
-  why_choose: WhyChooseSection,
-  faq: FaqSection,
-  contact: ContactSection,
+const ABOUT_SECTIONS = {
+  hero: { Component: AboutHero, eager: true },
+  header: { Component: AboutHeader, eager: true },
+  cards: { Component: AboutCards, eager: true },
+  values: { Component: ValuesSection, eager: true },
+  about_comparison: { Component: AboutComparison, eager: true },
+  why_choose: { Component: WhyChooseSection, eager: true },
+  faq: { Component: FaqSection, eager: true },
+  contact: { Component: ContactSection, eager: true },
 } as const;
 
-const FALLBACK_SECTION_ORDER = ['hero', 'header', 'cards', 'values', 'about_comparison', 'why_choose', 'faq', 'contact'] as const;
+const ABOUT_FALLBACK = [
+  'hero',
+  'header',
+  'cards',
+  'values',
+  'about_comparison',
+  'why_choose',
+  'faq',
+  'contact',
+] as const;
 
-const About = () => {
-  const sections = usePageSections('about');
-  const renderedSections = sections.length > 0
-    ? sections
-    : FALLBACK_SECTION_ORDER.map((section_key, order_index) => ({ page_key: 'about', section_key, order_index, enabled: true, content_pl: {}, content_en: {}, config: {}, updated_at: '' }));
-
+export default function About() {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f5f5f5', position: 'relative', zIndex: 1 }}>
-      <PageSeo pageKey="about" />
-      <div className="grid-background"></div>
-      {renderedSections.map((section) => {
-        const Component = SECTION_COMPONENTS[section.section_key as keyof typeof SECTION_COMPONENTS];
-        return Component ? <Component key={section.section_key} /> : null;
-      })}
-    </div>
+    <CmsPage
+      pageKey="about"
+      fallbackKeys={ABOUT_FALLBACK}
+      sections={ABOUT_SECTIONS}
+      shell={{ className: 'min-h-screen', style: { backgroundColor: '#f5f5f5', position: 'relative', zIndex: 1 } }}
+    />
   );
-};
-
-export default About;
+}

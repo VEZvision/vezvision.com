@@ -104,13 +104,24 @@ It runs install, typecheck, lint, unit tests, production build, npm audit, and C
 | Function | Purpose |
 |----------|---------|
 | `check-maintenance-access` | Maintenance gate + IP allowlist |
+| `get-code-injection` | Private CMS head/body snippets (service role) |
+| `increment-blog-view` | Blog view counter with per-IP dedup (service role RPC) |
 | `submit-contact` | Contact form → DB + Resend |
 | `subscribe-newsletter` | Newsletter signup via `safe_insert_newsletter_subscriber` |
 | `unsubscribe-newsletter` | Token unsubscribe via `unsubscribe_by_token` |
 
 `send-newsletter` is an **admin-only** Edge Function (service role + Resend). It is not part of this public repo; deploy and rotate secrets from your internal ops tooling, not from the marketing site pipeline.
 
-Deploy from `supabase/functions/` (shared `_shared/cors.ts`, `_shared/clientIp.ts`). Use `import_map_path: deno.json` when deploying via Supabase API. Apply DB migrations before deploying when RPC signatures change.
+Deploy from `supabase/functions/` (shared `_shared/cors.ts`, `_shared/clientIp.ts`, `_shared/turnstile.ts`). Use `import_map_path: deno.json` when deploying via Supabase API. Apply DB migrations before deploying when RPC signatures change.
+
+`verify_jwt` is `false` on public read/check endpoints (`check-maintenance-access`, `get-code-injection`, `increment-blog-view`, newsletter subscribe/unsubscribe) so anonymous SPA clients can call them with the publishable key. `submit-contact` keeps `verify_jwt: true` (anon JWT still works via `supabase.functions.invoke`).
+
+### Optional Turnstile (contact + newsletter)
+
+| Env (client) | `VITE_TURNSTILE_SITE_KEY` |
+| Env (edge) | `TURNSTILE_SECRET_KEY` |
+
+When the site key is unset, widgets are hidden and edge functions skip verification. When set, both must be configured in Supabase Edge secrets and Hostido env at build time.
 
 Before every production build, `npm run build` verifies CSP sources (`verify:security`) and `dist/` artifacts (`verify-production-build.mjs`).
 

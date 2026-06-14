@@ -1,5 +1,6 @@
-import { supabase } from '@/lib/supabase';
+import { getSupabase, supabaseUrl } from '@/lib/supabase';
 import { logError } from '@/lib/logger';
+import { safeImageUrl } from '@/utils/safeHref';
 import { isAbortLikeError } from './utils';
 import {
   PortfolioProject,
@@ -111,15 +112,28 @@ const mapProjectFromDB = (data: DBProject): PortfolioProject => {
   };
 };
 
+const PORTFOLIO_LIST_SELECT = `
+  id, slug, status, featured, order_index, demo_url, github_url, client_name, cover_image,
+  created_at, updated_at, title_pl, title_en, short_desc_pl, short_desc_en,
+  description_pl, description_en, challenge_pl, challenge_en, solution_pl, solution_en,
+  show_cover_image, show_demo_url, show_challenge, show_solution,
+  seo_title_pl, seo_title_en, seo_desc_pl, seo_desc_en,
+  vv_project_category_assignments(vv_project_categories(slug)),
+  vv_project_images(id, path, type, order_index, alt_pl, alt_en, created_at)
+`
+
+const PORTFOLIO_DETAIL_SELECT = `
+  *,
+  vv_project_category_assignments(vv_project_categories(slug)),
+  vv_project_images(*)
+`
+
 export async function listProjects(filter: PortfolioFilter = {}, signal?: AbortSignal): Promise<{ projects: PortfolioProject[], total: number }> {
   try {
+    const supabase = await getSupabase()
     let query = supabase
       .from('vv_projects')
-      .select(`
-        *,
-        vv_project_category_assignments(vv_project_categories(slug)),
-        vv_project_images(*)
-      `, { count: 'exact' })
+      .select(PORTFOLIO_LIST_SELECT, { count: 'exact' })
       .limit(100);
 
     if (signal) query = query.abortSignal(signal);
@@ -134,7 +148,17 @@ export async function listProjects(filter: PortfolioFilter = {}, signal?: AbortS
       query = query.eq('featured', filter.featured);
     }
     if (filter.search) {
-      query = query.or(`slug.ilike.%${filter.search}%,client_name.ilike.%${filter.search}%`);
+      const sanitizedSearch = filter.search
+        .trim()
+        .slice(0, 100)
+        .replace(/[%_,".()\\]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      if (sanitizedSearch) {
+        const pattern = `%${sanitizedSearch}%`;
+        query = query.or(`slug.ilike.${pattern},client_name.ilike.${pattern}`);
+      }
     }
 
     query = query.order('order_index', { ascending: true });
@@ -163,15 +187,12 @@ export async function listProjects(filter: PortfolioFilter = {}, signal?: AbortS
 
 export async function getProject(idOrSlug: string, signal?: AbortSignal): Promise<PortfolioProject | null> {
   try {
+    const supabase = await getSupabase()
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
 
     let query = supabase
       .from('vv_projects')
-      .select(`
-        *,
-        vv_project_category_assignments(vv_project_categories(slug)),
-        vv_project_images(*)
-      `);
+      .select(PORTFOLIO_DETAIL_SELECT);
 
     if (signal) query = query.abortSignal(signal);
 
@@ -198,9 +219,12 @@ export async function getProject(idOrSlug: string, signal?: AbortSignal): Promis
 
 export function getProjectImageUrl(path: string): string {
   if (!path) return '';
-  if (path.startsWith('http://') || path.startsWith('https://')) {
-    return path;
+
+  let url = path;
+  if (!path.startsWith('http://') && !path.startsWith('https://')) {
+    const base = supabaseUrl?.replace(/\/$/, '') ?? '';
+    url = `${base}/storage/v1/object/public/vv-portfolio-images/${path.replace(/^\//, '')}`;
   }
-  const { data } = supabase.storage.from('vv-portfolio-images').getPublicUrl(path);
-  return data.publicUrl;
+
+  return safeImageUrl(url) ?? '';
 }

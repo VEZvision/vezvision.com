@@ -9,6 +9,12 @@ import SectionHeader from '@/components/ui/SectionHeader';
 import { Newspaper } from 'lucide-react';
 import { SectionReveal, StaggerReveal, StaggerItem } from '@/components/ui/SectionReveal';
 import { safeJsonLd } from '@/utils/safeJsonLd';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { useSettings } from '@/hooks/useSettings';
+import { Helmet } from 'react-helmet-async';
+import { safeAbsoluteHttpUrl, safeImageUrl } from '@/utils/safeHref';
+import { hasBlogPostTranslation } from '@/utils/blogTranslation';
+import { stripHtmlForJsonLd } from '@/utils/stripHtmlForJsonLd';
 
 interface Article {
   id: string;
@@ -27,6 +33,9 @@ interface BlogArticlesWithDataProps {
 const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
   const { posts, loading, error, getPostTranslation } = useBlog();
   const { language, t } = useLanguageContext();
+  const { toLocalizedPath } = useLocalizedPath();
+  const { seo } = useSettings();
+  const siteBaseUrl = safeAbsoluteHttpUrl(seo?.siteUrl) ?? (typeof window !== 'undefined' ? window.location.origin : '');
   const [featuredPost, setFeaturedPost] = useState<BlogPostWithDetails | null>(null);
   const [regularPosts, setRegularPosts] = useState<BlogPostWithDetails[]>([]);
   const [visibleCount, setVisibleCount] = useState(6);
@@ -85,8 +94,8 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
       date: formatDate(post.published_at || post.created_at),
       title: translation?.title || 'Brak tytułu',
       description: translation?.excerpt || translation?.content?.substring(0, 150) + '...' || 'Brak opisu',
-      imageUrl: post.featured_image || '/Logo_vezvision_optimized.svg',
-      href: `/blog/${post.slug}`
+      imageUrl: safeImageUrl(post.featured_image) || '/Logo_vezvision_optimized.svg',
+      href: toLocalizedPath(`blog/${post.slug}`)
     };
   };
 
@@ -113,7 +122,6 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
             <div className="text-red-600 mb-4">
               {t('blog.list.error')}
             </div>
-            <div className="text-gray-600">{error}</div>
           </div>
         </div>
       </section>
@@ -156,7 +164,7 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
             badgeIcon={<Newspaper className="w-3.5 h-3.5" />}
             title={
               <>
-                {t('blog.articles.title.line1')} <span className="font-playfair italic font-medium">{t('blog.articles.title.line2.italic')}</span>
+                {t('blog.articles.title.line1')} <span className="font-sans font-semibold">{t('blog.articles.title.line2.italic')}</span>
               </>
             }
             subtitle={t('blog.articles.subtitle')}
@@ -198,37 +206,37 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
           </SectionReveal>
         )}
 
-        {/* Structured data for SEO */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: safeJsonLd({
-              "@context": "https://schema.org",
-              "@type": "Blog",
-              "name": "VezVision Blog",
-              "description": "Inspiracje, porady i nowości ze świata IT, AI oraz marketingu",
-              "url": "https://vezvision.com/blog",
-              "blogPost": posts.map(post => {
-                const translation = getPostTranslation(post, language as 'pl' | 'en');
-                return {
-                  "@type": "BlogPosting",
-                  "headline": translation?.title || 'Brak tytułu',
-                  "description": translation?.excerpt || translation?.content?.substring(0, 150) || 'Brak opisu',
-                  "image": post.featured_image || 'https://vezvision.com/Logo_vezvision_optimized.svg',
-                  "datePublished": post.published_at,
-                  "author": {
-                    "@type": "Organization",
-                    "name": "VezVision"
-                  },
-                  "publisher": {
-                    "@type": "Organization",
-                    "name": "VezVision"
-                  }
-                };
-              })
-            })
-          }}
-        />
+        <Helmet>
+          <script type="application/ld+json">
+            {safeJsonLd({
+              '@context': 'https://schema.org',
+              '@type': 'Blog',
+              name: 'VezVision Blog',
+              description: language === 'pl'
+                ? 'Inspiracje, porady i nowości ze świata IT, AI oraz marketingu'
+                : 'Ideas, tips and updates on IT, AI and marketing',
+              url: `${siteBaseUrl}${toLocalizedPath('blog')}`,
+              blogPost: posts
+                .filter((post) => hasBlogPostTranslation(post, language as 'pl' | 'en'))
+                .map((post) => {
+                  const translation = getPostTranslation(post, language as 'pl' | 'en');
+                  const postPath = toLocalizedPath(`blog/${post.slug}`);
+                  return {
+                    '@type': 'BlogPosting',
+                    headline: translation?.title || (language === 'pl' ? 'Brak tytułu' : 'Untitled'),
+                    description: stripHtmlForJsonLd(
+                      translation?.excerpt || translation?.content?.substring(0, 150) || '',
+                    ) || (language === 'pl' ? 'Brak opisu' : 'No description'),
+                    url: `${siteBaseUrl}${postPath}`,
+                    image: safeImageUrl(post.featured_image) || `${siteBaseUrl}/Logo_vezvision_optimized.svg`,
+                    ...(post.published_at ? { datePublished: post.published_at } : {}),
+                    author: { '@type': 'Organization', name: 'VezVision' },
+                    publisher: { '@type': 'Organization', name: 'VezVision' },
+                  };
+                }),
+            })}
+          </script>
+        </Helmet>
       </div>
     </section>
   );

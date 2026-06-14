@@ -8,6 +8,14 @@ export type CachedPublicSettings = {
   settings: SettingsState
 }
 
+/** Maintenance must never be served from cache — gate always needs a fresh flag. */
+function stripVolatileSettings(settings: SettingsState): SettingsState {
+  return {
+    ...settings,
+    maintenance: null,
+  }
+}
+
 export function readPublicSettingsCache(): CachedPublicSettings | undefined {
   if (typeof window === 'undefined') return undefined
 
@@ -19,7 +27,10 @@ export function readPublicSettingsCache(): CachedPublicSettings | undefined {
     if (!parsed?.savedAt || !parsed.settings) return undefined
     if (Date.now() - parsed.savedAt > CACHE_TTL_MS) return undefined
 
-    return parsed
+    return {
+      savedAt: parsed.savedAt,
+      settings: stripVolatileSettings(parsed.settings),
+    }
   } catch {
     return undefined
   }
@@ -29,7 +40,10 @@ export function writePublicSettingsCache(settings: SettingsState): void {
   if (typeof window === 'undefined') return
 
   try {
-    const payload: CachedPublicSettings = { savedAt: Date.now(), settings }
+    const payload: CachedPublicSettings = {
+      savedAt: Date.now(),
+      settings: stripVolatileSettings(settings),
+    }
     window.localStorage.setItem(CACHE_KEY, JSON.stringify(payload))
   } catch {
     // Quota or private mode — ignore.

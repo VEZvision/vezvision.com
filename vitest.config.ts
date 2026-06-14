@@ -9,7 +9,12 @@ export default defineConfig({
         environment: 'jsdom',
         globals: true,
         setupFiles: './src/test/setup.ts',
-        exclude: ['tests/e2e/**', 'node_modules/**', 'dist/**'],
+        exclude: ['tests/e2e/**', 'supabase/functions/**', 'scripts/**', 'node_modules/**', 'dist/**'],
+        coverage: {
+            provider: 'v8',
+            reporter: ['text', 'html'],
+            include: ['src/services/**', 'src/utils/**', 'shared/**'],
+        },
         alias: {
             '@': path.resolve(__dirname, './src'),
         },

@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 import { safeAbsoluteHttpUrl, safeExternalHref, safeImageUrl, safePublicHref } from '@/utils/safeHref'
 
 export interface ContactSettings {
@@ -32,7 +32,6 @@ export interface MaintenanceSettings {
   enabled: boolean
   message: string
   description: string
-  allowedIps: string[]
 }
 
 export interface SeoFilesSettings {
@@ -45,11 +44,6 @@ export interface IdentitySettings {
   logoUrl: string
   faviconUrl: string
   defaultOgImageUrl: string
-}
-
-export interface CodeInjectionSettings {
-  head: string
-  body: string
 }
 
 export interface CompanySettings {
@@ -90,7 +84,6 @@ export interface PublicSiteSettings {
   contact: ContactSettings
   social: SocialSettings
   seo: SeoSettings
-  code: CodeInjectionSettings
   maintenance: MaintenanceSettings
   seo_files: SeoFilesSettings
   company: CompanySettings
@@ -109,7 +102,6 @@ const PUBLIC_SETTINGS_KEYS = [
   'contact',
   'social',
   'seo',
-  'code_injection',
   'maintenance_mode',
   'seo_files',
   'company',
@@ -148,15 +140,10 @@ const EMPTY_PUBLIC_SETTINGS: PublicSiteSettings = {
     robots: '',
     ogSiteName: '',
   },
-  code: {
-    head: '',
-    body: '',
-  },
   maintenance: {
     enabled: false,
     message: '',
     description: '',
-    allowedIps: [],
   },
   seo_files: {
     robotsTxt: '',
@@ -287,15 +274,6 @@ function normalizeSeo(value: unknown): SeoSettings {
   }
 }
 
-function normalizeCodeInjection(value: unknown): CodeInjectionSettings {
-  if (!isRecord(value)) return EMPTY_PUBLIC_SETTINGS.code
-
-  return {
-    head: asString(value.head),
-    body: asString(value.body),
-  }
-}
-
 function normalizeMaintenance(value: unknown): MaintenanceSettings {
   if (!isRecord(value)) return EMPTY_PUBLIC_SETTINGS.maintenance
 
@@ -303,7 +281,6 @@ function normalizeMaintenance(value: unknown): MaintenanceSettings {
     enabled: asBoolean(value.enabled),
     message: asString(value.message),
     description: asString(value.description),
-    allowedIps: asStringArray(value.allowedIps),
   }
 }
 
@@ -361,7 +338,6 @@ export function normalizeSettingsEntries(entries: SettingEntry[]): PublicSiteSet
     contact: normalizeContact(settingsMap.get('contact')),
     social: normalizeSocial(settingsMap.get('social')),
     seo: normalizeSeo(settingsMap.get('seo')),
-    code: normalizeCodeInjection(settingsMap.get('code_injection')),
     maintenance: normalizeMaintenance(settingsMap.get('maintenance_mode')),
     seo_files: normalizeSeoFiles(settingsMap.get('seo_files')),
     company: normalizeCompany(settingsMap.get('company')),
@@ -373,6 +349,8 @@ export function normalizeSettingsEntries(entries: SettingEntry[]): PublicSiteSet
 export async function getSettings(key: 'ALL'): Promise<{ data: SettingEntry[] }>
 export async function getSettings(key: string): Promise<unknown | null>
 export async function getSettings(key: string): Promise<{ data: SettingEntry[] } | unknown | null> {
+  const supabase = await getSupabase()
+
   if (key === 'ALL') {
     const { data, error } = await supabase
       .from('vv_site_settings')

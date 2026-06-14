@@ -93,7 +93,7 @@ describe('normalizeSettingsEntries', () => {
     expect(settings.identity.siteName).toBe('VezVision')
     expect(settings.contact.address).toBe('Złote Łany 11, Bielsko-Biała')
     expect(settings.seo.keywords).toEqual(['ai', 'web'])
-    expect(settings.maintenance.allowedIps).toEqual(['127.0.0.1'])
+    expect(settings.maintenance.enabled).toBe(true)
     expect(settings.navigation.items).toHaveLength(1)
     expect(settings.footer.legalLinks[0]?.href).toBe('/privacy-policy')
   })

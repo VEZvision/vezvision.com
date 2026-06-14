@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 
 export interface LegalContentResult {
   content: string | null
@@ -30,6 +30,7 @@ export async function getPublishedLegalContent(
   pageKey: string,
   language: 'pl' | 'en'
 ): Promise<LegalContentResult> {
+  const supabase = await getSupabase()
   const { data, error } = await supabase
     .from('vv_legal_documents')
     .select('title_pl,title_en,content_pl,content_en,last_updated,version,is_published')
@@ -50,17 +51,33 @@ export async function getPublishedLegalContent(
 }
 
 export function subscribeToLegalContent(pageKey: string, onChange: () => void): () => void {
-  const channel = supabase
-    .channel(`legal-content-${pageKey}`)
-    .on('postgres_changes', {
-      event: '*',
-      schema: 'public',
-      table: 'vv_legal_documents',
-      filter: `document_key=eq.${pageKey}`,
-    }, onChange)
-    .subscribe()
+  let disposed = false
+  let removeChannel: (() => void) | null = null
+
+  void getSupabase().then((supabase) => {
+    if (disposed) return
+
+    const channel = supabase
+      .channel(`legal-content-${pageKey}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'vv_legal_documents',
+          filter: `document_key=eq.${pageKey}`,
+        },
+        onChange,
+      )
+      .subscribe()
+
+    removeChannel = () => {
+      void supabase.removeChannel(channel)
+    }
+  })
 
   return () => {
-    void supabase.removeChannel(channel)
+    disposed = true
+    removeChannel?.()
   }
 }

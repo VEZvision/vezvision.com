@@ -3,11 +3,15 @@ import { Link, MemoryRouter, Outlet, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useScrollToTopOnRouteChange } from '@/hooks/useScrollToTopOnRouteChange'
-import { scrollToTopInstant } from '@/utils/smoothScrolling'
+import { scrollToTopInstant } from '@/scroll'
 
-vi.mock('@/utils/smoothScrolling', () => ({
-  scrollToTopInstant: vi.fn(),
-}))
+vi.mock('@/scroll', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/scroll')>()
+  return {
+    ...actual,
+    scrollToTopInstant: vi.fn(),
+  }
+})
 
 function TestLayout() {
   useScrollToTopOnRouteChange()

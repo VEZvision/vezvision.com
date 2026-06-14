@@ -1,5 +1,6 @@
 import { ReactNode, useEffect } from 'react';
 import { LanguageContext, useLanguage } from '../hooks/useLanguage';
+import AppBootShell from '@/components/layout/AppBootShell';
 
 interface LanguageProviderProps {
   children: ReactNode;
@@ -13,6 +14,10 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       document.documentElement.lang = languageHook.language;
     }
   }, [languageHook.language]);
+
+  if (!languageHook.localeReady) {
+    return <AppBootShell />;
+  }
 
   return (
     <LanguageContext.Provider value={languageHook}>

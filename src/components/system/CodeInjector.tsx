@@ -1,8 +1,14 @@
-import { useEffect } from 'react';
-import DOMPurify from 'dompurify';
-import { useSettings } from '@/hooks/useSettings';
+import { useEffect, useState } from 'react';
+import { sanitizeCmsHtml } from '@/utils/sanitizeCmsHtml';
+import { fetchCodeInjection } from '@/services/codeInjection';
 
-const ALLOWED_LINK_RELS = new Set(['canonical', 'icon', 'shortcut icon', 'apple-touch-icon', 'manifest', 'alternate']);
+/** SEO-critical rels (canonical, alternate) are app-owned via Helmet — never from CMS head. */
+const ALLOWED_LINK_RELS = new Set(['icon', 'shortcut', 'shortcut icon', 'apple-touch-icon', 'manifest']);
+
+function hasAllowedLinkRel(relValue: string): boolean {
+    const tokens = relValue.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    return tokens.some((token) => ALLOWED_LINK_RELS.has(token));
+}
 const CMS_HEAD_MARKER = 'data-vez-cms-head';
 const CMS_BODY_MARKER = 'data-vez-cms-body';
 const MAX_HEAD_MARKUP_LENGTH = 32_000;
@@ -15,7 +21,7 @@ function isSafeHeadHref(value: string | null): value is string {
 
     try {
         const url = new URL(trimmed);
-        return url.protocol === 'https:' || url.protocol === 'http:';
+        return url.protocol === 'https:';
     } catch {
         return false;
     }
@@ -44,6 +50,10 @@ function buildSafeHeadFragment(markup: string): DocumentFragment {
             if (value) safeMeta.setAttribute(attr, value);
         }
 
+        if (safeMeta.getAttribute('http-equiv')?.toLowerCase() === 'refresh') {
+            continue;
+        }
+
         if (safeMeta.attributes.length > 0) {
             markInjectedNode(safeMeta, CMS_HEAD_MARKER);
             fragment.appendChild(safeMeta);
@@ -53,7 +63,7 @@ function buildSafeHeadFragment(markup: string): DocumentFragment {
     for (const link of template.content.querySelectorAll('link')) {
         const rel = link.getAttribute('rel')?.trim().toLowerCase() ?? '';
         const href = link.getAttribute('href');
-        if (!href || !ALLOWED_LINK_RELS.has(rel) || !isSafeHeadHref(href)) continue;
+        if (!href || !hasAllowedLinkRel(rel) || !isSafeHeadHref(href)) continue;
 
         const safeLink = document.createElement('link');
         safeLink.setAttribute('rel', rel);
@@ -70,7 +80,7 @@ function buildSafeHeadFragment(markup: string): DocumentFragment {
 }
 
 function injectBodyMarkup(markup: string): void {
-    const sanitizedBody = DOMPurify.sanitize(markup.slice(0, MAX_BODY_MARKUP_LENGTH));
+    const sanitizedBody = sanitizeCmsHtml(markup.slice(0, MAX_BODY_MARKUP_LENGTH));
     const range = document.createRange();
     range.setStart(document.body, 0);
     const fragment = range.createContextualFragment(sanitizedBody);
@@ -82,38 +92,68 @@ function injectBodyMarkup(markup: string): void {
     document.body.appendChild(fragment);
 }
 
-/**
- * CodeInjector — injects restricted admin-controlled markup from vv_site_settings.
- *
- * SECURITY MODEL:
- * - Write access is restricted to admins via RLS (vv_is_admin()).
- * - Head injection is limited to non-executable SEO/verification tags.
- *   Scripts and styles are stripped; analytics must use first-class integrations
- *   such as googleAnalyticsConsent.ts instead of arbitrary CMS code.
- * - Body injection is sanitized strictly via DOMPurify and cannot execute scripts.
- */
-const CodeInjector = () => {
-    const { code } = useSettings();
-    const headMarkup = typeof code?.head === 'string' ? code.head.trim() : '';
-    const bodyMarkup = typeof code?.body === 'string' ? code.body.trim() : '';
+interface CodeInjectionMarkup {
+    head: string;
+    body: string;
+}
+
+interface CodeInjectorProps {
+    delayMs?: number;
+}
+
+const CodeInjector = ({ delayMs = 2000 }: CodeInjectorProps) => {
+    const [markup, setMarkup] = useState<CodeInjectionMarkup>({ head: '', body: '' });
+
+    useEffect(() => {
+        let active = true;
+        let timer: ReturnType<typeof setTimeout> | null = null;
+
+        const load = () => {
+            timer = setTimeout(() => {
+                void fetchCodeInjection().then((code) => {
+                    if (active) {
+                        setMarkup({
+                            head: code.head.trim(),
+                            body: code.body.trim(),
+                        });
+                    }
+                });
+            }, delayMs);
+        };
+
+        if (typeof window.requestIdleCallback === 'function') {
+            const idleId = window.requestIdleCallback(load, { timeout: 3000 });
+            return () => {
+                active = false;
+                window.cancelIdleCallback(idleId);
+                if (timer) clearTimeout(timer);
+            };
+        }
+
+        load();
+        return () => {
+            active = false;
+            if (timer) clearTimeout(timer);
+        };
+    }, [delayMs]);
 
     useEffect(() => {
         clearInjectedNodes(CMS_HEAD_MARKER);
         clearInjectedNodes(CMS_BODY_MARKER);
 
-        if (headMarkup) {
-            document.head.appendChild(buildSafeHeadFragment(headMarkup));
+        if (markup.head) {
+            document.head.appendChild(buildSafeHeadFragment(markup.head));
         }
 
-        if (bodyMarkup) {
-            injectBodyMarkup(bodyMarkup);
+        if (markup.body) {
+            injectBodyMarkup(markup.body);
         }
 
         return () => {
             clearInjectedNodes(CMS_HEAD_MARKER);
             clearInjectedNodes(CMS_BODY_MARKER);
         };
-    }, [headMarkup, bodyMarkup]);
+    }, [markup.head, markup.body]);
 
     return null;
 };

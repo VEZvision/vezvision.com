@@ -145,26 +145,22 @@
   transform: translateX(-50%);
   width: 176px;
   height: 176px;
+}
+
+.gaugeInner {
+  width: 100%;
+  height: 100%;
   border-radius: 100px;
   background: #f5f5f5;
   box-shadow: inset 0 1px 1px -1px #00000014, inset 0 2px 2px -1px #00000014,
     inset 0 4px 4px -2px #00000012, inset 0 7px 7px -3px #00000012,
     inset 0 14px 14px -3px #0000000d, inset 0 30px 30px -4px #00000005;
+  animation: gaugeSpin 20s linear infinite;
 }
 
-.gauge::before {
-  content: '';
-  position: absolute;
-  top: 28px;
-  left: 108px;
-  width: 16px;
-  height: 87px;
-  border-radius: 100px;
-  background: #f5f5f5;
-  box-shadow: inset 0 3px 1px #ffffff, 0 1px 1px -1px #00000033, 0 2px 2px -1px #00000030,
-    0 4px 4px -2px #0000002e, 0 7px 7px -3px #0000002b, 0 14px 14px -3px #00000021,
-    0 30px 30px -4px #0000000d;
-  transform: rotate(52deg);
+@keyframes gaugeSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .gauge::after {
@@ -180,6 +176,21 @@
     0 2px 2px -1px #00000014, 0 4px 4px -2px #00000012,
     0 7px 7px -3px #00000012, 0 14px 14px -3px #0000000d,
     0 30px 30px -4px #00000005;
+}
+
+.gaugeInner::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  left: 108px;
+  width: 16px;
+  height: 87px;
+  border-radius: 100px;
+  background: #f5f5f5;
+  box-shadow: inset 0 3px 1px #ffffff, 0 1px 1px -1px #00000033, 0 2px 2px -1px #00000030,
+    0 4px 4px -2px #0000002e, 0 7px 7px -3px #0000002b, 0 14px 14px -3px #00000021,
+    0 30px 30px -4px #0000000d;
+  transform: rotate(52deg);
 }
 
 .bars {
@@ -206,14 +217,14 @@
   margin-top: 44px;
 }
 
-.bar.h111 {
-  height: 111px;
-  margin-top: 8px;
+.bar.h91 {
+  height: 91px;
+  margin-top: 28px;
 }
 
-.bar.h102 {
-  height: 102px;
-  margin-top: 17px;
+.bar.h107 {
+  height: 107px;
+  margin-top: 12px;
 }
 
 .bar.h119 {
@@ -233,15 +244,71 @@
 
 .networkShapeArea {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding-top: 12px;
+  padding-top: 48px;
 }
 
 .networkShapeArea .networkSvg {
   width: min(100%, 260px);
   height: auto;
   max-height: 176px;
+}
+
+.stemGroup {
+  animation: networkPulse 4s ease-in-out infinite;
+}
+
+.stem {
+  transform-origin: 148px 141px;
+  animation: stemSway 6s ease-in-out infinite;
+}
+
+.stem:nth-child(1) { animation-delay: 0s; }
+.stem:nth-child(2) { animation-delay: 0.8s; }
+.stem:nth-child(3) { animation-delay: 1.6s; }
+.stem:nth-child(4) { animation-delay: 2.4s; }
+.stem:nth-child(5) { animation-delay: 3.2s; }
+.stem:nth-child(6) { animation-delay: 4.0s; }
+.stem:nth-child(7) { animation-delay: 4.8s; }
+
+.stemDot {
+  animation: dotBreathe 2.5s ease-in-out infinite;
+}
+
+.stem:nth-child(1) .stemDot { animation-delay: 0s; }
+.stem:nth-child(2) .stemDot { animation-delay: 0.35s; }
+.stem:nth-child(3) .stemDot { animation-delay: 0.7s; }
+.stem:nth-child(4) .stemDot { animation-delay: 1.05s; }
+.stem:nth-child(5) .stemDot { animation-delay: 1.4s; }
+.stem:nth-child(6) .stemDot { animation-delay: 1.75s; }
+.stem:nth-child(7) .stemDot { animation-delay: 2.1s; }
+
+@keyframes dotBreathe {
+  0%, 100% { r: 9; opacity: 0.7; }
+  50% { r: 14; opacity: 1; }
+}
+
+@keyframes stemSway {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(1.5deg); }
+  75% { transform: rotate(-1.5deg); }
+}
+
+@keyframes networkPulse {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stemGroup,
+  .stem,
+  .stemDot {
+    animation: none;
+  }
+  .gaugeInner {
+    animation: none;
+  }
 }
 
 .network {
@@ -265,7 +332,8 @@
   }
 
   .networkShapeArea {
-    padding-top: 16px;
+    padding-top: 56px;
+    padding-bottom: 0;
   }
 
   .networkShapeArea .networkSvg {
@@ -310,7 +378,8 @@
   }
 
   .networkShapeArea {
-    padding-top: 18px;
+    padding-top: 60px;
+    padding-bottom: 0;
   }
 
   .networkShapeArea .networkSvg {

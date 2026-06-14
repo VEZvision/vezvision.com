@@ -1,7 +1,8 @@
-import { useEffect, useState, memo, useCallback } from 'react';
+import { useEffect, memo, useCallback } from 'react';
 import { X, Settings, Shield, Info } from 'lucide-react';
 import { useCookieConsent } from '../../hooks/useCookieConsent';
 import { useLanguageContext } from '../../hooks/useLanguage';
+import { useModalTransition } from '@/hooks/useModalTransition';
 
 interface CookieBannerProps {
   className?: string;
@@ -10,8 +11,10 @@ interface CookieBannerProps {
 export const CookieBanner = memo(({ className = '' }: CookieBannerProps) => {
   const { state, actions } = useCookieConsent();
   const { t } = useLanguageContext();
-  const [isVisible, setIsVisible] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const { isAnimating } = useModalTransition(state.showBanner, {
+    enterDelay: 10,
+    exitDuration: 350,
+  });
 
   // Memoized handlers
   const handleShowPreferences = useCallback(() => {
@@ -26,19 +29,6 @@ export const CookieBanner = memo(({ className = '' }: CookieBannerProps) => {
     actions.acceptAll();
   }, [actions]);
 
-  // Animacja pojawiania się bannera
-  useEffect(() => {
-    if (state.showBanner) {
-      setIsVisible(true);
-      const timer = setTimeout(() => setIsAnimating(true), 10);
-      return () => clearTimeout(timer);
-    } else {
-      setIsAnimating(false);
-      const timer = setTimeout(() => setIsVisible(false), 350);
-      return () => clearTimeout(timer);
-    }
-  }, [state.showBanner]);
-
   // Obsługa klawiatury
   useEffect(() => {
     if (!state.showBanner) return;
@@ -46,7 +36,7 @@ export const CookieBanner = memo(({ className = '' }: CookieBannerProps) => {
     const handleKeyDown = (event: KeyboardEvent) => {
       switch (event.key) {
         case 'Escape':
-          actions.rejectOptional();
+          actions.showPreferencesModal();
           break;
         case 'Enter':
           if (event.ctrlKey || event.metaKey) {
@@ -60,16 +50,20 @@ export const CookieBanner = memo(({ className = '' }: CookieBannerProps) => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [state.showBanner, actions]);
 
-  if (!isVisible || state.showPreferences) return null;
+  if (state.showPreferences) return null;
+
+  const isShown = state.showBanner || isAnimating;
+  const isHidden = !isShown;
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-[9999] transition-all duration-300 ease-out ${
-        isAnimating ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
-      } ${className}`}
+      className={`fixed bottom-0 left-0 right-0 z-[9999] transition-opacity duration-300 ease-out contain-layout contain-paint ${
+        isShown ? 'opacity-100' : 'opacity-0'
+      } ${isHidden ? 'pointer-events-none' : ''} ${className}`}
       role="banner"
       aria-labelledby="cookie-banner-title"
       aria-describedby="cookie-banner-description"
+      aria-hidden={isHidden}
     >
       <div className="bg-white border-t border-gray-200 shadow-2xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

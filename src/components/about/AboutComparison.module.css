@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: transparent;
+  background: #f8f8f8;
   padding: 100px 20px;
   width: 100%;
   min-height: 910px;
@@ -17,12 +17,19 @@
 .comparisonGrid {
   display: flex;
   flex-direction: row;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   gap: 32px;
   max-width: 1000px;
   width: 100%;
   margin: 0 auto;
+}
+
+.comparisonGrid > * {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  justify-content: center;
 }
 
 .comparisonCard {
@@ -55,7 +62,7 @@
 }
 
 .cardTitle {
-  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-family: 'Satoshi', "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
   font-size: 36px;
   font-weight: 500;
   line-height: 50px;
@@ -97,7 +104,7 @@
 }
 
 .benefitText {
-  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-family: 'Satoshi', "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
   font-size: 14px;
   line-height: 22px;
   color: #000000;
@@ -109,7 +116,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
   align-self: stretch;
   border-radius: 10px;
   background: #000000;
@@ -125,33 +131,19 @@
     0px 7px 7px -2px rgba(0, 0, 0, 0.30),
     0px 14px 14px -3px rgba(0, 0, 0, 0.26),
     0px 30px 30px -3px rgba(0, 0, 0, 0.15);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease;
 }
 
 .ctaButton:hover {
   transform: translateY(-1px);
-  box-shadow:
-    0px 4px 8px -2px rgba(61, 61, 61, 0.64),
-    0px 12px 20px -4px rgba(61, 61, 61, 0.25),
-    0px 2px 2px -1px rgba(0, 0, 0, 0.35),
-    0px 4px 4px -1px rgba(0, 0, 0, 0.34),
-    0px 6px 6px -2px rgba(0, 0, 0, 0.33),
-    0px 9px 9px -2px rgba(0, 0, 0, 0.30),
-    0px 16px 16px -3px rgba(0, 0, 0, 0.26),
-    0px 32px 32px -3px rgba(0, 0, 0, 0.15);
 }
 
 .ctaButton span {
-  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-family: 'Satoshi', "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
   font-size: 14px;
   font-weight: 500;
   line-height: 22px;
   color: #ffffff;
-}
-
-.ctaIcon {
-  width: 20px;
-  height: 20px;
 }
 
 /* Responsive Design */

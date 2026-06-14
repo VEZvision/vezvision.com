@@ -1,0 +1,17 @@
+export const commonTranslations = {
+    'common.close': 'Zamknij',
+    'common.save': 'Zapisz',
+    'common.cancel': 'Anuluj',
+    'common.accept': 'Akceptuj',
+    'common.reject': 'Odrzuć',
+    'common.loading': 'Ładowanie...',
+    'common.error': 'Błąd',
+    'common.success': 'Sukces',
+    'common.of': 'z',
+    'common.saving': 'Wysyłanie...',
+    'common.a11y.skip_to_main': 'Przejdź do treści',
+    'common.settings.degraded': 'Nie udało się załadować ustawień strony. Wyświetlamy wersję zapasową.',
+    'common.settings.retry': 'Spróbuj ponownie',
+    'maintenance.default_title': 'Trwają prace konserwacyjne',
+    'maintenance.default_description': 'Wracamy wkrótce. Dziękujemy za cierpliwość.',
+} as const

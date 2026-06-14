@@ -61,7 +61,18 @@ export function safeAbsoluteHttpUrl(value: unknown, fallback = ''): string {
   }
 }
 
+function isSafeAbsoluteHttpsUrl(value: unknown): value is string {
+  if (typeof value !== 'string') return false
+  try {
+    const url = new URL(value.trim())
+    return url.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
 export function safeImageUrl(value: unknown, fallback = ''): string {
   if (isSafeInternalHref(value)) return value.trim()
-  return safeAbsoluteHttpUrl(value, fallback)
+  if (isSafeAbsoluteHttpsUrl(value)) return value.trim()
+  return fallback
 }

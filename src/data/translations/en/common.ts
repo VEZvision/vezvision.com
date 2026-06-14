@@ -1,0 +1,17 @@
+export const commonTranslations = {
+    'common.close': 'Close',
+    'common.save': 'Save',
+    'common.cancel': 'Cancel',
+    'common.accept': 'Accept',
+    'common.reject': 'Reject',
+    'common.loading': 'Loading...',
+    'common.error': 'Error',
+    'common.success': 'Success',
+    'common.of': 'of',
+    'common.saving': 'Sending...',
+    'common.a11y.skip_to_main': 'Skip to main content',
+    'common.settings.degraded': 'Could not load site settings. Showing a fallback experience.',
+    'common.settings.retry': 'Try again',
+    'maintenance.default_title': 'Maintenance in progress',
+    'maintenance.default_description': 'We will be back shortly. Thank you for your patience.',
+} as const

@@ -1,19 +1,26 @@
-import { supabase } from '@/lib/supabase';
+import { getSupabase } from '@/lib/supabase';
 import { logError } from '@/lib/logger';
 
 export async function subscribeToNewsletter(
   email: string,
   language: 'pl' | 'en' = 'pl',
-  source: string = 'newsletter'
+  source: string = 'newsletter',
+  turnstileToken?: string,
 ): Promise<{ success: boolean; error?: string }> {
     try {
-        const { data, error } = await supabase.functions.invoke('subscribe-newsletter', {
-            body: { email, language, source }
+        const supabase = await getSupabase()
+        const response = await supabase.functions.invoke<{ success?: boolean; error?: string }>('subscribe-newsletter', {
+            body: {
+              email,
+              language,
+              source,
+              ...(turnstileToken ? { turnstile_token: turnstileToken } : {}),
+            },
         });
 
-        if (error) throw error;
+        if (response.error) throw response.error;
 
-        const result = data as { success?: boolean; error?: string } | null;
+        const result = response.data;
         if (result?.success === false) {
             return { success: false, error: result.error || 'Wystąpił błąd.' };
         }
@@ -31,13 +38,14 @@ export async function subscribeToNewsletter(
  */
 export async function unsubscribeByToken(token: string): Promise<{ success: boolean; error?: string; email?: string }> {
     try {
-        const { data, error } = await supabase.functions.invoke('unsubscribe-newsletter', {
+        const supabase = await getSupabase()
+        const response = await supabase.functions.invoke<{ success?: boolean; error?: string; email?: string }>('unsubscribe-newsletter', {
             body: { token },
         });
 
-        if (error) throw error;
+        if (response.error) throw response.error;
 
-        const result = data as { success?: boolean; error?: string; email?: string } | null;
+        const result = response.data;
         if (!result?.success) {
             return { success: false, error: result?.error || 'Unknown error' };
         }

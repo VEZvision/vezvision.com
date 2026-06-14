@@ -1,14 +1,16 @@
+@import 'lenis/dist/lenis.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Satoshi', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  --vez-ink: #050505;
-  --vez-ink-soft: #101828;
+  --vez-ink: #111827;
+  --vez-ink-soft: #1f2937;
   --vez-text: #111827;
   --vez-text-muted: #475467;
   --vez-text-subtle: #667085;
@@ -27,6 +29,8 @@
 
 html {
   /* scroll-behavior managed by Lenis — do NOT set it here */
+  background: #ffffff !important;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html.lenis,
@@ -71,6 +75,9 @@ body {
   overflow-x: clip;
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+  background-color: #ffffff;
+  overscroll-behavior-y: auto;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Webkit scrollbar styling */
@@ -119,6 +126,7 @@ body {
   font-weight: 600 !important;
   margin-top: 1.2em !important;
   margin-bottom: 0.5em !important;
+  line-height: 1.2 !important;
 }
 
 .ql-editor h4 {
@@ -126,6 +134,7 @@ body {
   font-weight: 600 !important;
   margin-top: 1em !important;
   margin-bottom: 0.5em !important;
+  line-height: 1.2 !important;
 }
 
 .ql-editor h5 {

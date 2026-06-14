@@ -1,11 +1,24 @@
-export function getClientIp(req: Request): string {
-  const forwarded = req.headers.get("x-forwarded-for");
-  if (!forwarded) return "unknown";
+/** Edge bundle — logic mirrored in shared/clientIp.ts for unit tests. */
+const IP_PATTERN = /^[\d.a-fA-F:]+$/;
 
-  const firstIp = forwarded.split(",")[0]?.trim();
-  if (firstIp && /^[\d.a-fA-F:]+$/.test(firstIp)) {
-    return firstIp.slice(0, 45);
+function isValidIp(value: string): boolean {
+  const trimmed = value.trim();
+  return trimmed.length > 0 && trimmed.length <= 45 && IP_PATTERN.test(trimmed);
+}
+
+export function getClientIpFromHeaders(headers: Pick<Headers, 'get'>): string {
+  const trustedHeaders = ['cf-connecting-ip', 'true-client-ip'] as const;
+
+  for (const header of trustedHeaders) {
+    const value = headers.get(header);
+    if (value && isValidIp(value)) {
+      return value.trim().slice(0, 45);
+    }
   }
 
-  return "unknown";
+  return 'unknown';
+}
+
+export function getClientIp(req: Request): string {
+  return getClientIpFromHeaders(req.headers);
 }

@@ -1,6 +1,6 @@
 .page {
     min-height: 100vh;
-    background: #fff;
+    background: #f5f5f5;
     padding-top: 100px;
     padding-bottom: 80px;
 }
@@ -64,18 +64,18 @@
 }
 
 .title {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Satoshi', sans-serif;
     font-size: 42px;
     font-weight: 500;
-    color: #101828;
+    color: #0f172a;
     margin: 0 0 12px 0;
     line-height: 1.2;
 }
 
 .subtitle {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Satoshi', sans-serif;
     font-size: 16px;
-    color: #667085;
+    color: #475569;
     line-height: 1.6;
     margin: 0 0 24px 0;
     max-width: 560px;
@@ -92,11 +92,11 @@
     align-items: center;
     gap: 8px;
     padding: 12px 24px;
-    background: #101828;
+    background: #04070d;
     color: #fff;
     font-size: 14px;
     font-weight: 500;
-    border-radius: 8px;
+    border-radius: 12px;
     text-decoration: none;
     transition: all 0.2s ease;
 }
@@ -192,7 +192,7 @@
 }
 
 .cardTitle {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Satoshi', sans-serif;
     font-size: 19px;
     font-weight: 500;
     color: #101828;
@@ -208,7 +208,7 @@
 }
 
 .cardSubtitle {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Satoshi', sans-serif;
     font-size: 15px;
     font-weight: 500;
     color: #101828;
@@ -216,7 +216,7 @@
 }
 
 .cardText {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Satoshi', sans-serif;
     font-size: 15px;
     line-height: 1.6;
     color: #101828;
@@ -258,7 +258,7 @@
 }
 
 .prose {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Satoshi', sans-serif;
     font-size: 15px;
     line-height: 1.6;
     color: #101828;
@@ -374,7 +374,7 @@
 }
 
 .sectionTitle {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Satoshi', sans-serif;
     font-size: 19px;
     font-weight: 500;
     color: #101828;
@@ -490,7 +490,7 @@
 }
 
 .notFoundTitle {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Satoshi', sans-serif;
     font-size: 19px;
     font-weight: 500;
     color: #101828;
@@ -498,7 +498,7 @@
 }
 
 .notFoundDesc {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Satoshi', sans-serif;
     font-size: 14px;
     line-height: 1.6;
     color: #667085;
@@ -525,21 +525,103 @@
     background: #1d2939;
 }
 
+.motionEnter {
+    /* Pairs with *Enter classes to enable page-load keyframes. */
+}
+
+@keyframes projectDetailsFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes projectDetailsNavIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.navEnter.motionEnter {
+    animation: projectDetailsNavIn 0.45s ease-out both;
+}
+
+.heroEnter.motionEnter {
+    animation: projectDetailsFadeIn 0.5s ease-out both;
+}
+
+.coverEnter.motionEnter {
+    animation: projectDetailsFadeIn 0.55s ease-out 0.15s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .navEnter.motionEnter,
+    .heroEnter.motionEnter,
+    .coverEnter.motionEnter {
+        animation: none;
+    }
+}
+
 .lightbox {
     position: fixed;
     inset: 0;
     z-index: 100;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.lightboxVisible {
+    opacity: 1;
+    pointer-events: auto;
+    background: rgba(0, 0, 0, 0.9);
 }
 
 .lightboxContent {
     position: relative;
+    z-index: 1;
     max-width: 90vw;
     max-height: 90vh;
+    transform: scale(0.94);
+    opacity: 0;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.lightboxBackdrop {
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    border: 0;
+    cursor: zoom-out;
+    padding: 0;
+}
+
+.lightboxContentVisible {
+    transform: scale(1);
+    opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lightbox,
+    .lightboxContent {
+        transition: none;
+    }
 }
 
 .lightboxContent img {

@@ -129,15 +129,16 @@
 }
 
 .footerNote {
-  margin-top: 24px;
+  margin: 0;
   text-align: center;
   color: #344054;
   font-size: 13px;
   opacity: 0.7;
+  line-height: 1;
 }
 
 .cta {
-  margin-top: 8px;
+  margin-top: 32px;
   display: flex;
   align-items: center;
   justify-content: center;

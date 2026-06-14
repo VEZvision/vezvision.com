@@ -1,96 +1,71 @@
-import { useState, useEffect, useCallback } from 'react';
-import { logError } from '@/lib/logger';
-import {
-  listProjects,
-  getProject,
-} from '@/services/portfolio';
-import {
-  PortfolioProject,
-  PortfolioFilter
-} from '@/types/portfolio';
+import { useCallback, useMemo } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
-export function usePortfolio(filter?: PortfolioFilter) {
-  const [projects, setProjects] = useState<PortfolioProject[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [total, setTotal] = useState(0);
-  const [refreshKey, setRefreshKey] = useState(0);
+import { queryKeys } from '@/lib/queryKeys'
+import { getProject, listProjects } from '@/services/portfolio'
+import type { PortfolioFilter, PortfolioProject } from '@/types/portfolio'
 
-  useEffect(() => {
-    const controller = new AbortController();
-
-    const run = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const result = await listProjects(filter, controller.signal);
-
-        setProjects(result.projects);
-        setTotal(result.total);
-      } catch (err) {
-        if (controller.signal.aborted || (err instanceof Error && err.message === 'Request aborted')) {
-          return;
-        }
-        setError(err instanceof Error ? err.message : 'Błąd ładowania projektów');
-        logError('usePortfolio.load', err);
-      } finally {
-        if (!controller.signal.aborted) setLoading(false);
-      }
-    };
-
-    void run();
-
-    return () => controller.abort();
-  }, [filter, refreshKey]);
-
-  const refresh = useCallback(() => {
-    setRefreshKey(k => k + 1);
-  }, []);
-
-  return { projects, loading, error, total, refresh };
+function filterKey(filter?: PortfolioFilter): string {
+  return JSON.stringify(filter ?? {})
 }
 
-export function useProject(idOrSlug: string | null) {
-  const [project, setProject] = useState<PortfolioProject | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
+export function usePortfolio(filter?: PortfolioFilter) {
+  const queryClient = useQueryClient()
+  const key = filterKey(filter)
 
-  useEffect(() => {
-    const controller = new AbortController();
+  const listQuery = useQuery({
+    queryKey: queryKeys.portfolio.list(key),
+    queryFn: ({ signal }) => listProjects(filter, signal),
+    staleTime: 5 * 60_000,
+  })
 
-    const run = async () => {
-      if (!idOrSlug) {
-        setProject(null);
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        setError(null);
-        const result = await getProject(idOrSlug, controller.signal);
-        setProject(result);
-      } catch (err) {
-        if (controller.signal.aborted || (err instanceof Error && err.message === 'Request aborted')) {
-          return;
-        }
-        setError(err instanceof Error ? err.message : 'Błąd ładowania projektu');
-        logError('useProject.load', err);
-      } finally {
-        if (!controller.signal.aborted) setLoading(false);
-      }
-    };
-
-    void run();
-
-    return () => controller.abort();
-  }, [idOrSlug, refreshKey]);
+  const projects = useMemo(() => listQuery.data?.projects ?? [], [listQuery.data?.projects])
+  const total = listQuery.data?.total ?? 0
 
   const refresh = useCallback(() => {
-    setRefreshKey(k => k + 1);
-  }, []);
+    void queryClient.invalidateQueries({ queryKey: queryKeys.portfolio.all })
+  }, [queryClient])
 
-  return { project, loading, error, refresh };
+  const getProjectBySlug = useCallback(
+    async (slug: string, signal?: AbortSignal): Promise<PortfolioProject | null> => {
+      const cached = projects.find((p) => p.slug === slug)
+      if (cached) return cached
+
+      const detailKey = queryKeys.portfolio.detail(slug)
+      const cachedDetail = queryClient.getQueryData<PortfolioProject>(detailKey)
+      if (cachedDetail) return cachedDetail
+
+      const project = await getProject(slug, signal)
+      if (project) queryClient.setQueryData(detailKey, project)
+      return project
+    },
+    [projects, queryClient],
+  )
+
+  return {
+    projects,
+    total,
+    loading: listQuery.isLoading,
+    error: listQuery.error instanceof Error ? listQuery.error : listQuery.error ? new Error(String(listQuery.error)) : null,
+    refresh,
+    getProjectBySlug,
+  }
+}
+
+export function useProject(slug: string | null) {
+  const query = useQuery({
+    queryKey: queryKeys.portfolio.detail(slug ?? ''),
+    queryFn: ({ signal }) => {
+      if (!slug) return Promise.resolve(null)
+      return getProject(slug, signal)
+    },
+    enabled: Boolean(slug),
+    staleTime: 5 * 60_000,
+  })
+
+  return {
+    project: query.data ?? null,
+    loading: query.isLoading,
+    error: query.error instanceof Error ? query.error : query.error ? new Error(String(query.error)) : null,
+  }
 }

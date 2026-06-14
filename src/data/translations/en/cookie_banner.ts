@@ -1,0 +1,18 @@
+export const cookie_bannerTranslations = {
+    'cookie.banner.title': 'We respect your privacy',
+    'cookie.banner.description': 'We use cookies and similar technologies to provide the best experience on our website. Some are essential for the site to function, others help us improve and customize it to your needs.',
+    'cookie.banner.gdpr': 'GDPR compliant',
+    'cookie.banner.secure': 'Secure storage',
+    'cookie.banner.customize': 'Customize',
+    'cookie.banner.settings': 'Settings',
+    'cookie.banner.necessary': 'Necessary only',
+    'cookie.banner.accept': 'Accept all',
+    'cookie.banner.close': 'Close cookie banner',
+    'cookie.banner.shortcuts.necessary': 'Necessary only',
+    'cookie.banner.shortcuts.accept': 'Accept all',
+    'cookiePolicy.title': 'Cookie Policy',
+    'cookiePolicy.lastUpdated': 'Last updated',
+    'cookiePolicy.whatAreCookies': 'What are cookies?',
+    'cookiePolicy.typesOfCookies': 'Types of cookies',
+    'cookiePolicy.manageCookies': 'Managing cookies',
+} as const

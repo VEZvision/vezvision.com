@@ -1,0 +1,17 @@
+export const overview_tabTranslations = {
+    'privacy.overview.status': 'Privacy status',
+    'privacy.overview.consent.granted': 'Consent granted',
+    'privacy.overview.cookies.active': 'Active cookies',
+    'privacy.overview.preferences': 'Your preferences',
+    'privacy.overview.enabled': 'Enabled',
+    'privacy.overview.disabled': 'Disabled',
+    'privacy.overview.change': 'Change preferences',
+    'privacy.category.necessary': 'Necessary',
+    'privacy.category.functional': 'Functional',
+    'privacy.category.analytics': 'Analytics',
+    'privacy.category.marketing': 'Marketing',
+    'privacy.category.necessary.desc': 'Required for the site to work.',
+    'privacy.category.functional.desc': 'Personalisation and comfort.',
+    'privacy.category.analytics.desc': 'Anonymous usage statistics.',
+    'privacy.category.marketing.desc': 'Ads matched to your interests.',
+} as const

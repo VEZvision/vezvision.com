@@ -1,17 +1,23 @@
-/**
- * Minimal placeholder while maintenance access is verified (maintenance ON only).
- * Lighter than full LoadingScreen — avoids blocking first paint on normal visits.
- */
+import logoHero from '@/assets/logo-hero.svg'
+import styles from '@/components/loading/LoadingScreen/LoadingScreen.module.css'
+
+/** Branded loading shell used before language/settings/routes are ready. */
 export default function AppBootShell() {
   return (
     <div
-      className="min-h-screen bg-white"
+      className={styles.container}
       role="status"
       aria-live="polite"
       aria-label="Loading"
     >
-      <div className="mx-auto flex min-h-screen max-w-7xl items-center justify-center px-6">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-200 border-t-gray-900" />
+      <div className={styles.logoContainer}>
+        <img src={logoHero} alt="VezVision" className={styles.logo} />
+      </div>
+      <div className={styles.spinnerContainer}>
+        <div className={styles.spinner} aria-hidden="true" />
+      </div>
+      <div className={styles.message}>
+        Loading
       </div>
     </div>
   )

@@ -1,30 +1,20 @@
 import '../styles/GridBackground.css';
-import { useNavigate } from 'react-router-dom';
-import PageSeo from '@/components/seo/PageSeo';
-import VideoHeroSection from '@/components/common/VideoHeroSection';
-import BlogFounderNote from '@/components/blog/BlogFounderNote';
-import BlogArticlesWithData from '@/components/blog/BlogArticlesWithData';
-import { ContactSection } from '@/components/contact';
-import NewsletterSection from '@/components/newsletter/NewsletterSection';
-import { useLanguageContext } from '@/hooks/useLanguage';
+import { useHeroContactAction } from '@/hooks/useHeroContactAction';
 import { BookOpen } from 'lucide-react';
-import socialX from '@/assets/social-x.svg';
+
+import VideoHeroSection from '@/components/common/VideoHeroSection';
+import { useLanguageContext } from '@/hooks/useLanguage';
+import { StaticPage } from '@/pagekit';
+import FacebookIcon from '@/assets/social-facebook';
 import socialLinkedin from '@/assets/social-linkedin.svg';
+import FounderNote from '@/components/FounderNote';
+import BlogArticlesWithData from '@/components/blog/BlogArticlesWithData';
+import NewsletterSection from '@/components/newsletter/NewsletterSection';
+import ContactSection from '@/components/contact/ContactSection';
 
-const BlogHeroWrapper = () => {
+function BlogHero() {
   const { t } = useLanguageContext();
-  const navigate = useNavigate();
-
-  const handleContactClick = () => {
-    if (typeof document === 'undefined') return;
-
-    const contactSection = document.getElementById('kontakt') ?? document.getElementById('contact-form-section');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      void navigate('/contact#kontakt');
-    }
-  };
+  const handleContactClick = useHeroContactAction();
 
   return (
     <VideoHeroSection
@@ -35,28 +25,28 @@ const BlogHeroWrapper = () => {
       badge={t('blog.hero.badge')}
       icon={<BookOpen className="w-3.5 h-3.5" />}
       socialLinks={[
-        { icon: socialX, label: 'X (Twitter)' },
-        { icon: socialLinkedin, label: 'LinkedIn' },
+        { icon: <FacebookIcon />, label: 'Facebook' },
+        { icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: 'LinkedIn' },
       ]}
       className="relative flex min-h-[85vh] w-full items-center justify-center overflow-hidden bg-white px-4 pt-[120px] pb-[80px]"
       contentClassName="max-w-[1024px]"
       ariaLabelledBy="blog-hero-title"
     />
   );
-};
+}
 
-const Blog = () => {
+export default function Blog() {
   return (
-    <div style={{ backgroundColor: 'transparent' }}>
-      <PageSeo pageKey="blog" />
-      <div className="grid-background"></div>
-      <BlogHeroWrapper />
-      <BlogFounderNote />
-      <BlogArticlesWithData />
-      <NewsletterSection />
-      <ContactSection />
-    </div>
+    <StaticPage
+      seoKey="blog"
+      shell={{ style: { backgroundColor: 'transparent' } }}
+      sections={[
+        { key: 'hero', Component: BlogHero, eager: true },
+        { key: 'founder', Component: FounderNote, props: { variant: 'blog' }, eager: true },
+        { key: 'articles', Component: BlogArticlesWithData, eager: true },
+        { key: 'newsletter', Component: NewsletterSection, eager: true },
+        { key: 'contact', Component: ContactSection, eager: true },
+      ]}
+    />
   );
-};
-
-export default Blog;
+}

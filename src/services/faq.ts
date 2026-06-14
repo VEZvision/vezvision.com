@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 import { logError } from '@/lib/logger'
 
 export interface FaqItem {
@@ -17,6 +17,7 @@ interface DBFaqItem {
 
 export async function listActiveFaqItems(language: 'pl' | 'en', signal?: AbortSignal): Promise<FaqItem[]> {
   try {
+    const supabase = await getSupabase()
     let query = supabase
       .from('vv_faq_items')
       .select('id, question_pl, question_en, answer_pl, answer_en')

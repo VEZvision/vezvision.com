@@ -1,18 +1,37 @@
+/** Edge bundle — logic mirrored in shared/contactValidation.ts (Zod). */
+import { z } from "npm:zod@3.25.76";
+
 export const CONTACT_EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const CONTACT_PHONE_PATTERN = /^\+?[0-9()\s-]{5,30}$/;
 
-export function normalizeText(value: unknown, maxLength: number): string | null {
-  if (typeof value !== "string") return null;
-  const text = value.trim();
-  if (!text || text.length > maxLength) return null;
-  return text;
+const contactEmailSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .min(5)
+  .max(254)
+  .regex(CONTACT_EMAIL_PATTERN);
+
+const contactPhoneSchema = z.string().trim().regex(CONTACT_PHONE_PATTERN);
+
+function contactTextSchema(maxLength: number, minLength = 1) {
+  return z.string().trim().min(minLength).max(maxLength);
 }
 
+export function normalizeContactText(
+  value: unknown,
+  maxLength: number,
+  minLength = 1,
+): string | null {
+  const result = contactTextSchema(maxLength, minLength).safeParse(value);
+  return result.success ? result.data : null;
+}
+
+export const normalizeText = normalizeContactText;
+
 export function normalizeContactEmail(value: unknown): string | null {
-  if (typeof value !== "string") return null;
-  const email = value.trim().toLowerCase();
-  if (email.length < 5 || email.length > 254 || !CONTACT_EMAIL_PATTERN.test(email)) return null;
-  return email;
+  const result = contactEmailSchema.safeParse(value);
+  return result.success ? result.data : null;
 }
 
 export function isContactPhoneProvided(value: unknown): boolean {
@@ -30,10 +49,10 @@ export function normalizeContactPhone(value: unknown): { phone: string | null; i
     return { phone: null, invalid: true };
   }
 
-  const phone = value.trim();
-  if (!CONTACT_PHONE_PATTERN.test(phone)) {
+  const result = contactPhoneSchema.safeParse(value);
+  if (!result.success) {
     return { phone: null, invalid: true };
   }
 
-  return { phone, invalid: false };
+  return { phone: result.data, invalid: false };
 }

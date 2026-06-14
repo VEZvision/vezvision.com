@@ -1,4 +1,6 @@
 import PageSeo from '@/components/seo/PageSeo';
+import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
+import type { BreadcrumbItem } from '@/components/seo/Breadcrumbs';
 import LegalMarkdown from '@/components/legal/LegalMarkdown';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { useLegalContent } from '@/hooks/useLegalContent';
@@ -39,11 +41,17 @@ const CookiePolicy = () => {
   const renderedTitle = title || fallbackTitle;
   const effectiveDate = lastUpdated ? new Date(lastUpdated) : new Date('2026-03-31');
 
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: t('nav.home'), href: '/' },
+    { label: renderedTitle },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50 py-16">
       <PageSeo pageKey="cookie-policy" />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <Breadcrumbs items={breadcrumbItems} />
+        <div className="bg-white rounded-lg shadow-lg p-8 mt-4">
           <h1 className="text-3xl font-bold text-gray-900 mb-6">
             {renderedTitle}
           </h1>

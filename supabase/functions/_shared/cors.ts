@@ -44,3 +44,10 @@ export function getCorsHeaders(req: Request): Record<string, string> {
     "Access-Control-Max-Age": "86400",
   };
 }
+
+/** Browser requests include Origin; curl/scripts typically do not. */
+export function hasTrustedBrowserOrigin(req: Request): boolean {
+  const origin = req.headers.get("origin");
+  if (!origin) return false;
+  return getAllowedOrigins().includes(origin);
+}

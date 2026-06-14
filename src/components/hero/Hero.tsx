@@ -1,33 +1,35 @@
 import { Fragment, memo, useEffect, useRef } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import logoHero from '../../assets/logo-hero.svg';
-import arrowRight from '../../assets/arrow-right.svg';
 
-import socialX from '@/assets/social-x.svg';
+import FacebookIcon from '@/assets/social-facebook';
 import socialInstagram from '@/assets/products/social-instagram.svg';
 import socialLinkedin from '@/assets/social-linkedin.svg';
 import { useLanguageContext } from '../../hooks/useLanguage';
+import { usePrefersReducedData } from '@/hooks/usePrefersReducedData';
 import SectionBadge from '@/components/ui/SectionBadge';
-import logoText from '@/assets/logo-text-only.svg';
 import { Sparkles } from 'lucide-react';
-import { useSettings } from '@/hooks/useSettings';
+import { useSocial } from '@/hooks/useSettings';
 import { usePageSectionConfig } from '@/hooks/usePageSection';
 import { safeCmsHref } from '@/utils/safeHref';
+import { localizeInternalHref } from '@/routing/locale';
 import styles from './Hero.module.scss';
 
 const HERO_VIDEO_SRC = '/aMPvRVYHFQxBoB0v2qyJln83jI.mp4';
 
 const Hero = memo(() => {
-  const { t } = useLanguageContext();
-  const { social } = useSettings();
+  const { t, language } = useLanguageContext();
+  const social = useSocial();
   const sectionConfig = usePageSectionConfig('home', 'hero');
+  const prefersReducedData = usePrefersReducedData();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const sectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const sectionEl = sectionRef.current;
     const videoEl = videoRef.current;
-    if (!videoEl) return;
+    if (!videoEl || prefersReducedData) return;
 
     const playVideo = () => {
       void videoEl.play().catch(() => {});
@@ -64,29 +66,35 @@ const Hero = memo(() => {
       videoEl.removeEventListener('loadeddata', playVideo);
       videoEl.pause();
     };
-  }, []);
+  }, [prefersReducedData]);
 
   const socialLinks = [
-    { href: social?.x || social?.facebook, icon: socialX, label: 'X (Twitter)' },
-    { href: social?.instagram, icon: socialInstagram, label: 'Instagram' },
-    { href: social?.linkedin, icon: socialLinkedin, label: 'LinkedIn' }
+    { href: social?.facebook || social?.x, icon: <FacebookIcon /> as React.ReactNode, label: 'Facebook' },
+    { href: social?.instagram, icon: <img src={socialInstagram} className="w-6 h-6" alt="" loading="lazy" decoding="async" /> as React.ReactNode, label: 'Instagram' },
+    { href: social?.linkedin, icon: <img src={socialLinkedin} className="w-6 h-6" alt="" loading="lazy" decoding="async" /> as React.ReactNode, label: 'LinkedIn' }
   ];
-  const primaryHref = safeCmsHref(sectionConfig.primaryHref, '/contact');
-  const secondaryHref = safeCmsHref(sectionConfig.secondaryHref, '/services');
+  const primaryHref = localizeInternalHref(safeCmsHref(sectionConfig.primaryHref, '/contact'), language);
+  const secondaryHref = localizeInternalHref(safeCmsHref(sectionConfig.secondaryHref, '/services'), language);
 
   return (
     <section ref={sectionRef} className={styles.sectionHero}>
-      <video
-        ref={videoRef}
-        className={styles.videoBg}
-        src={HERO_VIDEO_SRC}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        aria-hidden="true"
-      />
+      <Helmet>
+        <link rel="preload" as="image" href={logoHero} fetchPriority="high" />
+      </Helmet>
+      {!prefersReducedData && (
+        <video
+          ref={videoRef}
+          className={styles.videoBg}
+          src={HERO_VIDEO_SRC}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-hidden="true"
+          disableRemotePlayback
+          x-webkit-airplay="deny"
+        />
+      )}
 
       <div className={styles.videoOverlay} aria-hidden="true" />
 
@@ -94,20 +102,8 @@ const Hero = memo(() => {
         <div className="flex flex-col items-center">
           {/* Logo */}
           <div className="mb-6 flex justify-center">
-            <div
-              className="w-[80px] h-[80px] sm:w-24 sm:h-24 rounded-[16px] bg-[#04070d] p-[10px]"
-              style={{
-                boxShadow: `
-                  0px 1px 1px -1px rgba(64, 120, 168, 0.37),
-                  0px 2px 2px -1px rgba(64, 120, 168, 0.36),
-                  0px 4px 4px -2px rgba(64, 120, 168, 0.34),
-                  0px 7px 7px -3px rgba(64, 120, 168, 0.31),
-                  0px 14px 14px -3px rgba(64, 120, 168, 0.25),
-                  0px 30px 30px -4px rgba(64, 120, 168, 0.15)
-                `
-              }}
-            >
-              <img src={logoHero} alt="VezVision Logo" className="w-full h-full object-cover rounded-full" />
+            <div className={styles.logoPlate}>
+              <img src={logoHero} alt="VezVision Logo" className="w-full h-full object-cover rounded-full" width="80" height="80" fetchPriority="high" />
             </div>
           </div>
 
@@ -120,7 +116,9 @@ const Hero = memo(() => {
 
           {/* Heading */}
           <div className="mb-5">
-            <img src={logoText} alt="VezVision" className="h-[clamp(38px,6.5vw,80px)] w-auto" aria-hidden="true" />
+            <span className="font-sans text-[clamp(38px,6.5vw,80px)] font-normal leading-[1.05] tracking-[-1.6px] text-black">
+              <span className="font-medium">VEZ</span><span className="font-light">vision</span>
+            </span>
           </div>
 
           {/* Main heading for SEO & accessibility */}
@@ -132,10 +130,9 @@ const Hero = memo(() => {
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
               to={primaryHref}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#04070d] text-white font-semibold text-[16px] px-5 py-3 transition-transform hover:-translate-y-0.5"
+              className="inline-flex items-center rounded-lg bg-[#04070d] text-white font-semibold text-[16px] px-5 py-3 transition-transform hover:-translate-y-0.5"
             >
               {t('hero.cta.consult')}
-              <img src={arrowRight} className="w-5 h-5" alt="" aria-hidden="true" />
             </Link>
             <Link
               to={secondaryHref}
@@ -157,14 +154,14 @@ const Hero = memo(() => {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <img src={icon} className="w-6 h-6" alt="" aria-hidden="true" />
+                    {icon}
                   </a>
                 ) : (
                   <span
                     className="w-6 h-6 inline-flex items-center justify-center opacity-40"
                     aria-hidden="true"
                   >
-                    <img src={icon} className="w-6 h-6" alt="" />
+                    {icon}
                   </span>
                 )}
                 {index < socialLinks.length - 1 && (

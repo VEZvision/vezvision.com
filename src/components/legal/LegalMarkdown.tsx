@@ -1,10 +1,30 @@
 import ReactMarkdown from 'react-markdown'
+import { useLanguageContext } from '@/hooks/useLanguage'
+import { localizeInternalHref } from '@/routing/locale'
+import { isSafeExternalHref, isSafeInternalHref } from '@/utils/safeHref'
 
 interface LegalMarkdownProps {
   content: string
 }
 
+function safeMarkdownHref(
+  href: string | undefined,
+  language: 'pl' | 'en',
+): string | undefined {
+  if (!href) return undefined
+  const trimmed = href.trim()
+  if (isSafeExternalHref(trimmed)) {
+    return trimmed
+  }
+  if (isSafeInternalHref(trimmed)) {
+    return localizeInternalHref(trimmed, language)
+  }
+  return undefined
+}
+
 const LegalMarkdown = ({ content }: LegalMarkdownProps) => {
+  const { language } = useLanguageContext()
+
   return (
     <ReactMarkdown
       components={{
@@ -16,7 +36,23 @@ const LegalMarkdown = ({ content }: LegalMarkdownProps) => {
         ol: ({ children }) => <ol className="list-decimal list-inside space-y-2 mb-4 text-gray-700">{children}</ol>,
         li: ({ children }) => <li className="text-gray-700">{children}</li>,
         strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
-        a: ({ href, children }) => <a href={href} className="text-blue-600 hover:underline">{children}</a>,
+        a: ({ href, children }) => {
+          const safeHref = safeMarkdownHref(href, language)
+          if (!safeHref) {
+            return <span className="text-gray-700">{children}</span>
+          }
+
+          const external = isSafeExternalHref(safeHref)
+          return (
+            <a
+              href={safeHref}
+              className="text-blue-600 hover:underline"
+              {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            >
+              {children}
+            </a>
+          )
+        },
       }}
     >
       {content}

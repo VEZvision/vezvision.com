@@ -7,11 +7,24 @@ import { COOKIE_CONSENT_KEY } from '../types/cookies';
 
 let sentryInitialized = false;
 
+function getTracePropagationTargets(): (string | RegExp)[] {
+  const targets: (string | RegExp)[] = ['localhost'];
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  if (typeof supabaseUrl === 'string' && supabaseUrl.length > 0) {
+    try {
+      targets.push(new URL(supabaseUrl).origin);
+    } catch {
+      void 0;
+    }
+  }
+  return targets;
+}
+
 export function hasAnalyticsConsentFromStorage(): boolean {
   try {
     const raw = localStorage.getItem(COOKIE_CONSENT_KEY);
     if (!raw) return false;
-    const parsed = JSON.parse(raw);
+    const parsed = JSON.parse(raw) as { preferences?: CookiePreferences } | undefined;
     return parsed?.preferences?.analytics === true;
   } catch {
     return false;
@@ -31,10 +44,7 @@ async function initSentry(): Promise<void> {
         Sentry.replayIntegration(),
       ],
       tracesSampleRate: 0.2,
-      tracePropagationTargets: [
-        'localhost',
-        /^https:\/\/pcxcqbpygyidkusetghk\.supabase\.co/,
-      ],
+      tracePropagationTargets: getTracePropagationTargets(),
       replaysSessionSampleRate: 0.1,
       replaysOnErrorSampleRate: 1.0,
     });

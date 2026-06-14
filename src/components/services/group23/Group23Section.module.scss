@@ -18,7 +18,7 @@
 .sectionTitle {
   margin: 0 0 16px;
   text-align: center;
-  font-family: Inter, Arial, Helvetica, sans-serif;
+  font-family: 'Satoshi', Arial, Helvetica, sans-serif;
   font-size: 52px;
   font-weight: 500;
   line-height: 67px;
@@ -33,7 +33,7 @@
 .sectionSubtitle {
   margin: 0 0 32px;
   text-align: center;
-  font-family: Inter, Arial, Helvetica, sans-serif;
+  font-family: 'Satoshi', Arial, Helvetica, sans-serif;
   font-size: 16px;
   line-height: 24px;
   letter-spacing: 0;
@@ -89,6 +89,10 @@
   bottom: 24px;
   border-radius: 20px;
   background-image: url('/src/assets/services/group23/modern-approach.png');
+  background-image: image-set(
+    url('/src/assets/services/group23/modern-approach.webp') type('image/webp'),
+    url('/src/assets/services/group23/modern-approach.png') type('image/png')
+  );
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -107,7 +111,7 @@
   line-height: 1.05;
   letter-spacing: -1.5px;
   color: #344054;
-  font-family: Inter, Arial, Helvetica, sans-serif;
+  font-family: 'Satoshi', Arial, Helvetica, sans-serif;
   font-size: 54px;
   font-weight: 600;
 }
@@ -202,7 +206,7 @@
   line-height: 34px;
   letter-spacing: -1.04px;
   color: #344054;
-  font-family: Inter, Arial, Helvetica, sans-serif;
+  font-family: 'Satoshi', Arial, Helvetica, sans-serif;
   font-size: 26px;
   font-weight: 600;
 }
@@ -212,7 +216,7 @@
   line-height: 21px;
   letter-spacing: -0.64px;
   color: #344054;
-  font-family: Inter, Arial, Helvetica, sans-serif;
+  font-family: 'Satoshi', Arial, Helvetica, sans-serif;
   font-size: 16px;
   font-weight: 500;
 }
@@ -264,15 +268,14 @@
   background: #f5f5f5;
   box-shadow: inset 0px 2px 0px 0px #b8b4b414;
   margin-top: 24px;
-  overflow: hidden;
 }
 
 .chartInner {
   position: absolute;
-  top: 40px;
-  left: 24px;
-  right: 24px;
-  height: 176px;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
   border-radius: 20px;
   box-shadow: inset 0px 3px 1px 0px #ffffff,
     0px 1px 1px -1px #00000014,
@@ -302,6 +305,62 @@
   right: 8px;
   width: calc(100% - 16px);
   height: auto;
+}
+
+.chartSvg {
+  position: absolute;
+  inset: 12px 8px 12px 8px;
+  width: calc(100% - 16px);
+  height: calc(100% - 24px);
+}
+
+.chartArea {
+  animation: chartAreaCycle 4.5s ease-in-out infinite;
+}
+
+.chartLinePath {
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  animation: chartLineCycle 4.5s ease-in-out infinite;
+}
+
+.chartDot {
+  animation: chartDotCycle 4.5s ease-in-out infinite;
+}
+
+@keyframes chartAreaCycle {
+  0%, 18% { opacity: 0; }
+  30%, 72% { opacity: 1; }
+  85%, 100% { opacity: 0; }
+}
+
+@keyframes chartLineCycle {
+  0% { stroke-dashoffset: 600; }
+  22% { stroke-dashoffset: 0; }
+  78% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 600; }
+}
+
+@keyframes chartDotCycle {
+  0%, 20% { opacity: 0; }
+  26% { opacity: 1; }
+  74% { opacity: 1; }
+  80%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chartLinePath {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+  .chartArea {
+    opacity: 1;
+    animation: none;
+  }
+  .chartDot {
+    opacity: 1;
+    animation: none;
+  }
 }
 
 .chartMask {

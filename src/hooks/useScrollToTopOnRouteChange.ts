@@ -1,24 +1,20 @@
-import { useEffect } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import { refreshSmoothScrolling, scrollToTopInstant } from '@/utils/smoothScrolling'
+import { scrollToTopInstant } from '@/scroll'
+
+function getContentPath(pathname: string): string {
+  return pathname.replace(/^\/(pl|en)(?=\/|$)/, '') || '/'
+}
 
 export function useScrollToTopOnRouteChange() {
   const location = useLocation()
+  const prevPath = useRef<string | null>(null)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    const currentPath = getContentPath(location.pathname)
+    if (prevPath.current !== null && prevPath.current === currentPath) return
+    prevPath.current = currentPath
     scrollToTopInstant()
-
-    const rafId = requestAnimationFrame(() => {
-      refreshSmoothScrolling()
-    })
-    const timeoutId = window.setTimeout(() => {
-      refreshSmoothScrolling()
-    }, 400)
-
-    return () => {
-      cancelAnimationFrame(rafId)
-      window.clearTimeout(timeoutId)
-    }
   }, [location.pathname])
 }

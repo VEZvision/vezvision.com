@@ -2,6 +2,8 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
 import { getClientIp } from "../_shared/clientIp.ts";
+import { buildEdgeRateLimitKey } from "../_shared/rateLimitKey.ts";
+import { verifyTurnstileToken } from "../_shared/turnstile.ts";
 import {
   isContactPhoneProvided,
   normalizeContactEmail,
@@ -217,16 +219,48 @@ Deno.serve(async (req: Request) => {
   try {
     const clientIp = getClientIp(req);
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
+    const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+    if (!supabaseUrl || !serviceRoleKey) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Service unavailable" }),
+        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 503 },
+      );
+    }
+
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
+
+    const rateLimitKey = await buildEdgeRateLimitKey("edge-contact", req, clientIp);
+    const { data: edgeRateLimitRows, error: edgeRateError } = await supabase.rpc("consume_rate_limit", {
+      p_key: rateLimitKey,
+      p_max_requests: 10,
+      p_window_ms: 60000,
+    });
+    const edgeRateLimit = Array.isArray(edgeRateLimitRows) ? edgeRateLimitRows[0] : edgeRateLimitRows;
+    if (edgeRateError || !edgeRateLimit?.allowed) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Rate limit exceeded" }),
+        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 429 },
+      );
+    }
 
     const body = await req.json();
-    const fullName = normalizeContactText(body?.full_name, 120);
+    const turnstile = await verifyTurnstileToken(body?.turnstile_token, clientIp);
+    if (!turnstile.ok) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Captcha verification failed.",
+          field: "form",
+        }),
+        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 400 },
+      );
+    }
+
+    const fullName = normalizeContactText(body?.full_name, 120, 2);
     const email = normalizeContactEmail(body?.email);
-    const subject = normalizeContactText(body?.subject, 160);
-    const message = normalizeContactText(body?.message, 5000);
+    const subject = normalizeContactText(body?.subject, 160, 2);
+    const message = normalizeContactText(body?.message, 5000, 10);
     const phoneResult = normalizeContactPhone(body?.phone);
     const language = normalizeLanguage(body?.language);
 
@@ -266,7 +300,9 @@ Deno.serve(async (req: Request) => {
         JSON.stringify({
           success: false,
           error: isRateLimit
-            ? "Zbyt wiele prób. Spróbuj ponownie za godzinę."
+            ? language === "pl"
+              ? "Zbyt wiele prób. Spróbuj ponownie za kilka minut."
+              : "Too many attempts. Try again in a few minutes."
             : "Nie udało się wysłać wiadomości. Sprawdź dane i spróbuj ponownie.",
         }),
         {

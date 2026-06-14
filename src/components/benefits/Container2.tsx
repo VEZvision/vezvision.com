@@ -1,35 +1,59 @@
+import { useState, useEffect } from 'react';
 import styles from './Container2.module.css';
 import { useLanguageContext } from '../../hooks/useLanguage';
+import { useReducedMotion } from '@/hooks/useReducedMotion';
 
-/** Static "after" chart — no setInterval / React state during scroll (Contact-style lightweight). */
 const Container2: React.FC = () => {
+  const [isBefore, setIsBefore] = useState(false);
   const { t } = useLanguageContext();
+  const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (reducedMotion) {
+      setIsBefore(false);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setIsBefore((prev) => !prev);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [reducedMotion]);
 
   return (
     <article
-      className={`${styles.container} ${styles.isAfter}`}
+      className={`${styles.container} ${isBefore ? styles.isBefore : styles.isAfter}`}
       aria-labelledby="container2-title"
     >
       <div className={styles.chartWrapper}>
         <div className={styles.chartScene} role="img" aria-label={t('benefits.container2.chartAlt')}>
           <div className={styles.phaseTrack} aria-live="polite">
-            <div className={`${styles.phaseLabel} ${styles.afterLabel}`}>
+            <div className={`${styles.phaseLabel} ${styles.afterLabel}`} aria-hidden={isBefore}>
               <span className={styles.phaseText}>AFTER</span>
+            </div>
+            <div className={`${styles.phaseLabel} ${styles.beforeLabel}`} aria-hidden={!isBefore}>
+              <span className={styles.phaseText}>BEFORE</span>
             </div>
           </div>
           <div className={styles.shape}>
             <div className={styles.bar} />
-            <div className={`${styles.bar2} ${styles.barTall}`} />
+            <div className={`${styles.bar2} ${isBefore ? '' : styles.barTall}`} />
             <div className={styles.bar3} />
-            <div className={styles.bar4} />
+            <div className={`${styles.bar4} ${isBefore ? styles.barTall : ''}`} />
           </div>
 
-          <div className={`${styles.pill} ${styles.automationLabel}`}>
+          <div className={`${styles.pill} ${styles.automationLabel}`} aria-hidden={isBefore}>
             <span className={styles.labelText}>80% Automation</span>
           </div>
+          <div className={`${styles.pill} ${styles.automationLabelAlt}`} aria-hidden={!isBefore}>
+            <span className={styles.labelText}>10% Automation</span>
+          </div>
 
-          <div className={`${styles.pill} ${styles.costLabel}`}>
+          <div className={`${styles.pill} ${styles.costLabel}`} aria-hidden={isBefore}>
             <span className={styles.labelText}>10% Cost</span>
+          </div>
+          <div className={`${styles.pill} ${styles.costLabelAlt}`} aria-hidden={!isBefore}>
+            <span className={styles.labelText}>80% Cost</span>
           </div>
         </div>
       </div>

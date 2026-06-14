@@ -106,7 +106,6 @@ const MoreBenefits: React.FC = () => {
       <div ref={sliderRef} className={styles.slider}>
         <div
           className={`${styles.slideTrack} ${marqueeReady ? styles.slideTrackActive : ''}`}
-          data-marquee-active={marqueeReady ? 'true' : undefined}
           style={marqueeStyle}
         >
           {Array.from({ length: copyCount }, (_, copyIndex) => (

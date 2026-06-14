@@ -49,7 +49,5 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(() => ({ mode }), [mode]);
 
-  return (
-    <SmoothScrollContext.Provider value={value}>{children}</SmoothScrollContext.Provider>
-  );
+  return <SmoothScrollContext.Provider value={value}>{children}</SmoothScrollContext.Provider>;
 }

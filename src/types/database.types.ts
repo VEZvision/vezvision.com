@@ -7,6 +7,8 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.4"
   }
@@ -69,6 +71,24 @@ export type Database = {
           id?: string
           role?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      rate_limit_buckets: {
+        Row: {
+          bucket_key: string
+          request_count: number
+          window_started_at: string
+        }
+        Insert: {
+          bucket_key: string
+          request_count?: number
+          window_started_at?: string
+        }
+        Update: {
+          bucket_key?: string
+          request_count?: number
+          window_started_at?: string
         }
         Relationships: []
       }
@@ -1386,7 +1406,6 @@ export type Database = {
         Returns: {
           allowed: boolean
           remaining: number
-          reset_time: string
         }[]
       }
       get_active_storage_used_bytes: { Args: never; Returns: number }
@@ -1424,21 +1443,19 @@ export type Database = {
         }
         Returns: string
       }
-      safe_insert_newsletter_subscriber:
-        | { Args: { p_client_ip?: string; p_email: string }; Returns: string }
-        | {
-            Args: {
-              p_client_ip?: string
-              p_email: string
-              p_language?: string
-              p_source?: string
-            }
-            Returns: string
-          }
+      safe_insert_newsletter_subscriber: {
+        Args: {
+          p_client_ip?: string
+          p_email: string
+          p_language?: string
+          p_source?: string
+        }
+        Returns: string
+      }
       unsubscribe_by_email: { Args: { email_input: string }; Returns: Json }
       unsubscribe_by_token: { Args: { token_input: string }; Returns: Json }
       vv_blog_increment_views: {
-        Args: { client_ip?: string; post_slug: string }
+        Args: { p_client_ip?: string; p_post_slug: string }
         Returns: number
       }
       vv_blog_publish_scheduled: {

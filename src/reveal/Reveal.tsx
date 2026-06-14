@@ -14,6 +14,8 @@ export function Reveal({
   delay = 0,
   stagger = false,
   once = true,
+  amount = 0,
+  rootMargin,
 }: RevealProps) {
   const reducedMotion = useReducedMotion();
   const nodeRef = useRef<HTMLDivElement | null>(null);
@@ -34,13 +36,13 @@ export function Reveal({
       return;
     }
 
-    cleanupRef.current = registerRevealElement(node, { once });
+    cleanupRef.current = registerRevealElement(node, { once, amount, rootMargin });
 
     return () => {
       cleanupRef.current?.();
       cleanupRef.current = null;
     };
-  }, [once, reducedMotion]);
+  }, [once, reducedMotion, amount, rootMargin]);
 
   const classes = ['vez-reveal', stagger ? 'vez-stagger-parent' : '', className]
     .filter(Boolean)

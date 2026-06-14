@@ -3,6 +3,7 @@ import { X, Shield, BarChart3, Target, Cog, Info, Check } from 'lucide-react';
 import { useCookieConsent } from '@/hooks/useCookieConsent';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { useLanguageContext } from '@/hooks/useLanguage';
+import { useModalTransition } from '@/hooks/useModalTransition';
 import { CookiePreferences as CookiePreferencesType } from '@/types/cookies';
 import { COOKIE_CATEGORIES } from '@/data/cookieDefinitions';
 
@@ -51,23 +52,14 @@ export function CookiePreferences({ className = '' }: CookiePreferencesProps) {
   const { state, actions } = useCookieConsent();
   const { t } = useLanguageContext();
   const [localPreferences, setLocalPreferences] = useState<CookiePreferencesType>(state.preferences);
-  const [isVisible, setIsVisible] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const { isVisible, isAnimating } = useModalTransition(state.showPreferences, {
+    enterDelay: 50,
+    exitDuration: 300,
+  });
 
   // Lock body scroll when modal is open
   useBodyScrollLock(state.showPreferences);
-
-  // Animacja modala
-  useEffect(() => {
-    if (state.showPreferences) {
-      setIsVisible(true);
-      setTimeout(() => setIsAnimating(true), 50);
-    } else {
-      setIsAnimating(false);
-      setTimeout(() => setIsVisible(false), 300);
-    }
-  }, [state.showPreferences]);
 
   // Synchronizuj lokalne preferencje ze stanem
   useEffect(() => {

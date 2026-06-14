@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { getCorsHeaders } from "../_shared/cors.ts";
+import { getCorsHeaders, hasTrustedBrowserOrigin } from "../_shared/cors.ts";
 import { getClientIp } from "../_shared/clientIp.ts";
 
 function asStringArray(value: unknown): string[] {
@@ -32,20 +32,33 @@ Deno.serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
-    const { data, error } = await supabase
-      .from("vv_site_settings")
-      .select("value")
-      .eq("key", "maintenance_mode")
-      .eq("is_public", true)
-      .maybeSingle();
+    const [{ data: maintenanceData, error: maintenanceError }, { data: allowlistData, error: allowlistError }] =
+      await Promise.all([
+        supabase
+          .from("vv_site_settings")
+          .select("value")
+          .eq("key", "maintenance_mode")
+          .maybeSingle(),
+        supabase
+          .from("vv_site_settings")
+          .select("value")
+          .eq("key", "maintenance_allowlist")
+          .maybeSingle(),
+      ]);
 
-    if (error) {
-      throw error;
+    if (maintenanceError) {
+      throw maintenanceError;
     }
 
-    const settings = data?.value as { enabled?: boolean; allowedIps?: unknown } | null;
+    if (allowlistError) {
+      throw allowlistError;
+    }
+
+    const settings = maintenanceData?.value as { enabled?: boolean } | null;
     const maintenanceEnabled = settings?.enabled === true;
-    const allowedIps = asStringArray(settings?.allowedIps);
+    const allowedIps = asStringArray(
+      (allowlistData?.value as { allowedIps?: unknown } | null)?.allowedIps,
+    );
 
     if (!maintenanceEnabled) {
       return new Response(
@@ -62,7 +75,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const clientIp = getClientIp(req);
-    const bypass = allowedIps.includes(clientIp);
+    const bypass = hasTrustedBrowserOrigin(req) && allowedIps.includes(clientIp);
 
     return new Response(
       JSON.stringify({ success: true, maintenance: true, bypass }),

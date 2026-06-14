@@ -8,6 +8,10 @@ function dispatchScroll(): void {
   listeners.forEach((listener) => listener());
 }
 
+export function dispatchScrollBus(): void {
+  dispatchScroll();
+}
+
 export function subscribeScroll(listener: ScrollListener): () => void {
   listeners.add(listener);
   return () => listeners.delete(listener);

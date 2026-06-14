@@ -5,6 +5,7 @@ import { COOKIE_DEFINITIONS } from '../../data/cookieDefinitions';
 import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
 import { useSettings } from '@/hooks/useSettings';
 import { useLanguageContext } from '@/hooks/useLanguage';
+import { useModalTransition } from '@/hooks/useModalTransition';
 import { toast } from 'sonner';
 import { OverviewTab, CookiesTab, DataTab, RightsTab } from './privacy-tabs';
 
@@ -22,22 +23,14 @@ export function PrivacyCenter({ className = '' }: PrivacyCenterProps) {
   const { state, actions } = useCookieConsent();
   const { contact } = useSettings();
   const { t, language } = useLanguageContext();
-  const [isVisible, setIsVisible] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const { isVisible, isAnimating } = useModalTransition(state.showPrivacyCenter, {
+    enterDelay: 50,
+    exitDuration: 300,
+  });
   const [activeTab, setActiveTab] = useState<'overview' | 'cookies' | 'data' | 'rights'>('overview');
   const [isExporting, setIsExporting] = useState(false);
 
   useBodyScrollLock(state.showPrivacyCenter);
-
-  useEffect(() => {
-    if (state.showPrivacyCenter) {
-      setIsVisible(true);
-      setTimeout(() => setIsAnimating(true), 50);
-    } else {
-      setIsAnimating(false);
-      setTimeout(() => setIsVisible(false), 300);
-    }
-  }, [state.showPrivacyCenter]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {

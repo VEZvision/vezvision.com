@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 
 export interface ContactSubmissionPayload {
   full_name: string
@@ -7,6 +7,7 @@ export interface ContactSubmissionPayload {
   subject: string
   message: string
   language: 'pl' | 'en'
+  turnstile_token?: string
 }
 
 export type ContactFormField = 'fullName' | 'email' | 'phone' | 'subject' | 'message' | 'form'
@@ -47,15 +48,17 @@ function mapContactField(field?: string): ContactFormField | undefined {
 }
 
 export async function submitContactForm(payload: ContactSubmissionPayload): Promise<void> {
-  const { data, error } = await supabase.functions.invoke('submit-contact', {
+  const supabase = await getSupabase()
+  const response = await supabase.functions.invoke('submit-contact', {
     body: payload,
   })
 
-  if (error) {
-    throw new ContactFormError(error.message || 'Contact form submission failed')
+  if (response.error) {
+    const err = response.error as { message?: string }
+    throw new ContactFormError(err.message || 'Contact form submission failed')
   }
 
-  const result = data as ContactSubmissionResult | null
+  const result = response.data as ContactSubmissionResult | null
   if (result && result.success === false) {
     throw new ContactFormError(
       result.error || 'Contact form submission failed',

@@ -31,6 +31,34 @@
   gap: 60px;
 }
 
+.chevron {
+  flex-shrink: 0;
+  color: #9ca3af;
+  transition: transform 0.3s ease-in-out;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.answerPanel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.3s ease-in-out,
+    opacity 0.3s ease-in-out;
+}
+
+.answerPanelOpen {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.answerPanelInner {
+  overflow: hidden;
+}
+
 .item {
   width: 100%;
   background: #ffffff;
@@ -68,7 +96,7 @@
 }
 
 .question {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Satoshi', sans-serif;
   font-size: 18px;
   font-weight: 500;
   line-height: 1.4;
@@ -93,7 +121,7 @@
 
 .answer {
   padding-right: 48px;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Satoshi', sans-serif;
   font-size: 16px;
   line-height: 1.6;
   color: #555555;
@@ -174,7 +202,7 @@
   padding: 12px 24px;
   margin-top: 48px;
   background: #f9f9f9;
-  border-radius: 100px;
+  border-radius: 12px;
 }
 
 .mailIcon {
@@ -184,7 +212,7 @@
 }
 
 .contactText {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Satoshi', sans-serif;
   font-size: 15px;
   color: #555555;
   display: flex;
@@ -213,9 +241,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
   padding: 14px 28px;
-  border-radius: 100px;
+  border-radius: 12px;
   background: #111111;
   color: #ffffff;
   border: none;
@@ -230,14 +257,9 @@
 }
 
 .ctaButton span {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Satoshi', sans-serif;
   font-size: 15px;
   font-weight: 500;
-}
-
-.ctaIcon {
-  width: 18px;
-  height: 18px;
 }
 
 /* Responsive */

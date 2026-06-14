@@ -15,10 +15,6 @@ type SectionRevealProps = RevealOptions & {
   children: React.ReactNode;
   className?: string;
   delay?: number;
-  /** @deprecated Ignored — CSS reveal only uses opacity + translate. */
-  y?: number;
-  /** @deprecated Ignored — duration is controlled in reveal.css. */
-  duration?: number;
 };
 
 export function SectionReveal({
@@ -73,8 +69,8 @@ function assignStaggerIndices(
       return el;
     }
 
-    if (child.props.children != null) {
-      const nested = assignStaggerIndices(child.props.children, index);
+    if ((child.props as Record<string, unknown>).children != null) {
+      const nested = assignStaggerIndices((child.props as Record<string, unknown>).children as ReactNode, index);
       index = nested.nextIndex;
       return cloneElement(child, undefined, nested.children);
     }

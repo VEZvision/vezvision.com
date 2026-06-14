@@ -2,58 +2,45 @@ import { render, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import CodeInjector from './CodeInjector'
+import type { fetchCodeInjection } from '@/services/codeInjection'
 
-const useSettingsMock = vi.fn()
+const fetchCodeInjectionMock = vi.fn()
 
-vi.mock('@/hooks/useSettings', () => ({
-  useSettings: () => useSettingsMock(),
+type FetchCodeInjection = typeof fetchCodeInjection
+
+vi.mock('@/services/codeInjection', () => ({
+  fetchCodeInjection: (): ReturnType<FetchCodeInjection> =>
+    fetchCodeInjectionMock() as ReturnType<FetchCodeInjection>,
 }))
 
 describe('CodeInjector', () => {
   afterEach(() => {
     document.head.querySelectorAll('meta[name="cms-test"], script, style, [data-vez-cms-head]').forEach((node) => node.remove())
     document.body.querySelectorAll('[data-cms-test], [data-vez-cms-body], script').forEach((node) => node.remove())
-    useSettingsMock.mockReset()
+    fetchCodeInjectionMock.mockReset()
   })
 
-  it('replaces head markup when CMS settings change', async () => {
-    useSettingsMock.mockReturnValue({
-      code: {
-        head: '<meta name="cms-test" content="v1">',
-        body: '',
-      },
+  it('injects fetched head markup on mount', async () => {
+    fetchCodeInjectionMock.mockResolvedValue({
+      head: '<meta name="cms-test" content="v1">',
+      body: '',
     })
 
-    const { rerender } = render(<CodeInjector />)
+    render(<CodeInjector delayMs={0} />)
 
     await waitFor(() => {
       expect(document.head.querySelector('meta[name="cms-test"]')?.getAttribute('content')).toBe('v1')
-    })
-
-    useSettingsMock.mockReturnValue({
-      code: {
-        head: '<meta name="cms-test" content="v2">',
-        body: '',
-      },
-    })
-
-    rerender(<CodeInjector />)
-
-    await waitFor(() => {
-      expect(document.head.querySelector('meta[name="cms-test"]')?.getAttribute('content')).toBe('v2')
     })
     expect(document.head.querySelectorAll('meta[name="cms-test"]')).toHaveLength(1)
   })
 
   it('injects safe head metadata and strips executable tags', async () => {
-    useSettingsMock.mockReturnValue({
-      code: {
-        head: '<meta name="cms-test" content="ok"><script src="https://evil.example/x.js"></script><style>body{display:none}</style>',
-        body: '',
-      },
+    fetchCodeInjectionMock.mockResolvedValue({
+      head: '<meta name="cms-test" content="ok"><script src="https://evil.example/x.js"></script><style>body{display:none}</style>',
+      body: '',
     })
 
-    render(<CodeInjector />)
+    render(<CodeInjector delayMs={0} />)
 
     await waitFor(() => {
       expect(document.head.querySelector('meta[name="cms-test"]')?.getAttribute('content')).toBe('ok')
@@ -62,18 +49,31 @@ describe('CodeInjector', () => {
     expect(document.head.querySelector('style')).toBeNull()
   })
 
-  it('injects sanitized body markup without scripts', async () => {
-    useSettingsMock.mockReturnValue({
-      code: {
-        head: '',
-        body: '<div data-cms-test="body">Hello</div><script>window.__xss = true</script>',
-      },
+  it('strips seo-critical link rels from cms head', async () => {
+    fetchCodeInjectionMock.mockResolvedValue({
+      head: '<link rel="canonical" href="https://evil.example/hijack"><link rel="alternate" hreflang="en" href="https://evil.example/en"><link rel="icon" href="https://vezvision.com/favicon.svg">',
+      body: '',
     })
 
-    render(<CodeInjector />)
+    render(<CodeInjector delayMs={0} />)
 
     await waitFor(() => {
-      expect(document.body.querySelector('[data-cms-test="body"]')).toHaveTextContent('Hello')
+      expect(document.head.querySelector('link[rel="icon"]')).not.toBeNull()
+    })
+    expect(document.head.querySelector('link[rel="canonical"]')).toBeNull()
+    expect(document.head.querySelector('link[rel="alternate"]')).toBeNull()
+  })
+
+  it('injects sanitized body markup without scripts', async () => {
+    fetchCodeInjectionMock.mockResolvedValue({
+      head: '',
+      body: '<div class="cms-body-slot">Hello</div><script>window.__xss = true</script>',
+    })
+
+    render(<CodeInjector delayMs={0} />)
+
+    await waitFor(() => {
+      expect(document.body.querySelector('[data-vez-cms-body]')).toHaveTextContent('Hello')
     })
     expect(document.body.querySelector('script')).toBeNull()
   })

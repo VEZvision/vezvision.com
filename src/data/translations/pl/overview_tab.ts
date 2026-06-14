@@ -1,0 +1,17 @@
+export const overview_tabTranslations = {
+    'privacy.overview.status': 'Status prywatności',
+    'privacy.overview.consent.granted': 'Zgoda udzielona',
+    'privacy.overview.cookies.active': 'Aktywne cookies',
+    'privacy.overview.preferences': 'Twoje preferencje',
+    'privacy.overview.enabled': 'Włączone',
+    'privacy.overview.disabled': 'Wyłączone',
+    'privacy.overview.change': 'Zmień preferencje',
+    'privacy.category.necessary': 'Niezbędne',
+    'privacy.category.functional': 'Funkcjonalne',
+    'privacy.category.analytics': 'Analityczne',
+    'privacy.category.marketing': 'Marketingowe',
+    'privacy.category.necessary.desc': 'Wymagane do działania strony.',
+    'privacy.category.functional.desc': 'Personalizacja i wygoda.',
+    'privacy.category.analytics.desc': 'Anonimowe statystyki.',
+    'privacy.category.marketing.desc': 'Reklamy dopasowane do Ciebie.',
+} as const

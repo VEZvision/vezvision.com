@@ -1,0 +1,15 @@
+export const product_detailsTranslations = {
+    'product.details.loading': 'Loading product details...',
+    'product.details.notFound.title': 'Product not found',
+    'product.details.notFound.desc': 'Could not load product details',
+    'product.details.back': 'Back to products',
+    'product.details.featured': 'Featured project',
+    'product.details.client': 'Client',
+    'product.details.technologies': 'Technologies used',
+    'product.details.benefits': 'Business benefits',
+    'product.details.related': 'Related projects',
+    'product.details.created': 'Created at',
+    'product.details.demo': 'View Demo',
+    'product.details.github': 'GitHub',
+    'product.card.imageAlt': 'Project image',
+} as const

@@ -1,0 +1,18 @@
+export const featuresTranslations = {
+    'features.badge.alt': 'AI support icon',
+    'features.badge': 'CAPABILITIES',
+    'features.title': 'Everything your business needs',
+    'features.title.line1': 'Everything',
+    'features.title.line2.italic': 'your business needs',
+    'features.subtitle': 'Discover features that support business growth and simplify daily life in the digital world.',
+    'features.card.ai.title': 'AI support at every stage',
+    'features.card.ai.desc': 'We build AI tools that automate customer contact, analyze user behavior, and support better decisions.',
+    'features.card.web.title': 'Innovative websites & applications',
+    'features.card.web.desc': 'We create modern websites and applications that attract attention',
+    'features.card.marketing.title': 'Effective marketing, SEO and social media',
+    'features.card.marketing.desc': 'We improve online visibility through ad campaigns, SEO, and social media.',
+    'features.card.automation.title': 'Business process automation',
+    'features.card.automation.desc': 'We simplify customer service, sales, and internal processes with practical automation.',
+    'features.cta.primary': 'Start cooperation',
+    'features.cta.secondary': 'See our services',
+} as const

@@ -18,19 +18,17 @@ export default {
       'xs': '475px',
       'sm': '640px',
       'md': '768px',
+      'tablet': '768px',
       'lg': '1024px',
+      'tablet-lg': '1024px',
       'xl': '1280px',
       '2xl': '1536px',
-      // Custom breakpoints for better tablet support
-      'tablet': '768px',
-      'tablet-lg': '1024px',
-      'desktop': '1280px',
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        serif: ['Playfair Display', 'serif'],
-        playfair: ['Playfair Display', 'serif'],
+        sans: ['Satoshi', 'sans-serif'],
+        satoshi: ['Satoshi', 'sans-serif'],
+        mono: ['Maple Mono', 'monospace'],
       },
       spacing: {
         '18': '4.5rem',

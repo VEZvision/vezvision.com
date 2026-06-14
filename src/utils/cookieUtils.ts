@@ -16,7 +16,6 @@ export function isCategoryAllowed(category: CookieCategory, preferences: CookieP
   return preferences[category] === true;
 }
 
-// Implementacja utilities do zarządzania cookies w przeglądarce
 export class CookieUtilsImpl implements CookieUtils {
   
   setCookie(name: string, value: string, days: number): void {
@@ -30,7 +29,7 @@ export class CookieUtilsImpl implements CookieUtils {
       
       document.cookie = cookieString;
     } catch {
-      // fail silently
+      void 0;
     }
   }
 
@@ -55,7 +54,7 @@ export class CookieUtilsImpl implements CookieUtils {
     try {
       document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
     } catch {
-      // Silent fail for cookie deletion errors
+      void 0;
     }
   }
 
@@ -67,7 +66,6 @@ export class CookieUtilsImpl implements CookieUtils {
       
       definedCookies.forEach(name => this.deleteCookie(name));
 
-      // Also delete cookies matching known category patterns (e.g. Sentry, GA)
       const patterns = CATEGORY_PATTERNS[category] || [];
       if (patterns.length > 0) {
         const allCookies = document.cookie.split(';');
@@ -79,7 +77,7 @@ export class CookieUtilsImpl implements CookieUtils {
         }
       }
     } catch {
-      // fail silently
+      void 0;
     }
   }
 
@@ -97,10 +95,10 @@ export class CookieUtilsImpl implements CookieUtils {
             name: name.trim(),
             value: decodeURIComponent(value),
             category: definition?.category || 'necessary',
-            purpose: definition?.purpose || 'Nieznany cel',
-            expiry: definition?.expiry || 'Nieznany',
+            purpose: definition?.purpose || 'Unknown purpose',
+            expiry: definition?.expiry || 'Unknown',
             domain: definition?.domain || window.location.hostname,
-            provider: definition?.provider || 'Nieznany',
+            provider: definition?.provider || 'Unknown',
             isFirstParty: definition?.isFirstParty ?? true
           });
         }
@@ -110,43 +108,6 @@ export class CookieUtilsImpl implements CookieUtils {
     } catch {
       return [];
     }
-  }
-
-  clearAllOptionalCookies(): void {
-    try {
-      const optionalCookies = COOKIE_DEFINITIONS
-        .filter(def => def.category !== 'necessary')
-        .map(def => def.name);
-      
-      optionalCookies.forEach(name => this.deleteCookie(name));
-    } catch {
-      // Silent fail for optional cookies clearing
-    }
-  }
-
-  clearAllCookies(): void {
-    try {
-      const allCookies = COOKIE_DEFINITIONS.map(def => def.name);
-      allCookies.forEach(name => this.deleteCookie(name));
-    } catch {
-      // Silent fail for all cookies clearing
-    }
-  }
-
-  getCookiesSize(): number {
-    try {
-      return new Blob([document.cookie]).size;
-    } catch {
-      return 0;
-    }
-  }
-
-  cookieExists(name: string): boolean {
-    return this.getCookie(name) !== null;
-  }
-
-  getCookiesByCategory(category: CookieCategory): CookieInfo[] {
-    return this.getAllCookies().filter(cookie => cookie.category === category);
   }
 
   areCookiesEnabled(): boolean {
@@ -162,10 +123,8 @@ export class CookieUtilsImpl implements CookieUtils {
   }
 }
 
-// Singleton instance
 export const cookieUtils = new CookieUtilsImpl();
 
-// Funkcje pomocnicze dla łatwiejszego użycia
 export const setCookie = (name: string, value: string, days: number = 365) => {
   cookieUtils.setCookie(name, value, days);
 };
@@ -186,6 +145,4 @@ export const getAllCookies = (): CookieInfo[] => {
   return cookieUtils.getAllCookies();
 };
 
-export const areCookiesEnabled = (): boolean => {
-  return cookieUtils.areCookiesEnabled();
-};
+export const areCookiesEnabled = (): boolean => cookieUtils.areCookiesEnabled();

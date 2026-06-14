@@ -106,7 +106,7 @@
 
 /* Title - matching AboutCards */
 .cardTitle {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Satoshi', sans-serif;
     font-size: 18px;
     font-weight: 600;
     color: #111;
@@ -116,7 +116,7 @@
 
 /* Description - matching AboutCards */
 .cardDesc {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Satoshi', sans-serif;
     font-size: 15px;
     line-height: 1.6;
     color: #555;

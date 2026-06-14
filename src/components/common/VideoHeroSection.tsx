@@ -1,13 +1,16 @@
 import { FC, Fragment, ReactNode, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { usePrefersReducedData } from '@/hooks/usePrefersReducedData';
 import SectionBadge from '@/components/ui/SectionBadge';
 import logoHero from '@/assets/logo-hero.svg';
-import arrowRight from '@/assets/arrow-right.svg';
 import { safeExternalHref, safePublicHref } from '@/utils/safeHref';
+import { scrollToElement } from '@/scroll';
+import styles from './VideoHeroSection.module.css';
 
 export interface SocialLink {
   href?: string;
-  icon: string;
+  icon: ReactNode;
   label: string;
 }
 
@@ -39,11 +42,13 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
   ariaLabelledBy,
 }) => {
   const navigate = useNavigate();
+  const { toLocalizedPath } = useLocalizedPath();
+  const prefersReducedData = usePrefersReducedData();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const sectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !sectionRef.current || !videoRef.current) {
+    if (typeof window === 'undefined' || prefersReducedData || !sectionRef.current || !videoRef.current) {
       return;
     }
 
@@ -76,7 +81,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
       }
       videoEl.pause();
     };
-  }, []);
+  }, [prefersReducedData]);
 
   const handleButtonClick = () => {
     if (onButtonClick) {
@@ -89,12 +94,14 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
       if (safeButtonHref.startsWith('#')) {
         const target = document.getElementById(safeButtonHref.slice(1));
         if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          scrollToElement(target, { offset: -96, behavior: 'smooth' });
           return;
         }
       }
 
-      if (safeButtonHref.startsWith('/') || safeButtonHref.startsWith('#')) {
+      if (safeButtonHref.startsWith('/')) {
+        void navigate(toLocalizedPath(safeButtonHref.replace(/^\//, '')));
+      } else if (safeButtonHref.startsWith('#')) {
         void navigate(safeButtonHref);
       } else if (typeof window !== 'undefined') {
         window.location.assign(safeButtonHref);
@@ -111,20 +118,29 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
       }
       aria-labelledby={ariaLabelledBy}
     >
-      <video
-        ref={videoRef}
-        className="absolute inset-0 w-full h-full object-cover grayscale brightness-200 z-0"
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="none"
-        aria-hidden="true"
-        onError={() => {}}
-      >
-        <source src="/navons.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+      {prefersReducedData ? (
+        <div
+          className="absolute inset-0 z-0 bg-gradient-to-br from-[#f3f4f6] via-white to-[#e5e7eb]"
+          aria-hidden="true"
+        />
+      ) : (
+          <video
+          ref={videoRef}
+          className={styles.videoBg}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          aria-hidden="true"
+          onError={() => {}}
+          disableRemotePlayback
+          x-webkit-airplay="deny"
+        >
+          <source src="/navons.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      )}
 
       <div className="absolute inset-0 bg-white/90 z-10" />
 
@@ -163,7 +179,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
           )}
 
           <h1
-            className="mb-5 font-inter text-[clamp(38px,6.5vw,80px)] font-normal leading-[1.05] tracking-[-1.6px] text-black"
+            className="mb-5 font-sans text-[clamp(38px,6.5vw,80px)] font-normal leading-[1.05] tracking-[-1.6px] text-black"
             aria-label={typeof title === 'string' ? title : undefined}
           >
             {title}
@@ -177,14 +193,13 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
             <button
               type="button"
               onClick={handleButtonClick}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-[#04070d] text-white font-semibold text-[16px] px-5 py-3 transition-transform hover:-translate-y-0.5"
+              className="inline-flex items-center rounded-lg bg-[#04070d] text-white font-semibold text-[16px] px-5 py-3 transition-transform hover:-translate-y-0.5"
             >
               {buttonText}
-              <img src={arrowRight} alt="" className="w-5 h-5" aria-hidden="true" />
             </button>
           </div>
 
-          {socialLinks && socialLinks.length > 0 && (
+              {socialLinks && socialLinks.length > 0 && (
             <div className="flex items-center justify-center gap-6 mt-6">
               {socialLinks.map((item, index) => (
                 <Fragment key={item.label}>
@@ -196,15 +211,15 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <img src={item.icon} alt={item.label} className="w-6 h-6" />
+                      <span className="w-6 h-6 inline-flex items-center justify-center">{item.icon}</span>
                     </a>
                   ) : (
-                    <img
-                      src={item.icon}
-                      className="w-6 h-6 opacity-50"
-                      alt={item.label}
+                    <span
+                      className="w-6 h-6 inline-flex items-center justify-center opacity-50"
                       aria-hidden={item.label ? undefined : 'true'}
-                    />
+                    >
+                      {item.icon}
+                    </span>
                   )}
                   {index < socialLinks.length - 1 && (
                     <div className="w-0.5 h-6 bg-[#0a0a0a]" aria-hidden="true" />

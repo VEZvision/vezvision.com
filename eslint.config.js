@@ -15,7 +15,8 @@ export default tseslint.config(
       globals: globals.browser,
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['*.config.ts', 'scripts/*.ts', 'tests/e2e/*.ts'],
+          allowDefaultProject: ['*.config.ts', 'scripts/*.ts', 'scripts/lib/*.ts', 'tests/e2e/*.ts'],
+          maximumDefaultProjectFileMatchCount_THIS_WILL_SLOW_DOWN_LINTING: 16,
         },
         tsconfigRootDir: import.meta.dirname,
       },
@@ -28,11 +29,11 @@ export default tseslint.config(
     rules: {
       ...jsxA11y.flatConfigs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'error',
+      '@typescript-eslint/no-unsafe-argument': 'error',
+      '@typescript-eslint/no-unsafe-call': 'error',
+      '@typescript-eslint/no-unsafe-member-access': 'error',
+      '@typescript-eslint/no-unsafe-return': 'error',
       '@typescript-eslint/no-redundant-type-constituents': 'off',
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],

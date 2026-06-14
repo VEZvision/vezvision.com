@@ -69,3 +69,29 @@ export function scrollToTopInstant(): void {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
   }
 }
+
+export function scrollToElement(
+  target: Element | string | null | undefined,
+  options?: { offset?: number; behavior?: 'smooth' | 'instant' },
+): void {
+  if (typeof window === 'undefined' || !target) return;
+
+  const element = typeof target === 'string'
+    ? document.getElementById(target.replace(/^#/, ''))
+    : target instanceof HTMLElement ? target : null;
+
+  if (!element) return;
+
+  const offset = options?.offset ?? 0;
+  const scrollY = getScrollY();
+  const top = element.getBoundingClientRect().top + scrollY + offset;
+  const useInstant = shouldUseNativeScroll() || options?.behavior === 'instant';
+
+  if (lenis && !useInstant) {
+    lenis.scrollTo(top);
+  } else if (lenis) {
+    lenis.scrollTo(top, { immediate: true });
+  } else {
+    window.scrollTo({ top, behavior: useInstant ? 'auto' : 'smooth' });
+  }
+}

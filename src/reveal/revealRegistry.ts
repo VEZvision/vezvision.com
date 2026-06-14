@@ -1,65 +1,96 @@
 /**
- * Single shared IntersectionObserver for all section reveals.
+ * Shared IntersectionObserver pool for section reveals.
  * Avoids N observers + N React setStates (the main source of home-page hitches).
  */
 
-const DEFAULT_ROOT_MARGIN = '320px 0px 120px 0px';
+const DEFAULT_ROOT_MARGIN = '80px 0px 40px 0px';
 
-type Entry = { once: boolean };
+type Entry = { once: boolean; observerKey: string; onReveal?: () => void };
 
 const tracked = new Map<Element, Entry>();
+const observers = new Map<string, IntersectionObserver>();
 
-let observer: IntersectionObserver | null = null;
-
-function reveal(el: HTMLElement) {
+function reveal(el: HTMLElement, onReveal?: () => void) {
   if (el.dataset.revealed === 'true') return;
   el.dataset.revealed = 'true';
+  onReveal?.();
 }
 
-function ensureObserver() {
-  if (observer) return;
+function observerKey(rootMargin: string, threshold: number): string {
+  return `${rootMargin}|${threshold}`;
+}
 
-  observer = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (!entry.isIntersecting) continue;
-        const el = entry.target as HTMLElement;
-        reveal(el);
-        const meta = tracked.get(el);
-        if (meta?.once) {
-          observer?.unobserve(el);
-          tracked.delete(el);
-        }
-      }
-    },
-    { threshold: 0, rootMargin: DEFAULT_ROOT_MARGIN },
-  );
+function handleIntersect(entries: IntersectionObserverEntry[]) {
+  for (const entry of entries) {
+    if (!entry.isIntersecting) continue;
+    const el = entry.target as HTMLElement;
+    const meta = tracked.get(el);
+    reveal(el, meta?.onReveal);
+    if (meta?.once) {
+      observers.get(meta.observerKey)?.unobserve(el);
+      tracked.delete(el);
+    }
+  }
+}
+
+function getObserver(rootMargin: string, threshold: number): IntersectionObserver {
+  const key = observerKey(rootMargin, threshold);
+  let observer = observers.get(key);
+  if (!observer) {
+    observer = new IntersectionObserver(handleIntersect, { threshold, rootMargin });
+    observers.set(key, observer);
+  }
+  return observer;
 }
 
 function isAboveFold(el: HTMLElement): boolean {
   const rect = el.getBoundingClientRect();
-  return rect.top < window.innerHeight * 0.95 && rect.bottom > 0;
+  return (rect.top < window.innerHeight * 0.95 && rect.bottom > 0) || rect.bottom <= 0;
 }
+
+export type RegisterRevealOptions = {
+  once?: boolean;
+  rootMargin?: string;
+  amount?: number;
+  onReveal?: () => void;
+};
 
 export function registerRevealElement(
   el: HTMLElement,
-  { once = true }: { once?: boolean } = {},
+  { once = true, rootMargin = DEFAULT_ROOT_MARGIN, amount = 0, onReveal }: RegisterRevealOptions = {},
 ): () => void {
+  const threshold = Math.min(1, Math.max(0, amount));
+  const key = observerKey(rootMargin, threshold);
+  el.dataset.revealPending = 'true';
+
+  if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+    reveal(el, onReveal);
+    return () => {};
+  }
+
   if (isAboveFold(el)) {
-    reveal(el);
+    reveal(el, onReveal);
     if (once) return () => {};
   }
 
-  ensureObserver();
-  tracked.set(el, { once });
-  observer!.observe(el);
+  const observer = getObserver(rootMargin, threshold);
+  tracked.set(el, { once, observerKey: key, onReveal });
+  observer.observe(el);
 
   return () => {
-    observer?.unobserve(el);
+    observer.unobserve(el);
     tracked.delete(el);
   };
 }
 
 export function revealImmediately(el: HTMLElement) {
   reveal(el);
+}
+
+export function resetRevealRegistryState(): void {
+  for (const observer of observers.values()) {
+    observer.disconnect();
+  }
+  observers.clear();
+  tracked.clear();
 }

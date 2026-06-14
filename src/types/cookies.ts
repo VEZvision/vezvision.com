@@ -89,7 +89,6 @@ export interface StorageManager {
   saveConsent: (consent: CookieConsentStorage) => void;
   loadConsent: () => CookieConsentStorage | null;
   clearConsent: () => void;
-  migrateConsent: (oldVersion: string, newVersion: string) => void;
 }
 
 export interface AnalyticsManager {

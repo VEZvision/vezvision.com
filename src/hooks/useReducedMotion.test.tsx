@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { ReducedMotionProvider } from '@/contexts/ReducedMotionContext'
 import { useReducedMotion } from './useReducedMotion'
 
 const originalMatchMedia = window.matchMedia
@@ -32,6 +33,10 @@ function mockReducedMotion(matches: boolean) {
   }
 }
 
+const wrapper = ({ children }: { children: React.ReactNode }) => (
+  <ReducedMotionProvider>{children}</ReducedMotionProvider>
+)
+
 describe('useReducedMotion', () => {
   afterEach(() => {
     window.matchMedia = originalMatchMedia
@@ -41,7 +46,7 @@ describe('useReducedMotion', () => {
   it('reads prefers-reduced-motion instead of pointer type', () => {
     mockReducedMotion(true)
 
-    const { result } = renderHook(() => useReducedMotion())
+    const { result } = renderHook(() => useReducedMotion(), { wrapper })
 
     expect(window.matchMedia).toHaveBeenCalledWith('(prefers-reduced-motion: reduce)')
     expect(result.current).toBe(true)
@@ -49,7 +54,7 @@ describe('useReducedMotion', () => {
 
   it('updates when the media query changes', async () => {
     const media = mockReducedMotion(false)
-    const { result } = renderHook(() => useReducedMotion())
+    const { result } = renderHook(() => useReducedMotion(), { wrapper })
 
     expect(result.current).toBe(false)
 

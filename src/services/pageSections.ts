@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 
 export interface PageSectionEntry {
   page_key: string
@@ -87,6 +87,7 @@ export function flattenCmsTranslations(pageSections: PageSectionsMap) {
 }
 
 export async function getPublicPageSections(): Promise<{ data: unknown[]; error: string | null }> {
+  const supabase = await getSupabase()
   const { data, error } = await supabase
     .from('vv_page_sections')
     .select('page_key,section_key,order_index,enabled,content_pl,content_en,config,updated_at')

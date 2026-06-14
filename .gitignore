@@ -37,6 +37,9 @@ coverage
 .vercel/
 supabase/.temp/
 .sisyphus/
+
+# Generated at build/deploy time from CMS
+public/sitemap.xml
 .mcp-deploy-payload.json
 .deploy-*.json
 .mcp-args-*.json

@@ -1,0 +1,18 @@
+export const cookie_bannerTranslations = {
+    'cookie.banner.title': 'Szanujemy Twoją prywatność',
+    'cookie.banner.description': 'Używamy plików cookie i podobnych technologii, aby zapewnić najlepsze doświadczenia na naszej stronie. Niektóre są niezbędne do działania witryny, inne pomagają nam ją ulepszać i dostosowywać do Twoich potrzeb.',
+    'cookie.banner.gdpr': 'Zgodnie z RODO/GDPR',
+    'cookie.banner.secure': 'Bezpieczne przechowywanie',
+    'cookie.banner.customize': 'Dostosuj',
+    'cookie.banner.settings': 'Ustawienia',
+    'cookie.banner.necessary': 'Tylko niezbędne',
+    'cookie.banner.accept': 'Akceptuj wszystkie',
+    'cookie.banner.close': 'Zamknij banner cookies',
+    'cookie.banner.shortcuts.necessary': 'Tylko niezbędne',
+    'cookie.banner.shortcuts.accept': 'Akceptuj wszystkie',
+    'cookiePolicy.title': 'Polityka plików cookie',
+    'cookiePolicy.lastUpdated': 'Ostatnia aktualizacja',
+    'cookiePolicy.whatAreCookies': 'Czym są pliki cookie?',
+    'cookiePolicy.typesOfCookies': 'Rodzaje plików cookie',
+    'cookiePolicy.manageCookies': 'Zarządzanie plikami cookie',
+} as const

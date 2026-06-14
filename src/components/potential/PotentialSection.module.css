@@ -75,7 +75,7 @@
 }
 
 .cardTitle {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Satoshi', sans-serif;
     font-size: 18px;
     font-weight: 600;
     line-height: 1.3;
@@ -85,7 +85,7 @@
 }
 
 .cardDesc {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Satoshi', sans-serif;
     font-size: 15px;
     line-height: 1.6;
     color: #555555;
@@ -155,15 +155,21 @@
 .techPathDot {
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 0;
     width: 8px;
     height: 8px;
     margin-top: -4px;
     border-radius: 50%;
     background: #10b981;
-    transform: translateX(-50%);
-    opacity: 1;
     transform: translateX(-50%) scale(1);
+    opacity: 1;
+    animation: techDotSlide 3s ease-in-out infinite;
+}
+
+@keyframes techDotSlide {
+    0% { left: 0%; }
+    50% { left: 100%; }
+    100% { left: 0%; }
 }
 
 .techPathDot::after {
@@ -175,24 +181,26 @@
     z-index: -1;
 }
 
-@keyframes techDotPulse {
-    0%,
-    100% {
-        opacity: 0.65;
-        transform: translateX(-50%) scale(0.9);
-    }
-
-    50% {
-        opacity: 1;
-        transform: translateX(-50%) scale(1.18);
-    }
-}
-
 @media (prefers-reduced-motion: reduce) {
-    .techPathDot {
-        left: 50% !important;
+    .techPathDot,
+    .blinkingCursor,
+    .floatingTagPill,
+    .appCircle {
         animation: none;
     }
+
+    .techPathDot {
+        left: 50%;
+    }
+
+    .blinkingCursor {
+        opacity: 1;
+    }
+
+    .satelliteGlobe { transform: translate3d(-68px, -53px, 0); }
+    .satelliteGithub { transform: translate3d(78px, -13px, 0); }
+    .satelliteRobot { transform: translate3d(-98px, 17px, 0); }
+    .satelliteCube { transform: translate3d(42px, 83px, 0); }
 }
 
 .customBarIcon {
@@ -213,6 +221,14 @@
     background: #344054;
     border-radius: 3px;
     width: 100%;
+}
+
+.barShort {
+    height: 12px;
+}
+
+.barMedium {
+    height: 18px;
 }
 
 .barFull {
@@ -263,6 +279,7 @@
     height: 20px;
     background: #888;
     opacity: 1;
+    animation: cursorBlink 1s step-end infinite;
 }
 
 @keyframes cursorBlink {
@@ -328,6 +345,7 @@
     box-shadow:
         0 4px 12px rgba(0, 0, 0, 0.04),
         0 1px 2px rgba(0, 0, 0, 0.02);
+    animation: tagFloat 3s ease-in-out infinite;
 }
 
 @keyframes tagFloat {
@@ -397,7 +415,7 @@
     box-shadow:
         0 8px 24px rgba(0, 0, 0, 0.06),
         0 2px 8px rgba(0, 0, 0, 0.04);
-    z-index: 2;
+    z-index: 3;
 }
 
 /* Satellite icons — origin at center of central logo plate */
@@ -414,25 +432,47 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    z-index: 3;
+    z-index: 1;
     color: #222;
+    animation-duration: 5s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
 }
 
-/* Static satellites — transform animations during scroll caused section hitches */
 .satelliteGlobe {
-    transform: translate3d(-68px, -53px, 0);
+    animation-name: satRetractGlobe;
 }
 
 .satelliteGithub {
-    transform: translate3d(78px, -13px, 0);
+    animation-name: satRetractGithub;
 }
 
 .satelliteRobot {
-    transform: translate3d(-98px, 17px, 0);
+    animation-name: satRetractRobot;
 }
 
 .satelliteCube {
-    transform: translate3d(42px, 83px, 0);
+    animation-name: satRetractCube;
+}
+
+@keyframes satRetractGlobe {
+    0%, 100% { transform: translate3d(-68px, -53px, 0) scale(1); opacity: 1; }
+    35% { transform: translate3d(0, 0, 0) scale(0.1); opacity: 0; }
+}
+
+@keyframes satRetractGithub {
+    0%, 100% { transform: translate3d(78px, -13px, 0) scale(1); opacity: 1; }
+    55% { transform: translate3d(0, 0, 0) scale(0.1); opacity: 0; }
+}
+
+@keyframes satRetractRobot {
+    0%, 100% { transform: translate3d(-98px, 17px, 0) scale(1); opacity: 1; }
+    42% { transform: translate3d(0, 0, 0) scale(0.1); opacity: 0; }
+}
+
+@keyframes satRetractCube {
+    0%, 100% { transform: translate3d(42px, 83px, 0) scale(1); opacity: 1; }
+    60% { transform: translate3d(0, 0, 0) scale(0.1); opacity: 0; }
 }
 
 .dotCluster {

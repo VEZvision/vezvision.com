@@ -1,4 +1,4 @@
-import { useReducer, useEffect, ReactNode } from 'react';
+import { useReducer, useEffect, useMemo, useCallback, ReactNode } from 'react';
 import {
   CookieConsentState,
   CookieConsentActions,
@@ -12,7 +12,6 @@ import { clearCookiesByCategory } from '../utils/cookieUtils';
 import { handleConsentChange } from '../lib/sentryConsent';
 import { applyGoogleAnalyticsConsent } from '../lib/googleAnalyticsConsent';
 
-// Stan początkowy
 const initialState: CookieConsentState = {
   hasConsent: false,
   preferences: { ...DEFAULT_COOKIE_PREFERENCES },
@@ -24,7 +23,6 @@ const initialState: CookieConsentState = {
   consentId: ''
 };
 
-// Reducer do zarządzania stanem
 function cookieConsentReducer(
   state: CookieConsentState,
   action: CookieConsentActionType
@@ -132,47 +130,14 @@ function cookieConsentReducer(
 
 import { CookieConsentContext } from './CookieConsentContextDefinition';
 
-// Provider Props
 interface CookieConsentProviderProps {
   children: ReactNode;
 }
 
-// Provider Component
 export function CookieConsentProvider({ children }: CookieConsentProviderProps) {
   const [state, dispatch] = useReducer(cookieConsentReducer, initialState);
 
-  // Ładowanie zgody przy starcie aplikacji
-  useEffect(() => {
-    const loadStoredConsent = () => {
-      try {
-        const storedConsent = storageManager.loadConsent();
-
-        if (storedConsent) {
-          // Sprawdź czy wersja się zgadza
-          if (storedConsent.version !== COOKIE_CONSENT_VERSION) {
-            dispatch({ type: 'SHOW_BANNER' });
-            return;
-          }
-
-          // Załaduj zapisaną zgodę
-          dispatch({ type: 'LOAD_CONSENT', payload: storedConsent });
-
-          // Zastosuj preferencje cookies
-          applyCookiePreferences(storedConsent.preferences);
-        } else {
-          // Brak zapisanej zgody - pokaż banner
-          dispatch({ type: 'SHOW_BANNER' });
-        }
-      } catch {
-        // W przypadku błędu, pokazujemy banner
-        dispatch({ type: 'SHOW_BANNER' });
-      }
-    };
-
-    loadStoredConsent();
-  }, []);
-
-  const applyCookiePreferences = (preferences: CookiePreferences) => {
+  const applyCookiePreferences = useCallback((preferences: CookiePreferences) => {
     try {
       if (!preferences.functional) {
         clearCookiesByCategory('functional');
@@ -191,12 +156,11 @@ export function CookieConsentProvider({ children }: CookieConsentProviderProps) 
         detail: preferences
       }));
     } catch {
-      // fail silently
+      void 0;
     }
-  };
+  }, []);
 
-  // Funkcja do zapisywania zgody
-  const saveConsent = (preferences: CookiePreferences, action: 'accept_all' | 'reject_optional' | 'update_preferences') => {
+  const saveConsent = useCallback((preferences: CookiePreferences, action: 'accept_all' | 'reject_optional' | 'update_preferences') => {
     try {
       const consentData = storageManager.createDefaultConsent();
       consentData.preferences = preferences;
@@ -206,12 +170,11 @@ export function CookieConsentProvider({ children }: CookieConsentProviderProps) 
       storageManager.updatePreferences(preferences, action);
       applyCookiePreferences(preferences);
     } catch {
-      // Błąd podczas zapisywania zgody - ignorujemy
+      void 0;
     }
-  };
+  }, [state.consentId, applyCookiePreferences]);
 
-  // Actions
-  const actions: CookieConsentActions = {
+  const actions: CookieConsentActions = useMemo(() => ({
     acceptAll: () => {
       const preferences: CookiePreferences = {
         necessary: true,
@@ -239,7 +202,7 @@ export function CookieConsentProvider({ children }: CookieConsentProviderProps) 
     updatePreferences: (preferences: CookiePreferences) => {
       const finalPreferences = {
         ...preferences,
-        necessary: true // zawsze true
+        necessary: true
       };
 
       dispatch({ type: 'UPDATE_PREFERENCES', payload: finalPreferences });
@@ -265,20 +228,45 @@ export function CookieConsentProvider({ children }: CookieConsentProviderProps) 
     resetConsent: () => {
       try {
         storageManager.clearConsent();
-        // Usuń wszystkie opcjonalne cookies
         clearCookiesByCategory('functional');
         clearCookiesByCategory('analytics');
         clearCookiesByCategory('marketing');
 
         dispatch({ type: 'RESET_CONSENT' });
       } catch {
-        // Błąd podczas resetowania zgody - ignorujemy
+        void 0;
       }
     }
-  };
+  }), [saveConsent]);
+
+  const value = useMemo(() => ({ state, actions }), [state, actions]);
+
+  useEffect(() => {
+    const loadStoredConsent = () => {
+      try {
+        const storedConsent = storageManager.loadConsent();
+
+        if (storedConsent) {
+          if (storedConsent.version !== COOKIE_CONSENT_VERSION) {
+            dispatch({ type: 'SHOW_BANNER' });
+            return;
+          }
+
+          dispatch({ type: 'LOAD_CONSENT', payload: storedConsent });
+          applyCookiePreferences(storedConsent.preferences);
+        } else {
+          dispatch({ type: 'SHOW_BANNER' });
+        }
+      } catch {
+        dispatch({ type: 'SHOW_BANNER' });
+      }
+    };
+
+    loadStoredConsent();
+  }, [applyCookiePreferences]);
 
   return (
-    <CookieConsentContext.Provider value={{ state, actions }}>
+    <CookieConsentContext.Provider value={value}>
       {children}
     </CookieConsentContext.Provider>
   );

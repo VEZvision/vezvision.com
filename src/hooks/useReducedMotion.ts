@@ -1,20 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useReducedMotionValue } from '@/contexts/ReducedMotionContext';
 
+/** Single shared media-query listener via ReducedMotionProvider. */
 export function useReducedMotion(): boolean {
-  const [reducedMotion, setReducedMotion] = useState(() => {
-    if (typeof window === 'undefined') return false
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  })
-
-  useEffect(() => {
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const handleChange = (event: MediaQueryListEvent) => setReducedMotion(event.matches)
-
-    setReducedMotion(query.matches)
-    query.addEventListener('change', handleChange)
-
-    return () => query.removeEventListener('change', handleChange)
-  }, [])
-
-  return reducedMotion
+  return useReducedMotionValue();
 }

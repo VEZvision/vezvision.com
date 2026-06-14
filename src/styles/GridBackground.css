@@ -17,13 +17,13 @@
 }
 
 .grid-background {
-  /* Fixed grid — does not repaint on every Lenis scroll tick (home-only layer). */
-  position: fixed;
+  position: absolute;
   inset: 0;
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   pointer-events: none;
   z-index: 0;
+  contain: paint;
   --grid-size: 150px;
   --grid-color: rgba(128, 128, 128, 0.12);
   background-color: #ffffff;
@@ -31,13 +31,24 @@
     linear-gradient(var(--grid-color) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
   background-size: var(--grid-size) var(--grid-size);
-
-  /* mask disabled to avoid visible black dots */
   mask: none;
 }
 
 .grid-background::after {
-  content: none;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  --highlight-color: rgba(128, 128, 128, 0.12);
+  background-image:
+    linear-gradient(to bottom, transparent, var(--highlight-color), transparent),
+    linear-gradient(to right, transparent, var(--highlight-color), transparent);
+  background-size: 100% 3px, 3px 100%;
+  background-repeat: no-repeat;
+  background-position: 0 35%, 35% 0;
+  opacity: 0.45;
 }
 
 @media (pointer: coarse) {

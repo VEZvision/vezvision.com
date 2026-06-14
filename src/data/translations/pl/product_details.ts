@@ -1,0 +1,15 @@
+export const product_detailsTranslations = {
+    'product.details.loading': 'Ładowanie szczegółów produktu...',
+    'product.details.notFound.title': 'Produkt nie został znaleziony',
+    'product.details.notFound.desc': 'Nie można załadować szczegółów produktu',
+    'product.details.back': 'Powrót do produktów',
+    'product.details.featured': 'Polecany projekt',
+    'product.details.client': 'Klient',
+    'product.details.technologies': 'Użyte technologie',
+    'product.details.benefits': 'Korzyści biznesowe',
+    'product.details.related': 'Powiązane projekty',
+    'product.details.created': 'Data utworzenia',
+    'product.details.demo': 'Zobacz Demo',
+    'product.details.github': 'GitHub',
+    'product.card.imageAlt': 'Zdjęcie projektu',
+} as const

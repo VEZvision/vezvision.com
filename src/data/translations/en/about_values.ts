@@ -1,0 +1,15 @@
+export const about_valuesTranslations = {
+    'about.values.badge.alt': 'Values icon',
+    'about.values.badge': 'Values',
+    'about.values.title.line1': 'Values that',
+    'about.values.title.line2.italic': 'guide us',
+    'about.values.subtitle': 'How we work stems from our values. We focus on innovation, honesty, and real impact. We build solutions that support businesses and make everyday work easier.',
+    'about.values.card1.title': 'Innovation in practice',
+    'about.values.card1.desc': 'We follow new technology trends and translate them into simple, useful solutions.',
+    'about.values.card2.title': 'Honesty and trust',
+    'about.values.card2.desc': 'Transparent communication and accountability for results are the foundation of every collaboration.',
+    'about.values.card3.title': 'Business growth',
+    'about.values.card3.desc': 'We focus on what brings tangible benefits, saves time, and opens new opportunities.',
+    'about.values.card4.title': 'Customer first',
+    'about.values.card4.desc': 'We listen to needs, propose clear solutions, and deliver what truly matters.',
+} as const

@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom'
 import { useLanguageContext } from '@/hooks/useLanguage'
 import { useSettings } from '@/hooks/useSettings'
 import { safeAbsoluteHttpUrl, safeImageUrl } from '@/utils/safeHref'
-import { getSafeStructuredDataJson } from '@/utils/safeJsonLd'
+import { getSafeStructuredDataJson, safeJsonLd } from '@/utils/safeJsonLd'
 
 function getLocalizedValue(language: 'pl' | 'en', plValue: string, enValue: string) {
   return language === 'en' ? (enValue || plValue) : plValue
@@ -38,6 +38,18 @@ const PageSeo = ({ pageKey }: PageSeoProps) => {
   const ogSiteName = seo?.ogSiteName || identity?.siteName || seo?.siteTitle || ''
   const structuredDataJson = getSafeStructuredDataJson(entry.structured_data_json)
 
+  const webPageSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': canonicalUrl ? `${canonicalUrl}#webpage` : undefined,
+    url: canonicalUrl || undefined,
+    name: title || undefined,
+    description: description || undefined,
+    inLanguage: language === 'pl' ? 'pl-PL' : 'en-US',
+    isPartOf: siteUrl ? { '@id': `${siteUrl}/#website` } : undefined,
+    publisher: siteUrl ? { '@id': `${siteUrl}/#organization` } : undefined,
+  }
+
   return (
     <Helmet>
       {title ? <title>{title}</title> : null}
@@ -54,6 +66,7 @@ const PageSeo = ({ pageKey }: PageSeoProps) => {
       {ogTitle ? <meta name="twitter:title" content={ogTitle} /> : null}
       {ogDescription ? <meta name="twitter:description" content={ogDescription} /> : null}
       {ogImage ? <meta name="twitter:image" content={ogImage} /> : null}
+      {canonicalUrl ? <script type="application/ld+json">{safeJsonLd(webPageSchema)}</script> : null}
       {structuredDataJson ? <script type="application/ld+json">{structuredDataJson}</script> : null}
     </Helmet>
   )

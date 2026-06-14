@@ -1,193 +1,99 @@
-import { useState, type ChangeEvent, type FormEvent } from 'react';
-import styles from './ContactFormSection.module.scss';
-import { LanguageContextType } from '@/hooks/useLanguage';
-import SectionHeader from '@/components/ui/SectionHeader';
+import { useCallback, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 import { Mail, Loader2, Send } from 'lucide-react';
+import styles from './ContactFormSection.module.scss';
+import SectionHeader from '@/components/ui/SectionHeader';
 import { useSettings } from '@/hooks/useSettings';
 import { useLanguageContext } from '@/hooks/useLanguage';
-import { toast } from 'sonner';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import {
+  frontendContactFormSchema,
+  type FrontendContactFormInput,
+} from '@shared/contactSchema'
+import { ContactFormError, submitContactForm, type ContactSubmissionPayload } from '@/services/contact';
 import { logError } from '@/lib/logger';
-import {
-  ContactFormError,
-  submitContactForm,
-  type ContactSubmissionPayload,
-} from '@/services/contact';
-import {
-  CONTACT_EMAIL_PATTERN,
-  formatTelHref,
-  normalizeContactEmail,
-  normalizeContactPhone,
-} from '@/utils/contactValidation';
-
-interface FormData {
-  fullName: string;
-  email: string;
-  phone: string;
-  subject: string;
-  message: string;
-}
-
-interface FormErrors {
-  fullName?: string;
-  email?: string;
-  phone?: string;
-  subject?: string;
-  message?: string;
-}
+import TurnstileField from '@/components/security/TurnstileField';
+import { isTurnstileEnabled } from '@/lib/turnstile';
+import { ContactInfoCards } from './ContactInfoCards';
+import type { LanguageContextType } from '@/hooks/useLanguage';
 
 interface Props { t: LanguageContextType['t'] }
 
-function normalizeAddress(value: string | null | undefined): string | null {
-  const address = value?.trim();
-  if (!address || address.length > 300 || /[<>]/.test(address)) return null;
-  return address;
-}
-
-const ContactFormSection = ({ t }: Props) => {
-  const reducedMotion = useReducedMotion();
-  const { contact, loading, error } = useSettings();
-  const [formData, setFormData] = useState<FormData>({
-    fullName: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: ''
-  });
-
-  const [errors, setErrors] = useState<FormErrors>({});
+function ContactFormSection({ t }: Props) {
+  const { toLocalizedPath } = useLocalizedPath();
+  const { contact, loading: settingsLoading, error: settingsError } = useSettings();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const { language } = useLanguageContext();
-  const displayEmail = contact?.email?.trim() || 'contact@vezvision.com';
-  const displayPhone = contact?.phone?.trim() || (language === 'pl' ? 'Umów rozmowę mailowo' : 'Book a call by email');
-  const displayAddress = contact?.address?.trim() || (language === 'pl' ? 'Spotkania online i zdalnie' : 'Online and remote meetings');
 
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FrontendContactFormInput>({
+    resolver: zodResolver(frontendContactFormSchema),
+    defaultValues: { fullName: '', email: '', phone: '', subject: '', message: '', consent: false },
+  })
 
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = t('contact.form.error.fullName');
+  const handleTurnstileToken = useCallback((token: string) => setTurnstileToken(token), [])
+
+  const onSubmit = async (data: FrontendContactFormInput) => {
+    if (isTurnstileEnabled() && !turnstileToken) {
+      toast.error(t('contact.form.error.captcha'))
+      return
     }
 
-    if (!formData.email.trim()) {
-      newErrors.email = t('contact.form.error.email.required');
-    } else if (!CONTACT_EMAIL_PATTERN.test(formData.email.trim())) {
-      newErrors.email = t('contact.form.error.email.invalid');
+    setIsSubmitting(true)
+    const payload: ContactSubmissionPayload = {
+      full_name: data.fullName,
+      email: data.email,
+      phone: data.phone || null,
+      subject: data.subject,
+      message: data.message,
+      language,
+      ...(turnstileToken ? { turnstile_token: turnstileToken } : {}),
     }
 
-    if (formData.phone.trim()) {
-      const phoneResult = normalizeContactPhone(formData.phone);
-      if (phoneResult.invalid || !phoneResult.phone) {
-        newErrors.phone = t('contact.form.error.phone');
+    try {
+      await submitContactForm(payload)
+      reset()
+      setTurnstileToken('')
+      setTurnstileResetKey((k) => k + 1)
+      toast.success(t('contact.form.success'))
+    } catch (err) {
+      logError('contactForm.submit', err)
+      if (err instanceof ContactFormError) {
+        toast.error(err.message)
+      } else {
+        toast.error(err instanceof Error ? err.message : t('common.error'))
       }
+    } finally {
+      setIsSubmitting(false)
     }
+  }
 
-    if (!formData.subject.trim()) {
-      newErrors.subject = t('contact.form.error.subject');
-    }
+  const fieldClass = (name: keyof typeof errors) =>
+    `${styles.fieldInput} ${errors[name] ? styles.error : ''}`
 
-    if (!formData.message.trim()) {
-      newErrors.message = t('contact.form.error.message');
-    } else if (formData.message.trim().length < 10) {
-      newErrors.message = t('contact.form.error.messageTooShort');
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-
-    // Clear error when user starts typing
-    if (errors[name as keyof FormErrors]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: undefined
-      }));
-    }
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (validateForm()) {
-      setIsSubmitting(true);
-      const phoneResult = normalizeContactPhone(formData.phone);
-      const payload: ContactSubmissionPayload = {
-        full_name: formData.fullName.trim(),
-        email: formData.email.trim(),
-        phone: phoneResult.phone,
-        subject: formData.subject.trim(),
-        message: formData.message.trim(),
-        language,
-      };
-      try {
-        await submitContactForm(payload);
-
-        // Reset form
-        setFormData({
-          fullName: '',
-          email: '',
-          phone: '',
-          subject: '',
-          message: ''
-        });
-
-        toast.success(t('contact.form.success'));
-
-      } catch (err) {
-        logError('contactForm.submit', err);
-
-        if (err instanceof ContactFormError) {
-          if (err.field && err.field !== 'form') {
-            setErrors({ [err.field]: err.message });
-          } else {
-            setErrors({});
-          }
-          toast.error(err.message);
-          return;
-        }
-
-        const msg = err instanceof Error ? err.message : t('common.error');
-        toast.error(msg);
-      } finally {
-        setIsSubmitting(false);
-      }
-    }
-  };
-
-  const handleEmailClick = () => {
-    const email = normalizeContactEmail(displayEmail);
-    if (email) window.location.href = `mailto:${email}`;
-  };
-
-  const handlePhoneClick = () => {
-    const phoneResult = normalizeContactPhone(contact?.phone);
-    if (phoneResult.phone) window.location.href = formatTelHref(phoneResult.phone);
-  };
-
-  const handleAddressClick = () => {
-    const address = normalizeAddress(contact?.address);
-    if (address) window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`, '_blank', 'noopener,noreferrer');
-  };
+  const hasContact = contact != null && !settingsError
 
   return (
-    <section
-      id="contact-form-section"
-      className={styles.sectionContactContainer}
-    >
+    <section id="contact-form-section" className={styles.sectionContactContainer}>
       <div>
         <SectionHeader
           badgeText={t('contact.form.badge')}
           badgeIcon={<Mail className="w-3.5 h-3.5" />}
           title={
             <>
-              {t('contact.form.title.line1')} <span className="font-playfair italic font-medium">{t('contact.form.title.line2.italic')}</span>
+              {t('contact.form.title.line1')}{' '}
+              <span className="font-sans font-semibold">
+                {t('contact.form.title.line2.italic')}
+              </span>
             </>
           }
           subtitle={t('contact.form.subtitle')}
@@ -196,187 +102,168 @@ const ContactFormSection = ({ t }: Props) => {
       </div>
 
       <div className={styles.section}>
-        <div className={styles.contacts}>
-          <button type="button" className={styles.contactCard} onClick={handleEmailClick}>
-            <div className={styles.iconContainer}>
-              <div className={styles.iconEmail} />
-            </div>
-            <p className={styles.contactText}>
-              {t('contact.form.email.prompt.line1')}
-              <br />
-              {t('contact.form.email.prompt.line2')}
-            </p>
-            <div className={styles.link}>
-              {loading || (!contact && !error) ? (
-                <span className="inline-block w-40 h-5 bg-gray-200 rounded animate-pulse" />
-              ) : (
-                <span className={styles.contactInfo}>{displayEmail}</span>
-              )}
-            </div>
-          </button>
+        <ContactInfoCards
+          t={t}
+          contact={{
+            email: contact?.email ?? '',
+            phone: contact?.phone ?? null,
+            address: contact?.address ?? null,
+          }}
+          loading={settingsLoading}
+          hasContact={hasContact}
+        />
 
-          <button type="button" className={styles.contactCard} onClick={handlePhoneClick}>
-            <div className={styles.iconContainer}>
-              <div className={styles.iconPhone} />
-            </div>
-            <p className={styles.contactText}>
-              {t('contact.form.phone.prompt.line1')}
-              <br />
-              {t('contact.form.phone.prompt.line2')}
-            </p>
-            <div className={styles.link}>
-              {loading || (!contact && !error) ? (
-                <span className="inline-block w-32 h-5 bg-gray-200 rounded animate-pulse" />
-              ) : (
-                <span className={styles.contactInfo}>{displayPhone}</span>
-              )}
-            </div>
-          </button>
-
-          <button type="button" className={styles.contactCard} onClick={handleAddressClick}>
-            <div className={styles.iconContainer}>
-              <div className={styles.iconAddress} />
-            </div>
-            <p className={styles.contactText}>
-              {t('contact.tile.address.title')}
-              <br />
-              {t('contact.tile.address.desc')}
-            </p>
-            <div className={styles.link}>
-              {loading || (!contact && !error) ? (
-                <span className="inline-block w-48 h-5 bg-gray-200 rounded animate-pulse" />
-              ) : (
-                <span className={styles.contactInfo}>{displayAddress}</span>
-              )}
-            </div>
-          </button>
-        </div>
-
-        <form className={styles.formContainer} onSubmit={handleSubmit}>
+        <form className={styles.formContainer} onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className={styles.formField}>
-            <label className={styles.fieldLabel}>{t('contact.form.label.fullName')}</label>
+            <label className={styles.fieldLabel} htmlFor="contact-fullName">
+              {t('contact.form.label.fullName')}
+            </label>
             <input
+              id="contact-fullName"
               type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleInputChange}
-              className={`${styles.fieldInput} ${errors.fullName ? styles.error : ''}`}
+              {...register('fullName')}
+              className={fieldClass('fullName')}
               placeholder={t('contact.form.placeholder.fullName')}
+              aria-invalid={Boolean(errors.fullName)}
+              aria-describedby={errors.fullName ? 'contact-fullName-error' : undefined}
             />
-            {errors.fullName && <span className={styles.errorMessage}>{errors.fullName}</span>}
+            {errors.fullName && (
+              <span id="contact-fullName-error" className={styles.errorMessage} role="alert">
+                {t(errors.fullName.message!)}
+              </span>
+            )}
           </div>
 
           <div className={styles.formField}>
-            <label className={styles.fieldLabel}>{t('contact.form.label.email')}</label>
+            <label className={styles.fieldLabel} htmlFor="contact-email">
+              {t('contact.form.label.email')}
+            </label>
             <input
+              id="contact-email"
               type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              className={`${styles.fieldInput} ${errors.email ? styles.error : ''}`}
+              {...register('email')}
+              className={fieldClass('email')}
               placeholder={t('contact.form.placeholder.email')}
+              aria-invalid={Boolean(errors.email)}
+              aria-describedby={errors.email ? 'contact-email-error' : undefined}
             />
-            {errors.email && <span className={styles.errorMessage}>{errors.email}</span>}
+            {errors.email && (
+              <span id="contact-email-error" className={styles.errorMessage} role="alert">
+                {t(errors.email.message!)}
+              </span>
+            )}
           </div>
 
           <div className={styles.formField}>
-            <label className={styles.fieldLabel}>{t('contact.form.label.phoneOptional')}</label>
+            <label className={styles.fieldLabel} htmlFor="contact-phone">
+              {t('contact.form.label.phoneOptional')}
+            </label>
             <input
+              id="contact-phone"
               type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleInputChange}
+              {...register('phone')}
               className={`${styles.fieldInput} ${errors.phone ? styles.error : ''}`}
               placeholder={contact?.phone || ''}
+              aria-invalid={Boolean(errors.phone)}
+              aria-describedby={errors.phone ? 'contact-phone-error' : undefined}
             />
-            {errors.phone && <span className={styles.errorMessage}>{errors.phone}</span>}
+            {errors.phone && (
+              <span id="contact-phone-error" className={styles.errorMessage} role="alert">
+                {t(errors.phone.message!)}
+              </span>
+            )}
           </div>
 
           <div className={styles.formField}>
-            <label className={styles.fieldLabel}>{t('contact.form.label.subject')}</label>
+            <label className={styles.fieldLabel} htmlFor="contact-subject">
+              {t('contact.form.label.subject')}
+            </label>
             <input
+              id="contact-subject"
               type="text"
-              name="subject"
-              value={formData.subject}
-              onChange={handleInputChange}
-              className={`${styles.fieldInput} ${errors.subject ? styles.error : ''}`}
+              {...register('subject')}
+              className={fieldClass('subject')}
               placeholder={t('contact.form.placeholder.subject')}
+              aria-invalid={Boolean(errors.subject)}
+              aria-describedby={errors.subject ? 'contact-subject-error' : undefined}
             />
-            {errors.subject && <span className={styles.errorMessage}>{errors.subject}</span>}
+            {errors.subject && (
+              <span id="contact-subject-error" className={styles.errorMessage} role="alert">
+                {t(errors.subject.message!)}
+              </span>
+            )}
           </div>
 
           <div className={styles.formField}>
-            <label className={styles.fieldLabel}>{t('contact.form.label.message')}</label>
+            <label className={styles.fieldLabel} htmlFor="contact-message">
+              {t('contact.form.label.message')}
+            </label>
             <textarea
-              name="message"
-              value={formData.message}
-              onChange={handleInputChange}
+              id="contact-message"
+              {...register('message')}
               className={`${styles.fieldTextarea} ${errors.message ? styles.error : ''}`}
               placeholder={t('contact.form.placeholder.message')}
               rows={4}
+              aria-invalid={Boolean(errors.message)}
+              aria-describedby={errors.message ? 'contact-message-error' : undefined}
             />
-            {errors.message && <span className={styles.errorMessage}>{errors.message}</span>}
+            {errors.message && (
+              <span id="contact-message-error" className={styles.errorMessage} role="alert">
+                {t(errors.message.message!)}
+              </span>
+            )}
           </div>
 
           <div className={`${styles.formField} !mb-6`}>
             <label className="flex items-start gap-3 cursor-pointer group">
               <input
+                id="contact-consent"
                 type="checkbox"
-                required
+                {...register('consent')}
                 className="mt-1 w-4 h-4 text-black border-gray-300 rounded focus:ring-black cursor-pointer"
+                aria-invalid={Boolean(errors.consent)}
+                aria-describedby={errors.consent ? 'contact-consent-error' : undefined}
               />
               <span className="text-sm text-gray-500 group-hover:text-gray-700 transition-colors">
-                {t('contact.form.consent')} <a href="/privacy-policy" className="underline hover:text-black">{t('footer.legal.privacy')}</a>.
+                {t('contact.form.consent')}{' '}
+                <Link to={toLocalizedPath('privacy-policy')} className="underline hover:text-black">
+                  {t('footer.legal.privacy')}
+                </Link>
+                .
               </span>
             </label>
+            {errors.consent && (
+              <span id="contact-consent-error" className={styles.errorMessage} role="alert">
+                {t(errors.consent.message!)}
+              </span>
+            )}
           </div>
+
+          <TurnstileField
+            onTokenChange={handleTurnstileToken}
+            resetKey={turnstileResetKey}
+            className="mb-4"
+            loadErrorMessage={t('contact.form.error.captcha')}
+          />
 
           <button
             type="submit"
             className={`${styles.submitButton} ${isSubmitting ? styles.submitting : ''}`}
             disabled={isSubmitting}
           >
-            {reducedMotion ? (
-              isSubmitting ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" strokeWidth={3} />
-                  <span>{t('common.saving') || 'Wysyłanie...'}</span>
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <Send className="w-4 h-4" strokeWidth={2.5} />
-                  <span>{t('contact.form.submit')}</span>
-                </span>
-              )
+            {isSubmitting ? (
+              <span className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" strokeWidth={3} />
+                <span>{t('common.saving') || 'Wysyłanie...'}</span>
+              </span>
             ) : (
-              <AnimatePresence mode="wait">
-                {isSubmitting ? (
-                  <motion.div
-                    key="loading"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    className="flex items-center gap-2"
-                  >
-                    <Loader2 className="w-4 h-4 animate-spin" strokeWidth={3} />
-                    <span>{t('common.saving') || 'Wysyłanie...'}</span>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="submit"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    className="flex items-center gap-2"
-                  >
-                    <Send className="w-4 h-4" strokeWidth={2.5} />
-                    <span>{t('contact.form.submit')}</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <span className="flex items-center gap-2">
+                <Send className="w-4 h-4" strokeWidth={2.5} />
+                <span>{t('contact.form.submit')}</span>
+              </span>
             )}
           </button>
-          </form>
+        </form>
       </div>
     </section>
   );

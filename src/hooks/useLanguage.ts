@@ -1,54 +1,68 @@
-import { useState, createContext, useContext, useCallback, useMemo } from 'react';
+import { useState, createContext, useContext, useCallback, useMemo, useEffect } from 'react';
 
 import { getCmsTranslation } from '@/services/cmsTranslationsRegistry';
-import { pl, en } from '../data/translations';
+import {
+  detectInitialLanguage,
+  ensureLocaleLoaded,
+  getCachedLocale,
+  prefetchLocale,
+  type Language,
+} from '../data/translations/loadLocale';
 
-export type Language = 'pl' | 'en';
+export type { Language };
 
 export interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: (key: string) => string;
+  localeReady: boolean;
 }
-
-const translations = { pl, en };
-const translationDictionaries: Record<Language, Record<string, string>> = translations;
 
 const LANGUAGE_STORAGE_KEY = 'vezvision_language';
 
 export function useLanguage() {
-  const [language, setLanguageState] = useState<Language>(() => {
-    try {
-      const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-      if (stored === 'pl' || stored === 'en') return stored as Language;
-      const langs = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language]) as string[];
-      const hasPL = Array.isArray(langs) && langs.some(l => typeof l === 'string' && l.toLowerCase().startsWith('pl'));
-      return hasPL ? 'pl' : 'en';
-    } catch {
-      return 'en';
-    }
-  });
+  const [language, setLanguageState] = useState<Language>(detectInitialLanguage);
+  const [localeReady, setLocaleReady] = useState(() => Boolean(getCachedLocale(detectInitialLanguage())));
+
+  useEffect(() => {
+    let active = true;
+
+    void ensureLocaleLoaded(language).then(() => {
+      if (active) setLocaleReady(true);
+    });
+
+    prefetchLocale(language === 'pl' ? 'en' : 'pl');
+
+    return () => {
+      active = false;
+    };
+  }, [language]);
 
   const setLanguage = useCallback((lang: Language) => {
     try {
       localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
-      setLanguageState(lang);
     } catch {
-      // Silent fail for localStorage errors
-      setLanguageState(lang);
+      // localStorage may be unavailable
     }
+
+    setLocaleReady(Boolean(getCachedLocale(lang)));
+    setLanguageState(lang);
   }, []);
 
   const t = useCallback((key: string): string => {
     const cmsOverride = getCmsTranslation(language, key);
-    return cmsOverride || translationDictionaries[language][key] || key;
+    if (cmsOverride) return cmsOverride;
+
+    const dict = getCachedLocale(language);
+    return dict?.[key] ?? key;
   }, [language]);
 
   return useMemo(() => ({
     language,
     setLanguage,
-    t
-  }), [language, setLanguage, t]);
+    t,
+    localeReady,
+  }), [language, setLanguage, t, localeReady]);
 }
 
 export const LanguageContext = createContext<LanguageContextType | null>(null);

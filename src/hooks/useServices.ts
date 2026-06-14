@@ -1,73 +1,62 @@
-import { useState, useEffect, useCallback } from 'react'
-import { logError } from '@/lib/logger'
-import { listActiveServicesContent } from '@/services/services'
-import {
-  ServiceCategory,
-  ServiceTranslation,
-  ServiceWithDetails,
-} from '@/types/services'
+import { useCallback, useMemo } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+
+import { queryKeys } from '@/lib/queryKeys'
+import { useLanguageContext } from '@/hooks/useLanguage'
+import { listActiveServicesContent, type ServiceContentLanguage } from '@/services/servicesContent'
+import type { ServiceTranslation, ServiceWithDetails } from '@/types/services'
 
 export function useServices() {
-  const [services, setServices] = useState<ServiceWithDetails[]>([])
-  const [categories, setCategories] = useState<ServiceCategory[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [refreshKey, setRefreshKey] = useState(0)
+  const queryClient = useQueryClient()
+  const { language } = useLanguageContext()
+  const contentLanguage = language as ServiceContentLanguage
 
-  useEffect(() => {
-    const controller = new AbortController()
+  const listQuery = useQuery({
+    queryKey: queryKeys.services.list(contentLanguage),
+    queryFn: ({ signal }) => listActiveServicesContent(signal, contentLanguage),
+    staleTime: 5 * 60_000,
+    retry: (failureCount, error) => {
+      if (error instanceof Error && error.message === 'Network unavailable') return false
+      return failureCount < 1
+    },
+  })
 
-    const run = async () => {
-      try {
-        setLoading(true)
-        setError(null)
+  const services = useMemo(() => listQuery.data?.services ?? [], [listQuery.data?.services])
+  const categories = useMemo(() => listQuery.data?.categories ?? [], [listQuery.data?.categories])
 
-        const result = await listActiveServicesContent(controller.signal)
-        setServices(result.services)
-        setCategories(result.categories)
-      } catch (err) {
-        if (controller.signal.aborted || (err instanceof Error && err.message === 'Request aborted')) {
-          return
-        }
-        if (err instanceof Error && err.message === 'Network unavailable') {
-          setError(null)
-          return
-        }
-        logError('useServices.load', err)
-        setServices([])
-        setCategories([])
-        setError(err instanceof Error ? err.message : 'Wystąpił błąd podczas ładowania usług')
-      } finally {
-        if (!controller.signal.aborted) setLoading(false)
-      }
-    }
+  const getServiceTranslation = useCallback(
+    (service: ServiceWithDetails, lang: 'pl' | 'en'): ServiceTranslation => {
+      return service.translations.find((translation) => translation.language === lang) || service.translations[0]
+    },
+    [],
+  )
 
-    void run()
+  const getFeaturedServices = useCallback(() => services.filter((service) => service.is_featured), [services])
 
-    return () => controller.abort()
-  }, [refreshKey])
-
-  const getServiceTranslation = useCallback((service: ServiceWithDetails, language: 'pl' | 'en'): ServiceTranslation => {
-    return service.translations.find((translation) => translation.language === language) || service.translations[0]
-  }, [])
-
-  const getFeaturedServices = useCallback(() => {
-    return services.filter((service) => service.is_featured)
-  }, [services])
-
-  const getServicesByCategory = useCallback((categoryId: string) => {
-    return services.filter((service) => service.categories.some((category) => category.id === categoryId))
-  }, [services])
+  const getServicesByCategory = useCallback(
+    (categoryId: string) =>
+      services.filter((service) => service.categories.some((category) => category.id === categoryId)),
+    [services],
+  )
 
   const refreshServices = useCallback(() => {
-    setRefreshKey(k => k + 1)
-  }, [])
+    void queryClient.invalidateQueries({ queryKey: queryKeys.services.all })
+  }, [queryClient])
+
+  const networkError =
+    listQuery.error instanceof Error && listQuery.error.message === 'Network unavailable'
 
   return {
     services,
     categories,
-    loading,
-    error,
+    loading: listQuery.isLoading,
+    error: networkError
+      ? null
+      : listQuery.error instanceof Error
+        ? listQuery.error.message
+        : listQuery.error
+          ? String(listQuery.error)
+          : null,
     getServiceTranslation,
     getFeaturedServices,
     getServicesByCategory,

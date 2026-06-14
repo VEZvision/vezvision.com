@@ -1,5 +1,5 @@
 import { logError } from '@/lib/logger'
-import { supabase } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 
 interface MaintenanceAccessResponse {
   success?: boolean
@@ -22,7 +22,8 @@ const AVAILABILITY_FALLBACK: MaintenanceAccessSnapshot = {
   unavailable: true,
 }
 
-export async function fetchMaintenanceEnabledFromDb(): Promise<boolean> {
+export async function fetchMaintenanceEnabledFromDb(): Promise<boolean | null> {
+  const supabase = await getSupabase()
   const { data, error } = await supabase
     .from('vv_site_settings')
     .select('value')
@@ -32,7 +33,7 @@ export async function fetchMaintenanceEnabledFromDb(): Promise<boolean> {
 
   if (error) {
     logError('maintenanceAccess.db', error)
-    return false
+    return null
   }
 
   const settings = data?.value as { enabled?: boolean } | null
@@ -40,14 +41,17 @@ export async function fetchMaintenanceEnabledFromDb(): Promise<boolean> {
 }
 
 export async function fetchMaintenanceAccess(): Promise<MaintenanceAccessSnapshot> {
-  const { data, error } = await supabase.functions.invoke<MaintenanceAccessResponse>(
+  const supabase = await getSupabase()
+  const response = await supabase.functions.invoke<MaintenanceAccessResponse>(
     'check-maintenance-access',
   )
 
-  if (error) {
-    logError('maintenanceAccess.invoke', error)
+  if (response.error) {
+    logError('maintenanceAccess.invoke', response.error)
     return AVAILABILITY_FALLBACK
   }
+
+  const data = response.data
 
   if (data?.success === false) {
     if (data?.maintenance === true) {
@@ -80,9 +84,13 @@ export async function fetchMaintenanceAccess(): Promise<MaintenanceAccessSnapsho
 export function isSiteAccessible(
   snapshot: MaintenanceAccessSnapshot,
   settingsMaintenanceEnabled = false,
+  dbMaintenanceEnabled: boolean | null = null,
 ): boolean {
   if (snapshot.unavailable) {
-    return !settingsMaintenanceEnabled
+    if (settingsMaintenanceEnabled) return false
+    if (dbMaintenanceEnabled === true) return false
+    if (dbMaintenanceEnabled === null) return false
+    return true
   }
 
   if (!snapshot.maintenance) return true

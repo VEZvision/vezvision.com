@@ -1,108 +1,84 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { logError } from '@/lib/logger'
+import { useCallback, useMemo } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+
+import { queryKeys } from '@/lib/queryKeys'
+import { useLanguageContext } from '@/hooks/useLanguage'
+import { useBlogViewIncrement } from '@/hooks/useBlogViewIncrement'
+import {
+  getBlogPostTranslation,
+  getAvailableBlogLocales,
+  hasBlogPostTranslation,
+  type BlogLocale,
+} from '@/utils/blogTranslation'
 import {
   getPublishedPostBySlug,
-  incrementBlogViewCount,
   listPublishedBlogContent,
-  type BlogCategory,
+  type BlogContentLanguage,
   type BlogPostWithDetails,
 } from '@/services/blog'
 
 export type { BlogCategory, BlogPostWithDetails } from '@/services/blog'
+export { getBlogPostTranslation, getAvailableBlogLocales, hasBlogPostTranslation }
 
 export function useBlog() {
-  const [posts, setPosts] = useState<BlogPostWithDetails[]>([])
-  const [categories, setCategories] = useState<BlogCategory[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [refreshKey, setRefreshKey] = useState(0)
+  const queryClient = useQueryClient()
+  const { language } = useLanguageContext()
+  const contentLanguage = language as BlogContentLanguage
+  const incrementViewCount = useBlogViewIncrement()
 
-  useEffect(() => {
-    const controller = new AbortController()
+  const listQuery = useQuery({
+    queryKey: queryKeys.blog.list(contentLanguage),
+    queryFn: ({ signal }) => listPublishedBlogContent(signal, contentLanguage),
+    staleTime: 5 * 60_000,
+  })
 
-    const run = async () => {
-      try {
-        setLoading(true)
-        setError(null)
+  const posts = useMemo(() => listQuery.data?.posts ?? [], [listQuery.data?.posts])
+  const categories = useMemo(() => listQuery.data?.categories ?? [], [listQuery.data?.categories])
 
-        const result = await listPublishedBlogContent(controller.signal)
-        setPosts(result.posts)
-        setCategories(result.categories)
-      } catch (err) {
-        if (controller.signal.aborted || (err instanceof Error && err.message === 'Request aborted')) {
-          return
-        }
-        logError('useBlog.load', err)
-        setPosts([])
-        setCategories([])
-        setError(err instanceof Error ? err.message : 'Wystąpił błąd podczas ładowania postów')
-      } finally {
-        if (!controller.signal.aborted) setLoading(false)
+  const getPostTranslation = useCallback(
+    (post: BlogPostWithDetails, lang: BlogLocale) => getBlogPostTranslation(post, lang),
+    [],
+  )
+
+  const getFeaturedPosts = useCallback(() => posts.filter((post) => post.is_featured), [posts])
+
+  const getPostsByCategory = useCallback(
+    (categoryId: string) => posts.filter((post) => post.categories.some((category) => category.id === categoryId)),
+    [posts],
+  )
+
+  const getRecentPosts = useCallback((limit: number = 5) => posts.slice(0, limit), [posts])
+
+  const getPostBySlug = useCallback((slug: string) => posts.find((post) => post.slug === slug), [posts])
+
+  const fetchPostBySlug = useCallback(
+    async (slug: string, signal?: AbortSignal): Promise<BlogPostWithDetails | null> => {
+      const cached = queryClient.getQueryData<BlogPostWithDetails>(
+        queryKeys.blog.detail(slug, contentLanguage),
+      )
+      if (cached) return cached
+
+      const fromList = posts.find((post) => post.slug === slug)
+      if (fromList) return fromList
+
+      const post = await getPublishedPostBySlug(slug, signal, contentLanguage)
+      if (post) {
+        queryClient.setQueryData(queryKeys.blog.detail(slug, contentLanguage), post)
       }
-    }
-
-    void run()
-
-    return () => controller.abort()
-  }, [refreshKey])
-
-  const getPostTranslation = useCallback((post: BlogPostWithDetails, language: 'pl' | 'en') => {
-    return post.translations.find((translation) => translation.language === language) || post.translations[0]
-  }, [])
-
-  const getFeaturedPosts = useCallback(() => {
-    return posts.filter((post) => post.is_featured)
-  }, [posts])
-
-  const getPostsByCategory = useCallback((categoryId: string) => {
-    return posts.filter((post) => post.categories.some((category) => category.id === categoryId))
-  }, [posts])
-
-  const getRecentPosts = useCallback((limit: number = 5) => {
-    return posts.slice(0, limit)
-  }, [posts])
-
-  const getPostBySlug = useCallback((slug: string) => {
-    return posts.find((post) => post.slug === slug)
-  }, [posts])
-
-  const incrementingRef = useRef<Set<string>>(new Set())
-
-  const incrementViewCount = useCallback(async (slug: string) => {
-    const storageKey = `vv-blog-view:${slug}`
-    const canUseSessionStorage = typeof window !== 'undefined' && typeof window.sessionStorage !== 'undefined'
-
-    if (canUseSessionStorage && window.sessionStorage.getItem(storageKey)) return
-    if (incrementingRef.current.has(slug)) return
-
-    incrementingRef.current.add(slug)
-    if (canUseSessionStorage) window.sessionStorage.setItem(storageKey, '1')
-
-    const success = await incrementBlogViewCount(slug)
-    incrementingRef.current.delete(slug)
-
-    if (!success && canUseSessionStorage) window.sessionStorage.removeItem(storageKey)
-  }, [])
-
-  const fetchPostBySlug = useCallback(async (slug: string, signal?: AbortSignal): Promise<BlogPostWithDetails | null> => {
-    try {
-      return await getPublishedPostBySlug(slug, signal)
-    } catch (err) {
-      if (err instanceof Error && err.message === 'Request aborted') return null
-      logError('useBlog.getBySlug', err)
-      return null
-    }
-  }, [])
+      return post
+    },
+    [queryClient, contentLanguage, posts],
+  )
 
   const refreshPosts = useCallback(() => {
-    setRefreshKey(k => k + 1)
-  }, [])
+    void queryClient.invalidateQueries({ queryKey: queryKeys.blog.all })
+  }, [queryClient])
 
   return {
     posts,
     categories,
-    loading,
-    error,
+    loading: listQuery.isLoading,
+    error: listQuery.error instanceof Error ? listQuery.error : listQuery.error ? new Error(String(listQuery.error)) : null,
     getPostTranslation,
     getFeaturedPosts,
     getPostsByCategory,
@@ -111,5 +87,71 @@ export function useBlog() {
     fetchPostBySlug,
     incrementViewCount,
     refreshPosts,
+    contentLanguage,
+  }
+}
+
+export function useBlogRecentPosts(limit = 5, excludePostId?: string) {
+  const { language } = useLanguageContext()
+  const contentLanguage = language as BlogContentLanguage
+
+  const recentQuery = useQuery({
+    queryKey: [...queryKeys.blog.all, 'recent', contentLanguage, limit] as const,
+    queryFn: ({ signal }) => listPublishedBlogContent(signal, contentLanguage, limit + 1),
+    staleTime: 5 * 60_000,
+  })
+
+  const posts = (recentQuery.data?.posts ?? []).filter((post) => post.id !== excludePostId).slice(0, limit)
+
+  const getPostTranslation = useCallback(
+    (post: BlogPostWithDetails, lang: BlogLocale) => getBlogPostTranslation(post, lang),
+    [],
+  )
+
+  return {
+    posts,
+    loading: recentQuery.isLoading,
+    getPostTranslation,
+  }
+}
+
+export function useBlogPostDetail(slug: string | undefined) {
+  const queryClient = useQueryClient()
+  const { language } = useLanguageContext()
+  const contentLanguage = language as BlogContentLanguage
+  const incrementViewCount = useBlogViewIncrement()
+
+  const detailQuery = useQuery({
+    queryKey: queryKeys.blog.detail(slug ?? '', contentLanguage),
+    queryFn: async ({ signal }) => {
+      if (!slug) return null
+
+      const listData = queryClient.getQueryData<{ posts: BlogPostWithDetails[] }>(
+        queryKeys.blog.list(contentLanguage),
+      )
+      const fromList = listData?.posts.find((post) => post.slug === slug)
+      if (fromList) return fromList
+
+      return getPublishedPostBySlug(slug, signal, contentLanguage)
+    },
+    enabled: Boolean(slug),
+    staleTime: 5 * 60_000,
+    retry: 1,
+  })
+
+  const post = detailQuery.data ?? null
+  const isNotFound =
+    Boolean(slug) &&
+    !detailQuery.isLoading &&
+    !detailQuery.isError &&
+    (post === null || !hasBlogPostTranslation(post, contentLanguage))
+
+  return {
+    post,
+    isLoading: detailQuery.isLoading,
+    isError: detailQuery.isError,
+    isNotFound,
+    incrementViewCount,
+    getAvailableBlogLocales: post ? getAvailableBlogLocales(post) : [],
   }
 }

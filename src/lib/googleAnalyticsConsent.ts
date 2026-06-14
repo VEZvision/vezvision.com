@@ -60,6 +60,6 @@ export function applyGoogleAnalyticsConsent(analyticsAllowed: boolean): void {
   document.head.appendChild(script)
 
   gtag('js', new Date())
-  gtag('config', GA_ID, { anonymize_ip: 'true' })
+  gtag('config', GA_ID)
   window.__vezvisionGaLoaded = true
 }

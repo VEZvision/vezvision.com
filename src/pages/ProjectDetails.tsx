@@ -1,8 +1,7 @@
-import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { useCallback, useEffect, useState } from 'react';
+import DynamicPageSeo from '@/components/seo/DynamicPageSeo';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import DOMPurify from 'dompurify';
+import { sanitizeCmsHtml } from '@/utils/sanitizeCmsHtml';
 import {
     ArrowLeft,
     ExternalLink,
@@ -15,52 +14,78 @@ import {
     GitBranch,
     Layers
 } from 'lucide-react';
-import { useLanguage } from '@/hooks/useLanguage';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { useProject } from '@/hooks/usePortfolio';
+import { useProjectTranslation } from '@/hooks/useProjectTranslation';
 import { getProjectImageUrl } from '@/services/portfolio';
 import { useSettings } from '@/hooks/useSettings';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { safeExternalHref } from '@/utils/safeHref';
+import { useBodyScrollLock } from '@/hooks/useBodyScrollLock';
+import { safeAbsoluteHttpUrl, safeExternalHref, safeImageUrl } from '@/utils/safeHref';
+import { getAvailablePortfolioLocales } from '@/utils/portfolioTranslation';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import { LoadingScreen } from '@/components/loading';
+import { SectionReveal } from '@/components/ui/SectionReveal';
 import styles from './ProjectDetails.module.css';
 
 export default function ProjectDetails() {
     const { slug } = useParams<{ slug: string }>();
     const navigate = useNavigate();
-    const { language } = useLanguage();
-    const { t: tl } = useLanguageContext();
+    const { language, t: tl } = useLanguageContext();
     const { project, loading } = useProject(slug || null);
     const { seo } = useSettings();
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const isTouch = useReducedMotion();
+    const { toLocalizedPath } = useLocalizedPath();
+    const reducedMotion = useReducedMotion();
+    const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+    const [lightboxVisible, setLightboxVisible] = useState(false);
+    const t = useProjectTranslation(project ?? null, language);
 
-    const t = (key: string, defaultText: string): string => {
-        if (!project || !project.translations) return defaultText;
-        const translation = project.translations[language];
-        if (!translation) return defaultText;
-        const value = translation[key as keyof typeof translation];
-        if (Array.isArray(value)) {
-            const joinedValue = value.join(', ');
-            return joinedValue || defaultText;
-        }
-        // Return defaultText if value is undefined, null, or empty string
-        return value && value.trim() !== '' ? value : defaultText;
+    useBodyScrollLock(Boolean(lightboxImage));
+
+    const openLightbox = (imageUrl: string) => {
+        setLightboxImage(imageUrl);
     };
 
-    const fadeInUp = isTouch
-        ? { hidden: {}, visible: {} }
-        : {
-            hidden: { opacity: 0, y: 20 },
-            visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" as const } }
+    const closeLightbox = useCallback(() => {
+        setLightboxVisible(false);
+        window.setTimeout(() => setLightboxImage(null), reducedMotion ? 0 : 200);
+    }, [reducedMotion]);
+
+    useEffect(() => {
+        if (!lightboxImage) return;
+
+        if (reducedMotion) {
+            setLightboxVisible(true);
+            return;
+        }
+
+        const frame = window.requestAnimationFrame(() => setLightboxVisible(true));
+        return () => window.cancelAnimationFrame(frame);
+    }, [lightboxImage, reducedMotion]);
+
+    useEffect(() => {
+        if (!lightboxImage) return;
+
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') closeLightbox();
         };
 
-    const viewportProps = isTouch ? {} : { initial: "hidden" as const, whileInView: "visible" as const, viewport: { once: true } };
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [lightboxImage, closeLightbox]);
 
     if (loading) return <LoadingScreen />;
 
     if (!project && !loading) {
         return (
+            <>
+            <DynamicPageSeo
+                title={tl('portfolio.detail.not_found')}
+                description={tl('portfolio.detail.not_found_desc')}
+                canonicalUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                robots="noindex,nofollow"
+                language={language}
+            />
             <div className={styles.notFoundContainer}>
                 <div className={styles.notFoundCard}>
                     <div className={styles.notFoundIcon}>
@@ -72,12 +97,13 @@ export default function ProjectDetails() {
                     <p className={styles.notFoundDesc}>
                         {tl('portfolio.detail.not_found_desc')}
                     </p>
-                    <button type="button" onClick={() => navigate('/portfolio')} className={styles.backButton}>
+                    <button type="button" onClick={() => navigate(toLocalizedPath('portfolio'))} className={styles.backButton}>
                         <ArrowLeft size={16} />
                         {tl('portfolio.detail.back')}
                     </button>
                 </div>
             </div>
+            </>
         );
     }
 
@@ -85,47 +111,52 @@ export default function ProjectDetails() {
 
     const projectTitle = t('title', project.slug);
     const fullTitle = seo?.siteTitle ? `${projectTitle} | ${seo.siteTitle}` : projectTitle;
-    const canonicalUrl = seo?.siteUrl ? `${seo.siteUrl.replace(/\/$/, '')}/portfolio/${project.slug}` : `/portfolio/${project.slug}`;
+    const canonicalPath = toLocalizedPath(`portfolio/${project.slug}`);
+    const canonicalUrl = safeAbsoluteHttpUrl(seo?.siteUrl)
+        ? `${safeAbsoluteHttpUrl(seo?.siteUrl)}${canonicalPath}`
+        : canonicalPath;
     const ogDescription = project.translations?.[language]?.short_description || seo?.siteDescription || '';
-    const ogImage = project.cover_path ? getProjectImageUrl(project.cover_path) : (seo?.siteUrl ? `${seo.siteUrl.replace(/\/$/, '')}/favicon.svg` : '/favicon.svg');
+    const ogImage = project.cover_path
+        ? getProjectImageUrl(project.cover_path)
+        : safeImageUrl(seo?.siteUrl ? `${seo.siteUrl.replace(/\/$/, '')}/favicon.svg` : '/favicon.svg') || '/favicon.svg';
+    const availableLocales = getAvailablePortfolioLocales(project);
     const demoUrl = safeExternalHref(project.demo_url);
     const githubUrl = safeExternalHref(project.github_url);
+    const motionClass = reducedMotion ? '' : styles.motionEnter;
+
+    const siteName = seo?.ogSiteName || seo?.siteTitle || 'VezVision';
 
     return (
         <div className={styles.page}>
-            <Helmet>
-                <title>{fullTitle}</title>
-                {ogDescription && <meta name="description" content={ogDescription} />}
-                <meta property="og:title" content={fullTitle} />
-                <meta property="og:description" content={ogDescription} />
-                <meta property="og:image" content={ogImage} />
-                <meta property="og:url" content={canonicalUrl} />
-                <meta property="og:type" content="article" />
-                <meta name="twitter:card" content="summary_large_image" />
-                <link rel="canonical" href={canonicalUrl} />
-            </Helmet>
+            <DynamicPageSeo
+                title={fullTitle}
+                description={ogDescription}
+                canonicalUrl={canonicalUrl}
+                ogImage={safeImageUrl(ogImage) || ogImage}
+                ogType="article"
+                language={language}
+                siteUrl={safeAbsoluteHttpUrl(seo?.siteUrl) ?? undefined}
+                localizedPathSuffix={`portfolio/${project.slug}`}
+                availableLocales={availableLocales}
+                structuredData={{
+                    '@context': 'https://schema.org',
+                    '@type': 'CreativeWork',
+                    name: projectTitle,
+                    description: ogDescription,
+                    image: ogImage,
+                    url: canonicalUrl,
+                    creator: { '@type': 'Organization', name: siteName },
+                }}
+            />
             <div className={styles.container}>
-                {/* Navigation */}
-                <motion.div
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className={styles.nav}
-                >
-                    <Link to="/portfolio" className={styles.backLink}>
+                <div className={`${styles.nav} ${styles.navEnter} ${motionClass}`}>
+                    <Link to={toLocalizedPath('portfolio')} className={styles.backLink}>
                         <ArrowLeft size={18} />
-                        <span>Portfolio</span>
+                        <span>{tl('nav.portfolio')}</span>
                     </Link>
-                    <span className={styles.navDivider}>/</span>
-                    <span className={styles.navCurrent}>{t('title', project.slug)}</span>
-                </motion.div>
+                </div>
 
-                {/* Hero */}
-                <motion.header
-                    className={styles.hero}
-                    initial="hidden"
-                    animate="visible"
-                    variants={fadeInUp}
-                >
+                <header className={`${styles.hero} ${styles.heroEnter} ${motionClass}`}>
                     <div className={styles.heroContent}>
                         <div className={styles.categoryBadge}>
                             <Layers size={14} />
@@ -149,16 +180,10 @@ export default function ProjectDetails() {
                             )}
                         </div>
                     </div>
-                </motion.header>
+                </header>
 
-                {/* Cover Image - Card Style */}
                 {project.show_cover_image !== false && project.cover_path && (
-                    <motion.div
-                        className={styles.coverCard}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                    >
+                    <div className={`${styles.coverCard} ${styles.coverEnter} ${motionClass}`}>
                         <div className={styles.coverImageWrapper}>
                             <img
                                 src={getProjectImageUrl(project.cover_path)}
@@ -166,75 +191,53 @@ export default function ProjectDetails() {
                                 className={styles.coverImage}
                             />
                         </div>
-                    </motion.div>
+                    </div>
                 )}
 
-                {/* Main Grid */}
                 <div className={styles.grid}>
-                    {/* Left Column - Content */}
                     <div className={styles.mainColumn}>
-                        {/* Description Card */}
-                        <motion.section
-                            className={styles.card}
-                            {...viewportProps}
-                            variants={fadeInUp}
-                        >
+                        <SectionReveal className={styles.card}>
                             <h2 className={styles.cardTitle}>
                                 {tl('portfolio.detail.about')}
                             </h2>
                             <div
                                 className={styles.prose}
-                                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('description', '')) }}
+                                dangerouslySetInnerHTML={{ __html: sanitizeCmsHtml(t('description', '')) }}
                             />
-                        </motion.section>
+                        </SectionReveal>
 
-                        {/* Challenge & Solution */}
                         <div className={styles.twoColumns}>
                             {project.show_challenge !== false && (
-                            <motion.section
-                                className={styles.card}
-                                {...viewportProps}
-                                variants={fadeInUp}
-                            >
-                                <div className={styles.cardHeader}>
-                                    <div className={`${styles.iconBox} ${styles.amber}`}>
-                                        <div className={styles.dot} />
+                                <SectionReveal className={styles.card} delay={0.05}>
+                                    <div className={styles.cardHeader}>
+                                        <div className={`${styles.iconBox} ${styles.amber}`}>
+                                            <div className={styles.dot} />
+                                        </div>
+                                        <h3 className={styles.cardSubtitle}>
+                                            {tl('portfolio.detail.challenge')}
+                                        </h3>
                                     </div>
-                                    <h3 className={styles.cardSubtitle}>
-                                        {tl('portfolio.detail.challenge')}
-                                    </h3>
-                                </div>
-                                <div className={styles.cardText} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('challenge', '...')) }} />
-                            </motion.section>
+                                    <div className={styles.cardText} dangerouslySetInnerHTML={{ __html: sanitizeCmsHtml(t('challenge', '...')) }} />
+                                </SectionReveal>
                             )}
 
                             {project.show_solution !== false && (
-                            <motion.section
-                                className={styles.card}
-                                {...viewportProps}
-                                variants={fadeInUp}
-                                transition={{ delay: 0.1 }}
-                            >
-                                <div className={styles.cardHeader}>
-                                    <div className={`${styles.iconBox} ${styles.emerald}`}>
-                                        <div className={styles.dot} />
+                                <SectionReveal className={styles.card} delay={0.1}>
+                                    <div className={styles.cardHeader}>
+                                        <div className={`${styles.iconBox} ${styles.emerald}`}>
+                                            <div className={styles.dot} />
+                                        </div>
+                                        <h3 className={styles.cardSubtitle}>
+                                            {tl('portfolio.detail.solution')}
+                                        </h3>
                                     </div>
-                                    <h3 className={styles.cardSubtitle}>
-                                        {tl('portfolio.detail.solution')}
-                                    </h3>
-                                </div>
-                                <div className={styles.cardText} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('solution', '...')) }} />
-                            </motion.section>
+                                    <div className={styles.cardText} dangerouslySetInnerHTML={{ __html: sanitizeCmsHtml(t('solution', '...')) }} />
+                                </SectionReveal>
                             )}
                         </div>
 
-                        {/* Gallery */}
                         {project.images && project.images.length > 0 && (
-                            <motion.section
-                                className={styles.gallerySection}
-                                {...viewportProps}
-                                variants={fadeInUp}
-                            >
+                            <SectionReveal className={styles.gallerySection}>
                                 <h2 className={styles.sectionTitle}>
                                     {tl('portfolio.detail.gallery')}
                                 </h2>
@@ -244,7 +247,7 @@ export default function ProjectDetails() {
                                             type="button"
                                             key={img.id}
                                             className={styles.galleryItem}
-                                            onClick={() => setSelectedImage(getProjectImageUrl(img.path))}
+                                            onClick={() => openLightbox(getProjectImageUrl(img.path))}
                                             aria-label={`${tl('portfolio.detail.gallery')} - ${projectTitle}`}
                                         >
                                             <div className={styles.galleryItemInner}>
@@ -256,18 +259,12 @@ export default function ProjectDetails() {
                                         </button>
                                     ))}
                                 </div>
-                            </motion.section>
+                            </SectionReveal>
                         )}
                     </div>
 
-                    {/* Right Column - Sidebar */}
                     <aside className={styles.sidebar}>
-                        {/* Meta Card */}
-                        <motion.div
-                            className={styles.card}
-                            {...viewportProps}
-                            variants={fadeInUp}
-                        >
+                        <SectionReveal className={styles.card}>
                             <div className={styles.metaItem}>
                                 <div className={styles.metaIcon}><User size={18} /></div>
                                 <div>
@@ -285,61 +282,52 @@ export default function ProjectDetails() {
                                     </span>
                                 </div>
                             </div>
+                        </SectionReveal>
 
-                        </motion.div>
-
-                        {/* Scope Card */}
-                        <motion.div
-                            className={styles.card}
-                            {...viewportProps}
-                            variants={fadeInUp}
-                            transition={{ delay: 0.1 }}
-                        >
+                        <SectionReveal className={styles.card} delay={0.1}>
                             <div className={styles.scopeHeader}>
                                 <CheckCircle2 size={18} className={styles.scopeIcon} />
                                 <span>{tl('portfolio.detail.scope')}</span>
                             </div>
                             <ul className={styles.scopeList}>
                                 {project.scope && Array.isArray(project.scope) && project.scope.length > 0 ? (
-                                    project.scope.map((item: string, i: number) => (
-                                        <li key={i}>{item}</li>
+project.scope.map((item: string) => (
+<li key={item}>{item}</li>
                                     ))
                                 ) : (
-                                        <li className={styles.noScope}>
-                                            {tl('portfolio.detail.scope_empty')}
-                                        </li>
+                                    <li className={styles.noScope}>
+                                        {tl('portfolio.detail.scope_empty')}
+                                    </li>
                                 )}
                             </ul>
-                        </motion.div>
+                        </SectionReveal>
                     </aside>
                 </div>
             </div>
 
-            {/* Lightbox */}
-            <AnimatePresence>
-                {selectedImage && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className={styles.lightbox}
-                        onClick={() => setSelectedImage(null)}
+            {lightboxImage && (
+                <div
+                    className={`${styles.lightbox} ${lightboxVisible ? styles.lightboxVisible : ''}`}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={tl('portfolio.detail.fullview_alt')}
+                >
+                    <button
+                        type="button"
+                        className={styles.lightboxBackdrop}
+                        onClick={closeLightbox}
+                        aria-label={tl('portfolio.detail.fullview_alt')}
+                    />
+                    <div
+                        className={`${styles.lightboxContent} ${lightboxVisible ? styles.lightboxContentVisible : ''}`}
                     >
-                        <motion.div
-                            initial={{ scale: 0.9 }}
-                            animate={{ scale: 1 }}
-                            exit={{ scale: 0.9 }}
-                            className={styles.lightboxContent}
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <button type="button" onClick={() => setSelectedImage(null)} className={styles.lightboxClose}>
-                                <X size={24} />
-                            </button>
-                            <img src={selectedImage} alt={`${projectTitle} - ${tl('portfolio.detail.fullview_alt')}`} />
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                        <button type="button" onClick={closeLightbox} className={styles.lightboxClose}>
+                            <X size={24} />
+                        </button>
+                        <img src={lightboxImage} alt={`${projectTitle} - ${tl('portfolio.detail.fullview_alt')}`} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

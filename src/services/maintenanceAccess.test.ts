@@ -10,12 +10,20 @@ const invokeMock = vi.fn()
 const fromMock = vi.fn()
 
 vi.mock('@/lib/supabase', () => ({
-  supabase: {
+  getSupabase: () => Promise.resolve({
     functions: {
-      invoke: (...args: unknown[]) => invokeMock(...args),
+      invoke: (...args: unknown[]) => invokeMock(...args) as Promise<{ data: unknown; error: unknown }>,
     },
-    from: (...args: unknown[]) => fromMock(...args),
-  },
+    from: (...args: unknown[]) => fromMock(...args) as {
+      select: () => {
+        eq: () => {
+          eq: () => {
+            maybeSingle: () => Promise<{ data: unknown; error: unknown }>
+          }
+        }
+      }
+    },
+  }),
 }))
 
 vi.mock('@/lib/logger', () => ({
@@ -79,7 +87,7 @@ describe('fetchMaintenanceAccess', () => {
     expect(isSiteAccessible(snapshot)).toBe(true)
   })
 
-  it('fails open when the edge function is unavailable and CMS maintenance is off', async () => {
+  it('fails closed when the edge function is unavailable and db state is unknown', async () => {
     invokeMock.mockResolvedValue({ data: null, error: new Error('network') })
 
     const snapshot = await fetchMaintenanceAccess()
@@ -88,14 +96,29 @@ describe('fetchMaintenanceAccess', () => {
       bypass: true,
       unavailable: true,
     })
-    expect(isSiteAccessible(snapshot, false)).toBe(true)
+    expect(isSiteAccessible(snapshot, false, null)).toBe(false)
+  })
+
+  it('allows access when edge is unavailable, db confirms maintenance is off', async () => {
+    invokeMock.mockResolvedValue({ data: null, error: new Error('network') })
+
+    const snapshot = await fetchMaintenanceAccess()
+    expect(isSiteAccessible(snapshot, false, false)).toBe(true)
   })
 
   it('fails closed when edge is unavailable but CMS maintenance is enabled', async () => {
     invokeMock.mockResolvedValue({ data: null, error: new Error('network') })
 
     const snapshot = await fetchMaintenanceAccess()
-    expect(isSiteAccessible(snapshot, true)).toBe(false)
+    expect(isSiteAccessible(snapshot, true, null)).toBe(false)
+    expect(isSiteAccessible(snapshot, true, true)).toBe(false)
+  })
+
+  it('fails closed when edge is unavailable, settings are off, but db confirms maintenance', async () => {
+    invokeMock.mockResolvedValue({ data: null, error: new Error('network') })
+
+    const snapshot = await fetchMaintenanceAccess()
+    expect(isSiteAccessible(snapshot, false, true)).toBe(false)
   })
 
   it('honours maintenance responses even when success is false', async () => {

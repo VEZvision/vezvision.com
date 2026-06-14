@@ -1,9 +1,12 @@
+import { memo } from 'react';
+import { Link } from 'react-router-dom';
 import styles from './ProductsSection.module.css';
 import SectionHeader from '@/components/ui/SectionHeader';
-import { ArrowUpRight, BriefcaseBusiness, GraduationCap, Package, Sparkles } from 'lucide-react';
+import { BriefcaseBusiness, GraduationCap, Package, Sparkles } from 'lucide-react';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { SectionReveal, StaggerReveal, StaggerItem } from '@/components/ui/SectionReveal';
 import { useSettings } from '@/hooks/useSettings';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 
 const PRODUCT_CATEGORY_KEYS = [
   'products.category.creative',
@@ -36,8 +39,9 @@ interface ProductCardProps {
   social: ReturnType<typeof useSettings>['social'];
 }
 
-const ProductCard = ({ index, social }: ProductCardProps) => {
+const ProductCard = memo(({ index, social }: ProductCardProps) => {
   const { t } = useLanguageContext();
+  const { toLocalizedPath } = useLocalizedPath();
   const cardIndex = `0${index + 1}`;
   const categoryKey = PRODUCT_CATEGORY_KEYS[index] ?? PRODUCT_CATEGORY_KEYS[0];
   const CardIcon = PRODUCT_ICONS[index] ?? Package;
@@ -47,11 +51,6 @@ const ProductCard = ({ index, social }: ProductCardProps) => {
       className={styles.productCard}
       aria-label={`${t(categoryKey)} - ${t('products.card.title')}`}
     >
-      <div className={styles.cardBackground} aria-hidden="true">
-        <div className={styles.cardGlow} />
-        <div className={styles.cardOrbital} />
-      </div>
-
       <div className={styles.cardTopRow}>
         <div className={styles.cardMeta}>
           <span className={styles.cardIndex}>{cardIndex}</span>
@@ -89,16 +88,20 @@ const ProductCard = ({ index, social }: ProductCardProps) => {
           </div>
         )}
 
-        <div className={styles.comingSoonBadge}>
+        <Link
+          to={toLocalizedPath('newsletter')}
+          className={styles.comingSoonBadge}
+        >
           <span>{t('products.coming.title')}</span>
-          <ArrowUpRight className={styles.badgeIcon} aria-hidden="true" />
-        </div>
+        </Link>
       </div>
     </article>
   );
-};
+});
 
-const ProductsSection = () => {
+ProductCard.displayName = 'ProductCard';
+
+const ProductsSection = memo(() => {
   const { t } = useLanguageContext();
   const { social } = useSettings();
 
@@ -123,6 +126,8 @@ const ProductsSection = () => {
       </div>
     </section>
   );
-};
+});
+
+ProductsSection.displayName = 'ProductsSection';
 
 export default ProductsSection;

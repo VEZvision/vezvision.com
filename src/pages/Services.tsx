@@ -1,34 +1,24 @@
 import '../styles/GridBackground.css';
-import { useNavigate } from 'react-router-dom';
-import PageSeo from '@/components/seo/PageSeo';
+import { useHeroContactAction } from '@/hooks/useHeroContactAction';
+import { Briefcase } from 'lucide-react';
+
 import VideoHeroSection from '@/components/common/VideoHeroSection';
-import ServicesSection from '@/components/services/ServicesSection';
-import Group23Section from '@/components/services/group23/Group23Section';
-import WorkflowSection from '@/components/services/workflow/WorkflowSection';
-import ContactSection from '../components/contact/ContactSection';
-import NewsletterSection from '@/components/newsletter/NewsletterSection';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { useSettings } from '@/hooks/useSettings';
-import { Briefcase } from 'lucide-react';
-import socialX from '@/assets/social-x.svg';
+import { StaticPage } from '@/pagekit';
+import FacebookIcon from '@/assets/social-facebook';
 import socialInstagram from '@/assets/products/social-instagram.svg';
 import socialLinkedin from '@/assets/social-linkedin.svg';
+import Group23Section from '@/components/services/group23/Group23Section';
+import WorkflowSection from '@/components/services/workflow/WorkflowSection';
+import ServicesSection from '@/components/services/ServicesSection';
+import NewsletterSection from '@/components/newsletter/NewsletterSection';
+import ContactSection from '@/components/contact/ContactSection';
 
-const ServicesHeroWrapper = () => {
+function ServicesHero() {
   const { t } = useLanguageContext();
   const { social } = useSettings();
-  const navigate = useNavigate();
-
-  const handleContactClick = () => {
-    if (typeof document === 'undefined') return;
-
-    const contactSection = document.getElementById('kontakt') ?? document.getElementById('contact-form-section');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      void navigate('/contact#kontakt');
-    }
-  };
+  const handleContactClick = useHeroContactAction();
 
   return (
     <VideoHeroSection
@@ -36,7 +26,7 @@ const ServicesHeroWrapper = () => {
         <>
           <span className="block">{t('services.hero.title.line1')}</span>
           <span className="block">
-            {t('services.hero.title.line2')} <span className="font-serif italic">biznes</span>
+            {t('services.hero.title.line2')} <span className="font-sans">{t('services.hero.title.emphasis')}</span>
           </span>
         </>
       }
@@ -46,27 +36,27 @@ const ServicesHeroWrapper = () => {
       badge={t('services.hero.badge')}
       icon={<Briefcase className="w-3.5 h-3.5" />}
       socialLinks={[
-        ...(social?.x ? [{ href: social.x, icon: socialX, label: 'Follow us on X (Twitter)' }] : []),
-        ...(social?.instagram ? [{ href: social.instagram, icon: socialInstagram, label: 'Follow us on Instagram' }] : []),
-        ...(social?.linkedin ? [{ href: social.linkedin, icon: socialLinkedin, label: 'Connect with us on LinkedIn' }] : []),
+        ...(social?.facebook ? [{ href: social.facebook, icon: <FacebookIcon />, label: 'Follow us on Facebook' }] : social?.x ? [{ href: social.x, icon: <FacebookIcon />, label: 'Follow us on Facebook' }] : []),
+        ...(social?.instagram ? [{ href: social.instagram, icon: <img src={socialInstagram} className="w-6 h-6" alt="" />, label: 'Follow us on Instagram' }] : []),
+        ...(social?.linkedin ? [{ href: social.linkedin, icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: 'Connect with us on LinkedIn' }] : []),
       ]}
     />
   );
-};
+}
 
-const Services = () => {
+export default function Services() {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'transparent' }}>
-      <PageSeo pageKey="services" />
-      <div className="grid-background"></div>
-      <ServicesHeroWrapper />
-      <Group23Section />
-      <WorkflowSection />
-      <ServicesSection />
-      <NewsletterSection />
-      <ContactSection />
-    </div>
+    <StaticPage
+      seoKey="services"
+      shell={{ className: 'min-h-screen', style: { backgroundColor: 'transparent' } }}
+      sections={[
+        { key: 'hero', Component: ServicesHero, eager: true },
+        { key: 'group23', Component: Group23Section, eager: true },
+        { key: 'workflow', Component: WorkflowSection, eager: true },
+        { key: 'services', Component: ServicesSection, eager: true },
+        { key: 'newsletter', Component: NewsletterSection, eager: true },
+        { key: 'contact', Component: ContactSection, eager: true },
+      ]}
+    />
   );
-};
-
-export default Services;
+}

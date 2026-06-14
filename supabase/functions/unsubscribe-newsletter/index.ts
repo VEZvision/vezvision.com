@@ -1,6 +1,8 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { getClientIp } from "../_shared/clientIp.ts";
+import { buildEdgeRateLimitKey } from "../_shared/rateLimitKey.ts";
 
 const TOKEN_PATTERN = /^[a-f0-9]{32,128}$/i;
 
@@ -44,10 +46,28 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
+    const clientIp = getClientIp(req);
+    const rateLimitKey = await buildEdgeRateLimitKey("edge-unsubscribe", req, clientIp);
+
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
+
+    const { data: edgeRateLimitRows, error: edgeRateError } = await supabase.rpc("consume_rate_limit", {
+      p_key: rateLimitKey,
+      p_max_requests: 20,
+      p_window_ms: 60000,
+    });
+
+    const edgeRateLimit = Array.isArray(edgeRateLimitRows) ? edgeRateLimitRows[0] : edgeRateLimitRows;
+
+    if (edgeRateError || !edgeRateLimit?.allowed) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Rate limit exceeded" }),
+        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 429 },
+      );
+    }
 
     const body = await req.json();
     const token = normalizeToken(body?.token);

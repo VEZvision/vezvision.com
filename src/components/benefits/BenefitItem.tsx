@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import styles from './BenefitItem.module.css';
 
 interface BenefitItemProps {
@@ -6,13 +7,16 @@ interface BenefitItemProps {
   ariaHidden?: boolean;
 }
 
-const BenefitItem: React.FC<BenefitItemProps> = ({ icon, text, ariaHidden = false }) => {
+function BenefitItem({ icon, text, ariaHidden = false }: BenefitItemProps) {
   return (
     <div className={styles.benefitItem} aria-hidden={ariaHidden || undefined}>
       <img src={icon} alt={`${text} icon`} className={styles.icon} loading="lazy" decoding="async" />
       <span className={styles.text}>{text}</span>
     </div>
   );
-};
+}
 
-export default BenefitItem;
+const MemoizedBenefitItem = memo(BenefitItem);
+MemoizedBenefitItem.displayName = 'BenefitItem';
+
+export default MemoizedBenefitItem;

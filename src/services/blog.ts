@@ -1,6 +1,7 @@
-import { supabase, supabaseAnonKey, supabaseUrl } from '@/lib/supabase'
+import { getSupabase } from '@/lib/supabase'
 import { logError } from '@/lib/logger'
 import { isAbortLikeError } from './utils'
+import { applyPublishedBlogVisibilityFilter } from './blogFilters'
 import { BlogPost, BlogPostTranslation } from '@/types/blog'
 
 export interface BlogCategory {
@@ -15,11 +16,14 @@ export interface BlogPostWithDetails extends BlogPost {
   categories: BlogCategory[]
 }
 
+export type BlogContentLanguage = 'pl' | 'en'
+
 interface DBPostCategory {
   vv_blog_categories?: {
     id: string
     slug: string
     name_pl?: string
+    name_en?: string | null
     color?: string
     created_at: string
   }
@@ -55,18 +59,29 @@ interface DBBlogCategory {
   id: string
   slug: string
   name_pl?: string
+  name_en?: string | null
   color?: string
   created_at: string
 }
 
-const mapCategoryFromDB = (category: DBBlogCategory): BlogCategory => ({
+export function localizedBlogCategoryName(
+  category: Pick<DBBlogCategory, 'name_pl' | 'name_en' | 'slug'>,
+  language: BlogContentLanguage,
+): string {
+  if (language === 'en') {
+    return category.name_en?.trim() || category.name_pl?.trim() || category.slug
+  }
+  return category.name_pl?.trim() || category.slug
+}
+
+const mapCategoryFromDB = (category: DBBlogCategory, language: BlogContentLanguage): BlogCategory => ({
   id: category.id,
-  name: category.name_pl || category.slug,
+  name: localizedBlogCategoryName(category, language),
   color: category.color || '#000000',
   created_at: category.created_at,
 })
 
-const mapPostFromDB = (post: DBBlogPost): BlogPostWithDetails => {
+const mapPostFromDB = (post: DBBlogPost, language: BlogContentLanguage): BlogPostWithDetails => {
   const translations: BlogPostTranslation[] = [
     {
       id: `${post.id}-pl`,
@@ -95,7 +110,7 @@ const mapPostFromDB = (post: DBBlogPost): BlogPostWithDetails => {
   const categories: BlogCategory[] = (post.vv_blog_post_categories || [])
     .map((postCategory) => postCategory.vv_blog_categories)
     .filter((category): category is NonNullable<typeof category> => Boolean(category))
-    .map((category) => mapCategoryFromDB(category))
+    .map((category) => mapCategoryFromDB(category, language))
 
   return {
     id: post.id,
@@ -113,18 +128,33 @@ const mapPostFromDB = (post: DBBlogPost): BlogPostWithDetails => {
   }
 }
 
-export async function listPublishedBlogContent(signal?: AbortSignal): Promise<{
+const BLOG_LIST_POST_SELECT = `
+  id, slug, status, published_at, featured_image, featured, created_at, updated_at,
+  views_count, reading_time, title_pl, title_en, excerpt_pl, excerpt_en,
+  meta_title_pl, meta_title_en, meta_desc_pl, meta_desc_en, tags_pl, tags_en,
+  vv_blog_post_categories(vv_blog_categories(id, slug, name_pl, name_en, color, created_at))
+`
+
+const BLOG_DETAIL_POST_SELECT = '*, vv_blog_post_categories(vv_blog_categories(*))'
+
+export async function listPublishedBlogContent(
+  signal?: AbortSignal,
+  language: BlogContentLanguage = 'pl',
+  limit = 100,
+): Promise<{
   posts: BlogPostWithDetails[]
   categories: BlogCategory[]
 }> {
   try {
-    let postsQuery = supabase
-      .from('vv_blog_posts')
-      .select('*, vv_blog_post_categories(vv_blog_categories(*))')
-      .eq('status', 'published')
-      .lte('published_at', new Date().toISOString())
-      .order('published_at', { ascending: false })
-      .limit(100)
+    const supabase = await getSupabase()
+    let postsQuery = applyPublishedBlogVisibilityFilter(
+      supabase
+        .from('vv_blog_posts')
+        .select(BLOG_LIST_POST_SELECT)
+        .eq('status', 'published'),
+    )
+      .order('published_at', { ascending: false, nullsFirst: false })
+      .limit(limit)
 
     if (signal) postsQuery = postsQuery.abortSignal(signal)
     const { data: postsData, error: postsError } = await postsQuery
@@ -143,8 +173,10 @@ export async function listPublishedBlogContent(signal?: AbortSignal): Promise<{
     if (categoriesError) throw categoriesError
 
     return {
-      posts: (postsData || []).map((post) => mapPostFromDB(post as DBBlogPost)),
-      categories: (rawCategories || []).map((category) => mapCategoryFromDB(category as DBBlogCategory)),
+      posts: (postsData || []).map((post) => mapPostFromDB(post as DBBlogPost, language)),
+      categories: (rawCategories || []).map((category) =>
+        mapCategoryFromDB(category as DBBlogCategory, language),
+      ),
     }
   } catch (error) {
     if (isAbortLikeError(error)) throw new Error('Request aborted')
@@ -153,43 +185,46 @@ export async function listPublishedBlogContent(signal?: AbortSignal): Promise<{
   }
 }
 
-export async function getPublishedPostBySlug(slug: string, signal?: AbortSignal): Promise<BlogPostWithDetails | null> {
+export async function getPublishedPostBySlug(
+  slug: string,
+  signal?: AbortSignal,
+  language: BlogContentLanguage = 'pl',
+): Promise<BlogPostWithDetails | null> {
   try {
-    let postQuery = supabase
-      .from('vv_blog_posts')
-      .select('*, vv_blog_post_categories(vv_blog_categories(*))')
-      .eq('slug', slug)
-      .eq('status', 'published')
-      .lte('published_at', new Date().toISOString())
+    const supabase = await getSupabase()
+    let postQuery = applyPublishedBlogVisibilityFilter(
+      supabase
+        .from('vv_blog_posts')
+        .select(BLOG_DETAIL_POST_SELECT)
+        .eq('slug', slug)
+        .eq('status', 'published'),
+    )
 
     if (signal) postQuery = postQuery.abortSignal(signal)
     const { data: post, error: postError } = await postQuery.single()
 
-    if (postError) throw postError
+    if (postError) {
+      if (postError.code === 'PGRST116') return null
+      throw postError
+    }
     if (!post) return null
 
-    return mapPostFromDB(post as DBBlogPost)
+    return mapPostFromDB(post as DBBlogPost, language)
   } catch (error) {
     if (isAbortLikeError(error)) throw new Error('Request aborted')
     logError('blog.getBySlug', error)
-    return null
+    throw new Error('Failed to load blog post')
   }
 }
 
 export async function incrementBlogViewCount(slug: string): Promise<boolean> {
   try {
-    const response = await fetch(`${supabaseUrl}/rest/v1/rpc/vv_blog_increment_views`, {
-      method: 'POST',
-      headers: {
-        apikey: supabaseAnonKey,
-        Authorization: `Bearer ${supabaseAnonKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ post_slug: slug }),
-      keepalive: true,
+    const supabase = await getSupabase()
+    const response = await supabase.functions.invoke<{ success?: boolean }>('increment-blog-view', {
+      body: { slug },
     })
 
-    return response.ok
+    return !response.error && response.data?.success === true
   } catch {
     return false
   }
