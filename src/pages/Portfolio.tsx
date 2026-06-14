@@ -11,12 +11,14 @@ import PortfolioFeatures from '../components/portfolio/PortfolioFeatures';
 import ContactSection from '../components/contact/ContactSection';
 import { SectionReveal, StaggerItem, StaggerReveal } from '@/components/ui/SectionReveal';
 import styles from './Portfolio.module.css';
+import { useSettings } from '@/hooks/useSettings';
 import FacebookIcon from '@/assets/social-facebook';
 import socialLinkedin from '@/assets/social-linkedin.svg';
 import socialInstagram from '@/assets/products/social-instagram.svg';
 
 const Portfolio = () => {
   const { t, language } = useLanguageContext();
+  const { social } = useSettings();
   const navigate = useNavigate();
   const { projects, loading, error } = usePortfolio();
   const [activeCategory, setActiveCategory] = useState('all');
@@ -68,9 +70,9 @@ const Portfolio = () => {
         badge={t('portfolio.hero.badge')}
         icon={<FolderOpen className="w-3.5 h-3.5" />}
         socialLinks={[
-          { icon: <FacebookIcon />, label: 'Facebook' },
-          { icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: t('about.hero.social.linkedinAlt') },
-          { icon: <img src={socialInstagram} className="w-6 h-6" alt="" />, label: t('about.hero.social.instagramAlt') },
+          ...(social?.facebook ? [{ href: social.facebook, icon: <FacebookIcon />, label: 'Facebook' }] : social?.x ? [{ href: social.x, icon: <FacebookIcon />, label: 'Facebook' }] : []),
+          ...(social?.linkedin ? [{ href: social.linkedin, icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: t('about.hero.social.linkedinAlt') }] : []),
+          ...(social?.instagram ? [{ href: social.instagram, icon: <img src={socialInstagram} className="w-6 h-6" alt="" />, label: t('about.hero.social.instagramAlt') }] : []),
         ]}
         ariaLabelledBy="portfolio-hero-title"
       />
