@@ -3,11 +3,16 @@ import { useHeroContactAction } from '@/hooks/useHeroContactAction';
 
 import VideoHeroSection from '@/components/common/VideoHeroSection';
 import { useLanguageContext } from '@/hooks/useLanguage';
+import { useSettings } from '@/hooks/useSettings';
 import { StaticPage } from '@/pagekit';
+import FacebookIcon from '@/assets/social-facebook';
+import socialInstagram from '@/assets/products/social-instagram.svg';
+import socialLinkedin from '@/assets/social-linkedin.svg';
 import ProductsCatalogSection from '@/components/products/ProductsCatalogSection';
 
 function ProductsHero() {
   const { t } = useLanguageContext();
+  const { social } = useSettings();
   const handleContactClick = useHeroContactAction();
 
   return (
@@ -17,6 +22,11 @@ function ProductsHero() {
       subtitle={t('products.page.hero.subtitle')}
       buttonText={t('blog.hero.cta.text')}
       onButtonClick={handleContactClick}
+      socialLinks={[
+        ...(social?.facebook ? [{ href: social.facebook, icon: <FacebookIcon />, label: 'Facebook' }] : social?.x ? [{ href: social.x, icon: <FacebookIcon />, label: 'Facebook' }] : []),
+        ...(social?.instagram ? [{ href: social.instagram, icon: <img src={socialInstagram} className="w-6 h-6" alt="" />, label: 'Instagram' }] : []),
+        ...(social?.linkedin ? [{ href: social.linkedin, icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: 'LinkedIn' }] : []),
+      ]}
       className="relative flex min-h-[85vh] w-full items-center justify-center overflow-hidden bg-white px-4 pt-[120px] pb-[80px]"
       contentClassName="max-w-[1024px]"
     />

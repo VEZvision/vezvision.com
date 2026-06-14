@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useRef, type CSSProperties } from 'react';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import BenefitItem from './BenefitItem';
 import styles from './MoreBenefits.module.css';
@@ -10,21 +10,15 @@ import personalizedExperiencesIcon from '../../assets/personalized-experiences-i
 import fasterInnovationIcon from '../../assets/faster-innovation-icon.svg';
 
 const MARQUEE_SPEED_PX_PER_SEC = 20;
-const MIN_MARQUEE_COPIES = 3;
-
-function getMarqueeCopyCount(setWidthPx: number, viewportWidthPx: number): number {
-  if (setWidthPx <= 0) return MIN_MARQUEE_COPIES;
-  return Math.max(MIN_MARQUEE_COPIES, Math.ceil((viewportWidthPx + setWidthPx) / setWidthPx));
-}
+const MIN_COPIES = 3;
 
 const MoreBenefits: React.FC = () => {
   const { t } = useLanguageContext();
   const reducedMotion = useReducedMotion();
-  const sliderRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const setRef = useRef<HTMLDivElement>(null);
-  const [loopShiftPx, setLoopShiftPx] = useState(0);
-  const [copyCount, setCopyCount] = useState(MIN_MARQUEE_COPIES);
-  const [marqueeReady, setMarqueeReady] = useState(false);
+  const rafId = useRef<number>(0);
+  const offsetRef = useRef(0);
 
   const benefits = useMemo(
     () => [
@@ -36,56 +30,59 @@ const MoreBenefits: React.FC = () => {
     [t],
   );
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (reducedMotion) return;
 
-    const node = setRef.current;
-    const slider = sliderRef.current;
-    if (!node || !slider) return;
+    const track = trackRef.current;
+    const set = setRef.current;
+    if (!track || !set) return;
 
-    let resizeTimer: ReturnType<typeof setTimeout> | null = null;
+    let setWidth = 0;
 
     const measure = () => {
-      const setWidthPx = Math.ceil(node.getBoundingClientRect().width);
-      if (setWidthPx <= 0) return;
-
-      const viewportWidthPx = slider.clientWidth;
-      const nextCopyCount = getMarqueeCopyCount(setWidthPx, viewportWidthPx);
-
-      setLoopShiftPx(setWidthPx);
-      setCopyCount((current) => Math.max(current, nextCopyCount));
-      setMarqueeReady(true);
-    };
-
-    const scheduleMeasure = () => {
-      if (resizeTimer) clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(measure, 120);
+      const w = Math.ceil(set.getBoundingClientRect().width);
+      if (w <= 0) return;
+      setWidth = w;
     };
 
     measure();
 
-    const resizeObserver = new ResizeObserver(scheduleMeasure);
-    resizeObserver.observe(node);
-    resizeObserver.observe(slider);
-    window.addEventListener('resize', scheduleMeasure);
+    const resizeObserver = new ResizeObserver(() => {
+      measure();
+    });
+    resizeObserver.observe(set);
+    resizeObserver.observe(track);
+
+    let lastTime = 0;
+
+    const animate = (time: number) => {
+      if (lastTime === 0) {
+        lastTime = time;
+        rafId.current = requestAnimationFrame(animate);
+        return;
+      }
+
+      const deltaSec = (time - lastTime) / 1000;
+      lastTime = time;
+
+      if (setWidth > 0) {
+        offsetRef.current += MARQUEE_SPEED_PX_PER_SEC * deltaSec;
+        if (offsetRef.current >= setWidth) {
+          offsetRef.current -= setWidth;
+        }
+        track.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
+      }
+
+      rafId.current = requestAnimationFrame(animate);
+    };
+
+    rafId.current = requestAnimationFrame(animate);
 
     return () => {
-      if (resizeTimer) clearTimeout(resizeTimer);
+      cancelAnimationFrame(rafId.current);
       resizeObserver.disconnect();
-      window.removeEventListener('resize', scheduleMeasure);
     };
   }, [benefits, reducedMotion]);
-
-  const marqueeDurationSec =
-    loopShiftPx > 0 ? Math.max(48, loopShiftPx / MARQUEE_SPEED_PX_PER_SEC) : 0;
-
-  const marqueeStyle =
-    loopShiftPx > 0
-      ? ({
-          ['--marquee-shift' as string]: `${loopShiftPx}px`,
-          ['--marquee-duration' as string]: `${marqueeDurationSec}s`,
-        } as CSSProperties)
-      : undefined;
 
   if (reducedMotion) {
     return (
@@ -101,14 +98,13 @@ const MoreBenefits: React.FC = () => {
     );
   }
 
+  const initialCopyCount = MIN_COPIES;
+
   return (
     <div className={styles.moreBenefitsContainer}>
-      <div ref={sliderRef} className={styles.slider}>
-        <div
-          className={`${styles.slideTrack} ${marqueeReady ? styles.slideTrackActive : ''}`}
-          style={marqueeStyle}
-        >
-          {Array.from({ length: copyCount }, (_, copyIndex) => (
+      <div className={styles.slider}>
+        <div ref={trackRef} className={styles.slideTrack} style={{ willChange: 'transform' } as CSSProperties}>
+          {Array.from({ length: initialCopyCount }, (_, copyIndex) => (
             <div
               key={copyIndex}
               ref={copyIndex === 0 ? setRef : undefined}

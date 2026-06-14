@@ -18,7 +18,6 @@
   max-width: 384px;
   min-height: 372px;
   overflow: hidden;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
   isolation: isolate;
   transform: translateZ(0);
 }
@@ -224,10 +223,6 @@
   .dial {
     transform: translateX(-50%) scale(0.86);
   }
-
-  .desktopAnimate2:hover {
-    transform: none;
-  }
 }
 
 .shape2 {
@@ -430,12 +425,4 @@
   }
 }
 
-@media (hover: hover) {
-  .desktopAnimate2:hover {
-    transform: translateY(-2px);
-    box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 2px 2px -1px #0000001a,
-      0px 4px 4px -1px #00000017, 0px 8px 8px -2px #00000017,
-      0px 14px 14px -2px #00000017, 0px 28px 28px -3px #00000014,
-      0px 60px 60px -3px #0000000d;
-  }
-}
+

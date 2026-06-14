@@ -4,8 +4,10 @@ import { BookOpen } from 'lucide-react';
 
 import VideoHeroSection from '@/components/common/VideoHeroSection';
 import { useLanguageContext } from '@/hooks/useLanguage';
+import { useSettings } from '@/hooks/useSettings';
 import { StaticPage } from '@/pagekit';
 import FacebookIcon from '@/assets/social-facebook';
+import socialInstagram from '@/assets/products/social-instagram.svg';
 import socialLinkedin from '@/assets/social-linkedin.svg';
 import FounderNote from '@/components/FounderNote';
 import BlogArticlesWithData from '@/components/blog/BlogArticlesWithData';
@@ -14,6 +16,7 @@ import ContactSection from '@/components/contact/ContactSection';
 
 function BlogHero() {
   const { t } = useLanguageContext();
+  const { social } = useSettings();
   const handleContactClick = useHeroContactAction();
 
   return (
@@ -25,8 +28,9 @@ function BlogHero() {
       badge={t('blog.hero.badge')}
       icon={<BookOpen className="w-3.5 h-3.5" />}
       socialLinks={[
-        { icon: <FacebookIcon />, label: 'Facebook' },
-        { icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: 'LinkedIn' },
+        ...(social?.facebook ? [{ href: social.facebook, icon: <FacebookIcon />, label: 'Facebook' }] : social?.x ? [{ href: social.x, icon: <FacebookIcon />, label: 'Facebook' }] : []),
+        ...(social?.instagram ? [{ href: social.instagram, icon: <img src={socialInstagram} className="w-6 h-6" alt="" />, label: 'Instagram' }] : []),
+        ...(social?.linkedin ? [{ href: social.linkedin, icon: <img src={socialLinkedin} className="w-6 h-6" alt="" />, label: 'LinkedIn' }] : []),
       ]}
       className="relative flex min-h-[85vh] w-full items-center justify-center overflow-hidden bg-white px-4 pt-[120px] pb-[80px]"
       contentClassName="max-w-[1024px]"
