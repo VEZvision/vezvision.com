@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom'
 
 import { useLanguageContext } from '@/hooks/useLanguage'
 import { useSettings } from '@/hooks/useSettings'
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from '@/routing/routes.config'
+import { localizedPath, stripLocaleFromPathname } from '@/routing/locale'
 import { safeAbsoluteHttpUrl, safeImageUrl } from '@/utils/safeHref'
 import { getSafeStructuredDataJson, safeJsonLd } from '@/utils/safeJsonLd'
 
@@ -38,6 +40,16 @@ const PageSeo = ({ pageKey }: PageSeoProps) => {
   const ogSiteName = seo?.ogSiteName || identity?.siteName || seo?.siteTitle || ''
   const structuredDataJson = getSafeStructuredDataJson(entry.structured_data_json)
 
+  const pathWithoutLocale = stripLocaleFromPathname(location.pathname)
+  const alternatePathSuffix = pathWithoutLocale === '/' ? '' : pathWithoutLocale.replace(/^\//, '')
+  const hreflangUrls = siteUrl
+    ? SUPPORTED_LOCALES.map((locale) => ({
+        locale,
+        url: `${siteUrl}${localizedPath(locale, alternatePathSuffix)}`,
+      }))
+    : []
+  const xDefaultUrl = hreflangUrls.find((item) => item.locale === DEFAULT_LOCALE)?.url
+
   const webPageSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
@@ -55,6 +67,10 @@ const PageSeo = ({ pageKey }: PageSeoProps) => {
       {title ? <title>{title}</title> : null}
       {description ? <meta name="description" content={description} /> : null}
       {canonicalUrl ? <link rel="canonical" href={canonicalUrl} /> : null}
+      {hreflangUrls.map(({ locale, url }) => (
+        <link key={locale} rel="alternate" hrefLang={locale} href={url} />
+      ))}
+      {xDefaultUrl ? <link rel="alternate" hrefLang="x-default" href={xDefaultUrl} /> : null}
       <meta name="robots" content={robots} />
       {ogTitle ? <meta property="og:title" content={ogTitle} /> : null}
       {ogDescription ? <meta property="og:description" content={ogDescription} /> : null}

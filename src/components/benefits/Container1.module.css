@@ -23,7 +23,6 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 14%, rgba(16, 185, 129, 0.12), transparent 34%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(245, 245, 245, 0) 42%);
   pointer-events: none;
   z-index: 0;
@@ -41,95 +40,60 @@
   z-index: 1;
 }
 
-.dial {
+/* ── Gauge clock (copied from WhyChooseSection Card 1) ── */
+.gauge {
   position: absolute;
-  top: 4px;
-  left: 50%;
-  width: 244px;
-  height: 218px;
-  transform: translateX(-50%) scale(0.86);
-  transform-origin: top center;
-}
-
-.orbit {
-  position: absolute;
-  top: -28px;
-  left: 50%;
-  width: 244px;
-  height: 244px;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  opacity: 0.72;
-  border: 1px solid rgba(255, 255, 255, 0.75);
-  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.72) 0%, rgba(245, 245, 245, 0.96) 62%, rgba(234, 236, 240, 0.92) 100%);
-  box-shadow: inset 0px -3px 1px 0px #e3e3e375, 0px 1px 1px -1px #00000022,
-    0px 2px 2px -2px #00000020, 0px 5px 5px -3px #00000018,
-    0px 16px 16px -4px #00000008;
-}
-
-.badge {
-  position: absolute;
-  top: 34px;
+  top: 18px;
   left: 50%;
   transform: translateX(-50%);
-  width: 132px;
-  height: 132px;
-  border-radius: 50%;
-  padding: 9px;
-  background: linear-gradient(180deg, rgba(249, 250, 251, 0.98) 0%, rgba(241, 243, 245, 0.98) 100%);
-  box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 1px 1px -1px #00000014,
-    0px 2px 2px -1px #00000014, 0px 4px 4px -2px #00000012,
-    0px 7px 7px -3px #00000012, 0px 14px 14px -3px #0000000d,
-    0px 30px 30px -4px #00000005;
-  overflow: visible;
-  animation: pulseBadge 3.4s ease-in-out infinite;
+  width: 176px;
+  height: 176px;
 }
 
-.badge::after {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.08);
-  animation: rippleRing 3.4s ease-out infinite;
-  pointer-events: none;
-}
-
-.badgeInner {
-  position: relative;
+.gaugeInner {
   width: 100%;
   height: 100%;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 30%, #ffffff 0%, #f4f4f2 58%, #ececea 100%);
-  box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 1px 1px -1px #00000014,
-    0px 2px 2px -1px #00000014, 0px 4px 4px -2px #00000012;
+  border-radius: 100px;
+  background: #f5f5f5;
+  box-shadow: inset 0 1px 1px -1px #00000014, inset 0 2px 2px -1px #00000014,
+    inset 0 4px 4px -2px #00000012, inset 0 7px 7px -3px #00000012,
+    inset 0 14px 14px -3px #0000000d, inset 0 30px 30px -4px #00000005;
+  animation: gaugeSpin 20s linear infinite;
 }
 
-.pointer {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 52px;
-  height: 14px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #ffffff 0%, #edf7f1 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 6px 12px rgba(0, 0, 0, 0.08);
-  transform-origin: 8px 50%;
-  transform: translate(-8px, -50%) rotate(-42deg);
-  animation: pointerMove 14s linear infinite;
-  will-change: transform;
+@keyframes gaugeSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-.pointerDot {
+.gauge::after {
+  content: '';
   position: absolute;
-  top: 26px;
-  left: 66px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: linear-gradient(180deg, #ffffff 0%, #efefed 100%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.92), 0 4px 10px rgba(0, 0, 0, 0.08);
-  animation: dotFloat 5.8s ease-in-out infinite;
+  top: 30px;
+  right: 50px;
+  width: 20px;
+  height: 20px;
+  border-radius: 100px;
+  background: #f5f5f5;
+  box-shadow: inset 0 3px 1px #ffffff, 0 1px 1px -1px #00000014,
+    0 2px 2px -1px #00000014, 0 4px 4px -2px #00000012,
+    0 7px 7px -3px #00000012, 0 14px 14px -3px #0000000d,
+    0 30px 30px -4px #00000005;
+}
+
+.gaugeInner::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  left: 108px;
+  width: 16px;
+  height: 87px;
+  border-radius: 100px;
+  background: #f5f5f5;
+  box-shadow: inset 0 3px 1px #ffffff, 0 1px 1px -1px #00000033, 0 2px 2px -1px #00000030,
+    0 4px 4px -2px #0000002e, 0 7px 7px -3px #0000002b, 0 14px 14px -3px #00000021,
+    0 30px 30px -4px #0000000d;
+  transform: rotate(52deg);
 }
 
 .content {
@@ -169,73 +133,9 @@
   margin: 0;
 }
 
-@keyframes pulseBadge {
-  0%,
-  100% {
-    transform: translateX(-50%) scale(1);
-    box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 1px 1px -1px #00000014,
-      0px 2px 2px -1px #00000014, 0px 4px 4px -2px #00000012,
-      0px 7px 7px -3px #00000012, 0px 14px 14px -3px #0000000d,
-      0px 30px 30px -4px #00000005;
-  }
-
-  50% {
-    transform: translateX(-50%) scale(1.03);
-    box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 6px 12px -4px rgba(0, 0, 0, 0.1),
-      0px 12px 24px -6px rgba(0, 0, 0, 0.08);
-  }
-}
-
-@keyframes rippleRing {
-  0% {
-    opacity: 0.22;
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.08);
-  }
-
-  60% {
-    opacity: 0;
-    transform: scale(1.18);
-    box-shadow: 0 0 0 14px rgba(0, 0, 0, 0);
-  }
-
-  100% {
-    opacity: 0;
-    transform: scale(1.18);
-    box-shadow: 0 0 0 14px rgba(0, 0, 0, 0);
-  }
-}
-
-@keyframes pointerMove {
-  from {
-    transform: translate(-8px, -50%) rotate(0deg);
-  }
-  to {
-    transform: translate(-8px, -50%) rotate(360deg);
-  }
-}
-
-@keyframes dotFloat {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(3px);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .badge,
-  .badge::after,
-  .pointer,
-  .pointerDot {
-    animation: none !important;
-  }
-
-  .dial {
-    transform: translateX(-50%) scale(0.86);
+  .gaugeInner {
+    animation: none;
   }
 }
 
@@ -249,32 +149,8 @@
     bottom: 142px;
   }
 
-  .dial {
-    transform: translateX(-50%) scale(0.84);
-  }
-
-  .orbit {
-    width: 228px;
-    height: 228px;
-    top: -24px;
-  }
-
-  .badge {
-    width: 120px;
-    height: 120px;
-    top: 30px;
-  }
-
-  .pointer {
-    width: 48px;
-    height: 13px;
-  }
-
-  .pointerDot {
-    top: 24px;
-    left: 60px;
-    width: 16px;
-    height: 16px;
+  .gauge {
+    transform: translateX(-50%) scale(0.92);
   }
 
   .content {
@@ -305,33 +181,8 @@
     bottom: 136px;
   }
 
-  .dial {
-    transform: translateX(-50%) scale(0.82);
-  }
-
-  .orbit {
-    width: 208px;
-    height: 208px;
-    top: -22px;
-  }
-
-  .badge {
-    width: 108px;
-    height: 108px;
-    top: 28px;
-    padding: 8px;
-  }
-
-  .pointer {
-    width: 42px;
-    height: 12px;
-  }
-
-  .pointerDot {
-    top: 22px;
-    left: 55px;
-    width: 15px;
-    height: 15px;
+  .gauge {
+    transform: translateX(-50%) scale(0.86);
   }
 
   .content {
@@ -363,33 +214,8 @@
     bottom: 126px;
   }
 
-  .dial {
-    transform: translateX(-50%) scale(0.8);
-  }
-
-  .orbit {
-    width: 176px;
-    height: 176px;
-    top: -14px;
-  }
-
-  .badge {
-    width: 92px;
-    height: 92px;
-    top: 22px;
-    padding: 7px;
-  }
-
-  .pointer {
-    width: 34px;
-    height: 10px;
-  }
-
-  .pointerDot {
-    top: 18px;
-    left: 46px;
-    width: 13px;
-    height: 13px;
+  .gauge {
+    transform: translateX(-50%) scale(0.78);
   }
 
   .content {

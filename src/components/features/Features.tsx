@@ -1,10 +1,6 @@
 import styles from './Features.module.css';
 import FeatureCard from './FeatureCard';
 import aiSupportImage from '@/assets/features/ai-support-image.png';
-import aiSupportIcon from '@/assets/features/ai-support-icon.svg';
-import webAppsIcon from '@/assets/features/web-apps-icon.svg';
-import marketingIcon from '@/assets/features/marketing-icon.svg';
-import automationIcon from '@/assets/features/automation-icon.svg';
 import automationImage from '@/assets/features/automation-image.png';
 import aiSupportImageSrcset from '@/assets/features/ai-support-image.png?w=600;1200&format=webp&as=srcset';
 import aiSupportImageAvifSrcset from '@/assets/features/ai-support-image.png?w=600;1200&format=avif&as=srcset';
@@ -13,7 +9,7 @@ import automationImageAvifSrcset from '@/assets/features/automation-image.png?w=
 import { useLanguageContext } from '@/hooks/useLanguage';
 import SectionHeader from '@/components/ui/SectionHeader';
 import { StaggerReveal, StaggerItem, SectionReveal } from '@/components/ui/SectionReveal';
-import { Zap } from 'lucide-react';
+import { Zap, BrainCircuit, Globe, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { usePageSectionConfig } from '@/hooks/usePageSection';
 import { safeCmsHref } from '@/utils/safeHref';
@@ -50,7 +46,7 @@ return (
               image={aiSupportImage}
               imageSrcSet={aiSupportImageSrcset}
               imageAvifSrcSet={aiSupportImageAvifSrcset}
-              icon={aiSupportIcon}
+              icon={<BrainCircuit className="w-5 h-5" />}
             />
           </StaggerItem>
           <StaggerItem className={styles.featureCardMedium}>
@@ -58,7 +54,7 @@ return (
               variant="medium"
               title={t('features.card.web.title')}
               description={t('features.card.web.desc')}
-              icon={webAppsIcon}
+              icon={<Globe className="w-5 h-5" />}
             />
           </StaggerItem>
         </div>
@@ -68,7 +64,7 @@ return (
               variant="medium"
               title={t('features.card.marketing.title')}
               description={t('features.card.marketing.desc')}
-              icon={marketingIcon}
+              icon={<TrendingUp className="w-5 h-5" />}
             />
           </StaggerItem>
           <StaggerItem className={styles.featureCardLarge}>
@@ -79,7 +75,7 @@ return (
               image={automationImage}
               imageSrcSet={automationImageSrcset}
               imageAvifSrcSet={automationImageAvifSrcset}
-              icon={automationIcon}
+              icon={<Zap className="w-5 h-5" />}
             />
           </StaggerItem>
         </div>
@@ -110,7 +106,7 @@ return (
         </Link>
         <Link
           to={secondaryHref}
-          className="inline-flex items-center gap-2 rounded-lg bg-white text-zinc-900 px-6 py-3 text-sm font-medium border border-zinc-200 shadow-sm hover:bg-zinc-50 hover:-translate-y-0.5 transition transform"
+          className="inline-flex items-center justify-center rounded-lg bg-[#f5f5f5] text-black font-medium text-[14px] px-6 py-[11px] shadow-[inset_0px_3px_1px_0px_#ffffff,0px_1px_1px_-1px_rgba(0,0,0,0.1)] transition-transform hover:-translate-y-0.5"
         >
           {t('features.cta.secondary')}
         </Link>

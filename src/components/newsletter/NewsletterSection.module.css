@@ -47,7 +47,8 @@
 
 .form {
     display: flex;
-    gap: 16px;
+    align-items: center;
+    gap: 12px;
     max-width: 500px;
     margin: 0 auto;
 }
@@ -75,16 +76,17 @@
 }
 
 .button {
-    padding: 16px 32px;
+    padding: 8px 16px;
     background: #0f172a;
     color: #ffffff;
     border: none;
-    border-radius: 100px;
+    border-radius: 8px;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.875rem;
     cursor: pointer;
     transition: all 0.3s ease;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .button:hover:not(:disabled) {

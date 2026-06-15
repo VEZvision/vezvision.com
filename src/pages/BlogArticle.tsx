@@ -1,7 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react';
 import DynamicPageSeo from '@/components/seo/DynamicPageSeo';
-import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
-import type { BreadcrumbItem } from '@/components/seo/Breadcrumbs';
 import { useParams, Link } from 'react-router-dom';
 import '../styles/GridBackground.css';
 import logo from '@/assets/blog/logo.svg';
@@ -119,15 +117,15 @@ const siteName = seo?.ogSiteName || seo?.siteTitle || 'VezVision';
 const articleDescription = stripHtmlForJsonLd(excerpt || seo?.siteDescription || '');
   const featuredImageSrc = safeImageUrl(post.featured_image) || logo;
 
-  const breadcrumbItems: BreadcrumbItem[] = [
-    { label: t('nav.home'), href: '/' },
-    { label: t('nav.blog'), href: toLocalizedPath('blog') },
-    { label: title },
-  ];
-
   return (
     <section className="relative z-10 pt-32 pb-20 px-4 sm:px-6 lg:px-8" aria-labelledby="blog-article-title">
-      <Breadcrumbs items={breadcrumbItems} />
+      <Link
+        to={toLocalizedPath('blog')}
+        className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors mb-6"
+      >
+        <ArrowLeft size={16} />
+        {t('blog.article.back')}
+      </Link>
       <DynamicPageSeo
       title={fullTitle}
       description={articleDescription}

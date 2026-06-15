@@ -7,14 +7,8 @@ const Container1: React.FC = () => {
   return (
     <article className={styles.container} aria-label={t('benefits.container1.title')}>
       <div className={`${styles.visual} vez-decorative-motion`} aria-hidden="true">
-        <div className={styles.dial}>
-          <div className={styles.orbit} />
-          <div className={styles.badge}>
-            <div className={styles.badgeInner}>
-              <div className={styles.pointer} />
-              <div className={styles.pointerDot} />
-            </div>
-          </div>
+        <div className={styles.gauge}>
+          <div className={styles.gaugeInner} />
         </div>
       </div>
 

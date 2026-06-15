@@ -1,10 +1,10 @@
-import { memo } from 'react';
+import { memo, type ReactNode } from 'react';
 import { ResponsiveImage } from '@/components/ui/ResponsiveImage';
 import styles from './FeatureCard.module.css';
 
 interface FeatureCardProps {
   variant: 'large' | 'medium';
-  icon: string;
+  icon: ReactNode;
   title: string;
   description: string;
   image?: string;
@@ -41,7 +41,7 @@ function FeatureCard({
 
     <div className={styles.content}>
       <div className={styles.iconContainer}>
-        <img src={icon} alt="" className={styles.icon} loading="lazy" decoding="async" draggable={false} aria-hidden="true" />
+        {icon}
       </div>
 
       <div className={styles.textContent}>

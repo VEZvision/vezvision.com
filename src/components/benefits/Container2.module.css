@@ -121,14 +121,13 @@
   bottom: 0;
   height: var(--bar-tall);
   width: 34px;
-  overflow: hidden;
   z-index: 4;
   pointer-events: none;
 }
 
 .phaseLabel {
   position: absolute;
-  left: 6px;
+  left: 0;
   top: 50%;
   display: flex;
   align-items: center;
@@ -141,7 +140,18 @@
   writing-mode: vertical-rl;
   text-orientation: mixed;
   white-space: nowrap;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+  transform: translateY(-50%) rotate(180deg);
+  transition: opacity 0.5s ease;
+}
+
+.afterLabel,
+.beforeLabel {
+  opacity: 0;
+}
+
+.afterLabel[aria-hidden='false'],
+.beforeLabel[aria-hidden='false'] {
+  opacity: 1;
 }
 
 .afterLabel {
@@ -150,18 +160,6 @@
 
 .beforeLabel {
   border-color: rgba(244, 63, 94, 0.32);
-}
-
-.afterLabel[aria-hidden='true'],
-.beforeLabel[aria-hidden='true'] {
-  opacity: 0;
-  transform: translateY(-50%) rotate(180deg) translateX(-120%);
-}
-
-.afterLabel[aria-hidden='false'],
-.beforeLabel[aria-hidden='false'] {
-  opacity: 1;
-  transform: translateY(-50%) rotate(180deg) translateX(0);
 }
 
 .phaseText {
@@ -203,48 +201,53 @@
   line-height: 1;
 }
 
-/* bar2 ≈ 37%, bar4 ≈ 90% — etykiety nad słupkami; wyżej gdy słupek wyższy */
-.automationLabel[aria-hidden='true'] {
-  opacity: 0;
-  transform: translateX(-50%) translateY(6px);
-}
-.automationLabel[aria-hidden='false'] {
-  opacity: 1;
+/* bar2 ≈ 37%, bar4 ≈ 90% */
+
+.automationLabel,
+.automationLabelAlt {
   left: 37%;
+}
+
+.costLabel,
+.costLabelAlt {
+  left: 90%;
+}
+
+.automationLabel {
   bottom: calc(var(--bar-tall) + var(--pill-gap));
-  transform: translateX(-50%) translateY(-100%);
 }
 
-.automationLabelAlt[aria-hidden='true'] {
-  opacity: 0;
-  transform: translateX(-50%) translateY(-6px);
-}
-.automationLabelAlt[aria-hidden='false'] {
-  opacity: 1;
-  left: 37%;
+.automationLabelAlt {
   bottom: calc(var(--bar-short) + var(--pill-gap));
-  transform: translateX(-50%) translateY(-100%);
 }
 
+.costLabel {
+  bottom: calc(var(--bar-short) + var(--pill-gap));
+}
+
+.costLabelAlt {
+  bottom: calc(var(--bar-tall) + var(--pill-gap));
+}
+
+.automationLabel[aria-hidden='true'],
 .costLabel[aria-hidden='true'] {
   opacity: 0;
   transform: translateX(-50%) translateY(6px);
 }
+.automationLabel[aria-hidden='false'],
 .costLabel[aria-hidden='false'] {
   opacity: 1;
-  left: 90%;
-  bottom: calc(var(--bar-short) + var(--pill-gap));
   transform: translateX(-50%) translateY(-100%);
 }
 
+.automationLabelAlt[aria-hidden='true'],
 .costLabelAlt[aria-hidden='true'] {
   opacity: 0;
   transform: translateX(-50%) translateY(-6px);
 }
+.automationLabelAlt[aria-hidden='false'],
 .costLabelAlt[aria-hidden='false'] {
   opacity: 1;
-  left: 90%;
-  bottom: calc(var(--bar-tall) + var(--pill-gap));
   transform: translateX(-50%) translateY(-100%);
 }
 
