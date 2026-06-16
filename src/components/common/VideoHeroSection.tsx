@@ -137,6 +137,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
           disableRemotePlayback
           x-webkit-airplay="deny"
         >
+          <source src="/navons.webm" type="video/webm" />
           <source src="/navons.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>

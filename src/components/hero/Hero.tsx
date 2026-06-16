@@ -85,7 +85,6 @@ const Hero = memo(() => {
         <video
           ref={videoRef}
           className={styles.videoBg}
-          src={HERO_VIDEO_SRC}
           muted
           loop
           playsInline
@@ -93,7 +92,10 @@ const Hero = memo(() => {
           aria-hidden="true"
           disableRemotePlayback
           x-webkit-airplay="deny"
-        />
+        >
+          <source src="/aMPvRVYHFQxBoB0v2qyJln83jI.webm" type="video/webm" />
+          <source src={HERO_VIDEO_SRC} type="video/mp4" />
+        </video>
       )}
 
       <div className={styles.videoOverlay} aria-hidden="true" />

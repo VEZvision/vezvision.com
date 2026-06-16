@@ -35,6 +35,7 @@ export default function Footer() {
   const pathWithoutLocale = location.pathname.replace(/^\/(en|pl)(?=\/|$)/, '');
   const isHome = pathWithoutLocale === '' || pathWithoutLocale === '/';
   const videoSrc = isHome ? '/aMPvRVYHFQxBoB0v2qyJln83jI.mp4' : '/navons.mp4';
+  const videoWebmSrc = isHome ? '/aMPvRVYHFQxBoB0v2qyJln83jI.webm' : '/navons.webm';
   const showVideo = !prefersReducedData;
 
   useEffect(() => {
@@ -111,6 +112,7 @@ export default function Footer() {
                 disableRemotePlayback
                 x-webkit-airplay="deny"
               >
+                <source src={videoWebmSrc} type="video/webm" />
                 <source src={videoSrc} type="video/mp4" />
               </video>
             )}
