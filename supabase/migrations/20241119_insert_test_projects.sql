@@ -1,3 +1,6 @@
+-- MIGRATION TYPE: SEED DATA (historical)
+-- Inserts test projects into legacy tables. Current schema uses vv_projects.
+-- Kept for migration history continuity only.
 -- Insert test portfolio project
 INSERT INTO public.projects (
   id, slug, category, status, featured, order_index, demo_url, github_url, client_name, cover_path

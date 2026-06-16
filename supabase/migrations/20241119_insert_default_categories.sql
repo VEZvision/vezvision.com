@@ -1,3 +1,6 @@
+-- MIGRATION TYPE: SEED DATA (historical)
+-- Inserts default categories into legacy tables. Current schema uses vv_* tables
+-- seeded through the CMS/admin panel. Kept for migration history continuity.
 -- Kategorie usług
 INSERT INTO public.service_categories (slug, color) VALUES
 ('web-development', '#3B82F6'),

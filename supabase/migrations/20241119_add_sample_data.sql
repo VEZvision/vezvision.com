@@ -1,3 +1,7 @@
+-- MIGRATION TYPE: SEED DATA (historical)
+-- This migration inserts sample/demo data. It was applied early in the project
+-- lifecycle and targets legacy tables that no longer exist in the current schema.
+-- Do NOT rely on it for fresh deployments; use dedicated seed scripts instead.
 -- Migration: Add sample data for portfolio, blog, and services
 -- Created at: 2024-11-19
 

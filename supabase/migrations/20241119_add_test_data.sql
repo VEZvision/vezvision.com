@@ -1,3 +1,6 @@
+-- MIGRATION TYPE: SEED DATA (historical)
+-- This migration inserts test/demo data for legacy tables that no longer exist
+-- in the current schema. It is kept only for migration history continuity.
 -- Add some test data for verification
 -- This will help test if the admin panel is working correctly
 

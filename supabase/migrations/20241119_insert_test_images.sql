@@ -1,3 +1,6 @@
+-- MIGRATION TYPE: SEED DATA (historical)
+-- Inserts sample images for test projects into legacy project_images table.
+-- Current schema uses vv_project_images. Kept for migration history continuity.
 -- Insert sample images for test projects using public URLs
 
 -- Modern Portfolio Website
