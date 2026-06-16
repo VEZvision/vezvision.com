@@ -24,6 +24,14 @@ function normalizeLanguage(value: unknown): "pl" | "en" {
   return value === "en" ? "en" : "pl";
 }
 
+const PUBLIC_ASSETS_BUCKET = "vezvision-assets";
+
+function getStorageBaseUrl(): string {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
+  if (!supabaseUrl) return "";
+  return `${supabaseUrl.replace(/\/$/, "")}/storage/v1/object/public/${PUBLIC_ASSETS_BUCKET}`;
+}
+
 function getNotificationSubject(lang: string, subject: string): string {
   return lang === "pl"
     ? `Nowa wiadomość z formularza kontaktowego: ${subject}`
@@ -37,12 +45,14 @@ function getNotificationHtml(data: {
   subject: string;
   message: string;
   lang: string;
+  storageBaseUrl: string;
 }): string {
   const fullName = escapeHtml(data.fullName);
   const email = escapeHtml(data.email);
   const phone = data.phone ? escapeHtml(data.phone) : null;
   const subject = escapeHtml(data.subject);
   const message = escapeHtml(data.message);
+  const logoUrl = data.storageBaseUrl ? `${data.storageBaseUrl}/logo-navbar.svg` : "";
 
   const phoneRow = data.phone
     ? `<tr><td style="padding:10px 16px;font-weight:600;color:#0f0f0f;width:120px;border-bottom:1px solid #e5e7eb;">${data.lang === "pl" ? "Telefon" : "Phone"}</td><td style="padding:10px 16px;color:#374151;border-bottom:1px solid #e5e7eb;">${phone}</td></tr>`
@@ -56,7 +66,7 @@ function getNotificationHtml(data: {
     <tr>
       <td style="padding:28px 32px 20px 32px;text-align:center;">
         <a href="https://vezvision.com" style="display:inline-block;text-decoration:none;">
-          <img src="https://pcxcqbpygyidkusetghk.supabase.co/storage/v1/object/public/vezvision-assets/logo-navbar.svg" alt="VezVision" height="28" style="display:block;height:28px;width:auto;" />
+          ${logoUrl ? `<img src="${logoUrl}" alt="VezVision" height="28" style="display:block;height:28px;width:auto;" />` : "<span style=\"font-size:20px;font-weight:700;\">VezVision</span>"}
         </a>
         <span style="display:inline-block;margin-top:12px;font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#6b7280;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:9999px;padding:4px 12px;">${data.lang === "pl" ? "Formularz kontaktowy" : "Contact form"}</span>
       </td>
@@ -105,6 +115,7 @@ function getAutoReplySubject(lang: string): string {
 function getAutoReplyHtml(data: {
   fullName: string;
   lang: string;
+  storageBaseUrl: string;
 }): string {
   const isPl = data.lang === "pl";
   const fullName = escapeHtml(data.fullName);
@@ -114,6 +125,10 @@ function getAutoReplyHtml(data: {
     : "Thanks for your message. We will reply as soon as we can, usually within 24 hours.";
   const closing = isPl ? "Pozdrawiamy" : "Kind regards";
   const team = "VezVision";
+  const logoUrl = data.storageBaseUrl ? `${data.storageBaseUrl}/logo-navbar.svg` : "";
+  const xIconUrl = data.storageBaseUrl ? `${data.storageBaseUrl}/icons/x.svg` : "";
+  const instagramIconUrl = data.storageBaseUrl ? `${data.storageBaseUrl}/icons/instagram.svg` : "";
+  const linkedinIconUrl = data.storageBaseUrl ? `${data.storageBaseUrl}/icons/linkedin.svg` : "";
 
   return `<!DOCTYPE html>
 <html lang="${data.lang}">
@@ -123,7 +138,7 @@ function getAutoReplyHtml(data: {
     <tr>
       <td style="padding:28px 32px 20px 32px;text-align:center;">
         <a href="https://vezvision.com" style="display:inline-block;text-decoration:none;">
-          <img src="https://pcxcqbpygyidkusetghk.supabase.co/storage/v1/object/public/vezvision-assets/logo-navbar.svg" alt="VezVision" height="28" style="display:block;height:28px;width:auto;" />
+          ${logoUrl ? `<img src="${logoUrl}" alt="VezVision" height="28" style="display:block;height:28px;width:auto;" />` : "<span style=\"font-size:20px;font-weight:700;\">VezVision</span>"}
         </a>
       </td>
     </tr>
@@ -141,9 +156,9 @@ function getAutoReplyHtml(data: {
     </tr>
     <tr>
       <td align="center" style="padding:0 32px 16px 32px;">
-        <a href="https://x.com/vezvision" style="display:inline-block;margin:0 6px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;text-decoration:none;" target="_blank"><img src="https://pcxcqbpygyidkusetghk.supabase.co/storage/v1/object/public/vezvision-assets/icons/x.svg" alt="X" width="16" height="16" style="display:block;" /></a>
-        <a href="https://instagram.com/vezvision" style="display:inline-block;margin:0 6px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;text-decoration:none;" target="_blank"><img src="https://pcxcqbpygyidkusetghk.supabase.co/storage/v1/object/public/vezvision-assets/icons/instagram.svg" alt="Instagram" width="16" height="16" style="display:block;" /></a>
-        <a href="https://linkedin.com/company/vezvision" style="display:inline-block;margin:0 6px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;text-decoration:none;" target="_blank"><img src="https://pcxcqbpygyidkusetghk.supabase.co/storage/v1/object/public/vezvision-assets/icons/linkedin.svg" alt="LinkedIn" width="16" height="16" style="display:block;" /></a>
+        ${xIconUrl ? `<a href="https://x.com/vezvision" style="display:inline-block;margin:0 6px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;text-decoration:none;" target="_blank"><img src="${xIconUrl}" alt="X" width="16" height="16" style="display:block;" /></a>` : ""}
+        ${instagramIconUrl ? `<a href="https://instagram.com/vezvision" style="display:inline-block;margin:0 6px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;text-decoration:none;" target="_blank"><img src="${instagramIconUrl}" alt="Instagram" width="16" height="16" style="display:block;" /></a>` : ""}
+        ${linkedinIconUrl ? `<a href="https://linkedin.com/company/vezvision" style="display:inline-block;margin:0 6px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;text-decoration:none;" target="_blank"><img src="${linkedinIconUrl}" alt="LinkedIn" width="16" height="16" style="display:block;" /></a>` : ""}
       </td>
     </tr>
     <tr>
@@ -315,6 +330,7 @@ Deno.serve(async (req: Request) => {
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     const fromEmail = Deno.env.get("RESEND_FROM_EMAIL") || "onboarding@resend.dev";
     const notifyEmail = Deno.env.get("CONTACT_NOTIFY_EMAIL") || "contact@vezvision.com";
+    const storageBaseUrl = getStorageBaseUrl();
 
     if (resendApiKey) {
       sendEmailViaResend(
@@ -329,6 +345,7 @@ Deno.serve(async (req: Request) => {
           subject,
           message,
           lang: language,
+          storageBaseUrl,
         }),
         email
       ).catch(() => console.error("Notification email error"));
@@ -341,6 +358,7 @@ Deno.serve(async (req: Request) => {
         getAutoReplyHtml({
           fullName,
           lang: language,
+          storageBaseUrl,
         })
       ).catch(() => console.error("Auto-reply email error"));
     } else {
