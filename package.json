@@ -26,6 +26,8 @@
     "test:e2e:live": "E2E_LIVE_SUPABASE=1 playwright test tests/e2e/live-supabase.spec.ts --project=chromium",
     "test:ui": "vitest --ui",
     "generate-sitemap": "npx tsx --env-file=.env scripts/generate-sitemap.ts",
+    "generate-robots-txt": "npx tsx --env-file=.env scripts/generate-robots-txt.ts",
+    "generate-rss-feeds": "npx tsx --env-file=.env scripts/generate-rss-feeds.ts",
     "split-translations": "node scripts/split-translations.mjs",
     "gen:types": "npx supabase gen types typescript --project-id pcxcqbpygyidkusetghk > src/types/database.types.ts",
     "gen:types:local": "supabase gen types typescript --local > src/types/database.types.ts"
@@ -40,7 +42,7 @@
     "lucide-react": "^0.577.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "react-helmet-async": "^2.0.5",
+    "react-helmet-async": "^3.0.0",
     "react-hook-form": "^7.78.0",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.9.2",
