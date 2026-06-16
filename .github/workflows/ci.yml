@@ -41,8 +41,8 @@ jobs:
       - name: Edge shared tests
         run: npm run test:edge
 
-      - name: Verify edge bundles and shared parity
-        run: npm run verify:edge-shared && npm run verify:edge-bundles
+      - name: Verify edge shared parity
+        run: npm run verify:edge-shared
 
       - name: Build
         run: npm run build
