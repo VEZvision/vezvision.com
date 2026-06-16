@@ -94,6 +94,8 @@ jobs:
         env:
           CI: true
           E2E_USE_PREBUILT_DIST: '1'
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: test-anon-key
 
       - name: E2E route error boundary (E2E build)
         run: npm run test:e2e -- tests/e2e/route-error.spec.ts --project=chromium
