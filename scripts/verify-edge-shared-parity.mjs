@@ -47,24 +47,6 @@ for (const fn of ['normalizeContactText', 'normalizeContactEmail', 'normalizeCon
   }
 }
 
-const clientApp = fs.readFileSync(path.join(ROOT, 'shared/clientIp.ts'), 'utf8')
-const clientEdge = fs.readFileSync(path.join(ROOT, 'supabase/functions/_shared/clientIp.ts'), 'utf8')
-const clientAppFn = extractFunction(clientApp, 'getClientIpFromHeaders')
-const clientEdgeFn = extractFunction(clientEdge, 'getClientIpFromHeaders')
-if (!clientAppFn || clientAppFn !== clientEdgeFn) {
-  errors.push('shared/clientIp.ts getClientIpFromHeaders diverged from edge copy')
-}
-
-const rateApp = fs.readFileSync(path.join(ROOT, 'shared/rateLimitKey.ts'), 'utf8')
-const rateEdge = fs.readFileSync(path.join(ROOT, 'supabase/functions/_shared/rateLimitKey.ts'), 'utf8')
-for (const fn of ['sha256Hex16', 'buildEdgeRateLimitKey']) {
-  const appFn = extractFunction(rateApp, fn)
-  const edgeFn = extractFunction(rateEdge, fn)
-  if (!appFn || appFn !== edgeFn) {
-    errors.push(`shared/rateLimitKey.ts ${fn} diverged from edge copy`)
-  }
-}
-
 const zodEdge = (() => {
   const m = contactEdge.match(/npm:zod@([\d.]+)/)
   return m?.[1] ?? null

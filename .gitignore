@@ -46,3 +46,4 @@ public/sitemap.xml
 .edge-deploy-*.json
 scripts/mcp-deploy-*.json
 scripts/deploy-*.json
+scripts/edge-bundles/*.json
