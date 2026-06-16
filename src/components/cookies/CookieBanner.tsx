@@ -175,5 +175,3 @@ export const CookieBanner = memo(({ className = '' }: CookieBannerProps) => {
 });
 
 CookieBanner.displayName = 'CookieBanner';
-
-export default CookieBanner;

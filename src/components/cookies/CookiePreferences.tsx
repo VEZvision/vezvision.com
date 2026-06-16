@@ -306,5 +306,3 @@ export function CookiePreferences({ className = '' }: CookiePreferencesProps) {
     </div>
   );
 };
-
-export default CookiePreferences;

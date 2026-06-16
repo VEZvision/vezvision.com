@@ -180,9 +180,9 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         if (!query.data) return;
-        const { error: _, degraded: __, ...settingsToCache } = query.data;
-        void _;
-        void __;
+        const settingsToCache = Object.fromEntries(
+            Object.entries(query.data).filter(([key]) => key !== 'error' && key !== 'degraded')
+        ) as Omit<SettingsSnapshot, 'error' | 'degraded'>;
         writePublicSettingsCache(settingsToCache);
     }, [query.data]);
 

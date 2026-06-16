@@ -1,6 +1,4 @@
 import {
-  createContext,
-  useContext,
   useEffect,
   useMemo,
   useState,
@@ -13,18 +11,7 @@ import {
   initLenis,
   type ScrollMode,
 } from '@/scroll';
-
-type SmoothScrollContextValue = {
-  mode: ScrollMode;
-};
-
-const SmoothScrollContext = createContext<SmoothScrollContextValue>({
-  mode: 'native',
-});
-
-export function useSmoothScroll(): SmoothScrollContextValue {
-  return useContext(SmoothScrollContext);
-}
+import { SmoothScrollContext } from './SmoothScrollContextDefinition';
 
 export function SmoothScrollProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<ScrollMode>('native');

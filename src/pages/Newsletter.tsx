@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, Mail, Newspaper, ShieldCheck } from 'lucide-react';
 import PageSeo from '@/components/seo/PageSeo';
 import NewsletterSection from '@/components/newsletter/NewsletterSection';
-import SectionReveal from '@/components/ui/SectionReveal';
+import { SectionReveal } from '@/components/ui/SectionReveal';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 

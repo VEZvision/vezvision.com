@@ -248,5 +248,3 @@ export function PrivacyCenter({ className = '' }: PrivacyCenterProps) {
     </div>
   );
 }
-
-export default PrivacyCenter;

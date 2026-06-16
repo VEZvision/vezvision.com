@@ -124,4 +124,4 @@ export function StaggerItem({
   );
 }
 
-export default SectionReveal;
+

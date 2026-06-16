@@ -4,7 +4,7 @@ import { Mail } from 'lucide-react';
 import { subscribeToNewsletter } from '../../services/newsletter';
 import { logError } from '@/lib/logger';
 import { toast } from 'sonner';
-import SectionReveal from '@/components/ui/SectionReveal';
+import { SectionReveal } from '@/components/ui/SectionReveal';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import TurnstileField from '@/components/security/TurnstileField';
 import { isTurnstileEnabled } from '@/lib/turnstile';
