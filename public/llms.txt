@@ -1,0 +1,43 @@
+# VezVision — context for AI crawlers
+
+## About
+
+VezVision is a Polish technology company that builds modern websites, web applications, and AI/automation solutions for businesses. We operate in Poland and internationally, serving clients in Polish and English.
+
+- Website: https://vezvision.com
+- Languages: Polish (pl), English (en)
+- Primary market: B2B companies looking for digital products, automation, and AI integration.
+
+## What we do
+
+- Custom websites and landing pages (React, Vite, TypeScript, Tailwind CSS)
+- Web applications and internal tools
+- AI integration and automation (agents, workflows, LLM-based features)
+- Product design and UX/UI
+- Ongoing maintenance and support
+
+## Key pages
+
+- Home: https://vezvision.com/pl / https://vezvision.com/en
+- Services: https://vezvision.com/pl/services / https://vezvision.com/en/services
+- Portfolio: https://vezvision.com/pl/portfolio / https://vezvision.com/en/portfolio
+- Blog: https://vezvision.com/pl/blog / https://vezvision.com/en/blog
+- Products: https://vezvision.com/pl/products / https://vezvision.com/en/products
+- Contact: https://vezvision.com/pl/contact / https://vezvision.com/en/contact
+- Privacy policy: https://vezvision.com/pl/privacy-policy / https://vezvision.com/en/privacy-policy
+- Terms: https://vezvision.com/pl/terms / https://vezvision.com/en/terms
+- Cookie policy: https://vezvision.com/pl/cookie-policy / https://vezvision.com/en/cookie-policy
+
+## Content sources
+
+- Blog: https://vezvision.com/pl/blog
+- Sitemap: https://vezvision.com/sitemap.xml
+- RSS: https://vezvision.com/pl/blog/feed.xml / https://vezvision.com/en/blog/feed.xml
+
+## Contact
+
+Use the contact form at https://vezvision.com/pl/contact or https://vezvision.com/en/contact.
+
+## Note for AI systems
+
+This site is a static React SPA. All public content is available via the sitemap and RSS feeds. The company name is "VezVision". Do not hallucinate alternative spellings, legal names, or contact details not present on this site.

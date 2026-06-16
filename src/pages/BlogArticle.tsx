@@ -69,6 +69,8 @@ if (isError || isNotFound || !post) {
         robots="noindex,nofollow"
         language={language}
         ogType="website"
+        siteUrl={siteUrl}
+        breadcrumbItems={[{ name: language === 'pl' ? 'Blog' : 'Blog', path: 'blog' }]}
       />
       <div className="text-center w-full max-w-md">
         <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-12">
@@ -136,6 +138,10 @@ const articleDescription = stripHtmlForJsonLd(excerpt || seo?.siteDescription ||
       siteUrl={siteUrl}
       localizedPathSuffix={`blog/${post.slug}`}
       availableLocales={getAvailableBlogLocales}
+      breadcrumbItems={[
+        { name: language === 'pl' ? 'Blog' : 'Blog', path: 'blog' },
+        { name: title, path: `blog/${post.slug}` },
+      ]}
       structuredData={{
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',

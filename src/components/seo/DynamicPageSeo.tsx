@@ -7,6 +7,11 @@ import { safeJsonLd } from '@/utils/safeJsonLd';
 export type DynamicOgType = 'article' | 'website';
 export type DynamicLocale = 'pl' | 'en';
 
+export interface BreadcrumbItem {
+  name: string;
+  path: string;
+}
+
 interface DynamicPageSeoProps {
   title: string;
   description?: string;
@@ -20,6 +25,7 @@ interface DynamicPageSeoProps {
   localizedPathSuffix?: string;
   /** Locales that have real content — omit hreflang for missing translations. */
   availableLocales?: DynamicLocale[];
+  breadcrumbItems?: BreadcrumbItem[];
 }
 
 function buildAlternateUrl(siteUrl: string, locale: DynamicLocale, pathSuffix: string): string {
@@ -40,6 +46,7 @@ export default function DynamicPageSeo({
   siteUrl,
   localizedPathSuffix,
   availableLocales,
+  breadcrumbItems,
 }: DynamicPageSeoProps) {
   const ogLocale = language === 'pl' ? 'pl_PL' : 'en_US';
   const structuredDataJson = structuredData ? safeJsonLd(structuredData) : null;
@@ -69,6 +76,27 @@ export default function DynamicPageSeo({
   const ogLocaleAlternates = hreflangLocales
     .filter((locale) => locale !== language)
     .map((locale) => (locale === 'pl' ? 'pl_PL' : 'en_US'));
+
+  const breadcrumbListSchema = siteUrl && breadcrumbItems && breadcrumbItems.length > 0
+    ? safeJsonLd({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: language === 'pl' ? 'Strona główna' : 'Home',
+            item: siteUrl,
+          },
+          ...breadcrumbItems.map((item, index) => ({
+            '@type': 'ListItem',
+            position: index + 2,
+            name: item.name,
+            item: `${siteUrl}/${language}/${item.path.replace(/^\//, '')}`,
+          })),
+        ],
+      })
+    : null;
 
   return (
     <Helmet>
@@ -104,6 +132,9 @@ export default function DynamicPageSeo({
       {safeOgImage ? <meta name="twitter:image" content={safeOgImage} /> : null}
       {webPageSchema ? (
         <script type="application/ld+json">{webPageSchema}</script>
+      ) : null}
+      {breadcrumbListSchema ? (
+        <script type="application/ld+json">{breadcrumbListSchema}</script>
       ) : null}
       {structuredDataJson ? (
         <script type="application/ld+json">{structuredDataJson}</script>

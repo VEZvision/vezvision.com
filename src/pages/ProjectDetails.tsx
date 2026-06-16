@@ -85,6 +85,8 @@ export default function ProjectDetails() {
                 canonicalUrl={typeof window !== 'undefined' ? window.location.href : ''}
                 robots="noindex,nofollow"
                 language={language}
+                siteUrl={safeAbsoluteHttpUrl(seo?.siteUrl) ?? undefined}
+                breadcrumbItems={[{ name: language === 'pl' ? 'Portfolio' : 'Portfolio', path: 'portfolio' }]}
             />
             <div className={styles.notFoundContainer}>
                 <div className={styles.notFoundCard}>
@@ -138,6 +140,10 @@ export default function ProjectDetails() {
                 siteUrl={safeAbsoluteHttpUrl(seo?.siteUrl) ?? undefined}
                 localizedPathSuffix={`portfolio/${project.slug}`}
                 availableLocales={availableLocales}
+                breadcrumbItems={[
+                    { name: language === 'pl' ? 'Portfolio' : 'Portfolio', path: 'portfolio' },
+                    { name: projectTitle, path: `portfolio/${project.slug}` },
+                ]}
                 structuredData={{
                     '@context': 'https://schema.org',
                     '@type': 'CreativeWork',

@@ -65,6 +65,13 @@ const SEO = () => {
             {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && seo?.siteTitle ? <meta name="twitter:title" content={seo.siteTitle} /> : null}
             {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && siteDescription ? <meta name="twitter:description" content={siteDescription} /> : null}
             {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && ogImage ? <meta name="twitter:image" content={ogImage} /> : null}
+
+            {siteUrl ? (
+                <>
+                    <link rel="alternate" type="application/rss+xml" title="VezVision Blog (PL)" href={`${siteUrl}/pl/blog/feed.xml`} />
+                    <link rel="alternate" type="application/rss+xml" title="VezVision Blog (EN)" href={`${siteUrl}/en/blog/feed.xml`} />
+                </>
+            ) : null}
         </Helmet>
     );
 };
