@@ -23,9 +23,9 @@
     "test:e2e:prebuilt": "E2E_USE_PREBUILT_DIST=1 playwright test",
     "test:e2e:live": "E2E_LIVE_SUPABASE=1 playwright test tests/e2e/live-supabase.spec.ts --project=chromium",
     "test:ui": "vitest --ui",
-    "generate-sitemap": "npx tsx --env-file=.env scripts/generate-sitemap.ts",
-    "generate-robots-txt": "npx tsx --env-file=.env scripts/generate-robots-txt.ts",
-    "generate-rss-feeds": "npx tsx --env-file=.env scripts/generate-rss-feeds.ts",
+    "generate-sitemap": "npx tsx --env-file-if-exists=.env scripts/generate-sitemap.ts",
+    "generate-robots-txt": "npx tsx --env-file-if-exists=.env scripts/generate-robots-txt.ts",
+    "generate-rss-feeds": "npx tsx --env-file-if-exists=.env scripts/generate-rss-feeds.ts",
     "split-translations": "node scripts/split-translations.mjs",
     "gen:types": "npx supabase gen types typescript --project-id pcxcqbpygyidkusetghk > src/types/database.types.ts",
     "gen:types:local": "supabase gen types typescript --local > src/types/database.types.ts"
