@@ -1,4 +1,4 @@
-import { getSupabase } from '@/lib/supabase'
+import { getScriptSupabase } from '../lib/supabase'
 import { APP_ROUTES, SUPPORTED_LOCALES } from '@/routing/routes.config'
 import { localizedPath } from '@/routing/locale'
 import { applyPublishedBlogVisibilityFilter } from '@/services/blogFilters'
@@ -42,7 +42,7 @@ export function buildSitemapXml(routes: SitemapRoute[]): string {
 }
 
 export async function generateSitemap(): Promise<string> {
-  const supabase = await getSupabase()
+  const supabase = await getScriptSupabase()
   let blogQuery = supabase
     .from('vv_blog_posts')
     .select('slug,updated_at')

@@ -40,6 +40,8 @@ supabase/.temp/
 
 # Generated at build/deploy time from CMS
 public/sitemap.xml
+public/robots.txt
+public/*/blog/feed.xml
 .mcp-deploy-payload.json
 .deploy-*.json
 .mcp-args-*.json

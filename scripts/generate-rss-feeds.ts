@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
-import { getSupabase } from '@/lib/supabase'
+import { getScriptSupabase } from './lib/supabase'
 import { applyPublishedBlogVisibilityFilter } from '@/services/blogFilters'
 import { SUPPORTED_LOCALES } from '@/routing/routes.config'
 
@@ -44,7 +44,7 @@ function getLocalizedExcerpt(post: BlogPostForRSS, language: 'pl' | 'en'): strin
 }
 
 async function fetchPosts(): Promise<BlogPostForRSS[]> {
-  const supabase = await getSupabase()
+  const supabase = await getScriptSupabase()
   let query = supabase
     .from('vv_blog_posts')
     .select('slug,title_pl,title_en,excerpt_pl,excerpt_en,published_at,updated_at')

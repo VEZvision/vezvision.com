@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import { getSupabase } from '@/lib/supabase'
+import { getScriptSupabase } from './lib/supabase'
 
 const DEFAULT_ROBOTS_TXT = `User-agent: *
 Allow: /
@@ -13,7 +13,7 @@ function asString(value: unknown): string {
 }
 
 async function main() {
-  const supabase = await getSupabase()
+  const supabase = await getScriptSupabase()
   const { data, error } = await supabase
     .from('vv_site_settings')
     .select('value')
