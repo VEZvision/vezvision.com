@@ -27,6 +27,9 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
+    esbuildOptions: {
+      target: 'es2022',
+    },
   },
   css: {
     minify: 'lightningcss',
