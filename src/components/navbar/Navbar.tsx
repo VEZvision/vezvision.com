@@ -36,7 +36,7 @@ const Navbar = memo(() => {
   const toggleLanguage = useCallback(() => {
     const nextLanguage = language === 'en' ? 'pl' : 'en';
     setLanguage(nextLanguage);
-    navigate(
+    void navigate(
       `${switchLocalePath(location.pathname, nextLanguage)}${location.search}${location.hash}`,
       { replace: true },
     );
