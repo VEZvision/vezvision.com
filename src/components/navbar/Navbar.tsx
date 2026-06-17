@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, memo, useRef } from 'react';
 import { Menu, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logoNavbar from '@/assets/logo-navbar.svg';
 import { useLanguageContext } from '@/hooks/useLanguage';
 import { useSettings } from '@/hooks/useSettings';
 import { isSafeExternalHref, safePublicHref } from '@/utils/safeHref';
 import { getScrollY, getSmoothScroll } from '@/utils/smoothScrolling';
+import { switchLocalePath } from '@/routing/locale';
 
 function getLocalizedLabel(language: 'pl' | 'en', labelPl: string, labelEn: string) {
   return language === 'en' ? (labelEn || labelPl) : labelPl
@@ -29,6 +30,17 @@ const Navbar = memo(() => {
   const isScrolledRef = useRef(false);
   const { language, setLanguage, t } = useLanguageContext();
   const { navigation } = useSettings();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const toggleLanguage = useCallback(() => {
+    const nextLanguage = language === 'en' ? 'pl' : 'en';
+    setLanguage(nextLanguage);
+    navigate(
+      `${switchLocalePath(location.pathname, nextLanguage)}${location.search}${location.hash}`,
+      { replace: true },
+    );
+  }, [language, setLanguage, navigate, location.pathname, location.search, location.hash]);
 
   const toggleMenu = useCallback(() => {
     setIsMenuOpen(prev => !prev);
@@ -150,7 +162,7 @@ const Navbar = memo(() => {
             {/* Desktop Language Toggle */}
             <div className={`hidden tablet-lg:flex items-center transition-all duration-500 ${desktopGroupClass} ${isScrolled ? 'px-2 py-2' : ''}`}>
               <button
-                onClick={() => setLanguage(language === 'en' ? 'pl' : 'en')}
+                onClick={toggleLanguage}
                 className={`px-3 py-1 text-sm rounded-md transition-colors ${navTextClass} ${navHoverClass}`}
                 aria-label={language === 'en' ? 'Switch to Polish' : 'Switch to English'}
                 data-testid="language-toggle-desktop"
@@ -234,7 +246,7 @@ const Navbar = memo(() => {
             {/* Mobile Language Toggle */}
             <div className="flex items-center space-x-2 pt-2">
               <button
-                onClick={() => setLanguage(language === 'en' ? 'pl' : 'en')}
+                onClick={toggleLanguage}
                 className={`px-3 py-1 text-sm rounded-md transition-colors text-black hover:bg-white/50`}
                 aria-label={language === 'en' ? 'Switch to Polish' : 'Switch to English'}
                 data-testid="language-toggle-mobile"
