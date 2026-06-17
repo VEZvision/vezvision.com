@@ -153,6 +153,7 @@ const Navbar = memo(() => {
                 onClick={() => setLanguage(language === 'en' ? 'pl' : 'en')}
                 className={`px-3 py-1 text-sm rounded-md transition-colors ${navTextClass} ${navHoverClass}`}
                 aria-label={language === 'en' ? 'Switch to Polish' : 'Switch to English'}
+                data-testid="language-toggle-desktop"
               >
                 {language.toUpperCase()}
               </button>
@@ -179,6 +180,7 @@ const Navbar = memo(() => {
                 onClick={toggleMenu}
                 className={`inline-flex items-center justify-center p-2 rounded-md ${mobileButtonTextClass} transition-colors`}
                 aria-label={isMenuOpen ? t('nav.menu.close') : t('nav.menu.open')}
+                data-testid="mobile-menu-toggle"
               >
                 {isMenuOpen ? (
                   <X className="h-6 w-6 pointer-events-none" />
@@ -235,6 +237,7 @@ const Navbar = memo(() => {
                 onClick={() => setLanguage(language === 'en' ? 'pl' : 'en')}
                 className={`px-3 py-1 text-sm rounded-md transition-colors text-black hover:bg-white/50`}
                 aria-label={language === 'en' ? 'Switch to Polish' : 'Switch to English'}
+                data-testid="language-toggle-mobile"
               >
                 {language.toUpperCase()}
               </button>
