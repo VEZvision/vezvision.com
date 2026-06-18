@@ -1,0 +1,27 @@
+{
+  "name": "VezVision",
+  "short_name": "VezVision",
+  "description": "VezVision — modern AI & automation solutions for business",
+  "start_url": "/pl",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "lang": "pl",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/Logo_vezvision_optimized.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["business", "productivity", "developer"],
+  "scope": "/"
+}

@@ -4,7 +4,7 @@ Production Vite + React + TypeScript website for VezVision. The app uses Supabas
 
 ## Stack
 
-- React 18, React Router 7, Vite 6, TypeScript strict mode
+- React 19, React Router 7, Vite 6, TypeScript strict mode
 - TanStack Query for public settings cache/invalidation
 - Supabase client + Edge Functions
 - Vitest + Testing Library for unit/regression tests
@@ -101,14 +101,14 @@ It runs install, typecheck, lint, unit tests, production build, npm audit, and C
 
 ## Supabase Edge Functions (public site)
 
-| Function | Purpose |
-|----------|---------|
-| `check-maintenance-access` | Maintenance gate + IP allowlist |
-| `get-code-injection` | Private CMS head/body snippets (service role) |
-| `increment-blog-view` | Blog view counter with per-IP dedup (service role RPC) |
-| `submit-contact` | Contact form → DB + Resend |
-| `subscribe-newsletter` | Newsletter signup via `safe_insert_newsletter_subscriber` |
-| `unsubscribe-newsletter` | Token unsubscribe via `unsubscribe_by_token` |
+| Function                   | Purpose                                                   |
+| -------------------------- | --------------------------------------------------------- |
+| `check-maintenance-access` | Maintenance gate + IP allowlist                           |
+| `get-code-injection`       | Private CMS head/body snippets (service role)             |
+| `increment-blog-view`      | Blog view counter with per-IP dedup (service role RPC)    |
+| `submit-contact`           | Contact form → DB + Resend                                |
+| `subscribe-newsletter`     | Newsletter signup via `safe_insert_newsletter_subscriber` |
+| `unsubscribe-newsletter`   | Token unsubscribe via `unsubscribe_by_token`              |
 
 `send-newsletter` is an **admin-only** Edge Function (service role + Resend). It is not part of this public repo; deploy and rotate secrets from your internal ops tooling, not from the marketing site pipeline.
 

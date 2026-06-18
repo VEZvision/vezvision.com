@@ -52,7 +52,9 @@ function getNotificationHtml(data: {
   const phone = data.phone ? escapeHtml(data.phone) : null;
   const subject = escapeHtml(data.subject);
   const message = escapeHtml(data.message);
-  const logoUrl = data.storageBaseUrl ? `${data.storageBaseUrl}/logo-navbar.svg` : "";
+  const logoUrl = data.storageBaseUrl
+    ? `${data.storageBaseUrl}/logo-navbar.svg`
+    : "";
 
   const phoneRow = data.phone
     ? `<tr><td style="padding:10px 16px;font-weight:600;color:#0f0f0f;width:120px;border-bottom:1px solid #e5e7eb;">${data.lang === "pl" ? "Telefon" : "Phone"}</td><td style="padding:10px 16px;color:#374151;border-bottom:1px solid #e5e7eb;">${phone}</td></tr>`
@@ -66,7 +68,7 @@ function getNotificationHtml(data: {
     <tr>
       <td style="padding:28px 32px 20px 32px;text-align:center;">
         <a href="https://vezvision.com" style="display:inline-block;text-decoration:none;">
-          ${logoUrl ? `<img src="${logoUrl}" alt="VezVision" height="28" style="display:block;height:28px;width:auto;" />` : "<span style=\"font-size:20px;font-weight:700;\">VezVision</span>"}
+          ${logoUrl ? `<img src="${logoUrl}" alt="VezVision" height="28" style="display:block;height:28px;width:auto;" />` : '<span style="font-size:20px;font-weight:700;">VezVision</span>'}
         </a>
         <span style="display:inline-block;margin-top:12px;font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#6b7280;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:9999px;padding:4px 12px;">${data.lang === "pl" ? "Formularz kontaktowy" : "Contact form"}</span>
       </td>
@@ -125,10 +127,18 @@ function getAutoReplyHtml(data: {
     : "Thanks for your message. We will reply as soon as we can, usually within 24 hours.";
   const closing = isPl ? "Pozdrawiamy" : "Kind regards";
   const team = "VezVision";
-  const logoUrl = data.storageBaseUrl ? `${data.storageBaseUrl}/logo-navbar.svg` : "";
-  const xIconUrl = data.storageBaseUrl ? `${data.storageBaseUrl}/icons/x.svg` : "";
-  const instagramIconUrl = data.storageBaseUrl ? `${data.storageBaseUrl}/icons/instagram.svg` : "";
-  const linkedinIconUrl = data.storageBaseUrl ? `${data.storageBaseUrl}/icons/linkedin.svg` : "";
+  const logoUrl = data.storageBaseUrl
+    ? `${data.storageBaseUrl}/logo-navbar.svg`
+    : "";
+  const xIconUrl = data.storageBaseUrl
+    ? `${data.storageBaseUrl}/icons/x.svg`
+    : "";
+  const instagramIconUrl = data.storageBaseUrl
+    ? `${data.storageBaseUrl}/icons/instagram.svg`
+    : "";
+  const linkedinIconUrl = data.storageBaseUrl
+    ? `${data.storageBaseUrl}/icons/linkedin.svg`
+    : "";
 
   return `<!DOCTYPE html>
 <html lang="${data.lang}">
@@ -138,7 +148,7 @@ function getAutoReplyHtml(data: {
     <tr>
       <td style="padding:28px 32px 20px 32px;text-align:center;">
         <a href="https://vezvision.com" style="display:inline-block;text-decoration:none;">
-          ${logoUrl ? `<img src="${logoUrl}" alt="VezVision" height="28" style="display:block;height:28px;width:auto;" />` : "<span style=\"font-size:20px;font-weight:700;\">VezVision</span>"}
+          ${logoUrl ? `<img src="${logoUrl}" alt="VezVision" height="28" style="display:block;height:28px;width:auto;" />` : '<span style="font-size:20px;font-weight:700;">VezVision</span>'}
         </a>
       </td>
     </tr>
@@ -184,7 +194,7 @@ async function sendEmailViaResend(
   to: string,
   subject: string,
   html: string,
-  replyTo?: string
+  replyTo?: string,
 ): Promise<{ ok: boolean; error?: string }> {
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -212,8 +222,42 @@ async function sendEmailViaResend(
     return { ok: true };
   } catch (err) {
     console.error("Resend fetch error");
-    return { ok: false, error: err instanceof Error ? err.message : "Unknown error" };
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "Unknown error",
+    };
   }
+}
+
+type SupabaseEdgeClient = ReturnType<typeof createClient>;
+type SendType = "notification" | "auto_reply" | "webhook";
+
+async function createSendLog(
+  supabase: SupabaseEdgeClient,
+  messageId: string,
+  sendType: SendType,
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("vv_message_send_logs")
+    .insert({ message_id: messageId, send_type: sendType, status: "pending" })
+    .select("id")
+    .single();
+  if (error) console.error("sendLog.create", error);
+  return data?.id ?? null;
+}
+
+async function updateSendLog(
+  supabase: SupabaseEdgeClient,
+  logId: string | null,
+  status: "sent" | "failed",
+  errorMessage?: string,
+): Promise<void> {
+  if (!logId) return;
+  const { error } = await supabase
+    .from("vv_message_send_logs")
+    .update({ status, error_message: errorMessage ?? null })
+    .eq("id", logId);
+  if (error) console.error("sendLog.update", error);
 }
 
 Deno.serve(async (req: Request) => {
@@ -225,9 +269,13 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({ success: false, error: "Method not allowed" }),
       {
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json", "Allow": "POST, OPTIONS" },
+        headers: {
+          ...getCorsHeaders(req),
+          "Content-Type": "application/json",
+          Allow: "POST, OPTIONS",
+        },
         status: 405,
-      }
+      },
     );
   }
 
@@ -239,28 +287,50 @@ Deno.serve(async (req: Request) => {
     if (!supabaseUrl || !serviceRoleKey) {
       return new Response(
         JSON.stringify({ success: false, error: "Service unavailable" }),
-        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 503 },
+        {
+          headers: {
+            ...getCorsHeaders(req),
+            "Content-Type": "application/json",
+          },
+          status: 503,
+        },
       );
     }
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    const rateLimitKey = await buildEdgeRateLimitKey("edge-contact", req, clientIp);
-    const { data: edgeRateLimitRows, error: edgeRateError } = await supabase.rpc("consume_rate_limit", {
-      p_key: rateLimitKey,
-      p_max_requests: 10,
-      p_window_ms: 60000,
-    });
-    const edgeRateLimit = Array.isArray(edgeRateLimitRows) ? edgeRateLimitRows[0] : edgeRateLimitRows;
+    const rateLimitKey = await buildEdgeRateLimitKey(
+      "edge-contact",
+      req,
+      clientIp,
+    );
+    const { data: edgeRateLimitRows, error: edgeRateError } =
+      await supabase.rpc("consume_rate_limit", {
+        p_key: rateLimitKey,
+        p_max_requests: 10,
+        p_window_ms: 60000,
+      });
+    const edgeRateLimit = Array.isArray(edgeRateLimitRows)
+      ? edgeRateLimitRows[0]
+      : edgeRateLimitRows;
     if (edgeRateError || !edgeRateLimit?.allowed) {
       return new Response(
         JSON.stringify({ success: false, error: "Rate limit exceeded" }),
-        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 429 },
+        {
+          headers: {
+            ...getCorsHeaders(req),
+            "Content-Type": "application/json",
+          },
+          status: 429,
+        },
       );
     }
 
     const body = await req.json();
-    const turnstile = await verifyTurnstileToken(body?.turnstile_token, clientIp);
+    const turnstile = await verifyTurnstileToken(
+      body?.turnstile_token,
+      clientIp,
+    );
     if (!turnstile.ok) {
       return new Response(
         JSON.stringify({
@@ -268,7 +338,13 @@ Deno.serve(async (req: Request) => {
           error: "Captcha verification failed.",
           field: "form",
         }),
-        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 400 },
+        {
+          headers: {
+            ...getCorsHeaders(req),
+            "Content-Type": "application/json",
+          },
+          status: 400,
+        },
       );
     }
 
@@ -281,32 +357,57 @@ Deno.serve(async (req: Request) => {
 
     if (!fullName || !email || !subject || !message) {
       return new Response(
-        JSON.stringify({ success: false, error: "Invalid contact form payload", field: "form" }),
-        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 400 }
+        JSON.stringify({
+          success: false,
+          error: "Invalid contact form payload",
+          field: "form",
+        }),
+        {
+          headers: {
+            ...getCorsHeaders(req),
+            "Content-Type": "application/json",
+          },
+          status: 400,
+        },
       );
     }
 
-    if (phoneResult.invalid || (isContactPhoneProvided(body?.phone) && !phoneResult.phone)) {
+    if (
+      phoneResult.invalid ||
+      (isContactPhoneProvided(body?.phone) && !phoneResult.phone)
+    ) {
       return new Response(
         JSON.stringify({
           success: false,
-          error: language === "pl" ? "Podaj poprawny numer telefonu." : "Enter a valid phone number.",
+          error:
+            language === "pl"
+              ? "Podaj poprawny numer telefonu."
+              : "Enter a valid phone number.",
           field: "phone",
         }),
-        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 400 }
+        {
+          headers: {
+            ...getCorsHeaders(req),
+            "Content-Type": "application/json",
+          },
+          status: 400,
+        },
       );
     }
 
-    const { data: id, error } = await supabase.rpc("safe_insert_contact_message", {
-      p_full_name: fullName,
-      p_email: email,
-      p_subject: subject,
-      p_message: message,
-      p_phone: phoneResult.phone,
-      p_status: "new",
-      p_language: language,
-      p_client_ip: clientIp,
-    });
+    const { data: id, error } = await supabase.rpc(
+      "safe_insert_contact_message",
+      {
+        p_full_name: fullName,
+        p_email: email,
+        p_subject: subject,
+        p_message: message,
+        p_phone: phoneResult.phone,
+        p_status: "new",
+        p_language: language,
+        p_client_ip: clientIp,
+      },
+    );
 
     if (error) {
       const msg = error.message || "Unknown error";
@@ -321,46 +422,71 @@ Deno.serve(async (req: Request) => {
             : "Nie udało się wysłać wiadomości. Sprawdź dane i spróbuj ponownie.",
         }),
         {
-          headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+          headers: {
+            ...getCorsHeaders(req),
+            "Content-Type": "application/json",
+          },
           status: isRateLimit ? 429 : 400,
-        }
+        },
       );
     }
 
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
-    const fromEmail = Deno.env.get("RESEND_FROM_EMAIL") || "onboarding@resend.dev";
-    const notifyEmail = Deno.env.get("CONTACT_NOTIFY_EMAIL") || "contact@vezvision.com";
+    const fromEmail =
+      Deno.env.get("RESEND_FROM_EMAIL") || "onboarding@resend.dev";
+    const notifyEmail =
+      Deno.env.get("CONTACT_NOTIFY_EMAIL") || "contact@vezvision.com";
     const storageBaseUrl = getStorageBaseUrl();
 
     if (resendApiKey) {
-      sendEmailViaResend(
-        resendApiKey,
-        `VezVision <${fromEmail}>`,
-        notifyEmail,
-        getNotificationSubject(language, subject),
-        getNotificationHtml({
-          fullName,
+      void (async () => {
+        const logId = await createSendLog(supabase, String(id), "notification");
+        const result = await sendEmailViaResend(
+          resendApiKey,
+          `VezVision <${fromEmail}>`,
+          notifyEmail,
+          getNotificationSubject(language, subject),
+          getNotificationHtml({
+            fullName,
+            email,
+            phone: phoneResult.phone,
+            subject,
+            message,
+            lang: language,
+            storageBaseUrl,
+          }),
           email,
-          phone: phoneResult.phone,
-          subject,
-          message,
-          lang: language,
-          storageBaseUrl,
-        }),
-        email
-      ).catch(() => console.error("Notification email error"));
+        );
+        await updateSendLog(
+          supabase,
+          logId,
+          result.ok ? "sent" : "failed",
+          result.error,
+        );
+        if (!result.ok) console.error("Notification email error", result.error);
+      })();
 
-      sendEmailViaResend(
-        resendApiKey,
-        `VezVision <${fromEmail}>`,
-        email,
-        getAutoReplySubject(language),
-        getAutoReplyHtml({
-          fullName,
-          lang: language,
-          storageBaseUrl,
-        })
-      ).catch(() => console.error("Auto-reply email error"));
+      void (async () => {
+        const logId = await createSendLog(supabase, String(id), "auto_reply");
+        const result = await sendEmailViaResend(
+          resendApiKey,
+          `VezVision <${fromEmail}>`,
+          email,
+          getAutoReplySubject(language),
+          getAutoReplyHtml({
+            fullName,
+            lang: language,
+            storageBaseUrl,
+          }),
+        );
+        await updateSendLog(
+          supabase,
+          logId,
+          result.ok ? "sent" : "failed",
+          result.error,
+        );
+        if (!result.ok) console.error("Auto-reply email error", result.error);
+      })();
     } else {
       console.warn("RESEND_API_KEY not set");
     }
@@ -368,28 +494,52 @@ Deno.serve(async (req: Request) => {
     const webhookUrl = Deno.env.get("VEZCRM_WEBHOOK_URL");
     const webhookSecret = Deno.env.get("VEZCRM_WEBHOOK_SECRET");
     if (webhookUrl && webhookSecret) {
-      fetch(webhookUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-webhook-secret": webhookSecret,
-        },
-        body: JSON.stringify({
-          name: fullName,
-          email,
-          phone: phoneResult.phone,
-          message,
-          source: "contact-form",
-        }),
-      }).catch(() => console.error("Webhook error"));
+      void (async () => {
+        const logId = await createSendLog(supabase, String(id), "webhook");
+        try {
+          const res = await fetch(webhookUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-webhook-secret": webhookSecret,
+            },
+            body: JSON.stringify({
+              name: fullName,
+              email,
+              phone: phoneResult.phone,
+              message,
+              source: "contact-form",
+            }),
+          });
+          if (!res.ok) {
+            await updateSendLog(
+              supabase,
+              logId,
+              "failed",
+              `HTTP ${res.status}`,
+            );
+            console.error("Webhook error", `HTTP ${res.status}`);
+            return;
+          }
+          await updateSendLog(supabase, logId, "sent");
+        } catch (err) {
+          await updateSendLog(
+            supabase,
+            logId,
+            "failed",
+            err instanceof Error ? err.message : "Unknown error",
+          );
+          console.error("Webhook error", err);
+        }
+      })();
     }
 
-    return new Response(
-      JSON.stringify({ success: true, id }),
-      { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 200 }
-    );
-  } catch {
-    console.error("submit-contact error");
+    return new Response(JSON.stringify({ success: true, id }), {
+      headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      status: 200,
+    });
+  } catch (err) {
+    console.error("submit-contact error", err);
     return new Response(
       JSON.stringify({
         success: false,
@@ -398,7 +548,7 @@ Deno.serve(async (req: Request) => {
       {
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
         status: 500,
-      }
+      },
     );
   }
 });

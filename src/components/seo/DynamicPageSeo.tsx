@@ -1,11 +1,11 @@
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from "react-helmet-async";
 
-import { SUPPORTED_LOCALES } from '@/routing/routes.config';
-import { safeImageUrl } from '@/utils/safeHref';
-import { safeJsonLd } from '@/utils/safeJsonLd';
+import { SUPPORTED_LOCALES } from "@/routing/routes.config";
+import { safeImageUrl } from "@/utils/safeHref";
+import { safeJsonLd } from "@/utils/safeJsonLd";
 
-export type DynamicOgType = 'article' | 'website';
-export type DynamicLocale = 'pl' | 'en';
+export type DynamicOgType = "article" | "website";
+export type DynamicLocale = "pl" | "en";
 
 export interface BreadcrumbItem {
   name: string;
@@ -23,14 +23,22 @@ interface DynamicPageSeoProps {
   structuredData?: Record<string, unknown>;
   siteUrl?: string;
   localizedPathSuffix?: string;
-  /** Locales that have real content — omit hreflang for missing translations. */
   availableLocales?: DynamicLocale[];
   breadcrumbItems?: BreadcrumbItem[];
+  articlePublishedTime?: string;
+  articleModifiedTime?: string;
+  articleAuthor?: string;
+  articleSection?: string;
+  articleTags?: string[];
 }
 
-function buildAlternateUrl(siteUrl: string, locale: DynamicLocale, pathSuffix: string): string {
-  const base = siteUrl.replace(/\/$/, '');
-  const suffix = pathSuffix.replace(/^\//, '');
+function buildAlternateUrl(
+  siteUrl: string,
+  locale: DynamicLocale,
+  pathSuffix: string,
+): string {
+  const base = siteUrl.replace(/\/$/, "");
+  const suffix = pathSuffix.replace(/^\//, "");
   return suffix ? `${base}/${locale}/${suffix}` : `${base}/${locale}`;
 }
 
@@ -39,33 +47,40 @@ export default function DynamicPageSeo({
   description,
   canonicalUrl,
   ogImage,
-  ogType = 'article',
-  robots = 'index,follow',
+  ogType = "article",
+  robots = "index,follow",
   language,
   structuredData,
   siteUrl,
   localizedPathSuffix,
   availableLocales,
   breadcrumbItems,
+  articlePublishedTime,
+  articleModifiedTime,
+  articleAuthor,
+  articleSection,
+  articleTags,
 }: DynamicPageSeoProps) {
-  const ogLocale = language === 'pl' ? 'pl_PL' : 'en_US';
+  const ogLocale = language === "pl" ? "pl_PL" : "en_US";
   const structuredDataJson = structuredData ? safeJsonLd(structuredData) : null;
-  const safeOgImage = ogImage ? (safeImageUrl(ogImage) ?? undefined) : undefined;
+  const safeOgImage = ogImage
+    ? (safeImageUrl(ogImage) ?? undefined)
+    : undefined;
 
   const webPageSchema = canonicalUrl
     ? safeJsonLd({
-        '@context': 'https://schema.org',
-        '@type': 'WebPage',
-        '@id': `${canonicalUrl}#webpage`,
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "@id": `${canonicalUrl}#webpage`,
         url: canonicalUrl,
         name: title,
         description: description || undefined,
-        inLanguage: language === 'pl' ? 'pl-PL' : 'en-US',
-        isPartOf: siteUrl ? { '@id': `${siteUrl}/#website` } : undefined,
-        publisher: siteUrl ? { '@id': `${siteUrl}/#organization` } : undefined,
+        inLanguage: language === "pl" ? "pl-PL" : "en-US",
+        isPartOf: siteUrl ? { "@id": `${siteUrl}/#website` } : undefined,
+        publisher: siteUrl ? { "@id": `${siteUrl}/#organization` } : undefined,
       })
     : null;
-  const pathSuffix = localizedPathSuffix?.replace(/^\//, '') ?? '';
+  const pathSuffix = localizedPathSuffix?.replace(/^\//, "") ?? "";
   const hreflangLocales =
     availableLocales && availableLocales.length > 0
       ? availableLocales
@@ -75,28 +90,29 @@ export default function DynamicPageSeo({
 
   const ogLocaleAlternates = hreflangLocales
     .filter((locale) => locale !== language)
-    .map((locale) => (locale === 'pl' ? 'pl_PL' : 'en_US'));
+    .map((locale) => (locale === "pl" ? "pl_PL" : "en_US"));
 
-  const breadcrumbListSchema = siteUrl && breadcrumbItems && breadcrumbItems.length > 0
-    ? safeJsonLd({
-        '@context': 'https://schema.org',
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          {
-            '@type': 'ListItem',
-            position: 1,
-            name: language === 'pl' ? 'Strona główna' : 'Home',
-            item: siteUrl,
-          },
-          ...breadcrumbItems.map((item, index) => ({
-            '@type': 'ListItem',
-            position: index + 2,
-            name: item.name,
-            item: `${siteUrl}/${language}/${item.path.replace(/^\//, '')}`,
-          })),
-        ],
-      })
-    : null;
+  const breadcrumbListSchema =
+    siteUrl && breadcrumbItems && breadcrumbItems.length > 0
+      ? safeJsonLd({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: language === "pl" ? "Strona główna" : "Home",
+              item: siteUrl,
+            },
+            ...breadcrumbItems.map((item, index) => ({
+              "@type": "ListItem",
+              position: index + 2,
+              name: item.name,
+              item: `${siteUrl}/${language}/${item.path.replace(/^\//, "")}`,
+            })),
+          ],
+        })
+      : null;
 
   return (
     <Helmet>
@@ -114,21 +130,53 @@ export default function DynamicPageSeo({
             />
           ))
         : null}
-      {siteUrl && pathSuffix && hreflangLocales.includes('pl') ? (
-        <link rel="alternate" hrefLang="x-default" href={buildAlternateUrl(siteUrl, 'pl', pathSuffix)} />
+      {siteUrl && pathSuffix && hreflangLocales.includes("en") ? (
+        <link
+          rel="alternate"
+          hrefLang="x-default"
+          href={buildAlternateUrl(siteUrl, "en", pathSuffix)}
+        />
       ) : null}
       <meta property="og:title" content={title} />
-      {description ? <meta property="og:description" content={description} /> : null}
+      {description ? (
+        <meta property="og:description" content={description} />
+      ) : null}
       {safeOgImage ? <meta property="og:image" content={safeOgImage} /> : null}
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:type" content={ogType} />
+      {ogType === "article" && articlePublishedTime ? (
+        <meta
+          property="article:published_time"
+          content={articlePublishedTime}
+        />
+      ) : null}
+      {ogType === "article" && articleModifiedTime ? (
+        <meta property="article:modified_time" content={articleModifiedTime} />
+      ) : null}
+      {ogType === "article" && articleAuthor ? (
+        <meta property="article:author" content={articleAuthor} />
+      ) : null}
+      {ogType === "article" && articleSection ? (
+        <meta property="article:section" content={articleSection} />
+      ) : null}
+      {ogType === "article" && articleTags
+        ? articleTags.map((tag) => (
+            <meta key={tag} property="article:tag" content={tag} />
+          ))
+        : null}
       <meta property="og:locale" content={ogLocale} />
       {ogLocaleAlternates.map((alternate) => (
-        <meta key={alternate} property="og:locale:alternate" content={alternate} />
+        <meta
+          key={alternate}
+          property="og:locale:alternate"
+          content={alternate}
+        />
       ))}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
-      {description ? <meta name="twitter:description" content={description} /> : null}
+      {description ? (
+        <meta name="twitter:description" content={description} />
+      ) : null}
       {safeOgImage ? <meta name="twitter:image" content={safeOgImage} /> : null}
       {webPageSchema ? (
         <script type="application/ld+json">{webPageSchema}</script>

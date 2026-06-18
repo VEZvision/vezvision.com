@@ -22,7 +22,11 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({ success: false, error: "Method not allowed" }),
       {
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json", Allow: "GET, POST, OPTIONS" },
+        headers: {
+          ...getCorsHeaders(req),
+          "Content-Type": "application/json",
+          Allow: "GET, POST, OPTIONS",
+        },
         status: 405,
       },
     );
@@ -30,24 +34,37 @@ Deno.serve(async (req: Request) => {
 
   try {
     const clientIp = getClientIp(req);
-    const rateLimitKey = await buildEdgeRateLimitKey("edge-code-injection", req, clientIp);
+    const rateLimitKey = await buildEdgeRateLimitKey(
+      "edge-code-injection",
+      req,
+      clientIp,
+    );
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
-    const { data: edgeRateLimitRows, error: edgeRateError } = await supabase.rpc("consume_rate_limit", {
-      p_key: rateLimitKey,
-      p_max_requests: 30,
-      p_window_ms: 60000,
-    });
+    const { data: edgeRateLimitRows, error: edgeRateError } =
+      await supabase.rpc("consume_rate_limit", {
+        p_key: rateLimitKey,
+        p_max_requests: 30,
+        p_window_ms: 60000,
+      });
 
-    const edgeRateLimit = Array.isArray(edgeRateLimitRows) ? edgeRateLimitRows[0] : edgeRateLimitRows;
+    const edgeRateLimit = Array.isArray(edgeRateLimitRows)
+      ? edgeRateLimitRows[0]
+      : edgeRateLimitRows;
 
     if (edgeRateError || !edgeRateLimit?.allowed) {
       return new Response(
         JSON.stringify({ success: false, error: "Rate limit exceeded" }),
-        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 429 },
+        {
+          headers: {
+            ...getCorsHeaders(req),
+            "Content-Type": "application/json",
+          },
+          status: 429,
+        },
       );
     }
 
@@ -69,12 +86,15 @@ Deno.serve(async (req: Request) => {
         head: asString(settings?.head),
         body: asString(settings?.body),
       }),
-      { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } },
+      {
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      },
     );
-  } catch {
-    return new Response(
-      JSON.stringify({ success: true, head: "", body: "" }),
-      { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 200 },
-    );
+  } catch (err) {
+    console.error("get-code-injection error", err);
+    return new Response(JSON.stringify({ success: true, head: "", body: "" }), {
+      headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      status: 200,
+    });
   }
 });

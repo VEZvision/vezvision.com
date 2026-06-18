@@ -22,7 +22,11 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({ success: false, error: "Method not allowed" }),
       {
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json", Allow: "POST, OPTIONS" },
+        headers: {
+          ...getCorsHeaders(req),
+          "Content-Type": "application/json",
+          Allow: "POST, OPTIONS",
+        },
         status: 405,
       },
     );
@@ -35,7 +39,13 @@ Deno.serve(async (req: Request) => {
     if (!slug) {
       return new Response(
         JSON.stringify({ success: false, error: "Invalid slug" }),
-        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 400 },
+        {
+          headers: {
+            ...getCorsHeaders(req),
+            "Content-Type": "application/json",
+          },
+          status: 400,
+        },
       );
     }
 
@@ -45,20 +55,33 @@ Deno.serve(async (req: Request) => {
     );
 
     const clientIp = getClientIp(req);
-    const rateLimitKey = await buildEdgeRateLimitKey("edge-blog-view", req, clientIp);
+    const rateLimitKey = await buildEdgeRateLimitKey(
+      "edge-blog-view",
+      req,
+      clientIp,
+    );
 
-    const { data: edgeRateLimitRows, error: edgeRateError } = await supabase.rpc("consume_rate_limit", {
-      p_key: rateLimitKey,
-      p_max_requests: 60,
-      p_window_ms: 60000,
-    });
+    const { data: edgeRateLimitRows, error: edgeRateError } =
+      await supabase.rpc("consume_rate_limit", {
+        p_key: rateLimitKey,
+        p_max_requests: 60,
+        p_window_ms: 60000,
+      });
 
-    const edgeRateLimit = Array.isArray(edgeRateLimitRows) ? edgeRateLimitRows[0] : edgeRateLimitRows;
+    const edgeRateLimit = Array.isArray(edgeRateLimitRows)
+      ? edgeRateLimitRows[0]
+      : edgeRateLimitRows;
 
     if (edgeRateError || !edgeRateLimit?.allowed) {
       return new Response(
         JSON.stringify({ success: false, error: "Rate limit exceeded" }),
-        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 429 },
+        {
+          headers: {
+            ...getCorsHeaders(req),
+            "Content-Type": "application/json",
+          },
+          status: 429,
+        },
       );
     }
 
@@ -70,18 +93,33 @@ Deno.serve(async (req: Request) => {
     if (error) {
       return new Response(
         JSON.stringify({ success: false, error: "Could not increment views" }),
-        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 400 },
+        {
+          headers: {
+            ...getCorsHeaders(req),
+            "Content-Type": "application/json",
+          },
+          status: 400,
+        },
       );
     }
 
     return new Response(
-      JSON.stringify({ success: true, views: typeof data === "number" ? data : 0 }),
-      { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" } },
+      JSON.stringify({
+        success: true,
+        views: typeof data === "number" ? data : 0,
+      }),
+      {
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+      },
     );
-  } catch {
+  } catch (err) {
+    console.error("increment-blog-view error", err);
     return new Response(
       JSON.stringify({ success: false, error: "Unexpected error" }),
-      { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 500 },
+      {
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        status: 500,
+      },
     );
   }
 });

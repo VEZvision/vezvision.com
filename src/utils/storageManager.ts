@@ -1,20 +1,35 @@
-import { CookieConsentStorage, StorageManager, CookiePreferences, ConsentAction } from '../types/cookies';
-import { COOKIE_CONSENT_KEY, COOKIE_CONSENT_VERSION, DEFAULT_COOKIE_PREFERENCES } from '../types/cookies';
+import {
+  CookieConsentStorage,
+  StorageManager,
+  CookiePreferences,
+  ConsentAction,
+} from "../types/cookies";
+import {
+  COOKIE_CONSENT_KEY,
+  COOKIE_CONSENT_VERSION,
+  DEFAULT_COOKIE_PREFERENCES,
+} from "../types/cookies";
 
 export function generateConsentId(): string {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
     return `consent_${crypto.randomUUID()}`;
   }
 
   const randomValues = new Uint32Array(2);
-  if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.getRandomValues === "function"
+  ) {
     crypto.getRandomValues(randomValues);
   } else {
     randomValues[0] = Date.now();
     randomValues[1] = performance.now();
   }
 
-  return `consent_${Date.now()}_${Array.from(randomValues, value => value.toString(36)).join('')}`;
+  return `consent_${Date.now()}_${Array.from(randomValues, (value) => value.toString(36)).join("")}`;
 }
 
 export class StorageManagerImpl implements StorageManager {
@@ -23,7 +38,7 @@ export class StorageManagerImpl implements StorageManager {
       const consentData = {
         ...consent,
         timestamp: new Date().toISOString(),
-        version: COOKIE_CONSENT_VERSION
+        version: COOKIE_CONSENT_VERSION,
       };
 
       localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(consentData));
@@ -61,7 +76,7 @@ export class StorageManagerImpl implements StorageManager {
       localStorage.removeItem(COOKIE_CONSENT_KEY);
       document.cookie = `${COOKIE_CONSENT_KEY}_fallback=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
     } catch {
-      void 0;
+      /* localStorage remove failed — non-critical */
     }
   }
 
@@ -73,27 +88,34 @@ export class StorageManagerImpl implements StorageManager {
       preferences: { ...DEFAULT_COOKIE_PREFERENCES },
       hasShownBanner: false,
       history: [],
-      metadata: {}
+      metadata: {},
     };
   }
 
-  updatePreferences(preferences: CookiePreferences, action: ConsentAction): void {
-    try { let consent = this.loadConsent();
-    
-    if (!consent) {
-      consent = this.createDefaultConsent();
+  updatePreferences(
+    preferences: CookiePreferences,
+    action: ConsentAction,
+  ): void {
+    try {
+      let consent = this.loadConsent();
+
+      if (!consent) {
+        consent = this.createDefaultConsent();
+      }
+
+      consent.history.push({
+        action,
+        timestamp: new Date().toISOString(),
+        preferences: { ...preferences },
+      });
+
+      consent.preferences = { ...preferences };
+      consent.timestamp = new Date().toISOString();
+
+      this.saveConsent(consent);
+    } catch {
+      /* localStorage quota/private mode — non-critical */
     }
-    
-    consent.history.push({
-      action,
-      timestamp: new Date().toISOString(),
-      preferences: { ...preferences }
-    });
-    
-    consent.preferences = { ...preferences };
-    consent.timestamp = new Date().toISOString();
-    
-    this.saveConsent(consent); } catch { void 0; }
   }
 
   hasShownBanner(): boolean {
@@ -102,41 +124,47 @@ export class StorageManagerImpl implements StorageManager {
   }
 
   markBannerAsShown(): void {
-    try { let consent = this.loadConsent();
-    
-    if (!consent) {
-      consent = this.createDefaultConsent();
+    try {
+      let consent = this.loadConsent();
+
+      if (!consent) {
+        consent = this.createDefaultConsent();
+      }
+
+      consent.hasShownBanner = true;
+      this.saveConsent(consent);
+    } catch {
+      /* localStorage quota/private mode — non-critical */
     }
-    
-    consent.hasShownBanner = true;
-    this.saveConsent(consent); } catch { void 0; }
   }
 
   private generateConsentId(): string {
     return generateConsentId();
   }
 
-  private isValidConsentData(consent: unknown): consent is CookieConsentStorage {
-    if (!consent || typeof consent !== 'object' || consent === null) {
+  private isValidConsentData(
+    consent: unknown,
+  ): consent is CookieConsentStorage {
+    if (!consent || typeof consent !== "object" || consent === null) {
       return false;
     }
 
     const obj = consent as Record<string, unknown>;
     const preferences = obj.preferences;
-    if (!preferences || typeof preferences !== 'object') {
+    if (!preferences || typeof preferences !== "object") {
       return false;
     }
 
     const prefs = preferences as Record<string, unknown>;
 
     return (
-      typeof obj.version === 'string' &&
-      typeof obj.consentId === 'string' &&
-      typeof obj.timestamp === 'string' &&
-      typeof prefs.necessary === 'boolean' &&
-      typeof prefs.functional === 'boolean' &&
-      typeof prefs.analytics === 'boolean' &&
-      typeof prefs.marketing === 'boolean' &&
+      typeof obj.version === "string" &&
+      typeof obj.consentId === "string" &&
+      typeof obj.timestamp === "string" &&
+      typeof prefs.necessary === "boolean" &&
+      typeof prefs.functional === "boolean" &&
+      typeof prefs.analytics === "boolean" &&
+      typeof prefs.marketing === "boolean" &&
       Array.isArray(obj.history)
     );
   }
@@ -145,28 +173,32 @@ export class StorageManagerImpl implements StorageManager {
     try {
       const newConsent = this.createDefaultConsent();
 
-      if (oldConsent && typeof oldConsent === 'object' && oldConsent !== null) {
+      if (oldConsent && typeof oldConsent === "object" && oldConsent !== null) {
         const obj = oldConsent as Record<string, unknown>;
 
-        if (obj.preferences && typeof obj.preferences === 'object' && obj.preferences !== null) {
+        if (
+          obj.preferences &&
+          typeof obj.preferences === "object" &&
+          obj.preferences !== null
+        ) {
           const prefs = obj.preferences as Record<string, unknown>;
           newConsent.preferences = {
             necessary: true,
             functional: Boolean(prefs.functional) || false,
             analytics: Boolean(prefs.analytics) || false,
-            marketing: Boolean(prefs.marketing) || false
+            marketing: Boolean(prefs.marketing) || false,
           };
         }
 
-        if (typeof obj.hasShownBanner === 'boolean') {
+        if (typeof obj.hasShownBanner === "boolean") {
           newConsent.hasShownBanner = obj.hasShownBanner;
         }
       }
 
       newConsent.history.push({
-        action: 'update_preferences',
+        action: "update_preferences",
         timestamp: new Date().toISOString(),
-        preferences: newConsent.preferences
+        preferences: newConsent.preferences,
       });
 
       return newConsent;
@@ -176,30 +208,37 @@ export class StorageManagerImpl implements StorageManager {
   }
 
   private saveFallbackConsent(consent: CookieConsentStorage): void {
-    try { const fallbackData = JSON.stringify({
-      preferences: consent.preferences,
-      hasShownBanner: consent.hasShownBanner,
-      timestamp: consent.timestamp
-    });
-    
-    document.cookie = `${COOKIE_CONSENT_KEY}_fallback=${encodeURIComponent(fallbackData)}; expires=${new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toUTCString()}; path=/; SameSite=Lax`; } catch { void 0; }
+    try {
+      const fallbackData = JSON.stringify({
+        preferences: consent.preferences,
+        hasShownBanner: consent.hasShownBanner,
+        timestamp: consent.timestamp,
+      });
+
+      document.cookie = `${COOKIE_CONSENT_KEY}_fallback=${encodeURIComponent(fallbackData)}; expires=${new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toUTCString()}; path=/; SameSite=Lax`;
+    } catch {
+      /* cookie fallback write failed — non-critical */
+    }
   }
 
   private loadFallbackConsent(): CookieConsentStorage | null {
     try {
-      const cookies = document.cookie.split(';');
-      const fallbackCookie = cookies.find(cookie =>
-        cookie.trim().startsWith(`${COOKIE_CONSENT_KEY}_fallback=`)
+      const cookies = document.cookie.split(";");
+      const fallbackCookie = cookies.find((cookie) =>
+        cookie.trim().startsWith(`${COOKIE_CONSENT_KEY}_fallback=`),
       );
 
       if (!fallbackCookie) return null;
 
       const fallbackData = JSON.parse(
-        decodeURIComponent(fallbackCookie.split('=')[1])
-      ) as { preferences?: CookiePreferences; hasShownBanner?: boolean } | undefined;
+        decodeURIComponent(fallbackCookie.split("=")[1]),
+      ) as
+        | { preferences?: CookiePreferences; hasShownBanner?: boolean }
+        | undefined;
 
       const consent = this.createDefaultConsent();
-      consent.preferences = fallbackData?.preferences || DEFAULT_COOKIE_PREFERENCES;
+      consent.preferences =
+        fallbackData?.preferences || DEFAULT_COOKIE_PREFERENCES;
       consent.hasShownBanner = fallbackData?.hasShownBanner || false;
 
       return consent;

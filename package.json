@@ -11,6 +11,7 @@
     "test:csp": "node --env-file-if-exists=.env --test scripts/csp-policy.test.mjs",
     "build": "npm run sync:security-headers && npm run verify:security && npm run typecheck && vitest --run src/data/translations/parity.test.ts && npm run verify:edge-shared && node --env-file-if-exists=.env ./node_modules/vite/bin/vite.js build && node scripts/verify-production-build.mjs",
     "lint": "eslint .",
+    "knip": "knip --no-exit-code",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
     "check": "npm run typecheck && vitest --run src/data/translations/parity.test.ts && npm run test:unit && npm run verify:edge-shared && npm run test:csp",
@@ -18,7 +19,7 @@
     "test:unit": "vitest --run",
     "test:unit:coverage": "vitest --run --coverage",
     "test:edge": "deno test --allow-env supabase/functions/_shared/",
-    "check:edge": "deno check --config supabase/functions/deno.json supabase/functions/get-code-injection/index.ts supabase/functions/submit-contact/index.ts supabase/functions/subscribe-newsletter/index.ts supabase/functions/increment-blog-view/index.ts supabase/functions/check-maintenance-access/index.ts supabase/functions/unsubscribe-newsletter/index.ts",
+    "check:edge": "deno lint --config supabase/functions/deno.json supabase/functions/",
     "test:e2e": "E2E_BUILD=1 npm run build && E2E_USE_PREBUILT_DIST=1 playwright test",
     "test:e2e:prebuilt": "E2E_USE_PREBUILT_DIST=1 playwright test",
     "test:e2e:live": "E2E_LIVE_SUPABASE=1 playwright test tests/e2e/live-supabase.spec.ts --project=chromium",
@@ -28,7 +29,8 @@
     "generate-rss-feeds": "npx tsx --env-file-if-exists=.env scripts/generate-rss-feeds.ts",
     "split-translations": "node scripts/split-translations.mjs",
     "gen:types": "npx supabase gen types typescript --project-id pcxcqbpygyidkusetghk > src/types/database.types.ts",
-    "gen:types:local": "supabase gen types typescript --local > src/types/database.types.ts"
+    "gen:types:local": "supabase gen types typescript --local > src/types/database.types.ts",
+    "prepare": "husky"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
@@ -48,6 +50,8 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
     "@eslint/js": "^9.25.0",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/typography": "^0.5.19",
@@ -61,15 +65,20 @@
     "@vitejs/plugin-react": "^4.4.1",
     "@vitest/coverage-v8": "^4.0.14",
     "autoprefixer": "^10.4.21",
+    "babel-plugin-react-compiler": "^1.0.0",
     "esbuild": "^0.28.1",
     "eslint": "^9.25.0",
+    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
+    "husky": "^9.1.7",
     "jsdom": "^27.2.0",
+    "knip": "^6.17.1",
     "lightningcss": "^1.32.0",
     "postcss": "^8.5.12",
+    "prettier": "^3.8.4",
     "sass-embedded": "^1.93.1",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.8.3",
@@ -78,12 +87,17 @@
     "vite-imagetools": "^7.1.1",
     "vite-plugin-compression2": "^2.5.3",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^4.0.14"
+    "vitest": "^4.0.14",
+    "web-vitals": "^5.3.0"
   },
   "overrides": {
     "esbuild": "$esbuild"
   },
   "engines": {
     "node": ">=22"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "eslint --fix",
+    "*.{ts,tsx,css,md,json}": "prettier --write"
   }
 }

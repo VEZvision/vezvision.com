@@ -48,13 +48,18 @@ const htaccessTemplate = `<IfModule mod_rewrite.c>
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
   Header always set Content-Security-Policy "${csp}"
 
-  <FilesMatch "\\.(js|mjs|css|svg|png|jpg|jpeg|gif|webp|mp4|woff|woff2)$">
+  <FilesMatch "\\.(js|mjs|css|svg|png|jpg|jpeg|gif|webp|mp4|woff|woff2|html)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 
   <FilesMatch "^index\\.html$">
     Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header append Vary Accept-Encoding
   </FilesMatch>
+
+  AddType font/woff2 .woff2
+  AddEncoding br .br
+  AddEncoding gzip .gz
 
   <FilesMatch "\\.map$">
     Header set X-Robots-Tag "noindex, nofollow, noarchive"

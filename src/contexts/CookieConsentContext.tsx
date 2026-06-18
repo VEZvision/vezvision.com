@@ -1,16 +1,16 @@
-import { useReducer, useEffect, useMemo, useCallback, ReactNode } from 'react';
+import { useReducer, useEffect, useMemo, useCallback, ReactNode } from "react";
 import {
   CookieConsentState,
   CookieConsentActions,
   CookieConsentActionType,
   CookiePreferences,
   DEFAULT_COOKIE_PREFERENCES,
-  COOKIE_CONSENT_VERSION
-} from '../types/cookies';
-import { generateConsentId, storageManager } from '../utils/storageManager';
-import { clearCookiesByCategory } from '../utils/cookieUtils';
-import { handleConsentChange } from '../lib/sentryConsent';
-import { applyGoogleAnalyticsConsent } from '../lib/googleAnalyticsConsent';
+  COOKIE_CONSENT_VERSION,
+} from "../types/cookies";
+import { generateConsentId, storageManager } from "../utils/storageManager";
+import { clearCookiesByCategory } from "../utils/cookieUtils";
+import { handleConsentChange } from "../lib/sentryConsent";
+import { applyGoogleAnalyticsConsent } from "../lib/googleAnalyticsConsent";
 
 const initialState: CookieConsentState = {
   hasConsent: false,
@@ -20,15 +20,15 @@ const initialState: CookieConsentState = {
   showPrivacyCenter: false,
   lastUpdated: new Date().toISOString(),
   version: COOKIE_CONSENT_VERSION,
-  consentId: ''
+  consentId: "",
 };
 
 function cookieConsentReducer(
   state: CookieConsentState,
-  action: CookieConsentActionType
+  action: CookieConsentActionType,
 ): CookieConsentState {
   switch (action.type) {
-    case 'ACCEPT_ALL':
+    case "ACCEPT_ALL":
       return {
         ...state,
         hasConsent: true,
@@ -36,13 +36,13 @@ function cookieConsentReducer(
           necessary: true,
           functional: true,
           analytics: true,
-          marketing: true
+          marketing: true,
         },
         showBanner: false,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
       };
 
-    case 'REJECT_OPTIONAL':
+    case "REJECT_OPTIONAL":
       return {
         ...state,
         hasConsent: true,
@@ -50,69 +50,69 @@ function cookieConsentReducer(
           necessary: true,
           functional: false,
           analytics: false,
-          marketing: false
+          marketing: false,
         },
         showBanner: false,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
       };
 
-    case 'UPDATE_PREFERENCES':
+    case "UPDATE_PREFERENCES":
       return {
         ...state,
         hasConsent: true,
         preferences: {
           ...action.payload,
-          necessary: true
+          necessary: true,
         },
         showBanner: false,
         showPreferences: false,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
       };
 
-    case 'SHOW_BANNER':
+    case "SHOW_BANNER":
       return {
         ...state,
-        showBanner: true
+        showBanner: true,
       };
 
-    case 'HIDE_BANNER':
+    case "HIDE_BANNER":
       return {
         ...state,
-        showBanner: false
+        showBanner: false,
       };
 
-    case 'SHOW_PREFERENCES':
+    case "SHOW_PREFERENCES":
       return {
         ...state,
-        showPreferences: true
+        showPreferences: true,
       };
 
-    case 'HIDE_PREFERENCES':
+    case "HIDE_PREFERENCES":
       return {
         ...state,
-        showPreferences: false
+        showPreferences: false,
       };
 
-    case 'SHOW_PRIVACY_CENTER':
+    case "SHOW_PRIVACY_CENTER":
       return {
         ...state,
-        showPrivacyCenter: true
+        showPrivacyCenter: true,
       };
 
-    case 'HIDE_PRIVACY_CENTER':
+    case "HIDE_PRIVACY_CENTER":
       return {
         ...state,
-        showPrivacyCenter: false
+        showPrivacyCenter: false,
       };
 
-    case 'RESET_CONSENT':
+    case "RESET_CONSENT":
       return {
         ...initialState,
         showBanner: true,
-        consentId: generateConsentId()
+        consentId: generateConsentId(),
       };
 
-    case 'LOAD_CONSENT':
+    case "LOAD_CONSENT":
       return {
         ...state,
         hasConsent: true,
@@ -120,7 +120,7 @@ function cookieConsentReducer(
         consentId: action.payload.consentId,
         lastUpdated: action.payload.timestamp,
         version: action.payload.version,
-        showBanner: false
+        showBanner: false,
       };
 
     default:
@@ -128,116 +128,132 @@ function cookieConsentReducer(
   }
 }
 
-import { CookieConsentContext } from './CookieConsentContextDefinition';
+import { CookieConsentContext } from "./CookieConsentContextDefinition";
 
 interface CookieConsentProviderProps {
   children: ReactNode;
 }
 
-export function CookieConsentProvider({ children }: CookieConsentProviderProps) {
+export function CookieConsentProvider({
+  children,
+}: CookieConsentProviderProps) {
   const [state, dispatch] = useReducer(cookieConsentReducer, initialState);
 
-  const applyCookiePreferences = useCallback((preferences: CookiePreferences) => {
-    try {
-      if (!preferences.functional) {
-        clearCookiesByCategory('functional');
-      }
-      if (!preferences.analytics) {
-        clearCookiesByCategory('analytics');
-      }
-      if (!preferences.marketing) {
-        clearCookiesByCategory('marketing');
-      }
-
-      void handleConsentChange(preferences);
-      applyGoogleAnalyticsConsent(preferences.analytics);
-
-      window.dispatchEvent(new CustomEvent('cookiePreferencesChanged', {
-        detail: preferences
-      }));
-    } catch {
-      void 0;
-    }
-  }, []);
-
-  const saveConsent = useCallback((preferences: CookiePreferences, action: 'accept_all' | 'reject_optional' | 'update_preferences') => {
-    try {
-      const consentData = storageManager.createDefaultConsent();
-      consentData.preferences = preferences;
-      consentData.hasShownBanner = true;
-      consentData.consentId = state.consentId || consentData.consentId;
-
-      storageManager.updatePreferences(preferences, action);
-      applyCookiePreferences(preferences);
-    } catch {
-      void 0;
-    }
-  }, [state.consentId, applyCookiePreferences]);
-
-  const actions: CookieConsentActions = useMemo(() => ({
-    acceptAll: () => {
-      const preferences: CookiePreferences = {
-        necessary: true,
-        functional: true,
-        analytics: true,
-        marketing: true
-      };
-
-      dispatch({ type: 'ACCEPT_ALL' });
-      saveConsent(preferences, 'accept_all');
-    },
-
-    rejectOptional: () => {
-      const preferences: CookiePreferences = {
-        necessary: true,
-        functional: false,
-        analytics: false,
-        marketing: false
-      };
-
-      dispatch({ type: 'REJECT_OPTIONAL' });
-      saveConsent(preferences, 'reject_optional');
-    },
-
-    updatePreferences: (preferences: CookiePreferences) => {
-      const finalPreferences = {
-        ...preferences,
-        necessary: true
-      };
-
-      dispatch({ type: 'UPDATE_PREFERENCES', payload: finalPreferences });
-      saveConsent(finalPreferences, 'update_preferences');
-    },
-
-    showPreferencesModal: () => {
-      dispatch({ type: 'SHOW_PREFERENCES' });
-    },
-
-    hidePreferencesModal: () => {
-      dispatch({ type: 'HIDE_PREFERENCES' });
-    },
-
-    showPrivacyCenterModal: () => {
-      dispatch({ type: 'SHOW_PRIVACY_CENTER' });
-    },
-
-    hidePrivacyCenterModal: () => {
-      dispatch({ type: 'HIDE_PRIVACY_CENTER' });
-    },
-
-    resetConsent: () => {
+  const applyCookiePreferences = useCallback(
+    (preferences: CookiePreferences) => {
       try {
-        storageManager.clearConsent();
-        clearCookiesByCategory('functional');
-        clearCookiesByCategory('analytics');
-        clearCookiesByCategory('marketing');
+        if (!preferences.functional) {
+          clearCookiesByCategory("functional");
+        }
+        if (!preferences.analytics) {
+          clearCookiesByCategory("analytics");
+        }
+        if (!preferences.marketing) {
+          clearCookiesByCategory("marketing");
+        }
 
-        dispatch({ type: 'RESET_CONSENT' });
+        void handleConsentChange(preferences);
+        applyGoogleAnalyticsConsent(preferences.analytics);
+
+        window.dispatchEvent(
+          new CustomEvent("cookiePreferencesChanged", {
+            detail: preferences,
+          }),
+        );
       } catch {
-        void 0;
+        /* cookie cleanup non-critical */
       }
-    }
-  }), [saveConsent]);
+    },
+    [],
+  );
+
+  const saveConsent = useCallback(
+    (
+      preferences: CookiePreferences,
+      action: "accept_all" | "reject_optional" | "update_preferences",
+    ) => {
+      try {
+        const consentData = storageManager.createDefaultConsent();
+        consentData.preferences = preferences;
+        consentData.hasShownBanner = true;
+        consentData.consentId = state.consentId || consentData.consentId;
+
+        storageManager.updatePreferences(preferences, action);
+        applyCookiePreferences(preferences);
+      } catch {
+        /* consent persistence non-critical */
+      }
+    },
+    [state.consentId, applyCookiePreferences],
+  );
+
+  const actions: CookieConsentActions = useMemo(
+    () => ({
+      acceptAll: () => {
+        const preferences: CookiePreferences = {
+          necessary: true,
+          functional: true,
+          analytics: true,
+          marketing: true,
+        };
+
+        dispatch({ type: "ACCEPT_ALL" });
+        saveConsent(preferences, "accept_all");
+      },
+
+      rejectOptional: () => {
+        const preferences: CookiePreferences = {
+          necessary: true,
+          functional: false,
+          analytics: false,
+          marketing: false,
+        };
+
+        dispatch({ type: "REJECT_OPTIONAL" });
+        saveConsent(preferences, "reject_optional");
+      },
+
+      updatePreferences: (preferences: CookiePreferences) => {
+        const finalPreferences = {
+          ...preferences,
+          necessary: true,
+        };
+
+        dispatch({ type: "UPDATE_PREFERENCES", payload: finalPreferences });
+        saveConsent(finalPreferences, "update_preferences");
+      },
+
+      showPreferencesModal: () => {
+        dispatch({ type: "SHOW_PREFERENCES" });
+      },
+
+      hidePreferencesModal: () => {
+        dispatch({ type: "HIDE_PREFERENCES" });
+      },
+
+      showPrivacyCenterModal: () => {
+        dispatch({ type: "SHOW_PRIVACY_CENTER" });
+      },
+
+      hidePrivacyCenterModal: () => {
+        dispatch({ type: "HIDE_PRIVACY_CENTER" });
+      },
+
+      resetConsent: () => {
+        try {
+          storageManager.clearConsent();
+          clearCookiesByCategory("functional");
+          clearCookiesByCategory("analytics");
+          clearCookiesByCategory("marketing");
+
+          dispatch({ type: "RESET_CONSENT" });
+        } catch {
+          /* consent reset non-critical */
+        }
+      },
+    }),
+    [saveConsent],
+  );
 
   const value = useMemo(() => ({ state, actions }), [state, actions]);
 
@@ -248,17 +264,17 @@ export function CookieConsentProvider({ children }: CookieConsentProviderProps) 
 
         if (storedConsent) {
           if (storedConsent.version !== COOKIE_CONSENT_VERSION) {
-            dispatch({ type: 'SHOW_BANNER' });
+            dispatch({ type: "SHOW_BANNER" });
             return;
           }
 
-          dispatch({ type: 'LOAD_CONSENT', payload: storedConsent });
+          dispatch({ type: "LOAD_CONSENT", payload: storedConsent });
           applyCookiePreferences(storedConsent.preferences);
         } else {
-          dispatch({ type: 'SHOW_BANNER' });
+          dispatch({ type: "SHOW_BANNER" });
         }
       } catch {
-        dispatch({ type: 'SHOW_BANNER' });
+        dispatch({ type: "SHOW_BANNER" });
       }
     };
 
