@@ -10,28 +10,7 @@ import { buildContentSecurityPolicy } from './csp-policy.mjs'
 const root = path.resolve(import.meta.dirname, '..')
 const csp = buildContentSecurityPolicy(null)
 
-const htaccessTemplate = `<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-
-  # Serve pre-compressed .br or .gz assets when the browser accepts them.
-  RewriteCond %{HTTP:Accept-Encoding} br
-  RewriteCond %{REQUEST_FILENAME}.br -f
-  RewriteRule ^(.*)$ $1.br [L]
-
-  RewriteCond %{HTTP:Accept-Encoding} gzip
-  RewriteCond %{REQUEST_FILENAME}.gz -f
-  RewriteRule ^(.*)$ $1.gz [L]
-
-  RewriteRule ^index\\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} -f [OR]
-  RewriteCond %{REQUEST_FILENAME} -d
-  RewriteRule . - [L]
-
-  RewriteRule . /index.html [L]
-</IfModule>
-
-<IfModule mod_headers.c>
+const htaccessTemplate = `<IfModule mod_headers.c>
   <FilesMatch "\\.br$">
     Header set Content-Encoding br
     Header append Vary Accept-Encoding
@@ -56,15 +35,71 @@ const htaccessTemplate = `<IfModule mod_rewrite.c>
     Header set Cache-Control "no-cache, no-store, must-revalidate"
     Header append Vary Accept-Encoding
   </FilesMatch>
+</IfModule>
 
-  AddType font/woff2 .woff2
+<IfModule mod_mime.c>
+  AddType text/css .css
+  AddType application/javascript .js .mjs
+  AddType text/html .html
+  AddType application/json .json
+  AddType image/svg+xml .svg
+  AddType image/webp .webp
+  AddType video/webm .webm
+  AddType video/mp4 .mp4
+  AddType application/manifest+json .webmanifest
+  AddType text/plain .txt
+  AddType application/xml .xml
   AddEncoding br .br
   AddEncoding gzip .gz
+</IfModule>
 
-  <FilesMatch "\\.map$">
-    Header set X-Robots-Tag "noindex, nofollow, noarchive"
-    Header set Cache-Control "no-store"
-  </FilesMatch>
+<FilesMatch "\\.js\\.br$">
+  ForceType application/javascript
+</FilesMatch>
+<FilesMatch "\\.mjs\\.br$">
+  ForceType application/javascript
+</FilesMatch>
+<FilesMatch "\\.css\\.br$">
+  ForceType text/css
+</FilesMatch>
+<FilesMatch "\\.html\\.br$">
+  ForceType text/html
+</FilesMatch>
+<FilesMatch "\\.json\\.br$">
+  ForceType application/json
+</FilesMatch>
+<FilesMatch "\\.svg\\.br$">
+  ForceType image/svg+xml
+</FilesMatch>
+<FilesMatch "\\.js\\.gz$">
+  ForceType application/javascript
+</FilesMatch>
+<FilesMatch "\\.mjs\\.gz$">
+  ForceType application/javascript
+</FilesMatch>
+<FilesMatch "\\.css\\.gz$">
+  ForceType text/css
+</FilesMatch>
+<FilesMatch "\\.html\\.gz$">
+  ForceType text/html
+</FilesMatch>
+<FilesMatch "\\.json\\.gz$">
+  ForceType application/json
+</FilesMatch>
+<FilesMatch "\\.svg\\.gz$">
+  ForceType image/svg+xml
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  RewriteRule ^index\\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule . - [L]
+
+  RewriteRule . /index.html [L]
 </IfModule>
 
 <FilesMatch "\\.map$">
