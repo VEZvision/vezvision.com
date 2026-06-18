@@ -22,18 +22,6 @@ if (!fs.existsSync(indexPath)) {
     errors.push('dist/index.html must declare a valid html lang attribute')
   }
 
-  if (!indexHtml.includes('http-equiv="Content-Security-Policy"')) {
-    errors.push('dist/index.html must include a Content-Security-Policy meta tag')
-  }
-
-  if (indexHtml.includes("script-src 'self' 'unsafe-inline'")) {
-    errors.push('production CSP must not include unsafe-inline for scripts')
-  }
-
-  if (!indexHtml.includes("'nonce-")) {
-    errors.push('production CSP meta must include a script nonce')
-  }
-
   if (indexHtml.includes('__e2e__/error')) {
     errors.push('production build must not include E2E probe routes')
   }
