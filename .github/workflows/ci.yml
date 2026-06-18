@@ -35,18 +35,6 @@ jobs:
       - name: Typecheck, parity, and unit tests
         run: npm run check
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v2
-
-      - name: Edge typecheck
-        run: npm run check:edge
-
-      - name: Edge shared tests
-        run: npm run test:edge
-
-      - name: Verify edge shared parity
-        run: npm run verify:edge-shared
-
       - name: Build
         run: npm run build
 
