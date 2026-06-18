@@ -1,23 +1,28 @@
-import { useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { useLanguageContext } from '@/hooks/useLanguage';
-import { useSocial, useNavigation, useIdentity, useFooter } from '@/hooks/useSettings';
-import { useCookieConsent } from '@/hooks/useCookieConsent';
-import { usePrefersReducedData } from '@/hooks/usePrefersReducedData';
-import { isSafeExternalHref, safePublicHref } from '@/utils/safeHref';
-import { localizeInternalHref } from '@/routing/locale';
-import { getLocalizedLabel } from '@/utils/i18n';
-import { FooterSocial } from './FooterSocial';
-import { FooterNavLegal } from './FooterNavLegal';
-import twitterIcon from '@/assets/footer/twitter-icon.svg';
-import instagramIcon from '@/assets/footer/instagram-icon.svg';
-import linkedinIcon from '@/assets/footer/linkedin-icon.svg';
-import arrowIcon from '@/assets/arrow-icon.svg';
-import logoIcon from '@/assets/footer/logo-icon.svg';
-import styles from './Footer.module.css';
+import { useRef, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useLanguageContext } from "@/hooks/useLanguage";
+import {
+  useSocial,
+  useNavigation,
+  useIdentity,
+  useFooter,
+} from "@/hooks/useSettings";
+import { useCookieConsent } from "@/hooks/useCookieConsent";
+import { usePrefersReducedData } from "@/hooks/usePrefersReducedData";
+import { isSafeExternalHref, safePublicHref } from "@/utils/safeHref";
+import { localizeInternalHref } from "@/routing/locale";
+import { getLocalizedLabel } from "@/utils/i18n";
+import { FooterSocial } from "./FooterSocial";
+import { FooterNavLegal } from "./FooterNavLegal";
+import twitterIcon from "@/assets/footer/twitter-icon.svg";
+import instagramIcon from "@/assets/footer/instagram-icon.svg";
+import linkedinIcon from "@/assets/footer/linkedin-icon.svg";
+import arrowIcon from "@/assets/arrow-icon.svg";
+import logoIcon from "@/assets/footer/logo-icon.svg";
+import styles from "./Footer.module.css";
 
 function isExternal(href: string) {
-  return isSafeExternalHref(href)
+  return isSafeExternalHref(href);
 }
 
 export default function Footer() {
@@ -32,10 +37,12 @@ export default function Footer() {
   const location = useLocation();
   const prefersReducedData = usePrefersReducedData();
 
-  const pathWithoutLocale = location.pathname.replace(/^\/(en|pl)(?=\/|$)/, '');
-  const isHome = pathWithoutLocale === '' || pathWithoutLocale === '/';
-  const videoSrc = isHome ? '/aMPvRVYHFQxBoB0v2qyJln83jI.mp4' : '/navons.mp4';
-  const videoWebmSrc = isHome ? '/aMPvRVYHFQxBoB0v2qyJln83jI.webm' : '/navons.webm';
+  const pathWithoutLocale = location.pathname.replace(/^\/(en|pl)(?=\/|$)/, "");
+  const isHome = pathWithoutLocale === "" || pathWithoutLocale === "/";
+  const videoSrc = isHome ? "/aMPvRVYHFQxBoB0v2qyJln83jI.mp4" : "/navons.mp4";
+  const videoWebmSrc = isHome
+    ? "/aMPvRVYHFQxBoB0v2qyJln83jI.webm"
+    : "/navons.webm";
   const showVideo = !prefersReducedData;
 
   useEffect(() => {
@@ -43,12 +50,18 @@ export default function Footer() {
     const footerEl = footerRef.current;
     if (!videoEl || !showVideo) return;
 
-    const playVideo = () => { videoEl.play().catch(() => {}); };
-    const pauseVideo = () => { videoEl.pause(); };
+    const playVideo = () => {
+      videoEl.play().catch(() => {});
+    };
+    const pauseVideo = () => {
+      videoEl.pause();
+    };
 
-    if (!footerEl || !('IntersectionObserver' in window)) {
+    if (!footerEl || !("IntersectionObserver" in window)) {
       playVideo();
-      return () => { pauseVideo(); };
+      return () => {
+        pauseVideo();
+      };
     }
 
     const observer = new IntersectionObserver(
@@ -59,24 +72,52 @@ export default function Footer() {
           pauseVideo();
         }
       },
-      { threshold: 0, rootMargin: '120px' },
+      { threshold: 0, rootMargin: "120px" },
     );
 
     observer.observe(footerEl);
-    return () => { observer.disconnect(); pauseVideo(); };
+    return () => {
+      observer.disconnect();
+      pauseVideo();
+    };
   }, [videoSrc, showVideo]);
 
   const socialLinks = [
-    { href: social?.x || social?.facebook || '', icon: twitterIcon, alt: 'X (Twitter)', label: 'X' },
-    { href: social?.instagram || '', icon: instagramIcon, alt: 'Instagram', label: 'Instagram' },
-    { href: social?.linkedin || '', icon: linkedinIcon, alt: 'LinkedIn', label: 'LinkedIn' },
+    {
+      href: social?.x || social?.facebook || "",
+      icon: twitterIcon,
+      alt: "X (Twitter)",
+      label: "X",
+      rel: "me noopener noreferrer",
+    },
+    {
+      href: social?.instagram || "",
+      icon: instagramIcon,
+      alt: "Instagram",
+      label: "Instagram",
+      rel: "me noopener noreferrer",
+    },
+    {
+      href: social?.linkedin || "",
+      icon: linkedinIcon,
+      alt: "LinkedIn",
+      label: "LinkedIn",
+      rel: "me noopener noreferrer",
+    },
   ].filter((l) => l.href);
 
   const navLinks = (navigation?.items ?? [])
     .filter((item) => item.enabled)
     .map((item) => {
       const href = safePublicHref(item.href);
-      return href ? { ...item, href: isSafeExternalHref(href) ? href : localizeInternalHref(href, language) } : null;
+      return href
+        ? {
+            ...item,
+            href: isSafeExternalHref(href)
+              ? href
+              : localizeInternalHref(href, language),
+          }
+        : null;
     })
     .filter((item): item is NonNullable<typeof item> => Boolean(item?.href));
 
@@ -84,15 +125,31 @@ export default function Footer() {
     .filter((item) => item.enabled)
     .map((item) => {
       const href = safePublicHref(item.href);
-      return href ? { ...item, href: isSafeExternalHref(href) ? href : localizeInternalHref(href, language) } : null;
+      return href
+        ? {
+            ...item,
+            href: isSafeExternalHref(href)
+              ? href
+              : localizeInternalHref(href, language),
+          }
+        : null;
     })
     .filter((item): item is NonNullable<typeof item> => Boolean(item?.href));
 
-  const footerSubtitle = footer ? getLocalizedLabel(language, footer.subtitlePl, footer.subtitleEn) : t('footer.subtitle');
-  const footerTagline = footer ? getLocalizedLabel(language, footer.taglinePl, footer.taglineEn) : t('footer.tagline');
-  const footerCtaLabel = footer ? getLocalizedLabel(language, footer.ctaLabelPl, footer.ctaLabelEn) : t('footer.cta');
-  const footerCtaHref = localizeInternalHref(safePublicHref(footer?.ctaHref, '/contact') || '/contact', language);
-  const brandName = identity?.siteName || 'VezVision';
+  const footerSubtitle = footer
+    ? getLocalizedLabel(language, footer.subtitlePl, footer.subtitleEn)
+    : t("footer.subtitle");
+  const footerTagline = footer
+    ? getLocalizedLabel(language, footer.taglinePl, footer.taglineEn)
+    : t("footer.tagline");
+  const footerCtaLabel = footer
+    ? getLocalizedLabel(language, footer.ctaLabelPl, footer.ctaLabelEn)
+    : t("footer.cta");
+  const footerCtaHref = localizeInternalHref(
+    safePublicHref(footer?.ctaHref, "/contact") || "/contact",
+    language,
+  );
+  const brandName = identity?.siteName || "VezVision";
 
   return (
     <footer ref={footerRef} className={styles.footer}>
@@ -129,7 +186,13 @@ export default function Footer() {
                 <div className={styles.logoSection}>
                   <div className={styles.logoContainer}>
                     <div className={styles.logoWrapper}>
-                      <img src={logoIcon} alt="VezVision Logo" className={styles.logoImage} loading="lazy" decoding="async" />
+                      <img
+                        src={logoIcon}
+                        alt="VezVision Logo"
+                        className={styles.logoImage}
+                        loading="lazy"
+                        decoding="async"
+                      />
                     </div>
                     <p className={styles.logoText}>{brandName.toUpperCase()}</p>
                   </div>
@@ -139,14 +202,33 @@ export default function Footer() {
 
               <div className={styles.ctaSection}>
                 {isExternal(footerCtaHref) ? (
-                  <a href={footerCtaHref} className={styles.ctaButton} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={footerCtaHref}
+                    className={styles.ctaButton}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <span className={styles.ctaText}>{footerCtaLabel}</span>
-                    <img src={arrowIcon} alt="" className={styles.ctaIcon} aria-hidden="true" loading="lazy" decoding="async" />
+                    <img
+                      src={arrowIcon}
+                      alt=""
+                      className={styles.ctaIcon}
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                    />
                   </a>
                 ) : (
                   <Link to={footerCtaHref} className={styles.ctaButton}>
                     <span className={styles.ctaText}>{footerCtaLabel}</span>
-                    <img src={arrowIcon} alt="" className={styles.ctaIcon} aria-hidden="true" loading="lazy" decoding="async" />
+                    <img
+                      src={arrowIcon}
+                      alt=""
+                      className={styles.ctaIcon}
+                      aria-hidden="true"
+                      loading="lazy"
+                      decoding="async"
+                    />
                   </Link>
                 )}
               </div>

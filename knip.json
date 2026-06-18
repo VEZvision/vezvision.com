@@ -1,0 +1,10 @@
+{
+  "ignore": ["src/test/**", "tests/**", "scripts/csp-policy.test.mjs"],
+  "ignoreBinaries": ["deno"],
+  "ignoreFiles": [
+    "src/reveal/index.ts",
+    "src/scroll/index.ts",
+    "src/components/loading/index.ts",
+    "src/components/cookies/privacy-tabs/index.ts"
+  ]
+}

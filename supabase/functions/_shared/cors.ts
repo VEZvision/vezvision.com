@@ -35,14 +35,21 @@ function getAllowedOrigins(): string[] {
 export function getCorsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get("origin") ?? "";
   const allowedOrigins = getAllowedOrigins();
-  const allowedOrigin = allowedOrigins.includes(origin) ? origin : PRODUCTION_ORIGINS[0];
+  const isAllowed = allowedOrigins.includes(origin);
 
-  return {
-    "Access-Control-Allow-Origin": allowedOrigin,
+  const headers: Record<string, string> = {
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Headers":
+      "authorization, x-client-info, apikey, content-type",
     "Access-Control-Max-Age": "86400",
   };
+
+  if (isAllowed) {
+    headers["Access-Control-Allow-Origin"] = origin;
+    headers["Vary"] = "Origin";
+  }
+
+  return headers;
 }
 
 /** Browser requests include Origin; curl/scripts typically do not. */

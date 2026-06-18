@@ -19,7 +19,12 @@ function parseRpcResult(data: unknown): UnsubscribeRpcResult {
   return {
     success: record.success === true,
     email: typeof record.email === "string" ? record.email : undefined,
-    error: typeof record.error === "string" ? record.error : typeof record.message === "string" ? record.message : undefined,
+    error:
+      typeof record.error === "string"
+        ? record.error
+        : typeof record.message === "string"
+          ? record.message
+          : undefined,
   };
 }
 
@@ -39,7 +44,11 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({ success: false, error: "Method not allowed" }),
       {
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json", Allow: "POST, OPTIONS" },
+        headers: {
+          ...getCorsHeaders(req),
+          "Content-Type": "application/json",
+          Allow: "POST, OPTIONS",
+        },
         status: 405,
       },
     );
@@ -47,25 +56,38 @@ Deno.serve(async (req: Request) => {
 
   try {
     const clientIp = getClientIp(req);
-    const rateLimitKey = await buildEdgeRateLimitKey("edge-unsubscribe", req, clientIp);
+    const rateLimitKey = await buildEdgeRateLimitKey(
+      "edge-unsubscribe",
+      req,
+      clientIp,
+    );
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
-    const { data: edgeRateLimitRows, error: edgeRateError } = await supabase.rpc("consume_rate_limit", {
-      p_key: rateLimitKey,
-      p_max_requests: 20,
-      p_window_ms: 60000,
-    });
+    const { data: edgeRateLimitRows, error: edgeRateError } =
+      await supabase.rpc("consume_rate_limit", {
+        p_key: rateLimitKey,
+        p_max_requests: 20,
+        p_window_ms: 60000,
+      });
 
-    const edgeRateLimit = Array.isArray(edgeRateLimitRows) ? edgeRateLimitRows[0] : edgeRateLimitRows;
+    const edgeRateLimit = Array.isArray(edgeRateLimitRows)
+      ? edgeRateLimitRows[0]
+      : edgeRateLimitRows;
 
     if (edgeRateError || !edgeRateLimit?.allowed) {
       return new Response(
         JSON.stringify({ success: false, error: "Rate limit exceeded" }),
-        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 429 },
+        {
+          headers: {
+            ...getCorsHeaders(req),
+            "Content-Type": "application/json",
+          },
+          status: 429,
+        },
       );
     }
 
@@ -78,7 +100,13 @@ Deno.serve(async (req: Request) => {
           success: false,
           error: "Invalid or missing unsubscribe token.",
         }),
-        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 400 },
+        {
+          headers: {
+            ...getCorsHeaders(req),
+            "Content-Type": "application/json",
+          },
+          status: 400,
+        },
       );
     }
 
@@ -93,7 +121,13 @@ Deno.serve(async (req: Request) => {
           success: false,
           error: "Could not process unsubscribe request. Try again later.",
         }),
-        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 400 },
+        {
+          headers: {
+            ...getCorsHeaders(req),
+            "Content-Type": "application/json",
+          },
+          status: 400,
+        },
       );
     }
 
@@ -105,7 +139,13 @@ Deno.serve(async (req: Request) => {
           success: false,
           error: result.error || "Invalid or expired unsubscribe link.",
         }),
-        { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 400 },
+        {
+          headers: {
+            ...getCorsHeaders(req),
+            "Content-Type": "application/json",
+          },
+          status: 400,
+        },
       );
     }
 
@@ -114,16 +154,22 @@ Deno.serve(async (req: Request) => {
         success: true,
         email: result.email ?? null,
       }),
-      { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 200 },
+      {
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        status: 200,
+      },
     );
-  } catch {
-    console.error("unsubscribe-newsletter error");
+  } catch (err) {
+    console.error("unsubscribe-newsletter error", err);
     return new Response(
       JSON.stringify({
         success: false,
         error: "Could not process unsubscribe request. Try again later.",
       }),
-      { headers: { ...getCorsHeaders(req), "Content-Type": "application/json" }, status: 500 },
+      {
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+        status: 500,
+      },
     );
   }
 });

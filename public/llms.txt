@@ -16,6 +16,33 @@ VezVision is a Polish technology company that builds modern websites, web applic
 - Product design and UX/UI
 - Ongoing maintenance and support
 
+## Services
+
+- Custom Website Development: https://vezvision.com/pl/services / https://vezvision.com/en/services
+- Web Application Development: https://vezvision.com/pl/services / https://vezvision.com/en/services
+- AI Integration & Automation: https://vezvision.com/pl/services / https://vezvision.com/en/services
+- Product Design & UX/UI: https://vezvision.com/pl/services / https://vezvision.com/en/services
+- Maintenance & Support: https://vezvision.com/pl/services / https://vezvision.com/en/services
+
+## Portfolio
+
+- Case studies: https://vezvision.com/pl/portfolio / https://vezvision.com/en/portfolio
+- Each project includes challenge, solution, and outcomes.
+
+## Products
+
+- VezVision products: https://vezvision.com/pl/products / https://vezvision.com/en/products
+
+## Blog
+
+- Articles about AI, automation, web development, and digital products: https://vezvision.com/pl/blog / https://vezvision.com/en/blog
+- RSS feed (PL): https://vezvision.com/pl/blog/feed.xml
+- RSS feed (EN): https://vezvision.com/en/blog/feed.xml
+
+## FAQ
+
+- Frequently asked questions about our services and process: https://vezvision.com/pl/#faq / https://vezvision.com/en/#faq
+
 ## Key pages
 
 - Home: https://vezvision.com/pl / https://vezvision.com/en

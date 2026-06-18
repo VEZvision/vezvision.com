@@ -1,4 +1,3 @@
-/** Edge bundle — logic mirrored in shared/clientIp.ts for unit tests. */
 const IP_PATTERN = /^[\d.a-fA-F:]+$/;
 
 function isValidIp(value: string): boolean {
@@ -6,8 +5,8 @@ function isValidIp(value: string): boolean {
   return trimmed.length > 0 && trimmed.length <= 45 && IP_PATTERN.test(trimmed);
 }
 
-export function getClientIpFromHeaders(headers: Pick<Headers, 'get'>): string {
-  const trustedHeaders = ['cf-connecting-ip', 'true-client-ip'] as const;
+export function getClientIpFromHeaders(headers: Pick<Headers, "get">): string {
+  const trustedHeaders = ["cf-connecting-ip", "true-client-ip"] as const;
 
   for (const header of trustedHeaders) {
     const value = headers.get(header);
@@ -16,7 +15,7 @@ export function getClientIpFromHeaders(headers: Pick<Headers, 'get'>): string {
     }
   }
 
-  return 'unknown';
+  return "unknown";
 }
 
 export function getClientIp(req: Request): string {
