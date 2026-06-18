@@ -17,6 +17,7 @@ interface MessageRow {
   subject: string;
   message: string;
   language: string | null;
+  status: string;
 }
 
 const MAX_RETRY_AGE_HOURS = 24;
@@ -167,7 +168,8 @@ Deno.serve(async (req: Request) => {
     );
   }
 
-  const supabase = createClient(supabaseUrl, serviceRoleKey);
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  const supabase = createClient(supabaseUrl, serviceRoleKey) as any;
 
   const { data: failedLogs, error: fetchError } = await supabase
     .from("vv_message_send_logs")
@@ -198,7 +200,7 @@ Deno.serve(async (req: Request) => {
     if (!log.message_id) continue;
     const { data: msgData } = await supabase
       .from("messages")
-      .select("id, full_name, email, phone, subject, message, language")
+      .select("id, full_name, email, phone, subject, message, language, status")
       .eq("id", log.message_id)
       .maybeSingle();
     const msg = msgData as unknown as MessageRow | null;
