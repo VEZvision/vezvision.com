@@ -19,7 +19,7 @@
     "test:unit": "vitest --run",
     "test:unit:coverage": "vitest --run --coverage",
     "test:edge": "deno test --allow-env supabase/functions/_shared/",
-    "check:edge": "deno check --config supabase/functions/deno.json supabase/functions/get-code-injection/index.ts supabase/functions/submit-contact/index.ts supabase/functions/subscribe-newsletter/index.ts supabase/functions/increment-blog-view/index.ts supabase/functions/check-maintenance-access/index.ts supabase/functions/unsubscribe-newsletter/index.ts supabase/functions/retry-message-sends/index.ts",
+    "check:edge": "deno check --config supabase/functions/deno.json supabase/functions/get-code-injection/index.ts supabase/functions/submit-contact/index.ts supabase/functions/subscribe-newsletter/index.ts supabase/functions/increment-blog-view/index.ts supabase/functions/check-maintenance-access/index.ts supabase/functions/unsubscribe-newsletter/index.ts",
     "test:e2e": "E2E_BUILD=1 npm run build && E2E_USE_PREBUILT_DIST=1 playwright test",
     "test:e2e:prebuilt": "E2E_USE_PREBUILT_DIST=1 playwright test",
     "test:e2e:live": "E2E_LIVE_SUPABASE=1 playwright test tests/e2e/live-supabase.spec.ts --project=chromium",
