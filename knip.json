@@ -1,5 +1,11 @@
 {
-  "ignore": ["src/test/**", "tests/**", "scripts/csp-policy.test.mjs"],
+  "ignore": [
+    "src/test/**",
+    "tests/**",
+    "scripts/csp-policy.test.mjs",
+    "supabase/functions/**",
+    "src/types/database.types.ts"
+  ],
   "ignoreBinaries": ["deno"],
   "ignoreFiles": [
     "src/reveal/index.ts",
