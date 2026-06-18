@@ -1,27 +1,31 @@
-import { Suspense, lazy, useEffect, useState, type ReactNode } from 'react';
-import AppBootShell from '@/components/layout/AppBootShell';
-import { useSettings } from '@/hooks/useSettings';
+import { Suspense, lazy, useEffect, useState, type ReactNode } from "react";
+import AppBootShell from "@/components/layout/AppBootShell";
+import { useSettings } from "@/hooks/useSettings";
 import {
   fetchMaintenanceAccess,
   fetchMaintenanceEnabledFromDb,
   isSiteAccessible,
-} from '@/services/maintenanceAccess';
+} from "@/services/maintenanceAccess";
 
-const MaintenancePage = lazy(() => import('@/pages/MaintenancePage'));
+const MaintenancePage = lazy(() => import("@/pages/MaintenancePage"));
 
-export type MaintenanceAccessState = 'loading' | 'allowed' | 'blocked';
+export type MaintenanceAccessState = "checking" | "clear" | "blocked";
 
 type MaintenanceGuardProps = {
   children: ReactNode;
 };
 
 /**
- * Fail-closed until core CMS settings resolve.
- * Always verifies maintenance via edge (never trusts cached "off" alone).
+ * Optimistic: renders children immediately, checks maintenance in background.
+ * Only swaps to MaintenancePage if maintenance is confirmed active.
  */
 export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
-  const { maintenance, loading: settingsLoading, error: settingsError } = useSettings();
-  const [access, setAccess] = useState<MaintenanceAccessState>('loading');
+  const {
+    maintenance,
+    loading: settingsLoading,
+    error: settingsError,
+  } = useSettings();
+  const [access, setAccess] = useState<MaintenanceAccessState>("checking");
   const hasMaintenanceSettings = maintenance != null;
   const settingsMaintenanceEnabled = maintenance?.enabled === true;
 
@@ -31,13 +35,13 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
     let cancelled = false;
 
     const resolveAccess = async () => {
-      setAccess('loading');
-
       const snapshot = await fetchMaintenanceAccess();
       if (cancelled) return;
 
       const needsDbFallback =
-        snapshot.unavailable || Boolean(settingsError) || !hasMaintenanceSettings;
+        snapshot.unavailable ||
+        Boolean(settingsError) ||
+        !hasMaintenanceSettings;
 
       const dbMaintenanceEnabled = needsDbFallback
         ? await fetchMaintenanceEnabledFromDb()
@@ -45,11 +49,13 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
 
       if (cancelled) return;
 
-      setAccess(
-        isSiteAccessible(snapshot, settingsMaintenanceEnabled, dbMaintenanceEnabled)
-          ? 'allowed'
-          : 'blocked',
+      const accessible = isSiteAccessible(
+        snapshot,
+        settingsMaintenanceEnabled,
+        dbMaintenanceEnabled,
       );
+
+      setAccess(accessible ? "clear" : "blocked");
     };
 
     void resolveAccess();
@@ -57,15 +63,14 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
     return () => {
       cancelled = true;
     };
-  }, [settingsLoading, settingsError, hasMaintenanceSettings, settingsMaintenanceEnabled]);
+  }, [
+    settingsLoading,
+    settingsError,
+    hasMaintenanceSettings,
+    settingsMaintenanceEnabled,
+  ]);
 
-  const gateLoading = settingsLoading || access === 'loading';
-
-  if (gateLoading) {
-    return <AppBootShell />;
-  }
-
-  if (access === 'blocked') {
+  if (access === "blocked") {
     return (
       <Suspense fallback={<AppBootShell />}>
         <MaintenancePage />

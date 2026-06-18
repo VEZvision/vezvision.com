@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useRef, type CSSProperties } from 'react';
-import { useLanguageContext } from '@/hooks/useLanguage';
-import BenefitItem from './BenefitItem';
-import styles from './MoreBenefits.module.css';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useEffect, useMemo, useRef, type CSSProperties } from "react";
+import { useLanguageContext } from "@/hooks/useLanguage";
+import BenefitItem from "./BenefitItem";
+import styles from "./MoreBenefits.module.css";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-import virtualAssistanceIcon from '../../assets/virtual-assistance-icon.svg';
-import scalableSolutionsIcon from '../../assets/scalable-solutions-icon.svg';
-import personalizedExperiencesIcon from '../../assets/personalized-experiences-icon.svg';
-import fasterInnovationIcon from '../../assets/faster-innovation-icon.svg';
+import virtualAssistanceIcon from "../../assets/virtual-assistance-icon.svg";
+import scalableSolutionsIcon from "../../assets/scalable-solutions-icon.svg";
+import personalizedExperiencesIcon from "../../assets/personalized-experiences-icon.svg";
+import fasterInnovationIcon from "../../assets/faster-innovation-icon.svg";
 
 const MARQUEE_SPEED_PX_PER_SEC = 20;
 const MIN_COPIES = 3;
@@ -22,10 +22,10 @@ const MoreBenefits: React.FC = () => {
 
   const benefits = useMemo(
     () => [
-      { icon: fasterInnovationIcon, text: t('potential.card1.title') },
-      { icon: virtualAssistanceIcon, text: t('potential.card2.title') },
-      { icon: scalableSolutionsIcon, text: t('potential.card3.title') },
-      { icon: personalizedExperiencesIcon, text: t('potential.card4.title') },
+      { icon: fasterInnovationIcon, text: t("potential.card1.title") },
+      { icon: virtualAssistanceIcon, text: t("potential.card2.title") },
+      { icon: scalableSolutionsIcon, text: t("potential.card3.title") },
+      { icon: personalizedExperiencesIcon, text: t("potential.card4.title") },
     ],
     [t],
   );
@@ -35,9 +35,13 @@ const MoreBenefits: React.FC = () => {
 
     const track = trackRef.current;
     const set = setRef.current;
-    if (!track || !set) return;
+    const container = trackRef.current?.closest(
+      `.${styles.moreBenefitsContainer}`,
+    );
+    if (!track || !set || !container) return;
 
     let setWidth = 0;
+    let isVisible = true;
 
     const measure = () => {
       const w = Math.ceil(set.getBoundingClientRect().width);
@@ -53,6 +57,14 @@ const MoreBenefits: React.FC = () => {
     resizeObserver.observe(set);
     resizeObserver.observe(track);
 
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry?.isIntersecting ?? false;
+      },
+      { rootMargin: "100px 0px" },
+    );
+    visibilityObserver.observe(container);
+
     let lastTime = 0;
 
     const animate = (time: number) => {
@@ -65,7 +77,7 @@ const MoreBenefits: React.FC = () => {
       const deltaSec = (time - lastTime) / 1000;
       lastTime = time;
 
-      if (setWidth > 0) {
+      if (isVisible && setWidth > 0) {
         offsetRef.current += MARQUEE_SPEED_PX_PER_SEC * deltaSec;
         if (offsetRef.current >= setWidth) {
           offsetRef.current -= setWidth;
@@ -81,6 +93,7 @@ const MoreBenefits: React.FC = () => {
     return () => {
       cancelAnimationFrame(rafId.current);
       resizeObserver.disconnect();
+      visibilityObserver.disconnect();
     };
   }, [benefits, reducedMotion]);
 
@@ -90,7 +103,11 @@ const MoreBenefits: React.FC = () => {
         <div className={styles.slider}>
           <div className={`${styles.slideTrack} ${styles.slideTrackStatic}`}>
             {benefits.map((benefit, index) => (
-              <BenefitItem key={index} icon={benefit.icon} text={benefit.text} />
+              <BenefitItem
+                key={index}
+                icon={benefit.icon}
+                text={benefit.text}
+              />
             ))}
           </div>
         </div>
@@ -103,7 +120,11 @@ const MoreBenefits: React.FC = () => {
   return (
     <div className={styles.moreBenefitsContainer}>
       <div className={styles.slider}>
-        <div ref={trackRef} className={styles.slideTrack} style={{ willChange: 'transform' } as CSSProperties}>
+        <div
+          ref={trackRef}
+          className={styles.slideTrack}
+          style={{ willChange: "transform" } as CSSProperties}
+        >
           {Array.from({ length: initialCopyCount }, (_, copyIndex) => (
             <div
               key={copyIndex}
