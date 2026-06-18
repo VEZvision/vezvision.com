@@ -162,21 +162,19 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.HOSTIDO_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H ${{ secrets.HOSTIDO_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -p ${{ secrets.HOSTIDO_PORT || 22 }} -H ${{ secrets.HOSTIDO_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy to Hostido via rsync
         run: |
           rsync -avz --delete \
+            -e "ssh -i ~/.ssh/id_ed25519 -p ${{ secrets.HOSTIDO_PORT || 22 }} -o StrictHostKeyChecking=no -o ConnectTimeout=30" \
             --exclude='.htaccess' \
             dist/ ${{ secrets.HOSTIDO_USER }}@${{ secrets.HOSTIDO_HOST }}:${{ secrets.HOSTIDO_PATH }}/
-        env:
-          RSYNC_RSH: ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30
 
       - name: Upload .htaccess (protected from rsync --delete)
         run: |
-          scp public/.htaccess ${{ secrets.HOSTIDO_USER }}@${{ secrets.HOSTIDO_HOST }}:${{ secrets.HOSTIDO_PATH }}/.htaccess
-        env:
-          RSYNC_RSH: ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30
+          scp -i ~/.ssh/id_ed25519 -P ${{ secrets.HOSTIDO_PORT || 22 }} -o StrictHostKeyChecking=no -o ConnectTimeout=30 \
+            public/.htaccess ${{ secrets.HOSTIDO_USER }}@${{ secrets.HOSTIDO_HOST }}:${{ secrets.HOSTIDO_PATH }}/.htaccess
 
   lighthouse:
     runs-on: ubuntu-latest
