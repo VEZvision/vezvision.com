@@ -14,11 +14,6 @@ html.vez-smooth-scroll {
   scroll-behavior: auto !important;
 }
 
-/* Isolate each section's rendering — prevents style recalc from propagating */
-[data-lenis-events] section {
-  contain: layout style;
-}
-
 /* Promote fixed navbar to its own GPU layer — prevents repaint during scroll */
 nav.fixed {
   will-change: transform;
