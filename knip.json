@@ -7,6 +7,7 @@
     "src/types/database.types.ts"
   ],
   "ignoreBinaries": ["deno"],
+  "ignoreDependencies": ["prettier"],
   "ignoreFiles": [
     "src/reveal/index.ts",
     "src/scroll/index.ts",

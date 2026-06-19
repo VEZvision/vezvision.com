@@ -30,7 +30,7 @@ const SEO = () => {
   const ogImage =
     safeImageUrl(identity?.defaultOgImageUrl) ||
     safeImageUrl(identity?.logoUrl) ||
-    (siteUrl ? `${siteUrl}/Logo_vezvision_optimized.svg` : "");
+    (siteUrl ? `${siteUrl}/og-image.png` : "");
   const siteDescription = seo?.siteDescription || undefined;
   const robots =
     seo?.robots ||
@@ -41,7 +41,7 @@ const SEO = () => {
   const ogLocaleAlternate = language === "pl" ? "en_US" : "pl_PL";
 
   return (
-    <Helmet defaultTitle={seo?.siteTitle}>
+    <Helmet {...(seo?.siteTitle ? { defaultTitle: seo.siteTitle } : {})}>
       <html lang={language} />
       {safeImageUrl(identity?.faviconUrl) && (
         <link rel="icon" href={safeImageUrl(identity?.faviconUrl)} />
@@ -94,6 +94,15 @@ const SEO = () => {
       ) : null}
       {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && ogImage ? (
         <meta property="og:image" content={ogImage} />
+      ) : null}
+      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && ogImage ? (
+        <meta property="og:image:width" content="1200" />
+      ) : null}
+      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && ogImage ? (
+        <meta property="og:image:height" content="630" />
+      ) : null}
+      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && ogImage ? (
+        <meta property="og:image:alt" content={seo?.siteTitle || "VezVision"} />
       ) : null}
       <meta property="og:locale" content={ogLocale} />
       <meta property="og:locale:alternate" content={ogLocaleAlternate} />

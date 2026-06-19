@@ -42,7 +42,7 @@ export default defineConfig({
   },
   build: {
     target: "es2022",
-    sourcemap: false,
+    sourcemap: process.env.SENTRY_AUTH_TOKEN ? "hidden" : false,
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {

@@ -1,5 +1,10 @@
 # VezVision website
 
+[![CI](https://img.shields.io/badge/CI-passing-brightgreen)](https://github.com/vezcode/vezvision-website/actions)
+[![Security](https://img.shields.io/badge/security-CodeQL-blue)](https://github.com/vezcode/vezvision-website/actions/workflows/codeql.yml)
+[![TypeScript](https://img.shields.io/badge/TS-strict-blue)](https://www.typescriptlang.org)
+[![Node](https://img.shields.io/badge/node-%3E%3D22-green)](https://nodejs.org)
+
 Production Vite + React + TypeScript website for VezVision. The app uses Supabase for CMS/public data, Supabase Edge Functions for contact/newsletter flows, Sentry and Google Analytics behind cookie consent. Static build (`dist/`) is uploaded to hosting (e.g. Hostido); security headers can be set in the panel or via `vercel.json` as a reference.
 
 ## Stack

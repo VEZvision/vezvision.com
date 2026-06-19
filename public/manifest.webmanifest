@@ -2,12 +2,16 @@
   "name": "VezVision",
   "short_name": "VezVision",
   "description": "VezVision — modern AI & automation solutions for business",
-  "start_url": "/pl",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "orientation": "portrait-primary",
   "lang": "pl",
+  "categories": ["business", "productivity", "developer"],
   "icons": [
     {
       "src": "/favicon.svg",
@@ -16,12 +20,45 @@
       "purpose": "any"
     },
     {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
       "src": "/Logo_vezvision_optimized.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "maskable"
     }
   ],
-  "categories": ["business", "productivity", "developer"],
-  "scope": "/"
+  "shortcuts": [
+    {
+      "name": "Services",
+      "short_name": "Services",
+      "url": "/services"
+    },
+    {
+      "name": "Portfolio",
+      "short_name": "Portfolio",
+      "url": "/portfolio"
+    },
+    {
+      "name": "Contact",
+      "short_name": "Contact",
+      "url": "/contact"
+    }
+  ]
 }

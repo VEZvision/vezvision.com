@@ -11,6 +11,9 @@ Allow: /
 User-agent: ChatGPT-User
 Allow: /
 
+User-agent: OAI-SearchBot
+Allow: /
+
 User-agent: PerplexityBot
 Allow: /
 
@@ -19,6 +22,27 @@ Allow: /
 
 User-agent: Google-Extended
 Allow: /
+
+User-agent: CCBot
+Allow: /
+Crawl-delay: 10
+
+User-agent: Bytespider
+Allow: /
+Crawl-delay: 10
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+Crawl-delay: 10
 
 Sitemap: https://vezvision.com/sitemap.xml
 `;

@@ -1,7 +1,7 @@
-import styles from './LoadingScreen.module.css';
-import logoHero from '@/assets/logo-hero.svg';
-import { LoadingScreenProps } from '../types/loading.types';
-import { useLanguageContext } from '@/hooks/useLanguage';
+import styles from "./LoadingScreen.module.css";
+import logoNavbar from "@/assets/logo-navbar.svg";
+import { LoadingScreenProps } from "../types/loading.types";
+import { useLanguageContext } from "@/hooks/useLanguage";
 
 function LoadingScreen({
   message,
@@ -10,51 +10,46 @@ function LoadingScreen({
   showLogo = true,
   className,
   style,
-  'data-testid': dataTestId
-}: LoadingScreenProps) { const { t } = useLanguageContext();
-const messageToShow = message ?? t('loading.message');
-return (
-  <div 
-    className={`${styles.container} ${className || ''}`}
-    style={style}
-    data-testid={dataTestId}
-    role="status"
-    aria-live="polite"
-    aria-label={messageToShow}
-  >
-    {showLogo && (
-      <div className={styles.logoContainer}>
-        <img 
-          src={logoHero} 
-          alt={t('common.logoAlt')} 
-          className={styles.logo}
-        />
+  "data-testid": dataTestId,
+}: LoadingScreenProps) {
+  const { t } = useLanguageContext();
+  const messageToShow = message ?? t("loading.message");
+  return (
+    <div
+      className={`${styles.container} ${className || ""}`}
+      style={style}
+      data-testid={dataTestId}
+      role="status"
+      aria-live="polite"
+      aria-label={messageToShow}
+    >
+      {showLogo && (
+        <div className={styles.logoContainer}>
+          <img
+            src={logoNavbar}
+            alt={t("common.logoAlt")}
+            className={styles.logo}
+          />
+        </div>
+      )}
+
+      <div className={styles.spinnerContainer}>
+        <div className={styles.spinner} aria-hidden="true" />
       </div>
-    )}
-    
-    <div className={styles.spinnerContainer}>
-      <div 
-        className={styles.spinner}
-        aria-hidden="true"
-      />
+
+      {messageToShow && <div className={styles.message}>{messageToShow}</div>}
+
+      {showProgress && (
+        <div className={styles.progressContainer}>
+          <div
+            className={styles.progressBar}
+            style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+            aria-hidden="true"
+          />
+        </div>
+      )}
     </div>
-    
-    {messageToShow && (
-      <div className={styles.message}>
-        {messageToShow}
-      </div>
-    )}
-    
-    {showProgress && (
-      <div className={styles.progressContainer}>
-        <div 
-          className={styles.progressBar}
-          style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
-          aria-hidden="true"
-        />
-      </div>
-    )}
-  </div>
-); };
+  );
+}
 
 export default LoadingScreen;

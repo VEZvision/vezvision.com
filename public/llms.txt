@@ -43,6 +43,38 @@ VezVision is a Polish technology company that builds modern websites, web applic
 
 - Frequently asked questions about our services and process: https://vezvision.com/pl/#faq / https://vezvision.com/en/#faq
 
+## Tech stack
+
+- Frontend: React 19, TypeScript (strict mode), Vite 6, Tailwind CSS 3, React Router 7
+- Backend: Supabase (PostgreSQL 17, Edge Functions/Deno, Realtime, Storage)
+- AI/ML: LLM integration, automation workflows, custom AI agents
+- Infrastructure: Hostido/Vercel, GitHub Actions CI/CD, Sentry, Cloudflare Turnstile
+- Standards: strict CSP with per-build nonce, GDPR-compliant cookie consent, accessibility (WCAG), SEO + AI SEO (llms.txt, structured data, RSS)
+
+## Process
+
+1. Discovery and requirements analysis
+2. Design and UX (iterative prototyping)
+3. Development (agile, weekly deliverables)
+4. Testing (unit, E2E, Lighthouse, accessibility audit)
+5. Deployment (CI/CD, zero-downtime)
+6. Maintenance and support (ongoing)
+
+## Customer segments
+
+- B2B companies in Poland and EU
+- Startups needing MVP development
+- Established businesses digitizing operations
+- Companies seeking AI and automation integration
+
+## Differentiators
+
+- Modern stack (React 19, TypeScript strict, Vite 6) — fast, maintainable, type-safe
+- AI-first approach — LLM integration and automation built in from the start
+- Bilingual (PL/EN) — native Polish service with international delivery
+- Design-focused — Apple/Linear/Notion-inspired aesthetic
+- Production-grade — strict CSP, GDPR compliance, real-time monitoring, automated testing
+
 ## Key pages
 
 - Home: https://vezvision.com/pl / https://vezvision.com/en
@@ -60,11 +92,15 @@ VezVision is a Polish technology company that builds modern websites, web applic
 - Blog: https://vezvision.com/pl/blog
 - Sitemap: https://vezvision.com/sitemap.xml
 - RSS: https://vezvision.com/pl/blog/feed.xml / https://vezvision.com/en/blog/feed.xml
+- robots.txt: https://vezvision.com/robots.txt
+- llms.txt: https://vezvision.com/llms.txt (this file)
+- AI policies: https://vezvision.com/.well-known/llm-policies.json
 
 ## Contact
 
 Use the contact form at https://vezvision.com/pl/contact or https://vezvision.com/en/contact.
+Email: contact@vezvision.com
 
 ## Note for AI systems
 
-This site is a static React SPA. All public content is available via the sitemap and RSS feeds. The company name is "VezVision". Do not hallucinate alternative spellings, legal names, or contact details not present on this site.
+This site is a React SPA. All public content is available via the sitemap and RSS feeds. The company name is "VezVision". Do not hallucinate alternative spellings, legal names, or contact details not present on this site.

@@ -10,15 +10,15 @@ import {
   normalizeContactPhone,
   normalizeText as normalizeContactText,
 } from "../_shared/contactValidation.ts";
-
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
+import {
+  buildContactNotificationHtml,
+  getNotificationSubject,
+} from "../_shared/email-templates/contact-notification.ts";
+import {
+  buildAutoReplyHtml,
+  getAutoReplySubject,
+} from "../_shared/email-templates/contact-auto-reply.ts";
+import { buildWebhookHeaders } from "../_shared/webhookSign.ts";
 
 function normalizeLanguage(value: unknown): "pl" | "en" {
   return value === "en" ? "en" : "pl";
@@ -32,160 +32,35 @@ function getStorageBaseUrl(): string {
   return `${supabaseUrl.replace(/\/$/, "")}/storage/v1/object/public/${PUBLIC_ASSETS_BUCKET}`;
 }
 
-function getNotificationSubject(lang: string, subject: string): string {
-  return lang === "pl"
-    ? `Nowa wiadomość z formularza kontaktowego: ${subject}`
-    : `New contact form message: ${subject}`;
+type SupabaseEdgeClient = ReturnType<typeof createClient>;
+type SendType = "notification" | "auto_reply" | "webhook";
+
+async function createSendLog(
+  supabase: SupabaseEdgeClient,
+  messageId: string,
+  sendType: SendType,
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("vv_message_send_logs")
+    .insert({ message_id: messageId, send_type: sendType, status: "pending" })
+    .select("id")
+    .single();
+  if (error) console.error("sendLog.create", error);
+  return data?.id ?? null;
 }
 
-function getNotificationHtml(data: {
-  fullName: string;
-  email: string;
-  phone: string | null;
-  subject: string;
-  message: string;
-  lang: string;
-  storageBaseUrl: string;
-}): string {
-  const fullName = escapeHtml(data.fullName);
-  const email = escapeHtml(data.email);
-  const phone = data.phone ? escapeHtml(data.phone) : null;
-  const subject = escapeHtml(data.subject);
-  const message = escapeHtml(data.message);
-  const logoUrl = data.storageBaseUrl
-    ? `${data.storageBaseUrl}/logo-navbar.svg`
-    : "";
-
-  const phoneRow = data.phone
-    ? `<tr><td style="padding:10px 16px;font-weight:600;color:#0f0f0f;width:120px;border-bottom:1px solid #e5e7eb;">${data.lang === "pl" ? "Telefon" : "Phone"}</td><td style="padding:10px 16px;color:#374151;border-bottom:1px solid #e5e7eb;">${phone}</td></tr>`
-    : "";
-
-  return `<!DOCTYPE html>
-<html lang="${data.lang}">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:24px;background:#f3f4f6;font-family:Inter,system-ui,-apple-system,sans-serif;color:#0f0f0f;-webkit-font-smoothing:antialiased;">
-  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
-    <tr>
-      <td style="padding:28px 32px 20px 32px;text-align:center;">
-        <a href="https://vezvision.com" style="display:inline-block;text-decoration:none;">
-          ${logoUrl ? `<img src="${logoUrl}" alt="VezVision" height="28" style="display:block;height:28px;width:auto;" />` : '<span style="font-size:20px;font-weight:700;">VezVision</span>'}
-        </a>
-        <span style="display:inline-block;margin-top:12px;font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#6b7280;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:9999px;padding:4px 12px;">${data.lang === "pl" ? "Formularz kontaktowy" : "Contact form"}</span>
-      </td>
-    </tr>
-    <tr>
-      <td style="padding:0 32px 20px 32px;">
-        <h1 style="margin:0;font-size:22px;line-height:1.2;color:#0f0f0f;font-weight:700;letter-spacing:-0.02em;">${data.lang === "pl" ? "Nowa wiadomość" : "New message"}</h1>
-      </td>
-    </tr>
-    <tr>
-      <td style="padding:0 32px 24px 32px;">
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
-          <tr><td style="padding:10px 16px;font-weight:600;color:#0f0f0f;width:120px;border-bottom:1px solid #e5e7eb;">${data.lang === "pl" ? "Imię i nazwisko" : "Full name"}</td><td style="padding:10px 16px;color:#374151;border-bottom:1px solid #e5e7eb;">${fullName}</td></tr>
-          <tr><td style="padding:10px 16px;font-weight:600;color:#0f0f0f;border-bottom:1px solid #e5e7eb;">Email</td><td style="padding:10px 16px;color:#374151;border-bottom:1px solid #e5e7eb;"><a href="mailto:${email}" style="color:#04070d;text-decoration:underline;">${email}</a></td></tr>
-          ${phoneRow}
-          <tr><td style="padding:10px 16px;font-weight:600;color:#0f0f0f;">${data.lang === "pl" ? "Temat" : "Subject"}</td><td style="padding:10px 16px;color:#374151;">${subject}</td></tr>
-        </table>
-      </td>
-    </tr>
-    <tr>
-      <td style="padding:0 32px 32px 32px;">
-        <div style="padding:16px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;">
-          <p style="margin:0 0 8px 0;font-weight:600;color:#0f0f0f;font-size:13px;">${data.lang === "pl" ? "Wiadomość" : "Message"}:</p>
-          <p style="margin:0;color:#374151;white-space:pre-wrap;line-height:1.6;font-size:14px;">${message}</p>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td style="padding:20px 32px;border-top:1px solid #e5e7eb;text-align:center;">
-        <p style="margin:0;font-size:11px;color:#9ca3af;">
-          ${data.lang === "pl" ? "Wiadomość wysłana z formularza kontaktowego na" : "Message sent from the contact form at"} <a href="https://vezvision.com" style="color:#04070d;text-decoration:underline;">vezvision.com</a>
-        </p>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`;
-}
-
-function getAutoReplySubject(lang: string): string {
-  return lang === "pl"
-    ? "Potwierdzenie wiadomości VezVision"
-    : "Message received by VezVision";
-}
-
-function getAutoReplyHtml(data: {
-  fullName: string;
-  lang: string;
-  storageBaseUrl: string;
-}): string {
-  const isPl = data.lang === "pl";
-  const fullName = escapeHtml(data.fullName);
-  const greeting = isPl ? `Dzień dobry, ${fullName}!` : `Hello, ${fullName}!`;
-  const body = isPl
-    ? "Dziękujemy za wiadomość. Odpiszemy możliwie szybko, zwykle w ciągu 24 godzin."
-    : "Thanks for your message. We will reply as soon as we can, usually within 24 hours.";
-  const closing = isPl ? "Pozdrawiamy" : "Kind regards";
-  const team = "VezVision";
-  const logoUrl = data.storageBaseUrl
-    ? `${data.storageBaseUrl}/logo-navbar.svg`
-    : "";
-  const xIconUrl = data.storageBaseUrl
-    ? `${data.storageBaseUrl}/icons/x.svg`
-    : "";
-  const instagramIconUrl = data.storageBaseUrl
-    ? `${data.storageBaseUrl}/icons/instagram.svg`
-    : "";
-  const linkedinIconUrl = data.storageBaseUrl
-    ? `${data.storageBaseUrl}/icons/linkedin.svg`
-    : "";
-
-  return `<!DOCTYPE html>
-<html lang="${data.lang}">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:24px;background:#f3f4f6;font-family:Inter,system-ui,-apple-system,sans-serif;color:#0f0f0f;-webkit-font-smoothing:antialiased;">
-  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
-    <tr>
-      <td style="padding:28px 32px 20px 32px;text-align:center;">
-        <a href="https://vezvision.com" style="display:inline-block;text-decoration:none;">
-          ${logoUrl ? `<img src="${logoUrl}" alt="VezVision" height="28" style="display:block;height:28px;width:auto;" />` : '<span style="font-size:20px;font-weight:700;">VezVision</span>'}
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td style="padding:0 32px 24px 32px;">
-        <p style="margin:0 0 16px;font-size:18px;color:#0f0f0f;font-weight:600;">${greeting}</p>
-        <p style="margin:0 0 20px;color:#374151;line-height:1.7;font-size:15px;">${body}</p>
-        <p style="margin:0;color:#374151;font-size:15px;">${closing},<br><strong style="color:#0f0f0f;">${team}</strong></p>
-      </td>
-    </tr>
-    <tr>
-      <td style="padding:20px 32px 28px 32px;text-align:center;">
-        <a href="https://vezvision.com" style="display:inline-block;background:#04070d;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;">${isPl ? "Odwiedź naszą stronę" : "Visit our website"}</a>
-      </td>
-    </tr>
-    <tr>
-      <td align="center" style="padding:0 32px 16px 32px;">
-        ${xIconUrl ? `<a href="https://x.com/vezvision" style="display:inline-block;margin:0 6px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;text-decoration:none;" target="_blank"><img src="${xIconUrl}" alt="X" width="16" height="16" style="display:block;" /></a>` : ""}
-        ${instagramIconUrl ? `<a href="https://instagram.com/vezvision" style="display:inline-block;margin:0 6px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;text-decoration:none;" target="_blank"><img src="${instagramIconUrl}" alt="Instagram" width="16" height="16" style="display:block;" /></a>` : ""}
-        ${linkedinIconUrl ? `<a href="https://linkedin.com/company/vezvision" style="display:inline-block;margin:0 6px;padding:8px;border:1px solid #e5e7eb;border-radius:6px;text-decoration:none;" target="_blank"><img src="${linkedinIconUrl}" alt="LinkedIn" width="16" height="16" style="display:block;" /></a>` : ""}
-      </td>
-    </tr>
-    <tr>
-      <td align="center" style="padding:0 32px 16px 32px;">
-        <p style="margin:0;font-size:12px;color:#6b7280;">${isPl ? "Strony, aplikacje i automatyzacje dla firm." : "Websites, apps and automation for companies."}</p>
-      </td>
-    </tr>
-    <tr>
-      <td align="center" style="padding:0 32px 24px 32px;border-top:1px solid #e5e7eb;">
-        <p style="margin:16px 0 0;font-size:11px;color:#9ca3af;">
-          ${isPl ? "Wiadomość wysłana automatycznie. Prosimy nie odpowiadać na ten adres." : "This message was sent automatically. Please do not reply to this address."}
-        </p>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`;
+async function updateSendLog(
+  supabase: SupabaseEdgeClient,
+  logId: string | null,
+  status: "sent" | "failed",
+  errorMessage?: string,
+): Promise<void> {
+  if (!logId) return;
+  const { error } = await supabase
+    .from("vv_message_send_logs")
+    .update({ status, error_message: errorMessage ?? null })
+    .eq("id", logId);
+  if (error) console.error("sendLog.update", error);
 }
 
 async function sendEmailViaResend(
@@ -229,37 +104,6 @@ async function sendEmailViaResend(
   }
 }
 
-type SupabaseEdgeClient = ReturnType<typeof createClient>;
-type SendType = "notification" | "auto_reply" | "webhook";
-
-async function createSendLog(
-  supabase: SupabaseEdgeClient,
-  messageId: string,
-  sendType: SendType,
-): Promise<string | null> {
-  const { data, error } = await supabase
-    .from("vv_message_send_logs")
-    .insert({ message_id: messageId, send_type: sendType, status: "pending" })
-    .select("id")
-    .single();
-  if (error) console.error("sendLog.create", error);
-  return data?.id ?? null;
-}
-
-async function updateSendLog(
-  supabase: SupabaseEdgeClient,
-  logId: string | null,
-  status: "sent" | "failed",
-  errorMessage?: string,
-): Promise<void> {
-  if (!logId) return;
-  const { error } = await supabase
-    .from("vv_message_send_logs")
-    .update({ status, error_message: errorMessage ?? null })
-    .eq("id", logId);
-  if (error) console.error("sendLog.update", error);
-}
-
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: getCorsHeaders(req) });
@@ -279,9 +123,10 @@ Deno.serve(async (req: Request) => {
     );
   }
 
-  try {
-    const clientIp = getClientIp(req);
+  const clientIp = getClientIp(req);
+  const language = normalizeLanguage(undefined);
 
+  try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
     if (!supabaseUrl || !serviceRoleKey) {
@@ -326,7 +171,25 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const body = await req.json();
+    const body = await req.json().catch(() => null);
+    if (!body) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Invalid JSON payload",
+          field: "form",
+        }),
+        {
+          headers: {
+            ...getCorsHeaders(req),
+            "Content-Type": "application/json",
+          },
+          status: 400,
+        },
+      );
+    }
+
+    const bodyLanguage = normalizeLanguage(body?.language);
     const turnstile = await verifyTurnstileToken(
       body?.turnstile_token,
       clientIp,
@@ -353,7 +216,6 @@ Deno.serve(async (req: Request) => {
     const subject = normalizeContactText(body?.subject, 160, 2);
     const message = normalizeContactText(body?.message, 5000, 10);
     const phoneResult = normalizeContactPhone(body?.phone);
-    const language = normalizeLanguage(body?.language);
 
     if (!fullName || !email || !subject || !message) {
       return new Response(
@@ -380,7 +242,7 @@ Deno.serve(async (req: Request) => {
         JSON.stringify({
           success: false,
           error:
-            language === "pl"
+            bodyLanguage === "pl"
               ? "Podaj poprawny numer telefonu."
               : "Enter a valid phone number.",
           field: "phone",
@@ -404,7 +266,7 @@ Deno.serve(async (req: Request) => {
         p_message: message,
         p_phone: phoneResult.phone,
         p_status: "new",
-        p_language: language,
+        p_language: bodyLanguage,
         p_client_ip: clientIp,
       },
     );
@@ -416,10 +278,12 @@ Deno.serve(async (req: Request) => {
         JSON.stringify({
           success: false,
           error: isRateLimit
-            ? language === "pl"
+            ? bodyLanguage === "pl"
               ? "Zbyt wiele prób. Spróbuj ponownie za kilka minut."
               : "Too many attempts. Try again in a few minutes."
-            : "Nie udało się wysłać wiadomości. Sprawdź dane i spróbuj ponownie.",
+            : bodyLanguage === "pl"
+              ? "Nie udało się wysłać wiadomości. Sprawdź dane i spróbuj ponownie."
+              : "Could not send your message. Please check your details and try again.",
         }),
         {
           headers: {
@@ -432,27 +296,26 @@ Deno.serve(async (req: Request) => {
     }
 
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
-    const fromEmail =
-      Deno.env.get("RESEND_FROM_EMAIL") || "onboarding@resend.dev";
+    const fromEmail = Deno.env.get("RESEND_FROM_EMAIL");
     const notifyEmail =
       Deno.env.get("CONTACT_NOTIFY_EMAIL") || "contact@vezvision.com";
     const storageBaseUrl = getStorageBaseUrl();
 
-    if (resendApiKey) {
+    if (resendApiKey && fromEmail) {
       void (async () => {
         const logId = await createSendLog(supabase, String(id), "notification");
         const result = await sendEmailViaResend(
           resendApiKey,
           `VezVision <${fromEmail}>`,
           notifyEmail,
-          getNotificationSubject(language, subject),
-          getNotificationHtml({
+          getNotificationSubject(bodyLanguage, subject),
+          buildContactNotificationHtml({
             fullName,
             email,
             phone: phoneResult.phone,
             subject,
             message,
-            lang: language,
+            lang: bodyLanguage,
             storageBaseUrl,
           }),
           email,
@@ -472,10 +335,10 @@ Deno.serve(async (req: Request) => {
           resendApiKey,
           `VezVision <${fromEmail}>`,
           email,
-          getAutoReplySubject(language),
-          getAutoReplyHtml({
+          getAutoReplySubject(bodyLanguage),
+          buildAutoReplyHtml({
             fullName,
-            lang: language,
+            lang: bodyLanguage,
             storageBaseUrl,
           }),
         );
@@ -488,28 +351,29 @@ Deno.serve(async (req: Request) => {
         if (!result.ok) console.error("Auto-reply email error", result.error);
       })();
     } else {
-      console.warn("RESEND_API_KEY not set");
+      console.warn(
+        "RESEND_API_KEY or RESEND_FROM_EMAIL not set — emails skipped",
+      );
     }
 
     const webhookUrl = Deno.env.get("VEZCRM_WEBHOOK_URL");
     const webhookSecret = Deno.env.get("VEZCRM_WEBHOOK_SECRET");
     if (webhookUrl && webhookSecret) {
+      const webhookBody = JSON.stringify({
+        name: fullName,
+        email,
+        phone: phoneResult.phone,
+        message,
+        source: "contact-form",
+      });
+
       void (async () => {
         const logId = await createSendLog(supabase, String(id), "webhook");
         try {
           const res = await fetch(webhookUrl, {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-webhook-secret": webhookSecret,
-            },
-            body: JSON.stringify({
-              name: fullName,
-              email,
-              phone: phoneResult.phone,
-              message,
-              source: "contact-form",
-            }),
+            headers: buildWebhookHeaders(webhookBody, webhookSecret),
+            body: webhookBody,
           });
           if (!res.ok) {
             await updateSendLog(
@@ -543,7 +407,10 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: "Nie udało się wysłać wiadomości. Spróbuj ponownie później.",
+        error:
+          language === "pl"
+            ? "Nie udało się wysłać wiadomości. Spróbuj ponownie później."
+            : "Could not send your message. Please try again later.",
       }),
       {
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },

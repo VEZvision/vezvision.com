@@ -40,16 +40,14 @@ const helmetContext = getHelmetProviderContext(
   import.meta.env.VITE_CSP_NONCE || undefined,
 );
 
+const helmetProviderProps = helmetContext
+  ? ({ context: helmetContext } as unknown as Record<string, unknown>)
+  : {};
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <HelmetProvider
-        context={
-          helmetContext as React.ComponentProps<
-            typeof HelmetProvider
-          >["context"]
-        }
-      >
+      <HelmetProvider {...helmetProviderProps}>
         <AppErrorBoundary>
           <App />
         </AppErrorBoundary>

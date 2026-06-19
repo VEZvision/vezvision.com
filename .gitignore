@@ -50,3 +50,4 @@ scripts/mcp-deploy-*.json
 scripts/deploy-*.json
 scripts/edge-bundles/*.json
 deno.lock
+.csp-nonce

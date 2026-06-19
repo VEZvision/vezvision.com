@@ -82,7 +82,22 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const body = await req.json();
+    const body = await req.json().catch(() => null);
+    if (!body) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Invalid JSON payload",
+        }),
+        {
+          headers: {
+            ...getCorsHeaders(req),
+            "Content-Type": "application/json",
+          },
+          status: 400,
+        },
+      );
+    }
     const language = body?.language === "en" ? "en" : "pl";
     const turnstile = await verifyTurnstileToken(
       body?.turnstile_token,
@@ -177,7 +192,7 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: "Nie udało się zapisać adresu. Spróbuj ponownie później.",
+        error: "Could not subscribe this address. Try again later.",
       }),
       {
         headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },

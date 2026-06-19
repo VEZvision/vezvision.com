@@ -1,8 +1,4 @@
-/* Scroll performance optimizations — GPU acceleration without visual changes */
-
-:root {
-  --scroll-gpu-threshold: 0.01;
-}
+/* Scroll performance — prevent repaint propagation during Lenis smooth scroll */
 
 html.lenis,
 html.lenis body {
@@ -11,7 +7,6 @@ html.lenis body {
 
 html.vez-smooth-scroll {
   scroll-behavior: auto !important;
-  will-change: scroll-position;
 }
 
 .lenis,
@@ -19,52 +14,17 @@ html.vez-smooth-scroll {
   scroll-behavior: auto !important;
 }
 
-.vez-is-scrolling [data-lenis-events] {
-  pointer-events: none;
-}
-
-.vez-is-scrolling [data-lenis-events] * {
-  pointer-events: none;
-}
-
-.vez-is-scrolling img,
-.vez-is-scrolling video,
-.vez-is-scrolling picture {
-  pointer-events: none;
-}
-
-[data-lenis-events] section,
-[data-lenis-events] [data-reveal],
-[data-lenis-events] [data-revealed] {
-  contain-intrinsic-size: auto 500px;
-}
-
+/* Isolate each section's rendering — prevents style recalc from propagating */
 [data-lenis-events] section {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 800px;
+  contain: layout style;
 }
 
-[data-lenis-events] img,
-[data-lenis-events] video {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 300px;
-}
-
-[data-lenis-events] [data-reveal],
-[data-lenis-events] [data-revealed] {
-  will-change: transform, opacity;
-}
-
-[data-lenis-events] [data-revealed="true"] {
-  will-change: auto;
+/* Promote fixed navbar to its own GPU layer — prevents repaint during scroll */
+nav.fixed {
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 [data-marquee-paused="true"] {
   animation-play-state: paused !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html.vez-smooth-scroll {
-    will-change: auto;
-  }
 }

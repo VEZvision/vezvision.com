@@ -48,17 +48,37 @@ export function buildSitemapXml(routes: SitemapRoute[]): string {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urls}\n</urlset>`;
 }
 export async function generateSitemap(): Promise<string> {
-  const supabase = await getScriptSupabase();
-  let blogQuery = supabase
-    .from("vv_blog_posts")
-    .select("slug,updated_at,featured_image,title_pl,title_en")
-    .eq("status", "published")
-    .limit(100);
+  // Graceful degradation: if Supabase is unreachable (no .env, network issue),
+  // generate a static-only sitemap (APP_ROUTES × SUPPORTED_LOCALES) without
+  // dynamic blog/portfolio URLs. This ensures `npm run build` always produces
+  // a valid sitemap.xml even without Supabase credentials.
+  let posts: Array<{
+    slug: string;
+    updated_at: string;
+    featured_image: string | null;
+    title_pl: string | null;
+    title_en: string | null;
+  }> | null = null;
+  let projects: Array<{
+    slug: string;
+    updated_at: string;
+    cover_image: string | null;
+    title_pl: string | null;
+    title_en: string | null;
+  }> | null = null;
+  let siteSettings: { value: unknown; updated_at: string } | null = null;
 
-  blogQuery = applyPublishedBlogVisibilityFilter(blogQuery);
+  try {
+    const supabase = await getScriptSupabase();
+    let blogQuery = supabase
+      .from("vv_blog_posts")
+      .select("slug,updated_at,featured_image,title_pl,title_en")
+      .eq("status", "published")
+      .limit(100);
 
-  const [{ data: posts }, { data: projects }, { data: siteSettings }] =
-    await Promise.all([
+    blogQuery = applyPublishedBlogVisibilityFilter(blogQuery);
+
+    const [blogResult, projectsResult, settingsResult] = await Promise.all([
       blogQuery,
       supabase
         .from("vv_projects")
@@ -70,6 +90,13 @@ export async function generateSitemap(): Promise<string> {
         .eq("key", "seo")
         .single(),
     ]);
+
+    posts = blogResult.data;
+    projects = projectsResult.data;
+    siteSettings = settingsResult.data;
+  } catch {
+    // Supabase unavailable — static-only sitemap (no blog/portfolio URLs)
+  }
 
   const baseUrl = (
     ((siteSettings?.value as Record<string, unknown>)?.siteUrl as string) ||

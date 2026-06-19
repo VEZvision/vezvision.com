@@ -91,7 +91,22 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const body = await req.json();
+    const body = await req.json().catch(() => null);
+    if (!body) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: "Invalid JSON payload",
+        }),
+        {
+          headers: {
+            ...getCorsHeaders(req),
+            "Content-Type": "application/json",
+          },
+          status: 400,
+        },
+      );
+    }
     const token = normalizeToken(body?.token);
 
     if (!token) {

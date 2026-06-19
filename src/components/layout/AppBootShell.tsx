@@ -1,5 +1,5 @@
-import logoHero from '@/assets/logo-hero.svg'
-import styles from '@/components/loading/LoadingScreen/LoadingScreen.module.css'
+import logoNavbar from "@/assets/logo-navbar.svg";
+import styles from "@/components/loading/LoadingScreen/LoadingScreen.module.css";
 
 /** Branded loading shell used before language/settings/routes are ready. */
 export default function AppBootShell() {
@@ -11,14 +11,12 @@ export default function AppBootShell() {
       aria-label="Loading"
     >
       <div className={styles.logoContainer}>
-        <img src={logoHero} alt="VezVision" className={styles.logo} />
+        <img src={logoNavbar} alt="VezVision" className={styles.logo} />
       </div>
       <div className={styles.spinnerContainer}>
         <div className={styles.spinner} aria-hidden="true" />
       </div>
-      <div className={styles.message}>
-        Loading
-      </div>
+      <div className={styles.message}>Loading</div>
     </div>
-  )
+  );
 }

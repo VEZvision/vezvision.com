@@ -1,7 +1,7 @@
 import { Fragment, memo, useEffect, useRef, type ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import logoHero from "../../assets/logo-hero.svg";
+import logoNavbar from "../../assets/logo-navbar.svg";
 
 import FacebookIcon from "@/assets/social-facebook";
 import socialInstagram from "@/assets/products/social-instagram.svg";
@@ -107,7 +107,7 @@ const Hero = memo(() => {
   return (
     <section ref={sectionRef} className={styles.sectionHero}>
       <Helmet>
-        <link rel="preload" as="image" href={logoHero} fetchPriority="high" />
+        <link rel="preload" as="image" href={logoNavbar} fetchPriority="high" />
         {!prefersReducedData && (
           <script type="application/ld+json">
             {JSON.stringify({
@@ -116,7 +116,7 @@ const Hero = memo(() => {
               name: "VezVision Hero",
               description:
                 "VezVision — modern AI & automation solutions for business",
-              thumbnailUrl: logoHero,
+              thumbnailUrl: logoNavbar,
               uploadDate: "2026-03-28",
               contentUrl: `${typeof window !== "undefined" ? window.location.origin : "https://vezvision.com"}/aMPvRVYHFQxBoB0v2qyJln83jI.mp4`,
             })}
@@ -144,20 +144,6 @@ const Hero = memo(() => {
 
       <div className={styles.heroInner}>
         <div className="flex flex-col items-center">
-          {/* Logo */}
-          <div className="mb-6 flex justify-center">
-            <div className={styles.logoPlate}>
-              <img
-                src={logoHero}
-                alt="VezVision Logo"
-                className="w-full h-full object-cover rounded-full"
-                width="80"
-                height="80"
-                fetchPriority="high"
-              />
-            </div>
-          </div>
-
           {/* Badge */}
           <div className="flex justify-center mb-6">
             <div className="inline-flex items-center justify-center gap-[10px] bg-[#f3f4f6] border border-[#e5e7eb] rounded-full px-[12px] py-[8px]">
@@ -168,12 +154,14 @@ const Hero = memo(() => {
             </div>
           </div>
 
-          {/* Heading */}
-          <div className="mb-5">
-            <span className="font-sans text-[clamp(38px,6.5vw,80px)] font-normal leading-[1.05] tracking-[-1.6px] text-black">
-              <span className="font-medium">VEZ</span>
-              <span className="font-light">vision</span>
-            </span>
+          {/* Logo */}
+          <div className="mb-5 flex items-center justify-center">
+            <img
+              src={logoNavbar}
+              alt="VezVision"
+              className="h-[48px] sm:h-[64px] w-auto object-contain"
+              fetchPriority="high"
+            />
           </div>
 
           {/* Main heading for SEO & accessibility */}

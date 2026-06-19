@@ -64,7 +64,7 @@ const PageSeo = ({ pageKey }: PageSeoProps) => {
     safeImageUrl(entry.og_image_url) ||
     safeImageUrl(identity?.defaultOgImageUrl) ||
     safeImageUrl(identity?.logoUrl) ||
-    "";
+    (siteUrl ? `${siteUrl}/og-image.png` : "");
   const ogSiteName =
     seo?.ogSiteName || identity?.siteName || seo?.siteTitle || "";
   const structuredDataJson = getSafeStructuredDataJson(
@@ -113,6 +113,11 @@ const PageSeo = ({ pageKey }: PageSeoProps) => {
       <meta property="og:type" content="website" />
       {canonicalUrl ? <meta property="og:url" content={canonicalUrl} /> : null}
       {ogImage ? <meta property="og:image" content={ogImage} /> : null}
+      {ogImage ? <meta property="og:image:width" content="1200" /> : null}
+      {ogImage ? <meta property="og:image:height" content="630" /> : null}
+      {ogImage ? (
+        <meta property="og:image:alt" content={ogTitle || "VezVision"} />
+      ) : null}
       {ogSiteName ? (
         <meta property="og:site_name" content={ogSiteName} />
       ) : null}

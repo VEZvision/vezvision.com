@@ -1,0 +1,27 @@
+{
+  "version": "1.0",
+  "effective_date": "2026-06-19",
+  "publisher": {
+    "name": "VezVision",
+    "website": "https://vezvision.com",
+    "contact": "contact@vezvision.com"
+  },
+  "permissions": {
+    "retrieve_content_for_query_answering": true,
+    "summarize_with_attribution": true,
+    "cite_as_source": true
+  },
+  "prohibitions": {
+    "train_foundation_models_without_written_consent": true,
+    "verbatim_reproduction_without_attribution": true,
+    "commercial_ai_products_without_license": true
+  },
+  "attribution_required": true,
+  "attribution_format": "Source: https://vezvision.com",
+  "related_files": {
+    "ai_txt": "https://vezvision.com/ai.txt",
+    "llms_txt": "https://vezvision.com/llms.txt",
+    "robots_txt": "https://vezvision.com/robots.txt",
+    "sitemap": "https://vezvision.com/sitemap.xml"
+  }
+}

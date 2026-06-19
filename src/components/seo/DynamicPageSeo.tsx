@@ -14,22 +14,22 @@ export interface BreadcrumbItem {
 
 interface DynamicPageSeoProps {
   title: string;
-  description?: string;
+  description?: string | undefined;
   canonicalUrl: string;
-  ogImage?: string;
+  ogImage?: string | undefined;
   ogType?: DynamicOgType;
   robots?: string;
   language: DynamicLocale;
   structuredData?: Record<string, unknown>;
-  siteUrl?: string;
-  localizedPathSuffix?: string;
+  siteUrl?: string | undefined;
+  localizedPathSuffix?: string | undefined;
   availableLocales?: DynamicLocale[];
   breadcrumbItems?: BreadcrumbItem[];
-  articlePublishedTime?: string;
-  articleModifiedTime?: string;
-  articleAuthor?: string;
-  articleSection?: string;
-  articleTags?: string[];
+  articlePublishedTime?: string | undefined;
+  articleModifiedTime?: string | undefined;
+  articleAuthor?: string | undefined;
+  articleSection?: string | undefined;
+  articleTags?: string[] | undefined;
 }
 
 function buildAlternateUrl(
@@ -142,6 +142,9 @@ export default function DynamicPageSeo({
         <meta property="og:description" content={description} />
       ) : null}
       {safeOgImage ? <meta property="og:image" content={safeOgImage} /> : null}
+      {safeOgImage ? <meta property="og:image:width" content="1200" /> : null}
+      {safeOgImage ? <meta property="og:image:height" content="630" /> : null}
+      {safeOgImage ? <meta property="og:image:alt" content={title} /> : null}
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:type" content={ogType} />
       {ogType === "article" && articlePublishedTime ? (
