@@ -33,7 +33,7 @@
 
 html {
   /* scroll-behavior managed by Lenis — do NOT set it here */
-  background: #ffffff !important;
+  background: #f5f5f5;
   -webkit-tap-highlight-color: transparent;
 }
 
