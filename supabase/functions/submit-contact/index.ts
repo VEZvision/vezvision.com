@@ -1,6 +1,11 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import {
+  jsonResponse,
+  errorResponse,
+  successResponse,
+} from "../_shared/response.ts";
 import { getClientIp } from "../_shared/clientIp.ts";
 import { buildEdgeRateLimitKey } from "../_shared/rateLimitKey.ts";
 import { verifyTurnstileToken } from "../_shared/turnstile.ts";
@@ -30,6 +35,13 @@ function getStorageBaseUrl(): string {
   const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
   if (!supabaseUrl) return "";
   return `${supabaseUrl.replace(/\/$/, "")}/storage/v1/object/public/${PUBLIC_ASSETS_BUCKET}`;
+}
+
+function getSiteUrl(): string {
+  return (Deno.env.get("SITE_URL") ?? "https://vezvision.com").replace(
+    /\/$/,
+    "",
+  );
 }
 
 type SupabaseEdgeClient = ReturnType<typeof createClient>;
@@ -105,41 +117,23 @@ async function sendEmailViaResend(
 }
 
 Deno.serve(async (req: Request) => {
+  const cors = getCorsHeaders(req);
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: getCorsHeaders(req) });
+    return new Response("ok", { headers: cors });
   }
 
   if (req.method !== "POST") {
-    return new Response(
-      JSON.stringify({ success: false, error: "Method not allowed" }),
-      {
-        headers: {
-          ...getCorsHeaders(req),
-          "Content-Type": "application/json",
-          Allow: "POST, OPTIONS",
-        },
-        status: 405,
-      },
-    );
+    return errorResponse(cors, "Method not allowed", 405);
   }
 
   const clientIp = getClientIp(req);
-  const language = normalizeLanguage(undefined);
+  let bodyLanguage: "pl" | "en" = "pl";
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
     if (!supabaseUrl || !serviceRoleKey) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Service unavailable" }),
-        {
-          headers: {
-            ...getCorsHeaders(req),
-            "Content-Type": "application/json",
-          },
-          status: 503,
-        },
-      );
+      return errorResponse(cors, "Service unavailable", 503);
     }
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
@@ -159,56 +153,21 @@ Deno.serve(async (req: Request) => {
       ? edgeRateLimitRows[0]
       : edgeRateLimitRows;
     if (edgeRateError || !edgeRateLimit?.allowed) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Rate limit exceeded" }),
-        {
-          headers: {
-            ...getCorsHeaders(req),
-            "Content-Type": "application/json",
-          },
-          status: 429,
-        },
-      );
+      return errorResponse(cors, "Rate limit exceeded", 429);
     }
 
     const body = await req.json().catch(() => null);
     if (!body) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Invalid JSON payload",
-          field: "form",
-        }),
-        {
-          headers: {
-            ...getCorsHeaders(req),
-            "Content-Type": "application/json",
-          },
-          status: 400,
-        },
-      );
+      return errorResponse(cors, "Invalid JSON payload", 400, "form");
     }
 
-    const bodyLanguage = normalizeLanguage(body?.language);
+    bodyLanguage = normalizeLanguage(body?.language);
     const turnstile = await verifyTurnstileToken(
       body?.turnstile_token,
       clientIp,
     );
     if (!turnstile.ok) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Captcha verification failed.",
-          field: "form",
-        }),
-        {
-          headers: {
-            ...getCorsHeaders(req),
-            "Content-Type": "application/json",
-          },
-          status: 400,
-        },
-      );
+      return errorResponse(cors, "Captcha verification failed.", 400, "form");
     }
 
     const fullName = normalizeContactText(body?.full_name, 120, 2);
@@ -218,42 +177,20 @@ Deno.serve(async (req: Request) => {
     const phoneResult = normalizeContactPhone(body?.phone);
 
     if (!fullName || !email || !subject || !message) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Invalid contact form payload",
-          field: "form",
-        }),
-        {
-          headers: {
-            ...getCorsHeaders(req),
-            "Content-Type": "application/json",
-          },
-          status: 400,
-        },
-      );
+      return errorResponse(cors, "Invalid contact form payload", 400, "form");
     }
 
     if (
       phoneResult.invalid ||
       (isContactPhoneProvided(body?.phone) && !phoneResult.phone)
     ) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error:
-            bodyLanguage === "pl"
-              ? "Podaj poprawny numer telefonu."
-              : "Enter a valid phone number.",
-          field: "phone",
-        }),
-        {
-          headers: {
-            ...getCorsHeaders(req),
-            "Content-Type": "application/json",
-          },
-          status: 400,
-        },
+      return errorResponse(
+        cors,
+        bodyLanguage === "pl"
+          ? "Podaj poprawny numer telefonu."
+          : "Enter a valid phone number.",
+        400,
+        "phone",
       );
     }
 
@@ -274,24 +211,16 @@ Deno.serve(async (req: Request) => {
     if (error) {
       const msg = error.message || "Unknown error";
       const isRateLimit = msg.toLowerCase().includes("rate limit");
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: isRateLimit
-            ? bodyLanguage === "pl"
-              ? "Zbyt wiele prób. Spróbuj ponownie za kilka minut."
-              : "Too many attempts. Try again in a few minutes."
-            : bodyLanguage === "pl"
-              ? "Nie udało się wysłać wiadomości. Sprawdź dane i spróbuj ponownie."
-              : "Could not send your message. Please check your details and try again.",
-        }),
-        {
-          headers: {
-            ...getCorsHeaders(req),
-            "Content-Type": "application/json",
-          },
-          status: isRateLimit ? 429 : 400,
-        },
+      return errorResponse(
+        cors,
+        isRateLimit
+          ? bodyLanguage === "pl"
+            ? "Zbyt wiele prób. Spróbuj ponownie za kilka minut."
+            : "Too many attempts. Try again in a few minutes."
+          : bodyLanguage === "pl"
+            ? "Nie udało się wysłać wiadomości. Sprawdź dane i spróbuj ponownie."
+            : "Could not send your message. Please check your details and try again.",
+        isRateLimit ? 429 : 400,
       );
     }
 
@@ -300,6 +229,7 @@ Deno.serve(async (req: Request) => {
     const notifyEmail =
       Deno.env.get("CONTACT_NOTIFY_EMAIL") || "contact@vezvision.com";
     const storageBaseUrl = getStorageBaseUrl();
+    const siteUrl = getSiteUrl();
 
     if (resendApiKey && fromEmail) {
       void (async () => {
@@ -317,6 +247,7 @@ Deno.serve(async (req: Request) => {
             message,
             lang: bodyLanguage,
             storageBaseUrl,
+            siteUrl,
           }),
           email,
         );
@@ -340,6 +271,7 @@ Deno.serve(async (req: Request) => {
             fullName,
             lang: bodyLanguage,
             storageBaseUrl,
+            siteUrl,
           }),
         );
         await updateSendLog(
@@ -398,24 +330,15 @@ Deno.serve(async (req: Request) => {
       })();
     }
 
-    return new Response(JSON.stringify({ success: true, id }), {
-      headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-      status: 200,
-    });
+    return successResponse(cors, { id });
   } catch (err) {
     console.error("submit-contact error", err);
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error:
-          language === "pl"
-            ? "Nie udało się wysłać wiadomości. Spróbuj ponownie później."
-            : "Could not send your message. Please try again later.",
-      }),
-      {
-        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
-        status: 500,
-      },
+    return errorResponse(
+      cors,
+      bodyLanguage === "pl"
+        ? "Nie udało się wysłać wiadomości. Spróbuj ponownie później."
+        : "Could not send your message. Please try again later.",
+      500,
     );
   }
 });

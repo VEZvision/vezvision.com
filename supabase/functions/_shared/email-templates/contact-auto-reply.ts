@@ -4,6 +4,7 @@ interface AutoReplyData {
   fullName: string;
   lang: string;
   storageBaseUrl: string;
+  siteUrl: string;
 }
 
 export function buildAutoReplyHtml(data: AutoReplyData): string {
@@ -35,7 +36,8 @@ export function buildAutoReplyHtml(data: AutoReplyData): string {
     ? "Wiadomość wysłana automatycznie. Prosimy nie odpowiadać na ten adres."
     : "This message was sent automatically. Please do not reply to this address.";
 
-  const content = `${buildHeader(data.lang, logoUrl, "")}
+  const safeSiteUrl = data.siteUrl || "https://vezvision.com";
+  const content = `${buildHeader(data.lang, logoUrl, "", data.siteUrl)}
     <tr>
       <td style="padding:0 32px 24px 32px;">
         <p style="margin:0 0 16px;font-size:18px;color:#0f0f0f;font-weight:600;">${greeting}</p>
@@ -45,7 +47,7 @@ export function buildAutoReplyHtml(data: AutoReplyData): string {
     </tr>
     <tr>
       <td style="padding:20px 32px 28px 32px;text-align:center;">
-        <a href="https://vezvision.com" style="display:inline-block;background:#04070d;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;">${ctaLabel}</a>
+        <a href="${safeSiteUrl}" style="display:inline-block;background:#04070d;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;">${ctaLabel}</a>
       </td>
     </tr>
     <tr>
@@ -74,6 +76,7 @@ export function buildAutoReplyHtml(data: AutoReplyData): string {
     logoUrl,
     contentHtml: content,
     footerHtml: footer,
+    siteUrl: data.siteUrl,
   });
 }
 
