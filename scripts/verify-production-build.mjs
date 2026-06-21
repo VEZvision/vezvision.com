@@ -58,6 +58,15 @@ if (!fs.existsSync(htaccessPath)) {
   }
 }
 
+for (const locale of ['en', 'pl']) {
+  const localeIndex = path.join(distDir, locale, 'index.html')
+  if (!fs.existsSync(localeIndex)) {
+    errors.push(
+      `dist/${locale}/index.html is missing — LiteSpeed serves 403 on /${locale} and /${locale}/ refresh without it`,
+    )
+  }
+}
+
 if (errors.length > 0) {
   console.error('Production build verification failed:\n')
   for (const message of errors) {
