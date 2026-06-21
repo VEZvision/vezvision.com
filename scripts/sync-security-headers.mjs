@@ -1,9 +1,7 @@
 /**
  * Generates public/.htaccess and vercel.json from templates,
  * injecting the same CSP used by the Vite CSP nonce plugin.
- * Generates a per-build nonce shared with vite-plugin-csp-nonce via .csp-nonce file.
  */
-import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 
@@ -11,11 +9,7 @@ import { buildContentSecurityPolicy } from './csp-policy.mjs'
 
 const root = path.resolve(import.meta.dirname, '..')
 
-// Generate per-build CSP nonce — shared with vite-plugin-csp-nonce via .csp-nonce file.
-const nonce = crypto.randomBytes(16).toString('base64')
-fs.writeFileSync(path.join(root, '.csp-nonce'), nonce, 'utf8')
-
-const csp = buildContentSecurityPolicy(nonce)
+const csp = buildContentSecurityPolicy()
 
 const htaccessTemplate = `<IfModule mod_headers.c>
   <FilesMatch "\\.br$">

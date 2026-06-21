@@ -105,7 +105,7 @@ interface CodeInjectorProps {
   delayMs?: number;
 }
 
-const CodeInjector = ({ delayMs = 2000 }: CodeInjectorProps) => {
+const CodeInjector = ({ delayMs = 0 }: CodeInjectorProps) => {
   const [markup, setMarkup] = useState<CodeInjectionMarkup>({
     head: "",
     body: "",

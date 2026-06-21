@@ -43,7 +43,20 @@ async function initSentry(): Promise<void> {
       dsn: import.meta.env.VITE_SENTRY_DSN,
       integrations: [
         Sentry.browserTracingIntegration(),
-        Sentry.replayIntegration(),
+        Sentry.replayIntegration({
+          maskAllText: true,
+          maskAllInputs: true,
+          blockAllMedia: true,
+          block: [
+            'input[type="email"]',
+            'input[type="tel"]',
+            "textarea",
+            "[data-sentry-block]",
+          ],
+          unblock: [],
+          mask: ["[data-sentry-mask]"],
+          ignore: [],
+        }),
       ],
       tracesSampleRate: 0.2,
       tracePropagationTargets: getTracePropagationTargets(),

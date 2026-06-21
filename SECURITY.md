@@ -27,7 +27,7 @@ We aim to acknowledge reports within 48 hours and provide a resolution timeline 
 
 See `README.md` for the full security model description. Key points:
 
-- CSP with per-build nonce (`script-src 'self' 'nonce-{random}'`) — no `'unsafe-inline'`
+- CSP strict — `script-src 'self'` (no `'unsafe-inline'` for scripts), `object-src 'none'`, `frame-ancestors 'none'`. No inline scripts in production build. `style-src 'unsafe-inline'` is required for Tailwind-generated styles.
 - Strict RLS on all public tables, SECURITY DEFINER functions restricted to service_role
 - Edge Functions validate all input server-side with rate limiting
 - Cookie-consent gating for analytics and Sentry

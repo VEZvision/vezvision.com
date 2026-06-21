@@ -8,7 +8,6 @@ import { initGoogleAnalyticsConsentDefaults } from "./lib/googleAnalyticsConsent
 import { initSentryIfConsented } from "./lib/sentryConsent";
 import { initWebVitalsReporting } from "./lib/webVitals";
 import { queryClient } from "./lib/queryClient";
-import { getHelmetProviderContext } from "./lib/helmetContext";
 import { unregisterLegacyServiceWorkers } from "./utils/serviceWorkerCleanup";
 import {
   detectInitialLanguage,
@@ -36,18 +35,10 @@ const initialLanguage = detectInitialLanguage();
 prefetchLocale(initialLanguage);
 prefetchLocale(initialLanguage === "pl" ? "en" : "pl");
 
-const helmetContext = getHelmetProviderContext(
-  import.meta.env.VITE_CSP_NONCE || undefined,
-);
-
-const helmetProviderProps = helmetContext
-  ? ({ context: helmetContext } as unknown as Record<string, unknown>)
-  : {};
-
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <HelmetProvider {...helmetProviderProps}>
+      <HelmetProvider>
         <AppErrorBoundary>
           <App />
         </AppErrorBoundary>
