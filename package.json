@@ -9,12 +9,12 @@
     "verify:security": "node --env-file-if-exists=.env scripts/verify-security-headers.mjs",
     "verify:edge-shared": "node scripts/verify-edge-shared-parity.mjs",
     "test:csp": "node --env-file-if-exists=.env --test scripts/csp-policy.test.mjs",
-    "build": "npm run sync:security-headers && npm run verify:security && npm run typecheck && vitest --run src/data/translations/parity.test.ts && npm run verify:edge-shared && npm run generate-sitemap && npm run generate-robots-txt && npm run generate-rss-feeds && node --env-file-if-exists=.env ./node_modules/vite/bin/vite.js build && npx tsx --env-file-if-exists=.env scripts/prerender-head.ts && node scripts/verify-production-build.mjs",
+    "build": "npm run sync:security-headers && npm run verify:security && npm run typecheck && vitest --run src/data/translations/parity.test.ts && npm run verify:edge-shared && npm run generate-sitemap && npm run generate-robots-txt && npm run generate-rss-feeds && npm run generate-llms-full && node --env-file-if-exists=.env ./node_modules/vite/bin/vite.js build && npx tsx --env-file-if-exists=.env scripts/prerender-head.ts && node scripts/verify-production-build.mjs",
     "lint": "eslint .",
     "knip": "knip",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
-    "check": "npm run typecheck && vitest --run src/data/translations/parity.test.ts && npm run test:unit && npm run verify:edge-shared && npm run test:csp",
+    "check": "npm run typecheck && vitest --run src/data/translations/parity.test.ts && npm run test:unit && npm run verify:edge-shared && npm run test:csp && npm run size",
     "test": "vitest",
     "test:unit": "vitest --run",
     "test:unit:coverage": "vitest --run --coverage",
@@ -29,6 +29,7 @@
     "generate-sitemap": "npx tsx --env-file-if-exists=.env scripts/generate-sitemap.ts",
     "generate-robots-txt": "npx tsx --env-file-if-exists=.env scripts/generate-robots-txt.ts",
     "generate-rss-feeds": "npx tsx --env-file-if-exists=.env scripts/generate-rss-feeds.ts",
+    "generate-llms-full": "npx tsx --env-file-if-exists=.env scripts/generate-llms-full.ts",
     "generate-og-image": "node scripts/generate-og-image.mjs",
     "generate-pwa-icons": "node scripts/generate-pwa-icons.mjs",
     "prerender-head": "npx tsx --env-file-if-exists=.env scripts/prerender-head.ts",
@@ -42,7 +43,7 @@
     "@sentry/react": "^10.51.0",
     "@supabase/supabase-js": "^2.108.0",
     "@tanstack/react-query": "^5.100.14",
-    "dompurify": "^3.4.2",
+    "dompurify": "^3.4.9",
     "lenis": "^1.3.23",
     "lucide-react": "^0.577.0",
     "react": "^19.2.7",
@@ -52,6 +53,7 @@
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.9.2",
     "sonner": "^2.0.7",
+    "web-vitals": "^5.3.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -92,8 +94,7 @@
     "vite-imagetools": "^7.1.1",
     "vite-plugin-compression2": "^2.5.3",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^4.0.14",
-    "web-vitals": "^5.3.0"
+    "vitest": "^4.0.14"
   },
   "overrides": {
     "esbuild": "$esbuild"

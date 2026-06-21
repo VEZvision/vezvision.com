@@ -1,4 +1,4 @@
-import {
+import type {
   CookieConsentStorage,
   StorageManager,
   CookiePreferences,

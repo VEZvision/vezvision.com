@@ -1,20 +1,21 @@
-import { useState, useMemo, FC } from 'react';
-import { Link } from 'react-router-dom';
-import styles from './FaqSection.module.css';
-import { useLanguageContext } from '@/hooks/useLanguage';
-import SectionHeader from '@/components/ui/SectionHeader';
-import { MessageSquare } from 'lucide-react';
-import { useSettings } from '@/hooks/useSettings';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { Helmet } from 'react-helmet-async';
-import { SectionReveal } from '@/components/ui/SectionReveal';
-import { safeJsonLd } from '@/utils/safeJsonLd';
-import { sanitizeCmsHtml } from '@/utils/sanitizeCmsHtml';
-import { stripHtmlForJsonLd } from '@/utils/stripHtmlForJsonLd';
-import { useFaqItems } from '@/hooks/useFaqItems';
-import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import type { FC } from "react";
+import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
+import styles from "./FaqSection.module.css";
+import { useLanguageContext } from "@/hooks/useLanguage";
+import SectionHeader from "@/components/ui/SectionHeader";
+import { MessageSquare } from "lucide-react";
+import { useSettings } from "@/hooks/useSettings";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { Helmet } from "react-helmet-async";
+import { SectionReveal } from "@/components/ui/SectionReveal";
+import { safeJsonLd } from "@/utils/safeJsonLd";
+import { sanitizeCmsHtml } from "@/utils/sanitizeCmsHtml";
+import { stripHtmlForJsonLd } from "@/utils/stripHtmlForJsonLd";
+import { useFaqItems } from "@/hooks/useFaqItems";
+import { useLocalizedPath } from "@/hooks/useLocalizedPath";
 
-import { ChevronDown, Mail } from 'lucide-react';
+import { ChevronDown, Mail } from "lucide-react";
 
 interface FaqSectionProps {
   showContactCta?: boolean;
@@ -25,17 +26,21 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
   const [openItem, setOpenItem] = useState<string | null>(null);
   const { t, language } = useLanguageContext();
   const { toLocalizedPath } = useLocalizedPath();
-  const { data: dbFaqItems = [], isLoading: faqLoading } = useFaqItems(language);
+  const { data: dbFaqItems = [], isLoading: faqLoading } =
+    useFaqItems(language);
 
   const toggleItem = (id: string) => {
     setOpenItem(openItem === id ? null : id);
   };
   const { contact, loading: settingsLoading, error } = useSettings();
-  const contactEmail = contact?.email || '';
+  const contactEmail = contact?.email || "";
 
   const title = (
     <>
-      {t('faq.title.line1')} <span className="font-sans font-semibold">{t('faq.title.line2.italic')}</span>
+      {t("faq.title.line1")}{" "}
+      <span className="font-sans font-semibold">
+        {t("faq.title.line2.italic")}
+      </span>
     </>
   );
 
@@ -53,38 +58,38 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    "mainEntity": faqItems.map(item => ({
+    mainEntity: faqItems.map((item) => ({
       "@type": "Question",
-      "name": item.question,
-      "acceptedAnswer": {
+      name: item.question,
+      acceptedAnswer: {
         "@type": "Answer",
-        "text": stripHtmlForJsonLd(item.answer),
-      }
-    }))
+        text: stripHtmlForJsonLd(item.answer),
+      },
+    })),
   };
 
   return (
     <section className={styles.faqSection} aria-labelledby="faq-heading">
       <SectionHeader
         id="faq-heading"
-        badgeText={t('faq.badge')}
+        badgeText={t("faq.badge")}
         badgeIcon={<MessageSquare className="w-3.5 h-3.5" />}
         title={title}
-        subtitle={t('faq.subtitle')}
+        subtitle={t("faq.subtitle")}
         className="mb-16"
       />
 
       <SectionReveal className={styles.accordion} delay={0.1}>
         <Helmet>
-          <script type="application/ld+json">
-            {safeJsonLd(jsonLd)}
-          </script>
+          <script type="application/ld+json">{safeJsonLd(jsonLd)}</script>
         </Helmet>
 
         <div className="w-full flex flex-col gap-6 mb-8">
           <div className="space-y-4">
             {faqLoading && faqItems.length === 0 && (
-              <div className="text-center py-8 text-gray-500">{t('faq.loading')}</div>
+              <div className="text-center py-8 text-gray-500">
+                {t("faq.loading")}
+              </div>
             )}
             {faqItems.map((faq) => {
               const isOpen = openItem === faq.id;
@@ -103,8 +108,12 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
                       {faq.question}
                     </span>
                     <ChevronDown
-                      className={`${styles.chevron} w-5 h-5 ${isOpen ? styles.chevronOpen : ''}`}
-                      style={reducedMotion ? { transform: isOpen ? 'rotate(180deg)' : undefined } : undefined}
+                      className={`${styles.chevron} w-5 h-5 ${isOpen ? styles.chevronOpen : ""}`}
+                      style={
+                        reducedMotion
+                          ? { transform: isOpen ? "rotate(180deg)" : undefined }
+                          : undefined
+                      }
                     />
                   </button>
 
@@ -113,20 +122,24 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
                       <div className="px-5 pb-5 pt-0">
                         <div
                           className="prose prose-sm max-w-none text-gray-600 prose-a:text-blue-600 border-t border-gray-100 pt-4"
-                          dangerouslySetInnerHTML={{ __html: sanitizeCmsHtml(faq.answer) }}
+                          dangerouslySetInnerHTML={{
+                            __html: sanitizeCmsHtml(faq.answer),
+                          }}
                         />
                       </div>
                     ) : null
                   ) : (
                     <div
-                      className={`${styles.answerPanel} ${isOpen ? styles.answerPanelOpen : ''}`}
+                      className={`${styles.answerPanel} ${isOpen ? styles.answerPanelOpen : ""}`}
                       aria-hidden={!isOpen}
                     >
                       <div className={styles.answerPanelInner}>
                         <div className="px-5 pb-5 pt-0">
                           <div
                             className="prose prose-sm max-w-none text-gray-600 prose-a:text-blue-600 border-t border-gray-100 pt-4"
-                            dangerouslySetInnerHTML={{ __html: sanitizeCmsHtml(faq.answer) }}
+                            dangerouslySetInnerHTML={{
+                              __html: sanitizeCmsHtml(faq.answer),
+                            }}
                           />
                         </div>
                       </div>
@@ -144,13 +157,13 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
           <div className={styles.contactRow}>
             <Mail className="w-5 h-5 text-gray-900" />
             <span className={styles.contactText}>
-              {t('faq.contact.text')}
+              {t("faq.contact.text")}
               {settingsLoading || (!contact && !error) ? (
                 <span className="inline-block w-32 h-4 bg-gray-200 rounded animate-pulse align-middle ml-1" />
               ) : contactEmail ? (
                 <a
                   href={`mailto:${contactEmail}`}
-                  title={t('faq.contact.title')}
+                  title={t("faq.contact.title")}
                   rel="noopener"
                 >
                   {contactEmail}
@@ -161,10 +174,10 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
           <div className={styles.ctaWrap}>
             <Link
               className={styles.ctaButton}
-              to={toLocalizedPath('contact')}
-              aria-label={t('faq.cta.aria')}
+              to={toLocalizedPath("contact")}
+              aria-label={t("faq.cta.aria")}
             >
-              <span>{t('nav.contact')}</span>
+              <span>{t("nav.contact")}</span>
             </Link>
           </div>
         </SectionReveal>

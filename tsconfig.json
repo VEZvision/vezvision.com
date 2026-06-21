@@ -17,7 +17,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "exactOptionalPropertyTypes": true,
-    "noUncheckedSideEffectImports": false,
+    "noUncheckedSideEffectImports": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": "./",
     "paths": {

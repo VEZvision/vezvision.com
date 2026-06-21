@@ -33,7 +33,12 @@ export default defineConfig({
       "react/jsx-runtime",
       "react/jsx-dev-runtime",
     ],
-    esbuildOptions: {
+    esbuild: {
+      drop: process.env.NODE_ENV === "production" ? ["debugger"] : [],
+      pure:
+        process.env.NODE_ENV === "production"
+          ? ["console.log", "console.info", "console.debug", "console.warn"]
+          : [],
       target: "es2022",
     },
   },
@@ -43,7 +48,7 @@ export default defineConfig({
   build: {
     target: "es2022",
     sourcemap: process.env.SENTRY_AUTH_TOKEN ? "hidden" : false,
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 700,
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -89,8 +94,8 @@ export default defineConfig({
     cspNoncePlugin(),
     imagetools(),
     compression({
+      algorithms: ["gzip", "brotliCompress"],
       include: [/\.(js|css|html|svg|json)$/],
-      algorithm: "brotliCompress",
       threshold: 1024,
     }),
   ],

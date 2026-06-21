@@ -1,6 +1,6 @@
 import styles from "./LoadingScreen.module.css";
 import logoNavbar from "@/assets/logo-navbar.svg";
-import { LoadingScreenProps } from "../types/loading.types";
+import type { LoadingScreenProps } from "../types/loading.types";
 import { useLanguageContext } from "@/hooks/useLanguage";
 
 function LoadingScreen({

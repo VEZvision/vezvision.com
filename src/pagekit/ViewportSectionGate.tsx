@@ -19,7 +19,7 @@ export function ViewportSectionGate({
 }: ViewportSectionGateProps) {
   const reducedMotion = useReducedMotion();
   const placeholderRef = useRef<HTMLDivElement>(null);
-  const [isRevealed, setIsRevealed] = useState(reducedMotion);
+  const [isRevealed, setIsRevealed] = useState(false);
 
   useEffect(() => {
     if (
@@ -48,7 +48,7 @@ export function ViewportSectionGate({
     return () => observer.disconnect();
   }, [reducedMotion, rootMargin]);
 
-  if (isRevealed) {
+  if (reducedMotion || isRevealed) {
     return <>{children}</>;
   }
 

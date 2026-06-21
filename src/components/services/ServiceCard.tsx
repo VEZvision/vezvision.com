@@ -1,12 +1,6 @@
 import styles from "./ServiceCard.module.css";
-import {
-  Zap,
-  LucideIcon,
-  Globe,
-  Smartphone,
-  Database,
-  ScanLine,
-} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { Zap, Globe, Smartphone, Database, ScanLine } from "lucide-react";
 import { safeImageUrl } from "@/utils/safeHref";
 
 interface ServiceCardProps {
