@@ -2,17 +2,16 @@ import { logError } from "@/lib/logger";
 import {
   readPublicSettingsCache,
   writePublicSettingsCache,
+  writeMaintenanceFlagToCache,
 } from "@/lib/publicSettingsCache";
-import {
-  getSettings,
-  normalizeSettingsEntries,
-  SettingEntry,
-} from "@/services/settings";
-import { getAllPageSeo, PageSeoMap } from "@/services/pageSeo";
+import type { SettingEntry } from "@/services/settings";
+import { getSettings, normalizeSettingsEntries } from "@/services/settings";
+import type { PageSeoMap } from "@/services/pageSeo";
+import { getAllPageSeo } from "@/services/pageSeo";
+import type { PageSectionsMap } from "@/services/pageSections";
 import {
   flattenCmsTranslations,
   normalizePageSections,
-  PageSectionsMap,
   getPublicPageSections,
 } from "@/services/pageSections";
 import { setCmsTranslationsRegistry } from "@/services/cmsTranslationsRegistry";
@@ -130,4 +129,8 @@ export async function loadSettingsSnapshot(): Promise<SettingsSnapshot> {
   };
 }
 
-export { readPublicSettingsCache, writePublicSettingsCache };
+export {
+  readPublicSettingsCache,
+  writePublicSettingsCache,
+  writeMaintenanceFlagToCache,
+};

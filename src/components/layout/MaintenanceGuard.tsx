@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect, useState, type ReactNode } from "react";
 import AppBootShell from "@/components/layout/AppBootShell";
 import { useSettings } from "@/hooks/useSettings";
+import { readMaintenanceFlagFromCache } from "@/lib/publicSettingsCache";
 import {
   fetchMaintenanceAccess,
   fetchMaintenanceEnabledFromDb,
@@ -25,7 +26,9 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
     loading: settingsLoading,
     error: settingsError,
   } = useSettings();
-  const [access, setAccess] = useState<MaintenanceAccessState>("checking");
+  const [access, setAccess] = useState<MaintenanceAccessState>(
+    readMaintenanceFlagFromCache() === true ? "blocked" : "checking",
+  );
   const hasMaintenanceSettings = maintenance != null;
   const settingsMaintenanceEnabled = maintenance?.enabled === true;
 

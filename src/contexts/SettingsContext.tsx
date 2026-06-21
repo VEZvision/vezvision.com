@@ -13,6 +13,7 @@ import {
   defaultState,
   readPublicSettingsCache,
   writePublicSettingsCache,
+  writeMaintenanceFlagToCache,
 } from "./settings/loaders";
 import type {
   SettingsContextType,
@@ -52,13 +53,16 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!query.data) return;
-    const settingsToCache = Object.fromEntries(
-      Object.entries(query.data).filter(
-        ([key]) => key !== "error" && key !== "degraded",
-      ),
-    ) as Omit<typeof query.data, "error" | "degraded">;
+    const {
+      error: _error,
+      degraded: _degraded,
+      ...settingsToCache
+    } = query.data;
     writePublicSettingsCache(settingsToCache);
-  }, [query.data]);
+    if (query.data.maintenance) {
+      writeMaintenanceFlagToCache(query.data.maintenance.enabled);
+    }
+  }, [query]);
 
   const refreshSettings = useCallback(async () => {
     await query.refetch();
