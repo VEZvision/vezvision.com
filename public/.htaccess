@@ -85,8 +85,7 @@
   RewriteBase /
 
   RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} -f [OR]
-  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteCond %{REQUEST_FILENAME} -f
   RewriteRule . - [L]
 
   RewriteRule . /index.html [L]
