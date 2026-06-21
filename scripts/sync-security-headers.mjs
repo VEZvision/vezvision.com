@@ -8,7 +8,8 @@ import path from 'node:path'
 import { buildContentSecurityPolicy } from './csp-policy.mjs'
 
 const root = path.resolve(import.meta.dirname, '..')
-const csp = buildContentSecurityPolicy(null)
+
+const csp = buildContentSecurityPolicy()
 
 const htaccessTemplate = `<IfModule mod_headers.c>
   <FilesMatch "\\.br$">
@@ -25,6 +26,8 @@ const htaccessTemplate = `<IfModule mod_headers.c>
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Cross-Origin-Resource-Policy "same-site"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
   Header always set Content-Security-Policy "${csp}"
 
   <FilesMatch "\\.(js|mjs|css|svg|png|jpg|jpeg|gif|webp|mp4|woff|woff2|html)$">
@@ -120,6 +123,8 @@ const vercelConfig = {
         { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
         { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
         { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+        { key: 'Cross-Origin-Resource-Policy', value: 'same-site' },
+        { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
         { key: 'Content-Security-Policy', value: csp },
       ],
     },

@@ -77,11 +77,6 @@ export function GlobalJsonLd() {
     url: siteUrl,
     inLanguage: language === "pl" ? "pl-PL" : "en-US",
     publisher: { "@id": `${siteUrl}/#organization` },
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${siteUrl}/${language}/blog?q={search_term_string}`,
-      "query-input": "required name=search_term_string",
-    },
   };
 
   const graph: Record<string, unknown>[] = [organization, website];

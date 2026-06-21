@@ -1,13 +1,13 @@
-import { getSupabase, supabaseUrl } from '@/lib/supabase';
-import { logError } from '@/lib/logger';
-import { safeImageUrl } from '@/utils/safeHref';
-import { isAbortLikeError } from './utils';
-import {
+import { getSupabase, supabaseUrl } from "@/lib/supabase";
+import { logError } from "@/lib/logger";
+import { safeImageUrl } from "@/utils/safeHref";
+import { isAbortLikeError } from "./utils";
+import type {
   PortfolioProject,
   ProjectTranslation,
   PortfolioFilter,
-  PortfolioProjectStatus
-} from '@/types/portfolio';
+  PortfolioProjectStatus,
+} from "@/types/portfolio";
 
 interface DBProject {
   id: string;
@@ -40,7 +40,9 @@ interface DBProject {
   seo_title_en?: string;
   seo_desc_pl?: string;
   seo_desc_en?: string;
-  vv_project_category_assignments?: { vv_project_categories: { slug: string } }[];
+  vv_project_category_assignments?: {
+    vv_project_categories: { slug: string };
+  }[];
   vv_project_images?: {
     id: string;
     path: string;
@@ -53,31 +55,33 @@ interface DBProject {
 }
 
 const mapProjectFromDB = (data: DBProject): PortfolioProject => {
-  const translations: Record<'pl' | 'en', ProjectTranslation> = {
+  const translations: Record<"pl" | "en", ProjectTranslation> = {
     pl: {
-      title: data.title_pl || '',
-      short_description: data.short_desc_pl || '',
-      description: data.description_pl || '',
+      title: data.title_pl || "",
+      short_description: data.short_desc_pl || "",
+      description: data.description_pl || "",
       challenge: data.challenge_pl,
       solution: data.solution_pl,
       seo_title: data.seo_title_pl,
       seo_description: data.seo_desc_pl,
     },
     en: {
-      title: data.title_en || '',
-      short_description: data.short_desc_en || '',
-      description: data.description_en || '',
+      title: data.title_en || "",
+      short_description: data.short_desc_en || "",
+      description: data.description_en || "",
       challenge: data.challenge_en,
       solution: data.solution_en,
       seo_title: data.seo_title_en,
       seo_description: data.seo_desc_en,
-    }
+    },
   };
 
   const categoryAssignments = data.vv_project_category_assignments || [];
-  const category = categoryAssignments.length > 0 && categoryAssignments[0].vv_project_categories
-    ? categoryAssignments[0].vv_project_categories.slug
-    : 'websites';
+  const category =
+    categoryAssignments.length > 0 &&
+    categoryAssignments[0].vv_project_categories
+      ? categoryAssignments[0].vv_project_categories.slug
+      : "websites";
 
   return {
     id: data.id,
@@ -99,16 +103,16 @@ const mapProjectFromDB = (data: DBProject): PortfolioProject => {
     created_at: data.created_at,
     updated_at: data.updated_at,
     translations,
-    images: (data.vv_project_images || []).map(img => ({
+    images: (data.vv_project_images || []).map((img) => ({
       id: img.id,
       path: img.path,
-      type: img.type as PortfolioProject['images'][0]['type'],
+      type: img.type as PortfolioProject["images"][0]["type"],
       order: img.order_index,
       alt_pl: img.alt_pl,
       alt_en: img.alt_en,
-      created_at: img.created_at
+      created_at: img.created_at,
     })),
-    technologies: []
+    technologies: [],
   };
 };
 
@@ -120,39 +124,45 @@ const PORTFOLIO_LIST_SELECT = `
   seo_title_pl, seo_title_en, seo_desc_pl, seo_desc_en,
   vv_project_category_assignments(vv_project_categories(slug)),
   vv_project_images(id, path, type, order_index, alt_pl, alt_en, created_at)
-`
+`;
 
 const PORTFOLIO_DETAIL_SELECT = `
   *,
   vv_project_category_assignments(vv_project_categories(slug)),
   vv_project_images(*)
-`
+`;
 
-export async function listProjects(filter: PortfolioFilter = {}, signal?: AbortSignal): Promise<{ projects: PortfolioProject[], total: number }> {
+export async function listProjects(
+  filter: PortfolioFilter = {},
+  signal?: AbortSignal,
+): Promise<{ projects: PortfolioProject[]; total: number }> {
   try {
-    const supabase = await getSupabase()
+    const supabase = await getSupabase();
     let query = supabase
-      .from('vv_projects')
-      .select(PORTFOLIO_LIST_SELECT, { count: 'exact' })
+      .from("vv_projects")
+      .select(PORTFOLIO_LIST_SELECT, { count: "exact" })
       .limit(100);
 
     if (signal) query = query.abortSignal(signal);
 
-    if (filter.category && filter.category !== 'all') {
-      query = query.eq('vv_project_category_assignments.vv_project_categories.slug', filter.category);
+    if (filter.category && filter.category !== "all") {
+      query = query.eq(
+        "vv_project_category_assignments.vv_project_categories.slug",
+        filter.category,
+      );
     }
-    if (filter.status && filter.status !== 'all') {
-      query = query.eq('status', filter.status);
+    if (filter.status && filter.status !== "all") {
+      query = query.eq("status", filter.status);
     }
     if (filter.featured !== undefined) {
-      query = query.eq('featured', filter.featured);
+      query = query.eq("featured", filter.featured);
     }
     if (filter.search) {
       const sanitizedSearch = filter.search
         .trim()
         .slice(0, 100)
-        .replace(/[%_,".()\\]/g, ' ')
-        .replace(/\s+/g, ' ')
+        .replace(/[%_,".()\\]/g, " ")
+        .replace(/\s+/g, " ")
         .trim();
 
       if (sanitizedSearch) {
@@ -161,7 +171,7 @@ export async function listProjects(filter: PortfolioFilter = {}, signal?: AbortS
       }
     }
 
-    query = query.order('order_index', { ascending: true });
+    query = query.order("order_index", { ascending: true });
 
     if (filter.limit) {
       const from = filter.offset || 0;
@@ -173,33 +183,39 @@ export async function listProjects(filter: PortfolioFilter = {}, signal?: AbortS
     if (error) throw error;
 
     return {
-      projects: (data || []).map(p => mapProjectFromDB(p as unknown as DBProject)),
-      total: count || 0
+      projects: (data || []).map((p) =>
+        mapProjectFromDB(p as unknown as DBProject),
+      ),
+      total: count || 0,
     };
   } catch (error: unknown) {
     if (isAbortLikeError(error)) {
-      throw new Error('Request aborted');
+      throw new Error("Request aborted");
     }
-    logError('portfolio.list', error);
-    throw new Error('Failed to list projects');
+    logError("portfolio.list", error);
+    throw new Error("Failed to list projects");
   }
 }
 
-export async function getProject(idOrSlug: string, signal?: AbortSignal): Promise<PortfolioProject | null> {
+export async function getProject(
+  idOrSlug: string,
+  signal?: AbortSignal,
+): Promise<PortfolioProject | null> {
   try {
-    const supabase = await getSupabase()
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+    const supabase = await getSupabase();
+    const isUuid =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        idOrSlug,
+      );
 
-    let query = supabase
-      .from('vv_projects')
-      .select(PORTFOLIO_DETAIL_SELECT);
+    let query = supabase.from("vv_projects").select(PORTFOLIO_DETAIL_SELECT);
 
     if (signal) query = query.abortSignal(signal);
 
     if (isUuid) {
-      query = query.eq('id', idOrSlug);
+      query = query.eq("id", idOrSlug);
     } else {
-      query = query.eq('slug', idOrSlug);
+      query = query.eq("slug", idOrSlug);
     }
 
     const { data, error } = await query.single();
@@ -210,21 +226,21 @@ export async function getProject(idOrSlug: string, signal?: AbortSignal): Promis
     return mapProjectFromDB(data as unknown as DBProject);
   } catch (error: unknown) {
     if (isAbortLikeError(error)) {
-      throw new Error('Request aborted');
+      throw new Error("Request aborted");
     }
-    logError('portfolio.get', error);
-    throw new Error('Failed to get project');
+    logError("portfolio.get", error);
+    throw new Error("Failed to get project");
   }
 }
 
 export function getProjectImageUrl(path: string): string {
-  if (!path) return '';
+  if (!path) return "";
 
   let url = path;
-  if (!path.startsWith('http://') && !path.startsWith('https://')) {
-    const base = supabaseUrl?.replace(/\/$/, '') ?? '';
-    url = `${base}/storage/v1/object/public/vv-portfolio-images/${path.replace(/^\//, '')}`;
+  if (!path.startsWith("http://") && !path.startsWith("https://")) {
+    const base = supabaseUrl?.replace(/\/$/, "") ?? "";
+    url = `${base}/storage/v1/object/public/vv-portfolio-images/${path.replace(/^\//, "")}`;
   }
 
-  return safeImageUrl(url) ?? '';
+  return safeImageUrl(url) ?? "";
 }

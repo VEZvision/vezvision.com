@@ -17,16 +17,13 @@ function getSupabaseRealtimeHost(supabaseHost) {
 }
 
 /**
- * @param {string | null | undefined} nonce Build-time nonce for inline JSON-LD (Helmet). Dev omits nonce.
  * @param {string} [supabaseHost] Optional override for Supabase origin.
  */
-export function buildContentSecurityPolicy(nonce, supabaseHost) {
+export function buildContentSecurityPolicy(supabaseHost) {
   const host = supabaseHost || getSupabaseHost()
   const realtimeHost = getSupabaseRealtimeHost(host)
 
-  const scriptSrc = nonce
-    ? `'self' 'nonce-${nonce}' https://www.googletagmanager.com https://challenges.cloudflare.com`
-    : `'self' 'unsafe-inline' https://www.googletagmanager.com https://challenges.cloudflare.com`
+  const scriptSrc = `'self' https://www.googletagmanager.com https://challenges.cloudflare.com`
 
   return [
     "default-src 'self'",

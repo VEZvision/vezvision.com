@@ -1,15 +1,16 @@
-import { FC, Fragment, ReactNode, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useLocalizedPath } from '@/hooks/useLocalizedPath';
-import { usePrefersReducedData } from '@/hooks/usePrefersReducedData';
-import SectionBadge from '@/components/ui/SectionBadge';
-import logoHero from '@/assets/logo-hero.svg';
-import { safeExternalHref, safePublicHref } from '@/utils/safeHref';
-import { scrollToElement } from '@/scroll';
-import styles from './VideoHeroSection.module.css';
+import type { FC, ReactNode } from "react";
+import { Fragment, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { useLocalizedPath } from "@/hooks/useLocalizedPath";
+import { usePrefersReducedData } from "@/hooks/usePrefersReducedData";
+import SectionBadge from "@/components/ui/SectionBadge";
+import logoNavbar from "@/assets/logo-navbar.svg";
+import { safeExternalHref, safePublicHref } from "@/utils/safeHref";
+import { scrollToElement } from "@/scroll";
+import styles from "./VideoHeroSection.module.css";
 
 export interface SocialLink {
-  href?: string;
+  href: string | undefined;
   icon: ReactNode;
   label: string;
 }
@@ -48,7 +49,12 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
   const sectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || prefersReducedData || !sectionRef.current || !videoRef.current) {
+    if (
+      typeof window === "undefined" ||
+      prefersReducedData ||
+      !sectionRef.current ||
+      !videoRef.current
+    ) {
       return;
     }
 
@@ -68,7 +74,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
 
     let observer: IntersectionObserver | null = null;
 
-    if ('IntersectionObserver' in window) {
+    if ("IntersectionObserver" in window) {
       observer = new IntersectionObserver(handleVisibilityChange, {
         threshold: 0.2,
       });
@@ -91,19 +97,19 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
 
     const safeButtonHref = safePublicHref(buttonHref);
     if (safeButtonHref) {
-      if (safeButtonHref.startsWith('#')) {
+      if (safeButtonHref.startsWith("#")) {
         const target = document.getElementById(safeButtonHref.slice(1));
         if (target) {
-          scrollToElement(target, { offset: -96, behavior: 'smooth' });
+          scrollToElement(target, { offset: -96, behavior: "smooth" });
           return;
         }
       }
 
-      if (safeButtonHref.startsWith('/')) {
-        void navigate(toLocalizedPath(safeButtonHref.replace(/^\//, '')));
-      } else if (safeButtonHref.startsWith('#')) {
+      if (safeButtonHref.startsWith("/")) {
+        void navigate(toLocalizedPath(safeButtonHref.replace(/^\//, "")));
+      } else if (safeButtonHref.startsWith("#")) {
         void navigate(safeButtonHref);
-      } else if (typeof window !== 'undefined') {
+      } else if (typeof window !== "undefined") {
         window.location.assign(safeButtonHref);
       }
     }
@@ -114,7 +120,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
       ref={sectionRef}
       className={
         className ??
-        'relative flex min-h-[72vh] w-full items-center justify-center overflow-hidden bg-white px-4 pt-[112px] pb-[56px] md:min-h-[76vh] md:pt-[120px] md:pb-[68px]'
+        "relative flex min-h-[72vh] w-full items-center justify-center overflow-hidden bg-white px-4 pt-[112px] pb-[56px] md:min-h-[76vh] md:pt-[120px] md:pb-[68px]"
       }
       aria-labelledby={ariaLabelledBy}
     >
@@ -124,7 +130,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
           aria-hidden="true"
         />
       ) : (
-          <video
+        <video
           ref={videoRef}
           className={styles.videoBg}
           autoPlay
@@ -137,8 +143,8 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
           disableRemotePlayback
           x-webkit-airplay="deny"
         >
-          <source src="/navons.webm" type="video/webm" />
-          <source src="/navons.mp4" type="video/mp4" />
+          <source src="/footer-bg.webm" type="video/webm" />
+          <source src="/footer-bg.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
       )}
@@ -147,27 +153,17 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
 
       <div
         className={`relative z-20 mx-auto text-center ${
-          contentClassName ?? 'max-w-[980px]'
+          contentClassName ?? "max-w-[980px]"
         }`}
       >
         <div className="flex flex-col items-center">
           <div className="mb-6 flex justify-center">
-            <div
-              className="w-[80px] h-[80px] sm:w-24 sm:h-24 rounded-[16px] bg-[#04070d] p-[10px]"
-              style={{
-                boxShadow: `
-                  0px 1px 1px -1px rgba(64, 120, 168, 0.37),
-                  0px 2px 2px -1px rgba(64, 120, 168, 0.36),
-                  0px 4px 4px -2px rgba(64, 120, 168, 0.34),
-                  0px 7px 7px -3px rgba(64, 120, 168, 0.31),
-                  0px 14px 14px -3px rgba(64, 120, 168, 0.25),
-                  0px 30px 30px -4px rgba(64, 120, 168, 0.15)
-                `,
-              }}
-            >
-              <div className="w-full h-full rounded-full overflow-hidden">
-                <img src={logoHero} alt="VezVision Logo" className="w-full h-full object-cover" />
-              </div>
+            <div className="flex items-center justify-center">
+              <img
+                src={logoNavbar}
+                alt="VezVision"
+                className="h-[48px] sm:h-[64px] w-auto object-contain"
+              />
             </div>
           </div>
 
@@ -181,7 +177,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
 
           <h1
             className="mb-5 font-sans text-[clamp(38px,6.5vw,80px)] font-normal leading-[1.05] tracking-[-1.6px] text-black"
-            aria-label={typeof title === 'string' ? title : undefined}
+            aria-label={typeof title === "string" ? title : undefined}
           >
             {title}
           </h1>
@@ -200,7 +196,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
             </button>
           </div>
 
-              {socialLinks && socialLinks.length > 0 && (
+          {socialLinks && socialLinks.length > 0 && (
             <div className="flex items-center justify-center gap-6 mt-6">
               {socialLinks.map((item, index) => (
                 <Fragment key={item.label}>
@@ -212,18 +208,23 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <span className="w-6 h-6 inline-flex items-center justify-center">{item.icon}</span>
+                      <span className="w-6 h-6 inline-flex items-center justify-center">
+                        {item.icon}
+                      </span>
                     </a>
                   ) : (
                     <span
                       className="w-6 h-6 inline-flex items-center justify-center opacity-50"
-                      aria-hidden={item.label ? undefined : 'true'}
+                      aria-hidden={item.label ? undefined : "true"}
                     >
                       {item.icon}
                     </span>
                   )}
                   {index < socialLinks.length - 1 && (
-                    <div className="w-0.5 h-6 bg-[#0a0a0a]" aria-hidden="true" />
+                    <div
+                      className="w-0.5 h-6 bg-[#0a0a0a]"
+                      aria-hidden="true"
+                    />
                   )}
                 </Fragment>
               ))}

@@ -5,13 +5,22 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/Logo_vezvision_optimized.svg" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a0a0a" />
     <meta name="msapplication-TileColor" content="#ffffff" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="author" content="VezVision" />
+    <meta name="publisher" content="VezVision" />
+    <meta name="application-name" content="VezVision" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
     <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://challenges.cloudflare.com">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
     <link rel="preload" as="style" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700,400i,500i,600i,700i&f[]=maple-mono@400,500&display=swap">
     <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700,400i,500i,600i,700i&f[]=maple-mono@400,500&display=swap" media="print" onload="this.media='all'">
     <noscript>
@@ -33,6 +42,13 @@
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="font-family:system-ui;max-width:640px;margin:2rem auto;padding:1rem;">
+        <h1>VezVision — modern AI &amp; automation solutions for business</h1>
+        <p>This site requires JavaScript. Visit our blog: <a href="/pl/blog">/pl/blog</a> or <a href="/en/blog">/en/blog</a>.</p>
+        <p>Contact: <a href="mailto:contact@vezvision.com">contact@vezvision.com</a></p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -39,7 +39,7 @@ grant execute on function public.anonymize_old_messages(int) to service_role;
 select cron.schedule(
   'anonymize-old-messages-weekly',
   '0 4 * * 0',
-  $$ select public.anonymize_old_messages(3); $$
+  $$ select public.anonymize_old_messages(2); $$
 );
 
 do $$

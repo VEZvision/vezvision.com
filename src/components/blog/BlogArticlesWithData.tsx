@@ -1,20 +1,24 @@
-import { useState, useEffect } from 'react';
-import BlogCardLarge from './BlogCardLarge';
-import BlogCard from './BlogCard';
-import styles from './BlogArticles.module.scss';
-import { useBlog } from '@/hooks/useBlog';
-import { BlogPostWithDetails } from '@/hooks/useBlog';
-import { useLanguageContext } from '@/hooks/useLanguage';
-import SectionHeader from '@/components/ui/SectionHeader';
-import { Newspaper } from 'lucide-react';
-import { SectionReveal, StaggerReveal, StaggerItem } from '@/components/ui/SectionReveal';
-import { safeJsonLd } from '@/utils/safeJsonLd';
-import { useLocalizedPath } from '@/hooks/useLocalizedPath';
-import { useSettings } from '@/hooks/useSettings';
-import { Helmet } from 'react-helmet-async';
-import { safeAbsoluteHttpUrl, safeImageUrl } from '@/utils/safeHref';
-import { hasBlogPostTranslation } from '@/utils/blogTranslation';
-import { stripHtmlForJsonLd } from '@/utils/stripHtmlForJsonLd';
+import { useState, useEffect } from "react";
+import BlogCardLarge from "./BlogCardLarge";
+import BlogCard from "./BlogCard";
+import styles from "./BlogArticles.module.scss";
+import { useBlog } from "@/hooks/useBlog";
+import type { BlogPostWithDetails } from "@/hooks/useBlog";
+import { useLanguageContext } from "@/hooks/useLanguage";
+import SectionHeader from "@/components/ui/SectionHeader";
+import { Newspaper } from "lucide-react";
+import {
+  SectionReveal,
+  StaggerReveal,
+  StaggerItem,
+} from "@/components/ui/SectionReveal";
+import { safeJsonLd } from "@/utils/safeJsonLd";
+import { useLocalizedPath } from "@/hooks/useLocalizedPath";
+import { useSettings } from "@/hooks/useSettings";
+import { Helmet } from "react-helmet-async";
+import { safeAbsoluteHttpUrl, safeImageUrl } from "@/utils/safeHref";
+import { hasBlogPostTranslation } from "@/utils/blogTranslation";
+import { stripHtmlForJsonLd } from "@/utils/stripHtmlForJsonLd";
 
 interface Article {
   id: string;
@@ -35,8 +39,12 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
   const { language, t } = useLanguageContext();
   const { toLocalizedPath } = useLocalizedPath();
   const { seo } = useSettings();
-  const siteBaseUrl = safeAbsoluteHttpUrl(seo?.siteUrl) ?? (typeof window !== 'undefined' ? window.location.origin : '');
-  const [featuredPost, setFeaturedPost] = useState<BlogPostWithDetails | null>(null);
+  const siteBaseUrl =
+    safeAbsoluteHttpUrl(seo?.siteUrl) ??
+    (typeof window !== "undefined" ? window.location.origin : "");
+  const [featuredPost, setFeaturedPost] = useState<BlogPostWithDetails | null>(
+    null,
+  );
   const [regularPosts, setRegularPosts] = useState<BlogPostWithDetails[]>([]);
   const [visibleCount, setVisibleCount] = useState(6);
 
@@ -53,9 +61,9 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setVisibleCount(prev => prev === 6 ? 3 : prev); // Only reset if it was default desktop
+        setVisibleCount((prev) => (prev === 6 ? 3 : prev)); // Only reset if it was default desktop
       } else {
-        setVisibleCount(prev => prev === 3 ? 6 : prev); // Only reset if it was default mobile
+        setVisibleCount((prev) => (prev === 3 ? 6 : prev)); // Only reset if it was default mobile
       }
     };
 
@@ -66,48 +74,54 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
       setVisibleCount(6);
     }
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const handleShowMore = () => {
-    setVisibleCount(prev => prev + (window.innerWidth < 768 ? 3 : 6));
+    setVisibleCount((prev) => prev + (window.innerWidth < 768 ? 3 : 6));
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    const locale = language === 'pl' ? 'pl-PL' : 'en-US';
+    const locale = language === "pl" ? "pl-PL" : "en-US";
     return date.toLocaleDateString(locale, {
-      day: 'numeric',
-      month: 'numeric',
-      year: '2-digit'
+      day: "numeric",
+      month: "numeric",
+      year: "2-digit",
     });
   };
 
   const convertPostToArticle = (post: BlogPostWithDetails): Article => {
-    const translation = getPostTranslation(post, language as 'pl' | 'en');
-    const primaryCategory = post.categories.length > 0 ? post.categories[0] : null;
+    const translation = getPostTranslation(post, language as "pl" | "en");
+    const primaryCategory =
+      post.categories.length > 0 ? post.categories[0] : null;
 
     return {
       id: post.id,
-      category: primaryCategory?.name.toUpperCase() || 'BLOG',
+      category: primaryCategory?.name.toUpperCase() || "BLOG",
       date: formatDate(post.published_at || post.created_at),
-      title: translation?.title || 'Brak tytułu',
-      description: translation?.excerpt || translation?.content?.substring(0, 150) + '...' || 'Brak opisu',
-      imageUrl: safeImageUrl(post.featured_image) || '/Logo_vezvision_optimized.svg',
-      href: toLocalizedPath(`blog/${post.slug}`)
+      title: translation?.title || "Brak tytułu",
+      description:
+        translation?.excerpt ||
+        translation?.content?.substring(0, 150) + "..." ||
+        "Brak opisu",
+      imageUrl:
+        safeImageUrl(post.featured_image) || "/Logo_vezvision_optimized.svg",
+      href: toLocalizedPath(`blog/${post.slug}`),
     };
   };
 
   if (loading) {
     return (
-      <section className={styles.blogArticles} aria-labelledby="blog-articles-heading">
+      <section
+        className={styles.blogArticles}
+        aria-labelledby="blog-articles-heading"
+      >
         <div className={styles.container}>
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="mt-2 text-gray-600">
-              {t('blog.list.loading')}
-            </p>
+            <p className="mt-2 text-gray-600">{t("blog.list.loading")}</p>
           </div>
         </div>
       </section>
@@ -116,12 +130,13 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
 
   if (error) {
     return (
-      <section className={styles.blogArticles} aria-labelledby="blog-articles-heading">
+      <section
+        className={styles.blogArticles}
+        aria-labelledby="blog-articles-heading"
+      >
         <div className={styles.container}>
           <div className="text-center py-12">
-            <div className="text-red-600 mb-4">
-              {t('blog.list.error')}
-            </div>
+            <div className="text-red-600 mb-4">{t("blog.list.error")}</div>
           </div>
         </div>
       </section>
@@ -130,23 +145,26 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
 
   if (posts.length === 0) {
     return (
-      <section className={styles.blogArticles} aria-labelledby="blog-articles-heading">
+      <section
+        className={styles.blogArticles}
+        aria-labelledby="blog-articles-heading"
+      >
         <div className={styles.container}>
           <div className="text-center py-12">
-            <h2 className={styles.sectionTitle}>
-              {t('blog.list.empty')}
-            </h2>
-            <p className="text-gray-600 mt-4">
-              {t('blog.list.empty_desc')}
-            </p>
+            <h2 className={styles.sectionTitle}>{t("blog.list.empty")}</h2>
+            <p className="text-gray-600 mt-4">{t("blog.list.empty_desc")}</p>
           </div>
         </div>
       </section>
     );
   }
 
-  const featuredArticle = featuredPost ? convertPostToArticle(featuredPost) : null;
-  const visibleArticles = regularPosts.slice(0, visibleCount).map(convertPostToArticle);
+  const featuredArticle = featuredPost
+    ? convertPostToArticle(featuredPost)
+    : null;
+  const visibleArticles = regularPosts
+    .slice(0, visibleCount)
+    .map(convertPostToArticle);
   const hasMore = regularPosts.length > visibleCount;
 
   // Split articles into rows of 3
@@ -156,18 +174,24 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
   }
 
   return (
-    <section className={styles.blogArticles} aria-labelledby="blog-articles-heading">
+    <section
+      className={styles.blogArticles}
+      aria-labelledby="blog-articles-heading"
+    >
       <div className={styles.container}>
         <SectionReveal>
           <SectionHeader
-            badgeText={t('blog.articles.badge')}
+            badgeText={t("blog.articles.badge")}
             badgeIcon={<Newspaper className="w-3.5 h-3.5" />}
             title={
               <>
-                {t('blog.articles.title.line1')} <span className="font-sans font-semibold">{t('blog.articles.title.line2.italic')}</span>
+                {t("blog.articles.title.line1")}{" "}
+                <span className="font-sans font-semibold">
+                  {t("blog.articles.title.line2.italic")}
+                </span>
               </>
             }
-            subtitle={t('blog.articles.subtitle')}
+            subtitle={t("blog.articles.subtitle")}
             className="mb-16"
           />
         </SectionReveal>
@@ -176,9 +200,7 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
         {featuredArticle && (
           <SectionReveal delay={0.1}>
             <div className={styles.featuredSection}>
-              <BlogCardLarge
-                article={featuredArticle}
-              />
+              <BlogCardLarge article={featuredArticle} />
             </div>
           </SectionReveal>
         )}
@@ -199,8 +221,12 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
         {hasMore && (
           <SectionReveal delay={0.1}>
             <div className={styles.showMoreContainer}>
-              <button type="button" onClick={handleShowMore} className={styles.showMoreButton}>
-                {t('blog.list.show_more')}
+              <button
+                type="button"
+                onClick={handleShowMore}
+                className={styles.showMoreButton}
+              >
+                {t("blog.list.show_more")}
               </button>
             </div>
           </SectionReveal>
@@ -209,29 +235,45 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
         <Helmet>
           <script type="application/ld+json">
             {safeJsonLd({
-              '@context': 'https://schema.org',
-              '@type': 'Blog',
-              name: 'VezVision Blog',
-              description: language === 'pl'
-                ? 'Inspiracje, porady i nowości ze świata IT, AI oraz marketingu'
-                : 'Ideas, tips and updates on IT, AI and marketing',
-              url: `${siteBaseUrl}${toLocalizedPath('blog')}`,
+              "@context": "https://schema.org",
+              "@type": "Blog",
+              name: "VezVision Blog",
+              description:
+                language === "pl"
+                  ? "Inspiracje, porady i nowości ze świata IT, AI oraz marketingu"
+                  : "Ideas, tips and updates on IT, AI and marketing",
+              url: `${siteBaseUrl}${toLocalizedPath("blog")}`,
               blogPost: posts
-                .filter((post) => hasBlogPostTranslation(post, language as 'pl' | 'en'))
+                .filter((post) =>
+                  hasBlogPostTranslation(post, language as "pl" | "en"),
+                )
                 .map((post) => {
-                  const translation = getPostTranslation(post, language as 'pl' | 'en');
+                  const translation = getPostTranslation(
+                    post,
+                    language as "pl" | "en",
+                  );
                   const postPath = toLocalizedPath(`blog/${post.slug}`);
                   return {
-                    '@type': 'BlogPosting',
-                    headline: translation?.title || (language === 'pl' ? 'Brak tytułu' : 'Untitled'),
-                    description: stripHtmlForJsonLd(
-                      translation?.excerpt || translation?.content?.substring(0, 150) || '',
-                    ) || (language === 'pl' ? 'Brak opisu' : 'No description'),
+                    "@type": "BlogPosting",
+                    headline:
+                      translation?.title ||
+                      (language === "pl" ? "Brak tytułu" : "Untitled"),
+                    description:
+                      stripHtmlForJsonLd(
+                        translation?.excerpt ||
+                          translation?.content?.substring(0, 150) ||
+                          "",
+                      ) ||
+                      (language === "pl" ? "Brak opisu" : "No description"),
                     url: `${siteBaseUrl}${postPath}`,
-                    image: safeImageUrl(post.featured_image) || `${siteBaseUrl}/Logo_vezvision_optimized.svg`,
-                    ...(post.published_at ? { datePublished: post.published_at } : {}),
-                    author: { '@type': 'Organization', name: 'VezVision' },
-                    publisher: { '@type': 'Organization', name: 'VezVision' },
+                    image:
+                      safeImageUrl(post.featured_image) ||
+                      `${siteBaseUrl}/Logo_vezvision_optimized.svg`,
+                    ...(post.published_at
+                      ? { datePublished: post.published_at }
+                      : {}),
+                    author: { "@type": "Organization", name: "VezVision" },
+                    publisher: { "@type": "Organization", name: "VezVision" },
                   };
                 }),
             })}

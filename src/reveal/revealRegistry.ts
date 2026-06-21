@@ -3,16 +3,20 @@
  * Avoids N observers + N React setStates (the main source of home-page hitches).
  */
 
-const DEFAULT_ROOT_MARGIN = '80px 0px 40px 0px';
+const DEFAULT_ROOT_MARGIN = "80px 0px 40px 0px";
 
-type Entry = { once: boolean; observerKey: string; onReveal?: () => void };
+type Entry = {
+  once: boolean;
+  observerKey: string;
+  onReveal?: (() => void) | undefined;
+};
 
 const tracked = new Map<Element, Entry>();
 const observers = new Map<string, IntersectionObserver>();
 
 function reveal(el: HTMLElement, onReveal?: () => void) {
-  if (el.dataset.revealed === 'true') return;
-  el.dataset.revealed = 'true';
+  if (el.dataset.revealed === "true") return;
+  el.dataset.revealed = "true";
   onReveal?.();
 }
 
@@ -33,11 +37,17 @@ function handleIntersect(entries: IntersectionObserverEntry[]) {
   }
 }
 
-function getObserver(rootMargin: string, threshold: number): IntersectionObserver {
+function getObserver(
+  rootMargin: string,
+  threshold: number,
+): IntersectionObserver {
   const key = observerKey(rootMargin, threshold);
   let observer = observers.get(key);
   if (!observer) {
-    observer = new IntersectionObserver(handleIntersect, { threshold, rootMargin });
+    observer = new IntersectionObserver(handleIntersect, {
+      threshold,
+      rootMargin,
+    });
     observers.set(key, observer);
   }
   return observer;
@@ -45,25 +55,33 @@ function getObserver(rootMargin: string, threshold: number): IntersectionObserve
 
 function isAboveFold(el: HTMLElement): boolean {
   const rect = el.getBoundingClientRect();
-  return (rect.top < window.innerHeight * 0.95 && rect.bottom > 0) || rect.bottom <= 0;
+  return (
+    (rect.top < window.innerHeight * 0.95 && rect.bottom > 0) ||
+    rect.bottom <= 0
+  );
 }
 
 export type RegisterRevealOptions = {
   once?: boolean;
-  rootMargin?: string;
+  rootMargin?: string | undefined;
   amount?: number;
-  onReveal?: () => void;
+  onReveal?: (() => void) | undefined;
 };
 
 export function registerRevealElement(
   el: HTMLElement,
-  { once = true, rootMargin = DEFAULT_ROOT_MARGIN, amount = 0, onReveal }: RegisterRevealOptions = {},
+  {
+    once = true,
+    rootMargin = DEFAULT_ROOT_MARGIN,
+    amount = 0,
+    onReveal,
+  }: RegisterRevealOptions = {},
 ): () => void {
   const threshold = Math.min(1, Math.max(0, amount));
   const key = observerKey(rootMargin, threshold);
-  el.dataset.revealPending = 'true';
+  el.dataset.revealPending = "true";
 
-  if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+  if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
     reveal(el, onReveal);
     return () => {};
   }

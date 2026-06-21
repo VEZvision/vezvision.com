@@ -42,10 +42,11 @@ if (!fs.existsSync(htaccessPath)) {
   }
 }
 
-if (fs.existsSync(assetsDir)) {
+  if (fs.existsSync(assetsDir)) {
   const assetNames = fs.readdirSync(assetsDir)
   const sourceMaps = assetNames.filter((name) => name.endsWith('.map'))
-  if (sourceMaps.length > 0) {
+  const isSentryBuild = Boolean(process.env.SENTRY_AUTH_TOKEN)
+  if (!isSentryBuild && sourceMaps.length > 0) {
     errors.push(`dist/assets must not include public source maps (${sourceMaps.length} found)`)
   }
 

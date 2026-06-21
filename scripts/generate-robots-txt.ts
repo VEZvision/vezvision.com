@@ -2,6 +2,11 @@ import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { getScriptSupabase } from "./lib/supabase";
 
+const SITE_URL = (process.env.VITE_SITE_URL || "https://vezvision.com").replace(
+  /\/$/,
+  "",
+);
+
 const DEFAULT_ROBOTS_TXT = `User-agent: *
 Allow: /
 
@@ -9,6 +14,9 @@ User-agent: GPTBot
 Allow: /
 
 User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
 Allow: /
 
 User-agent: PerplexityBot
@@ -20,7 +28,37 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-Sitemap: https://vezvision.com/sitemap.xml
+User-agent: GoogleGenAI
+Allow: /
+
+User-agent: CCBot
+Allow: /
+Crawl-delay: 10
+
+User-agent: Bytespider
+Allow: /
+Crawl-delay: 10
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Allow: /
+
+User-agent: Meta-ExternalFetcher
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: AI2Bot
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+Crawl-delay: 10
+
+Sitemap: ${SITE_URL}/sitemap.xml
 `;
 
 function asString(value: unknown): string {

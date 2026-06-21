@@ -1,13 +1,22 @@
-export { SCROLL_IDLE_MS, type ScrollMode } from '@/scroll/config';
+export { SCROLL_IDLE_MS, type ScrollMode } from "@/scroll/config";
 
 export {
   getScrollMode,
   getScrollY,
   initLenis,
   destroyLenis,
+  refreshLenis,
   scrollToTopInstant,
   scrollToElement,
-} from '@/scroll/lenisEngine';
+} from "@/scroll/lenisEngine";
 
-export { subscribeScroll, attachScrollBus, detachScrollBus, dispatchScrollBus } from '@/scroll/scrollBus';
-export { createScrollIdleTracker, type ScrollIdleTracker } from '@/scroll/scrollIdle';
+export {
+  subscribeScroll,
+  attachScrollBus,
+  detachScrollBus,
+  dispatchScrollBus,
+} from "@/scroll/scrollBus";
+export {
+  createScrollIdleTracker,
+  type ScrollIdleTracker,
+} from "@/scroll/scrollIdle";

@@ -1,6 +1,15 @@
-// @ts-nocheck
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { timingSafeEqual } from "node:crypto";
+import { getCorsHeaders } from "../_shared/cors.ts";
+import {
+  buildContactNotificationHtml,
+  getNotificationSubject,
+} from "../_shared/email-templates/contact-notification.ts";
+import {
+  buildAutoReplyHtml,
+  getAutoReplySubject,
+} from "../_shared/email-templates/contact-auto-reply.ts";
 
 interface SendLogRow {
   id: string;
@@ -8,6 +17,7 @@ interface SendLogRow {
   send_type: "notification" | "auto_reply" | "webhook";
   status: string;
   error_message: string | null;
+  created_at: string;
 }
 
 interface MessageRow {
@@ -25,14 +35,7 @@ const MAX_RETRY_AGE_HOURS = 24;
 const MAX_RETRIES_PER_RUN = 25;
 const PUBLIC_ASSETS_BUCKET = "vezvision-assets";
 
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
+type SupabaseEdgeClient = ReturnType<typeof createClient>;
 
 function getStorageBaseUrl(): string {
   const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
@@ -40,56 +43,11 @@ function getStorageBaseUrl(): string {
   return `${supabaseUrl.replace(/\/$/, "")}/storage/v1/object/public/${PUBLIC_ASSETS_BUCKET}`;
 }
 
-function getNotificationSubject(lang: string, subject: string): string {
-  return lang === "pl"
-    ? `Nowa wiadomość z formularza kontaktowego: ${subject}`
-    : `New contact form message: ${subject}`;
-}
-
-function getNotificationHtml(data: {
-  fullName: string;
-  email: string;
-  phone: string | null;
-  subject: string;
-  message: string;
-  lang: string;
-  storageBaseUrl: string;
-}): string {
-  const fullName = escapeHtml(data.fullName);
-  const email = escapeHtml(data.email);
-  const phone = data.phone ? escapeHtml(data.phone) : null;
-  const subject = escapeHtml(data.subject);
-  const message = escapeHtml(data.message);
-  const logoUrl = data.storageBaseUrl
-    ? `${data.storageBaseUrl}/logo-navbar.svg`
-    : "";
-  const phoneRow = data.phone
-    ? `<tr><td style="padding:10px 16px;font-weight:600;color:#0f0f0f;width:120px;border-bottom:1px solid #e5e7eb;">${data.lang === "pl" ? "Telefon" : "Phone"}</td><td style="padding:10px 16px;color:#374151;border-bottom:1px solid #e5e7eb;">${phone}</td></tr>`
-    : "";
-  return `<!DOCTYPE html><html lang="${data.lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body style="margin:0;padding:24px;background:#f3f4f6;font-family:Inter,system-ui,-apple-system,sans-serif;color:#0f0f0f;-webkit-font-smoothing:antialiased;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;"><tr><td style="padding:28px 32px 20px 32px;text-align:center;"><a href="https://vezvision.com" style="display:inline-block;text-decoration:none;">${logoUrl ? `<img src="${logoUrl}" alt="VezVision" height="28" style="display:block;height:28px;width:auto;" />` : '<span style="font-size:20px;font-weight:700;">VezVision</span>'}</a><span style="display:inline-block;margin-top:12px;font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:#6b7280;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:9999px;padding:4px 12px;">${data.lang === "pl" ? "Formularz kontaktowy" : "Contact form"}</span></td></tr><tr><td style="padding:0 32px 20px 32px;"><h1 style="margin:0;font-size:22px;line-height:1.2;color:#0f0f0f;font-weight:700;letter-spacing:-0.02em;">${data.lang === "pl" ? "Nowa wiadomość" : "New message"}</h1></td></tr><tr><td style="padding:0 32px 24px 32px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;"><tr><td style="padding:10px 16px;font-weight:600;color:#0f0f0f;width:120px;border-bottom:1px solid #e5e7eb;">${data.lang === "pl" ? "Imię i nazwisko" : "Full name"}</td><td style="padding:10px 16px;color:#374151;border-bottom:1px solid #e5e7eb;">${fullName}</td></tr><tr><td style="padding:10px 16px;font-weight:600;color:#0f0f0f;border-bottom:1px solid #e5e7eb;">Email</td><td style="padding:10px 16px;color:#374151;border-bottom:1px solid #e5e7eb;"><a href="mailto:${email}" style="color:#04070d;text-decoration:underline;">${email}</a></td></tr>${phoneRow}<tr><td style="padding:10px 16px;font-weight:600;color:#0f0f0f;">${data.lang === "pl" ? "Temat" : "Subject"}</td><td style="padding:10px 16px;color:#374151;">${subject}</td></tr></table></td></tr><tr><td style="padding:0 32px 32px 32px;"><div style="padding:16px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;"><p style="margin:0 0 8px 0;font-weight:600;color:#0f0f0f;font-size:13px;">${data.lang === "pl" ? "Wiadomość" : "Message"}:</p><p style="margin:0;color:#374151;white-space:pre-wrap;line-height:1.6;font-size:14px;">${message}</p></div></td></tr></table></body></html>`;
-}
-
-function getAutoReplySubject(lang: string): string {
-  return lang === "pl"
-    ? "Potwierdzenie wiadomości VezVision"
-    : "Message received by VezVision";
-}
-
-function getAutoReplyHtml(data: {
-  fullName: string;
-  lang: string;
-  storageBaseUrl: string;
-}): string {
-  const isPl = data.lang === "pl";
-  const fullName = escapeHtml(data.fullName);
-  const greeting = isPl ? `Dzień dobry, ${fullName}!` : `Hello, ${fullName}!`;
-  const body = isPl
-    ? "Dziękujemy za wiadomość. Odpiszemy możliwie szybko, zwykle w ciągu 24 godzin."
-    : "Thanks for your message. We will reply as soon as we can, usually within 24 hours.";
-  const logoUrl = data.storageBaseUrl
-    ? `${data.storageBaseUrl}/logo-navbar.svg`
-    : "";
-  return `<!DOCTYPE html><html lang="${data.lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body style="margin:0;padding:24px;background:#f3f4f6;font-family:Inter,system-ui,-apple-system,sans-serif;color:#0f0f0f;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;"><tr><td style="padding:28px 32px 20px 32px;text-align:center;"><a href="https://vezvision.com" style="display:inline-block;text-decoration:none;">${logoUrl ? `<img src="${logoUrl}" alt="VezVision" height="28" style="display:block;height:28px;width:auto;" />` : '<span style="font-size:20px;font-weight:700;">VezVision</span>'}</a></td></tr><tr><td style="padding:0 32px 24px 32px;"><p style="margin:0 0 16px;font-size:18px;color:#0f0f0f;font-weight:600;">${greeting}</p><p style="margin:0 0 20px;color:#374151;line-height:1.7;font-size:15px;">${body}</p><p style="margin:0;color:#374151;font-size:15px;">${isPl ? "Pozdrawiamy" : "Kind regards"},<br><strong style="color:#0f0f0f;">VezVision</strong></p></td></tr><tr><td style="padding:20px 32px 28px 32px;text-align:center;"><a href="https://vezvision.com" style="display:inline-block;background:#04070d;color:#ffffff;text-decoration:none;padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;">${isPl ? "Odwiedź naszą stronę" : "Visit our website"}</a></td></tr></table></body></html>`;
+function getSiteUrl(): string {
+  return (Deno.env.get("SITE_URL") ?? "https://vezvision.com").replace(
+    /\/$/,
+    "",
+  );
 }
 
 async function sendEmailViaResend(
@@ -116,10 +74,13 @@ async function sendEmailViaResend(
       }),
     });
     const resData = await res.json();
-    if (!res.ok)
+    if (!res.ok) {
+      console.error("Resend API error");
       return { ok: false, error: resData.message || "Resend API error" };
+    }
     return { ok: true };
   } catch (err) {
+    console.error("Resend fetch error");
     return {
       ok: false,
       error: err instanceof Error ? err.message : "Unknown error",
@@ -128,11 +89,19 @@ async function sendEmailViaResend(
 }
 
 Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: getCorsHeaders(req) });
+  }
+
   if (req.method !== "POST") {
     return new Response(
       JSON.stringify({ success: false, error: "Method not allowed" }),
       {
-        headers: { "Content-Type": "application/json", Allow: "POST" },
+        headers: {
+          ...getCorsHeaders(req),
+          "Content-Type": "application/json",
+          Allow: "POST, OPTIONS",
+        },
         status: 405,
       },
     );
@@ -140,11 +109,17 @@ Deno.serve(async (req: Request) => {
 
   const authHeader = req.headers.get("Authorization") ?? "";
   const expectedToken = `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""}`;
-  if (!authHeader || authHeader !== expectedToken) {
+  const encoder = new TextEncoder();
+  const authBytes = encoder.encode(authHeader);
+  const expectedBytes = encoder.encode(expectedToken);
+  const authOk =
+    authBytes.length === expectedBytes.length &&
+    timingSafeEqual(authBytes, expectedBytes);
+  if (!authOk) {
     return new Response(
       JSON.stringify({ success: false, error: "Unauthorized" }),
       {
-        headers: { "Content-Type": "application/json" },
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
         status: 401,
       },
     );
@@ -158,19 +133,22 @@ Deno.serve(async (req: Request) => {
   const notifyEmail =
     Deno.env.get("CONTACT_NOTIFY_EMAIL") || "contact@vezvision.com";
   const storageBaseUrl = getStorageBaseUrl();
+  const siteUrl = getSiteUrl();
 
   if (!supabaseUrl || !serviceRoleKey || !resendApiKey) {
     return new Response(
       JSON.stringify({ success: false, error: "Missing env" }),
       {
-        headers: { "Content-Type": "application/json" },
+        headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
         status: 503,
       },
     );
   }
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  const supabase = createClient(supabaseUrl, serviceRoleKey) as any;
+  const supabase: SupabaseEdgeClient = createClient(
+    supabaseUrl,
+    serviceRoleKey,
+  );
 
   const { data: failedLogs, error: fetchError } = await supabase
     .from("vv_message_send_logs")
@@ -187,7 +165,10 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({ success: false, error: fetchError.message }),
       {
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          ...getCorsHeaders(req),
+          "Content-Type": "application/json",
+        },
         status: 500,
       },
     );
@@ -223,7 +204,7 @@ Deno.serve(async (req: Request) => {
         `VezVision <${fromEmail}>`,
         notifyEmail,
         getNotificationSubject(lang, msg.subject),
-        getNotificationHtml({
+        buildContactNotificationHtml({
           fullName: msg.full_name,
           email: msg.email,
           phone: msg.phone,
@@ -231,6 +212,7 @@ Deno.serve(async (req: Request) => {
           message: msg.message,
           lang,
           storageBaseUrl,
+          siteUrl,
         }),
         msg.email,
       );
@@ -240,7 +222,12 @@ Deno.serve(async (req: Request) => {
         `VezVision <${fromEmail}>`,
         msg.email,
         getAutoReplySubject(lang),
-        getAutoReplyHtml({ fullName: msg.full_name, lang, storageBaseUrl }),
+        buildAutoReplyHtml({
+          fullName: msg.full_name,
+          lang,
+          storageBaseUrl,
+          siteUrl,
+        }),
       );
     } else {
       // webhook retry is handled externally; skip here.
@@ -265,6 +252,8 @@ Deno.serve(async (req: Request) => {
       succeeded,
       total_failed: logs.length,
     }),
-    { headers: { "Content-Type": "application/json" } },
+    {
+      headers: { ...getCorsHeaders(req), "Content-Type": "application/json" },
+    },
   );
 });

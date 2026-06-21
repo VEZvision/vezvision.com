@@ -1,9 +1,12 @@
-import { useReducer, useEffect, useMemo, useCallback, ReactNode } from "react";
-import {
+import type { ReactNode } from "react";
+import { useReducer, useEffect, useMemo, useCallback } from "react";
+import type {
   CookieConsentState,
   CookieConsentActions,
   CookieConsentActionType,
   CookiePreferences,
+} from "../types/cookies";
+import {
   DEFAULT_COOKIE_PREFERENCES,
   COOKIE_CONSENT_VERSION,
 } from "../types/cookies";

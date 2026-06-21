@@ -3,6 +3,11 @@ import { APP_ROUTES, SUPPORTED_LOCALES } from "@/routing/routes.config";
 import { localizedPath } from "@/routing/locale";
 import { applyPublishedBlogVisibilityFilter } from "@/services/blogFilters";
 
+export interface SitemapAlternate {
+  hreflang: string;
+  href: string;
+}
+
 export interface SitemapRoute {
   url: string;
   lastmod?: string;
@@ -13,6 +18,7 @@ export interface SitemapRoute {
     caption?: string;
     title?: string;
   };
+  alternates?: SitemapAlternate[];
 }
 
 function escapeXml(str: string): string {
@@ -40,25 +46,68 @@ export function buildSitemapXml(routes: SitemapRoute[]): string {
       const imageTag = route.image
         ? `\n    <image:image>\n      <image:loc>${escapeXml(route.image.loc)}</image:loc>${route.image.caption ? `\n      <image:caption>${escapeXml(route.image.caption)}</image:caption>` : ""}${route.image.title ? `\n      <image:title>${escapeXml(route.image.title)}</image:title>` : ""}\n    </image:image>`
         : "";
+      const alternatesTag = route.alternates
+        ? route.alternates
+            .map(
+              (alt) =>
+                `\n    <xhtml:link rel="alternate" hreflang="${escapeXml(alt.hreflang)}" href="${escapeXml(alt.href)}" />`,
+            )
+            .join("")
+        : "";
 
-      return `  <url>\n    <loc>${escapeXml(route.url)}</loc>${lastmodTag}${changefreqTag}${priorityTag}${imageTag}\n  </url>`;
+      return `  <url>\n    <loc>${escapeXml(route.url)}</loc>${lastmodTag}${changefreqTag}${priorityTag}${imageTag}${alternatesTag}\n  </url>`;
     })
     .join("\n");
 
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urls}\n</urlset>`;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls}\n</urlset>`;
 }
+function buildAlternates(
+  baseUrl: string,
+  pathSuffix: string,
+): SitemapAlternate[] {
+  const alternates: SitemapAlternate[] = SUPPORTED_LOCALES.map((locale) => ({
+    hreflang: locale,
+    href: `${baseUrl}${localizedPath(locale, pathSuffix)}`,
+  }));
+  alternates.push({
+    hreflang: "x-default",
+    href: `${baseUrl}${localizedPath("en", pathSuffix)}`,
+  });
+  return alternates;
+}
+
 export async function generateSitemap(): Promise<string> {
-  const supabase = await getScriptSupabase();
-  let blogQuery = supabase
-    .from("vv_blog_posts")
-    .select("slug,updated_at,featured_image,title_pl,title_en")
-    .eq("status", "published")
-    .limit(100);
+  // Graceful degradation: if Supabase is unreachable (no .env, network issue),
+  // generate a static-only sitemap (APP_ROUTES × SUPPORTED_LOCALES) without
+  // dynamic blog/portfolio URLs. This ensures `npm run build` always produces
+  // a valid sitemap.xml even without Supabase credentials.
+  let posts: Array<{
+    slug: string;
+    updated_at: string;
+    featured_image: string | null;
+    title_pl: string | null;
+    title_en: string | null;
+  }> | null = null;
+  let projects: Array<{
+    slug: string;
+    updated_at: string;
+    cover_image: string | null;
+    title_pl: string | null;
+    title_en: string | null;
+  }> | null = null;
+  let siteSettings: { value: unknown; updated_at: string } | null = null;
 
-  blogQuery = applyPublishedBlogVisibilityFilter(blogQuery);
+  try {
+    const supabase = await getScriptSupabase();
+    let blogQuery = supabase
+      .from("vv_blog_posts")
+      .select("slug,updated_at,featured_image,title_pl,title_en")
+      .eq("status", "published")
+      .limit(100);
 
-  const [{ data: posts }, { data: projects }, { data: siteSettings }] =
-    await Promise.all([
+    blogQuery = applyPublishedBlogVisibilityFilter(blogQuery);
+
+    const [blogResult, projectsResult, settingsResult] = await Promise.all([
       blogQuery,
       supabase
         .from("vv_projects")
@@ -70,6 +119,13 @@ export async function generateSitemap(): Promise<string> {
         .eq("key", "seo")
         .single(),
     ]);
+
+    posts = blogResult.data;
+    projects = projectsResult.data;
+    siteSettings = settingsResult.data;
+  } catch {
+    // Supabase unavailable — static-only sitemap (no blog/portfolio URLs)
+  }
 
   const baseUrl = (
     ((siteSettings?.value as Record<string, unknown>)?.siteUrl as string) ||
@@ -92,6 +148,7 @@ export async function generateSitemap(): Promise<string> {
         lastmod: settingsLastmod,
         changefreq: route.sitemap.changefreq,
         priority: route.sitemap.priority,
+        alternates: buildAlternates(baseUrl, route.path),
       });
     }
   }
@@ -115,6 +172,7 @@ export async function generateSitemap(): Promise<string> {
                 title: postTitle,
               }
             : undefined,
+          alternates: buildAlternates(baseUrl, `blog/${post.slug}`),
         });
       }
     }
@@ -140,6 +198,7 @@ export async function generateSitemap(): Promise<string> {
                 title: projectTitle,
               }
             : undefined,
+          alternates: buildAlternates(baseUrl, `portfolio/${project.slug}`),
         });
       }
     }

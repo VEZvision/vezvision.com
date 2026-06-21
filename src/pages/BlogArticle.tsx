@@ -85,9 +85,7 @@ function BlogArticle() {
           language={language}
           ogType="website"
           siteUrl={siteUrl}
-          breadcrumbItems={[
-            { name: language === "pl" ? "Blog" : "Blog", path: "blog" },
-          ]}
+          breadcrumbItems={[{ name: "Blog", path: "blog" }]}
         />
         <div className="text-center w-full max-w-md">
           <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-12">
@@ -145,7 +143,7 @@ function BlogArticle() {
   const canonicalUrl = siteUrl ? `${siteUrl}${canonicalPath}` : canonicalPath;
   const ogImage =
     safeImageUrl(post.featured_image) ||
-    (siteUrl ? `${siteUrl.replace(/\/$/, "")}/favicon.svg` : "/favicon.svg");
+    (siteUrl ? `${siteUrl.replace(/\/$/, "")}/og-image.png` : "/og-image.png");
   const siteName = seo?.ogSiteName || seo?.siteTitle || "VezVision";
   const articleDescription = stripHtmlForJsonLd(
     excerpt || seo?.siteDescription || "",
@@ -175,7 +173,7 @@ function BlogArticle() {
         localizedPathSuffix={`blog/${post.slug}`}
         availableLocales={getAvailableBlogLocales}
         breadcrumbItems={[
-          { name: language === "pl" ? "Blog" : "Blog", path: "blog" },
+          { name: "Blog", path: "blog" },
           { name: title, path: `blog/${post.slug}` },
         ]}
         structuredData={{
@@ -269,8 +267,8 @@ function BlogArticle() {
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               lazy={false}
               fetchPriority="high"
-              onError={(e) => {
-                (e.currentTarget as HTMLImageElement).src = logo;
+              onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                e.currentTarget.src = logo;
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />

@@ -6,7 +6,7 @@ import { buildContentSecurityPolicy } from './csp-policy.mjs'
 const root = path.resolve(import.meta.dirname, '..')
 const errors = []
 
-const expectedCsp = buildContentSecurityPolicy(null)
+const expectedCsp = buildContentSecurityPolicy()
 const requiredCspDirectives = [
   "default-src 'self'",
   "script-src 'self'",

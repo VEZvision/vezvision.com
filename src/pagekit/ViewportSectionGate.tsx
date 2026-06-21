@@ -1,28 +1,32 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
-import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-const DEFAULT_ROOT_MARGIN = '500px 0px';
+const DEFAULT_ROOT_MARGIN = "500px 0px";
 
 export type ViewportSectionGateProps = {
   children: ReactNode;
   className?: string;
-  minHeight?: string;
+  minHeight?: string | undefined;
   rootMargin?: string;
 };
 
 export function ViewportSectionGate({
   children,
   className,
-  minHeight = '50vh',
+  minHeight = "50vh",
   rootMargin = DEFAULT_ROOT_MARGIN,
 }: ViewportSectionGateProps) {
   const reducedMotion = useReducedMotion();
   const placeholderRef = useRef<HTMLDivElement>(null);
-  const [isRevealed, setIsRevealed] = useState(reducedMotion);
+  const [isRevealed, setIsRevealed] = useState(false);
 
   useEffect(() => {
-    if (reducedMotion || typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+    if (
+      reducedMotion ||
+      typeof window === "undefined" ||
+      !("IntersectionObserver" in window)
+    ) {
       setIsRevealed(true);
       return;
     }
@@ -44,7 +48,7 @@ export function ViewportSectionGate({
     return () => observer.disconnect();
   }, [reducedMotion, rootMargin]);
 
-  if (isRevealed) {
+  if (reducedMotion || isRevealed) {
     return <>{children}</>;
   }
 
@@ -54,7 +58,7 @@ export function ViewportSectionGate({
       className={className}
       style={{
         minHeight,
-        contain: 'layout style',
+        contain: "layout style",
       }}
       aria-hidden="true"
     />

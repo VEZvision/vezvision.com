@@ -18,7 +18,7 @@ import twitterIcon from "@/assets/footer/twitter-icon.svg";
 import instagramIcon from "@/assets/footer/instagram-icon.svg";
 import linkedinIcon from "@/assets/footer/linkedin-icon.svg";
 import arrowIcon from "@/assets/arrow-icon.svg";
-import logoIcon from "@/assets/footer/logo-icon.svg";
+import logoNavbar from "@/assets/logo-navbar.svg";
 import styles from "./Footer.module.css";
 
 function isExternal(href: string) {
@@ -39,10 +39,8 @@ export default function Footer() {
 
   const pathWithoutLocale = location.pathname.replace(/^\/(en|pl)(?=\/|$)/, "");
   const isHome = pathWithoutLocale === "" || pathWithoutLocale === "/";
-  const videoSrc = isHome ? "/aMPvRVYHFQxBoB0v2qyJln83jI.mp4" : "/navons.mp4";
-  const videoWebmSrc = isHome
-    ? "/aMPvRVYHFQxBoB0v2qyJln83jI.webm"
-    : "/navons.webm";
+  const videoSrc = isHome ? "/hero-bg.mp4" : "/footer-bg.mp4";
+  const videoWebmSrc = isHome ? "/hero-bg.webm" : "/footer-bg.webm";
   const showVideo = !prefersReducedData;
 
   useEffect(() => {
@@ -83,28 +81,34 @@ export default function Footer() {
   }, [videoSrc, showVideo]);
 
   const socialLinks = [
-    {
-      href: social?.x || social?.facebook || "",
-      icon: twitterIcon,
-      alt: "X (Twitter)",
-      label: "X",
-      rel: "me noopener noreferrer",
-    },
-    {
-      href: social?.instagram || "",
-      icon: instagramIcon,
-      alt: "Instagram",
-      label: "Instagram",
-      rel: "me noopener noreferrer",
-    },
-    {
-      href: social?.linkedin || "",
-      icon: linkedinIcon,
-      alt: "LinkedIn",
-      label: "LinkedIn",
-      rel: "me noopener noreferrer",
-    },
-  ].filter((l) => l.href);
+    social?.x
+      ? {
+          href: social.x,
+          icon: twitterIcon,
+          alt: "X (Twitter)",
+          label: "X",
+          rel: "me noopener noreferrer",
+        }
+      : null,
+    social?.instagram
+      ? {
+          href: social.instagram,
+          icon: instagramIcon,
+          alt: "Instagram",
+          label: "Instagram",
+          rel: "me noopener noreferrer",
+        }
+      : null,
+    social?.linkedin
+      ? {
+          href: social.linkedin,
+          icon: linkedinIcon,
+          alt: "LinkedIn",
+          label: "LinkedIn",
+          rel: "me noopener noreferrer",
+        }
+      : null,
+  ].filter((l): l is NonNullable<typeof l> => l !== null);
 
   const navLinks = (navigation?.items ?? [])
     .filter((item) => item.enabled)
@@ -185,16 +189,12 @@ export default function Footer() {
                 <p className={styles.subtitle}>{footerSubtitle}</p>
                 <div className={styles.logoSection}>
                   <div className={styles.logoContainer}>
-                    <div className={styles.logoWrapper}>
-                      <img
-                        src={logoIcon}
-                        alt="VezVision Logo"
-                        className={styles.logoImage}
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    </div>
-                    <p className={styles.logoText}>{brandName.toUpperCase()}</p>
+                    <img
+                      src={logoNavbar}
+                      alt="VezVision"
+                      className={styles.logoImage}
+                      decoding="async"
+                    />
                   </div>
                   <p className={styles.tagline}>{footerTagline}</p>
                 </div>
@@ -214,7 +214,6 @@ export default function Footer() {
                       alt=""
                       className={styles.ctaIcon}
                       aria-hidden="true"
-                      loading="lazy"
                       decoding="async"
                     />
                   </a>
@@ -226,7 +225,6 @@ export default function Footer() {
                       alt=""
                       className={styles.ctaIcon}
                       aria-hidden="true"
-                      loading="lazy"
                       decoding="async"
                     />
                   </Link>

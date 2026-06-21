@@ -1,9 +1,9 @@
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 
 export type RevealOptions = {
   once?: boolean;
   amount?: number;
-  rootMargin?: string;
+  rootMargin?: string | undefined;
 };
 
 export type RevealProps = RevealOptions & {
