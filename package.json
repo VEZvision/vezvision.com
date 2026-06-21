@@ -96,9 +96,6 @@
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^4.0.14"
   },
-  "overrides": {
-    "esbuild": "$esbuild"
-  },
   "engines": {
     "node": ">=22"
   },
