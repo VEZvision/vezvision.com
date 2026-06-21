@@ -176,6 +176,8 @@ export default function DynamicPageSeo({
         />
       ))}
       <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content="@vezvision" />
+      <meta name="twitter:creator" content="@vezvision" />
       <meta name="twitter:title" content={title} />
       {description ? (
         <meta name="twitter:description" content={description} />

@@ -79,7 +79,9 @@ async function fetchPosts(): Promise<BlogPostForRSS[]> {
 }
 
 function buildFeedXml(posts: BlogPostForRSS[], language: "pl" | "en"): string {
-  const baseUrl = "https://vezvision.com";
+  const baseUrl = (
+    process.env.VITE_SITE_URL || "https://vezvision.com"
+  ).replace(/\/$/, "");
   const localePath = `${baseUrl}/${language}`;
   const title = language === "en" ? "VezVision Blog" : "Blog VezVision";
   const description =

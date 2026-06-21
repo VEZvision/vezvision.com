@@ -16,7 +16,8 @@ import { safeCmsHref } from "@/utils/safeHref";
 import { localizeInternalHref } from "@/routing/locale";
 import styles from "./Hero.module.scss";
 
-const HERO_VIDEO_SRC = "/aMPvRVYHFQxBoB0v2qyJln83jI.mp4";
+const HERO_VIDEO_SRC = "/hero-bg.mp4";
+const SITE_URL = import.meta.env.VITE_SITE_URL || "https://vezvision.com";
 
 interface SocialLink {
   href: string | undefined;
@@ -118,7 +119,7 @@ const Hero = memo(() => {
                 "VezVision — modern AI & automation solutions for business",
               thumbnailUrl: logoNavbar,
               uploadDate: "2026-03-28",
-              contentUrl: `${typeof window !== "undefined" ? window.location.origin : "https://vezvision.com"}/aMPvRVYHFQxBoB0v2qyJln83jI.mp4`,
+              contentUrl: `${typeof window !== "undefined" ? window.location.origin : SITE_URL}/hero-bg.mp4`,
             })}
           </script>
         )}
@@ -135,7 +136,7 @@ const Hero = memo(() => {
           disableRemotePlayback
           x-webkit-airplay="deny"
         >
-          <source src="/aMPvRVYHFQxBoB0v2qyJln83jI.webm" type="video/webm" />
+          <source src="/hero-bg.webm" type="video/webm" />
           <source src={HERO_VIDEO_SRC} type="video/mp4" />
         </video>
       )}

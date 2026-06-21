@@ -7,19 +7,22 @@ import { SUPPORTED_LOCALES } from "@/routing/routes.config";
 import { localizedPath, stripLocaleFromPathname } from "@/routing/locale";
 import { safeAbsoluteHttpUrl, safeImageUrl } from "@/utils/safeHref";
 import { getSafeStructuredDataJson, safeJsonLd } from "@/utils/safeJsonLd";
-
-function getLocalizedValue(
-  language: "pl" | "en",
-  plValue: string,
-  enValue: string,
-) {
-  return language === "en" ? enValue || plValue : plValue;
-}
+import { getLocalizedLabel } from "@/utils/i18n";
 
 function getRobots(indexable: boolean, robots: string, fallback: string) {
   if (!indexable) return "noindex,nofollow";
   return robots || fallback;
 }
+
+/**
+ * Hardcoded noindex for pages that should never be indexed regardless of CMS state.
+ * `vv_page_seo` is empty by default — these pages would fall through to SEO.tsx
+ * fallback (`index,follow`) which is wrong.
+ */
+const NOINDEX_ROBOTS: Record<string, string> = {
+  "not-found": "noindex,follow",
+  unsubscribe: "noindex,nofollow",
+};
 
 interface PageSeoProps {
   pageKey: string;
@@ -31,7 +34,18 @@ const PageSeo = ({ pageKey }: PageSeoProps) => {
   const location = useLocation();
 
   const entry = pageSeo?.[pageKey];
-  if (!entry) return null;
+  const forcedRobots = NOINDEX_ROBOTS[pageKey];
+
+  if (!entry) {
+    if (forcedRobots) {
+      return (
+        <Helmet>
+          <meta name="robots" content={forcedRobots} />
+        </Helmet>
+      );
+    }
+    return null;
+  }
 
   const siteUrl =
     safeAbsoluteHttpUrl(seo?.siteUrl) ||
@@ -41,25 +55,23 @@ const PageSeo = ({ pageKey }: PageSeoProps) => {
     (siteUrl
       ? `${siteUrl}${location.pathname === "/" ? "" : location.pathname}`
       : "");
-  const title = getLocalizedValue(language, entry.title_pl, entry.title_en);
-  const description = getLocalizedValue(
+  const title = getLocalizedLabel(language, entry.title_pl, entry.title_en);
+  const description = getLocalizedLabel(
     language,
     entry.description_pl,
     entry.description_en,
   );
   const ogTitle =
-    getLocalizedValue(language, entry.og_title_pl, entry.og_title_en) || title;
+    getLocalizedLabel(language, entry.og_title_pl, entry.og_title_en) || title;
   const ogDescription =
-    getLocalizedValue(
+    getLocalizedLabel(
       language,
       entry.og_description_pl,
       entry.og_description_en,
     ) || description;
-  const robots = getRobots(
-    entry.indexable,
-    entry.robots,
-    seo?.robots || "index,follow",
-  );
+  const robots =
+    forcedRobots ??
+    getRobots(entry.indexable, entry.robots, seo?.robots || "index,follow");
   const ogImage =
     safeImageUrl(entry.og_image_url) ||
     safeImageUrl(identity?.defaultOgImageUrl) ||
@@ -122,6 +134,8 @@ const PageSeo = ({ pageKey }: PageSeoProps) => {
         <meta property="og:site_name" content={ogSiteName} />
       ) : null}
       <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:site" content="@vezvision" />
+      <meta name="twitter:creator" content="@vezvision" />
       {ogTitle ? <meta name="twitter:title" content={ogTitle} /> : null}
       {ogDescription ? (
         <meta name="twitter:description" content={ogDescription} />

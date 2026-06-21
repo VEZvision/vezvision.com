@@ -39,10 +39,8 @@ export default function Footer() {
 
   const pathWithoutLocale = location.pathname.replace(/^\/(en|pl)(?=\/|$)/, "");
   const isHome = pathWithoutLocale === "" || pathWithoutLocale === "/";
-  const videoSrc = isHome ? "/aMPvRVYHFQxBoB0v2qyJln83jI.mp4" : "/navons.mp4";
-  const videoWebmSrc = isHome
-    ? "/aMPvRVYHFQxBoB0v2qyJln83jI.webm"
-    : "/navons.webm";
+  const videoSrc = isHome ? "/hero-bg.mp4" : "/footer-bg.mp4";
+  const videoWebmSrc = isHome ? "/hero-bg.webm" : "/footer-bg.webm";
   const showVideo = !prefersReducedData;
 
   useEffect(() => {

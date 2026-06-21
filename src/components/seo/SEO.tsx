@@ -40,6 +40,8 @@ const SEO = () => {
   const ogLocale = language === "pl" ? "pl_PL" : "en_US";
   const ogLocaleAlternate = language === "pl" ? "en_US" : "pl_PL";
 
+  const showFallback = !hasDedicatedPageSeo && !shouldSuppressFallbackSeo;
+
   return (
     <Helmet {...(seo?.siteTitle ? { defaultTitle: seo.siteTitle } : {})}>
       <html lang={language} />
@@ -49,18 +51,14 @@ const SEO = () => {
       {seo?.keywords && seo.keywords.length > 0 && (
         <meta name="keywords" content={seo.keywords.join(", ")} />
       )}
-      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && seo?.siteTitle ? (
-        <title>{seo.siteTitle}</title>
-      ) : null}
-      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && siteDescription ? (
+      {showFallback && seo?.siteTitle ? <title>{seo.siteTitle}</title> : null}
+      {showFallback && siteDescription ? (
         <meta name="description" content={siteDescription} />
       ) : null}
-      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && canonicalUrl ? (
+      {showFallback && canonicalUrl ? (
         <link rel="canonical" href={canonicalUrl} />
       ) : null}
-      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo ? (
-        <meta name="robots" content={robots} />
-      ) : null}
+      {showFallback ? <meta name="robots" content={robots} /> : null}
 
       {siteUrl &&
         !shouldSuppressFallbackSeo &&
@@ -80,28 +78,26 @@ const SEO = () => {
         />
       ) : null}
 
-      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && seo?.siteTitle ? (
+      {showFallback && seo?.siteTitle ? (
         <meta property="og:title" content={seo.siteTitle} />
       ) : null}
-      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && siteDescription ? (
+      {showFallback && siteDescription ? (
         <meta property="og:description" content={siteDescription} />
       ) : null}
-      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo ? (
-        <meta property="og:type" content="website" />
-      ) : null}
-      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && canonicalUrl ? (
+      {showFallback ? <meta property="og:type" content="website" /> : null}
+      {showFallback && canonicalUrl ? (
         <meta property="og:url" content={canonicalUrl} />
       ) : null}
-      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && ogImage ? (
+      {showFallback && ogImage ? (
         <meta property="og:image" content={ogImage} />
       ) : null}
-      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && ogImage ? (
+      {showFallback && ogImage ? (
         <meta property="og:image:width" content="1200" />
       ) : null}
-      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && ogImage ? (
+      {showFallback && ogImage ? (
         <meta property="og:image:height" content="630" />
       ) : null}
-      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && ogImage ? (
+      {showFallback && ogImage ? (
         <meta property="og:image:alt" content={seo?.siteTitle || "VezVision"} />
       ) : null}
       <meta property="og:locale" content={ogLocale} />
@@ -109,13 +105,15 @@ const SEO = () => {
       {ogSiteName && <meta property="og:site_name" content={ogSiteName} />}
 
       <meta name="twitter:card" content="summary_large_image" />
-      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && seo?.siteTitle ? (
+      <meta name="twitter:site" content="@vezvision" />
+      <meta name="twitter:creator" content="@vezvision" />
+      {showFallback && seo?.siteTitle ? (
         <meta name="twitter:title" content={seo.siteTitle} />
       ) : null}
-      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && siteDescription ? (
+      {showFallback && siteDescription ? (
         <meta name="twitter:description" content={siteDescription} />
       ) : null}
-      {!hasDedicatedPageSeo && !shouldSuppressFallbackSeo && ogImage ? (
+      {showFallback && ogImage ? (
         <meta name="twitter:image" content={ogImage} />
       ) : null}
 

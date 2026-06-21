@@ -86,16 +86,14 @@ async function prerenderRoute(
     return false;
   }
 
-  await page.waitForTimeout(10_000);
-
-  const hasOgTitle = await page.evaluate(() =>
-    Boolean(document.querySelector('meta[property="og:title"]')),
-  );
-  const pageTitle = await page.title();
-
-  if (!hasOgTitle) {
+  try {
+    await page.waitForSelector('meta[property="og:title"]', {
+      timeout: 15_000,
+    });
+  } catch {
+    const pageTitle = await page.title();
     console.warn(
-      `  skip: ${routePath} (no OG title — page title: "${pageTitle}")`,
+      `  skip: ${routePath} (no OG title within 15s — page title: "${pageTitle}")`,
     );
     return false;
   }
@@ -108,10 +106,7 @@ async function prerenderRoute(
 
   const prerendered = buildPrerenderedHtml(headHtml, htmlLang, bodyHtml);
 
-  const outDir =
-    routePath === "/pl" || routePath === "/en"
-      ? join(DIST_DIR, routePath.slice(1))
-      : join(DIST_DIR, routePath.slice(1));
+  const outDir = join(DIST_DIR, routePath.slice(1));
   const outPath = join(outDir, "index.html");
 
   await mkdir(dirname(outPath), { recursive: true });

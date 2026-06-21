@@ -1,4 +1,5 @@
-import { FC, Fragment, ReactNode, useEffect, useRef } from "react";
+import type { FC, ReactNode } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
 import { usePrefersReducedData } from "@/hooks/usePrefersReducedData";
@@ -142,8 +143,8 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
           disableRemotePlayback
           x-webkit-airplay="deny"
         >
-          <source src="/navons.webm" type="video/webm" />
-          <source src="/navons.mp4" type="video/mp4" />
+          <source src="/footer-bg.webm" type="video/webm" />
+          <source src="/footer-bg.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
       )}

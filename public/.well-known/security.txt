@@ -2,3 +2,4 @@ Contact: mailto:contact@vezvision.com
 Expires: 2027-12-31T23:00:00.000Z
 Preferred-Languages: pl, en
 Canonical: https://vezvision.com/.well-known/security.txt
+Policy: https://vezvision.com/privacy-policy

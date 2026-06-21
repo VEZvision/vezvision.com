@@ -6,14 +6,7 @@ import { useLanguageContext } from "@/hooks/useLanguage";
 import { useSettings } from "@/hooks/useSettings";
 import { isSafeExternalHref, safePublicHref } from "@/utils/safeHref";
 import { switchLocalePath } from "@/routing/locale";
-
-function getLocalizedLabel(
-  language: "pl" | "en",
-  labelPl: string,
-  labelEn: string,
-) {
-  return language === "en" ? labelEn || labelPl : labelPl;
-}
+import { getLocalizedLabel } from "@/utils/i18n";
 
 function isExternalHref(href: string) {
   return isSafeExternalHref(href);
@@ -190,6 +183,7 @@ const Navbar = memo(() => {
                     <Link
                       key={item.id}
                       to={item.href}
+                      prefetch="intent"
                       className={`px-4 py-2 text-sm ${navTextClass} ${navHoverClass} rounded-md transition-colors`}
                     >
                       {getLocalizedLabel(language, item.labelPl, item.labelEn)}

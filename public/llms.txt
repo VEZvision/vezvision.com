@@ -49,7 +49,7 @@ VezVision is a Polish technology company that builds modern websites, web applic
 - Backend: Supabase (PostgreSQL 17, Edge Functions/Deno, Realtime, Storage)
 - AI/ML: LLM integration, automation workflows, custom AI agents
 - Infrastructure: Hostido/Vercel, GitHub Actions CI/CD, Sentry, Cloudflare Turnstile
-- Standards: strict CSP with per-build nonce, GDPR-compliant cookie consent, accessibility (WCAG), SEO + AI SEO (llms.txt, structured data, RSS)
+- Standards: strict CSP (script-src 'self', object-src 'none', frame-ancestors 'none'), GDPR-compliant cookie consent, accessibility (WCAG), SEO + AI SEO (llms.txt, structured data, RSS)
 
 ## Process
 
@@ -93,6 +93,7 @@ VezVision is a Polish technology company that builds modern websites, web applic
 - Sitemap: https://vezvision.com/sitemap.xml
 - RSS: https://vezvision.com/pl/blog/feed.xml / https://vezvision.com/en/blog/feed.xml
 - robots.txt: https://vezvision.com/robots.txt
+- ai.txt: https://vezvision.com/ai.txt
 - llms.txt: https://vezvision.com/llms.txt (this file)
 - AI policies: https://vezvision.com/.well-known/llm-policies.json
 
