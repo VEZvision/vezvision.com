@@ -13,6 +13,8 @@
   overflow: hidden;
   background: #ffffff;
   isolation: isolate;
+  padding-top: env(safe-area-inset-top);
+  margin-top: calc(-1 * env(safe-area-inset-top));
 }
 
 .sectionHero::after {

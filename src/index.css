@@ -1,11 +1,15 @@
-@import 'lenis/dist/lenis.css';
+@import "lenis/dist/lenis.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  font-family: 'Satoshi', system-ui, -apple-system, sans-serif;
+  font-family:
+    "Satoshi",
+    system-ui,
+    -apple-system,
+    sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -17,7 +21,7 @@
   --vez-surface: #f5f5f5;
   --vez-surface-soft: #f8f9fa;
   --vez-surface-raised: #ffffff;
-  --vez-line: rgba(16, 24, 40, 0.10);
+  --vez-line: rgba(16, 24, 40, 0.1);
   --vez-line-strong: rgba(16, 24, 40, 0.18);
   --vez-shadow-soft: rgba(16, 24, 40, 0.08);
 
@@ -31,6 +35,13 @@ html {
   /* scroll-behavior managed by Lenis — do NOT set it here */
   background: #ffffff !important;
   -webkit-tap-highlight-color: transparent;
+}
+
+/* iOS Safari: fixed navbar needs safe-area padding to avoid notch overlap */
+@supports (padding-top: env(safe-area-inset-top)) {
+  nav[class*="fixed"] {
+    padding-top: env(safe-area-inset-top) !important;
+  }
 }
 
 html.lenis,
@@ -68,7 +79,9 @@ html.vez-smooth-scroll {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {
