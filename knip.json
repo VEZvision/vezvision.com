@@ -1,5 +1,12 @@
 {
   "ignore": ["supabase/functions/**", "src/types/database.types.ts"],
   "ignoreBinaries": ["deno"],
-  "ignoreDependencies": ["prettier"]
+  "ignoreDependencies": ["prettier"],
+  "ignoreFiles": [
+    "src/reveal/index.ts",
+    "src/scroll/index.ts",
+    "src/components/loading/index.ts",
+    "src/components/cookies/privacy-tabs/index.ts",
+    "src/services/settings/index.ts"
+  ]
 }

@@ -16,9 +16,9 @@ import type {
   SeoFilesSettings,
   SeoSettings,
   SocialSettings,
+  SettingEntry,
 } from "./types";
 import { EMPTY_PUBLIC_SETTINGS } from "./defaults";
-import { PUBLIC_SETTINGS_KEYS } from "./defaults";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -176,7 +176,7 @@ function normalizeFooter(value: unknown): FooterSettings {
 }
 
 export function normalizeSettingsEntries(
-  entries: import("./types").SettingEntry[],
+  entries: SettingEntry[],
 ): PublicSiteSettings {
   const settingsMap = new Map(entries.map((entry) => [entry.key, entry.value]));
   return {
@@ -191,20 +191,3 @@ export function normalizeSettingsEntries(
     footer: normalizeFooter(settingsMap.get("footer")),
   };
 }
-
-export { PUBLIC_SETTINGS_KEYS };
-export type {
-  ContactSettings,
-  SocialSettings,
-  SeoSettings,
-  MaintenanceSettings,
-  SeoFilesSettings,
-  IdentitySettings,
-  CompanySettings,
-  LocalizedLinkItem,
-  NavigationSettings,
-  FooterSettings,
-  PublicSiteSettings,
-  SettingEntry,
-} from "./types";
-export { EMPTY_PUBLIC_SETTINGS } from "./defaults";
