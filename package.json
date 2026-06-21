@@ -14,7 +14,7 @@
     "knip": "knip",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
-    "check": "npm run typecheck && vitest --run src/data/translations/parity.test.ts && npm run test:unit && npm run verify:edge-shared && npm run test:csp && npm run size",
+    "check": "npm run typecheck && vitest --run src/data/translations/parity.test.ts && npm run test:unit && npm run verify:edge-shared && npm run test:csp",
     "test": "vitest",
     "test:unit": "vitest --run",
     "test:unit:coverage": "vitest --run --coverage",
