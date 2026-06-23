@@ -16,7 +16,11 @@ import { safeJsonLd } from "@/utils/safeJsonLd";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
 import { useSettings } from "@/hooks/useSettings";
 import { Helmet } from "react-helmet-async";
-import { safeAbsoluteHttpUrl, safeImageUrl } from "@/utils/safeHref";
+import {
+  joinUrlPath,
+  safeAbsoluteHttpUrl,
+  safeImageUrl,
+} from "@/utils/safeHref";
 import { hasBlogPostTranslation } from "@/utils/blogTranslation";
 import { stripHtmlForJsonLd } from "@/utils/stripHtmlForJsonLd";
 
@@ -40,7 +44,7 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
   const { toLocalizedPath } = useLocalizedPath();
   const { seo } = useSettings();
   const siteBaseUrl =
-    safeAbsoluteHttpUrl(seo?.siteUrl) ??
+    safeAbsoluteHttpUrl(seo?.siteUrl) ||
     (typeof window !== "undefined" ? window.location.origin : "");
   const [featuredPost, setFeaturedPost] = useState<BlogPostWithDetails | null>(
     null,
@@ -242,7 +246,7 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
                 language === "pl"
                   ? "Inspiracje, porady i nowości ze świata IT, AI oraz marketingu"
                   : "Ideas, tips and updates on IT, AI and marketing",
-              url: `${siteBaseUrl}${toLocalizedPath("blog")}`,
+              url: joinUrlPath(siteBaseUrl, toLocalizedPath("blog")),
               blogPost: posts
                 .filter((post) =>
                   hasBlogPostTranslation(post, language as "pl" | "en"),
@@ -265,10 +269,10 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
                           "",
                       ) ||
                       (language === "pl" ? "Brak opisu" : "No description"),
-                    url: `${siteBaseUrl}${postPath}`,
+                    url: joinUrlPath(siteBaseUrl, postPath),
                     image:
                       safeImageUrl(post.featured_image) ||
-                      `${siteBaseUrl}/Logo_vezvision_optimized.svg`,
+                      joinUrlPath(siteBaseUrl, "/Logo_vezvision_optimized.svg"),
                     ...(post.published_at
                       ? { datePublished: post.published_at }
                       : {}),

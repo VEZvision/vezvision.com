@@ -13,7 +13,7 @@ import {
   StaggerItem,
 } from "@/components/ui/SectionReveal";
 import { safeJsonLd } from "@/utils/safeJsonLd";
-import { safeAbsoluteHttpUrl } from "@/utils/safeHref";
+import { joinUrlPath, safeAbsoluteHttpUrl } from "@/utils/safeHref";
 import { useSettings } from "@/hooks/useSettings";
 
 function ServicesSection() {
@@ -46,12 +46,14 @@ function ServicesSection() {
     return {
       "@type": "Service",
       "@id": siteUrl
-        ? `${siteUrl}/${language}/services#${service.slug}`
+        ? joinUrlPath(siteUrl, `/${language}/services#${service.slug}`)
         : undefined,
       name: translation?.title || service.slug,
       description:
         translation?.excerpt || translation?.description || undefined,
-      provider: { "@id": siteUrl ? `${siteUrl}/#organization` : undefined },
+      provider: {
+        "@id": siteUrl ? joinUrlPath(siteUrl, "/#organization") : undefined,
+      },
       serviceType: service.categories[0]?.name || undefined,
       offers:
         service.price > 0
