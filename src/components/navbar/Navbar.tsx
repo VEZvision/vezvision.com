@@ -5,7 +5,11 @@ import logoNavbar from "@/assets/logo-navbar.svg";
 import { useLanguageContext } from "@/hooks/useLanguage";
 import { useSettings } from "@/hooks/useSettings";
 import { isSafeExternalHref, safePublicHref } from "@/utils/safeHref";
-import { switchLocalePath } from "@/routing/locale";
+import {
+  switchLocalePath,
+  localizeInternalHref,
+  localizedPath,
+} from "@/routing/locale";
 import { getLocalizedLabel } from "@/utils/i18n";
 
 function isExternalHref(href: string) {
@@ -94,7 +98,10 @@ const Navbar = memo(() => {
           enabled: true,
         }))
   )
-    .map((item) => ({ ...item, href: safePublicHref(item.href) }))
+    .map((item) => ({
+      ...item,
+      href: localizeInternalHref(safePublicHref(item.href) || "", language),
+    }))
     .filter((item) => item.href);
   const contactButtonLabel = navigation
     ? getLocalizedLabel(
@@ -104,7 +111,10 @@ const Navbar = memo(() => {
       )
     : t("nav.contact");
   const contactButtonHref =
-    safePublicHref(navigation?.contactButtonHref, "/contact") || "/contact";
+    localizeInternalHref(
+      safePublicHref(navigation?.contactButtonHref, "/contact") || "/contact",
+      language,
+    ) || localizedPath(language, "contact");
   const navTextClass = "text-black";
   const navHoverClass = "hover:bg-black/[0.05]";
   const scrolledSurfaceClass =
@@ -148,7 +158,7 @@ const Navbar = memo(() => {
               <div className="flex items-center">
                 <div className="flex-shrink-0 py-3">
                   <Link
-                    to="/"
+                    to={localizedPath(language)}
                     className="cursor-pointer hover:opacity-80 transition-opacity duration-200"
                   >
                     <img

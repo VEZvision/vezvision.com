@@ -14,6 +14,9 @@ import {
 } from "@/routing/routes.config";
 import { localizedPath, stripLocaleFromPathname } from "@/routing/locale";
 
+const SITE_URL_FALLBACK =
+  import.meta.env.VITE_SITE_URL || "https://vezvision.com";
+
 const SEO = () => {
   const { seo, identity } = useSettings();
   const { language } = useLanguageContext();
@@ -23,9 +26,7 @@ const SEO = () => {
 
   const pageKey = getPageKeyFromPath(location.pathname);
   const shouldSuppressFallbackSeo = isDynamicContentPath(location.pathname);
-  const siteUrl =
-    safeAbsoluteHttpUrl(seo?.siteUrl) ||
-    (typeof window !== "undefined" ? window.location.origin : "");
+  const siteUrl = safeAbsoluteHttpUrl(seo?.siteUrl) || SITE_URL_FALLBACK;
   const pathWithoutLocale = stripLocaleFromPathname(location.pathname);
   const canonicalUrl = siteUrl
     ? joinUrlPath(
@@ -71,6 +72,7 @@ const SEO = () => {
       {showFallback ? <meta name="robots" content={robots} /> : null}
 
       {siteUrl &&
+        !pageKey &&
         !shouldSuppressFallbackSeo &&
         SUPPORTED_LOCALES.map((locale) => {
           const suffix =
@@ -80,7 +82,7 @@ const SEO = () => {
             <link key={locale} rel="alternate" hrefLang={locale} href={href} />
           );
         })}
-      {siteUrl && !shouldSuppressFallbackSeo ? (
+      {siteUrl && !pageKey && !shouldSuppressFallbackSeo ? (
         <link
           rel="alternate"
           hrefLang="x-default"

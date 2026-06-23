@@ -37,8 +37,10 @@ function buildAlternateUrl(
   locale: DynamicLocale,
   pathSuffix: string,
 ): string {
-  const suffix = pathSuffix.replace(/^\//, "");
-  return joinUrlPath(siteUrl, suffix ? `/${locale}/${suffix}` : `/${locale}`);
+  const suffix = pathSuffix.replace(/^\/+/, "").replace(/\/+$/, "");
+  return suffix
+    ? joinUrlPath(siteUrl, `/${locale}/${suffix}/`)
+    : joinUrlPath(siteUrl, `/${locale}/`);
 }
 
 export default function DynamicPageSeo({

@@ -84,6 +84,19 @@
   RewriteEngine On
   RewriteBase /
 
+  # 301: root → /pl/
+  RewriteRule ^$ /pl/ [R=301,L]
+
+  # 301: old non-locale paths → /pl/ with trailing slash
+  RewriteRule ^(about|services|contact|blog|portfolio|products|newsletter)$ /pl/$1/ [R=301,L]
+
+  # 404 for paths that are not locale-prefixed, not files, not dirs, not in redirect list
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !^/(pl|en)/
+  RewriteCond %{REQUEST_URI} !^/(about|services|contact|blog|portfolio|products|newsletter)$
+  RewriteRule ^ - [R=404,L]
+
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
