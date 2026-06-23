@@ -18,6 +18,10 @@ const PREVIEW_PORT = 4173;
 const NAV_TIMEOUT = 20_000;
 const SEO_READY_TIMEOUT = 30_000;
 const SKIP_URLS = ["https://example.supabase.co", ""];
+const PREVIEW_ORIGIN = `http://127.0.0.1:${PREVIEW_PORT}`;
+const SITE_ORIGIN = (
+  process.env.VITE_SITE_URL || "https://vezvision.com"
+).replace(/\/+$/, "");
 
 interface PrerenderResult {
   readonly ok: boolean;
@@ -90,7 +94,8 @@ async function prerenderRoute({
   const fullHtml: string = await page.evaluate(
     () => document.documentElement.outerHTML,
   );
-  const validationErrors = validateSeoRouteHtml(routePath, fullHtml);
+  const normalizedHtml = fullHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN);
+  const validationErrors = validateSeoRouteHtml(routePath, normalizedHtml);
 
   if (validationErrors.length > 0) {
     return {
@@ -100,7 +105,13 @@ async function prerenderRoute({
     };
   }
 
-  const prerendered = buildPrerenderedHtml(headHtml, htmlLang, bodyHtml);
+  const normalizedHead = headHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN);
+  const normalizedBody = bodyHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN);
+  const prerendered = buildPrerenderedHtml(
+    normalizedHead,
+    htmlLang,
+    normalizedBody,
+  );
 
   const outDir = join(DIST_DIR, routePath.slice(1));
   const outPath = join(outDir, "index.html");
