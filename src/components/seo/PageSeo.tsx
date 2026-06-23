@@ -5,7 +5,11 @@ import { useLanguageContext } from "@/hooks/useLanguage";
 import { useSettings } from "@/hooks/useSettings";
 import { SUPPORTED_LOCALES } from "@/routing/routes.config";
 import { localizedPath, stripLocaleFromPathname } from "@/routing/locale";
-import { safeAbsoluteHttpUrl, safeImageUrl } from "@/utils/safeHref";
+import {
+  joinUrlPath,
+  safeAbsoluteHttpUrl,
+  safeImageUrl,
+} from "@/utils/safeHref";
 import { getSafeStructuredDataJson, safeJsonLd } from "@/utils/safeJsonLd";
 import { getLocalizedLabel } from "@/utils/i18n";
 
@@ -24,64 +28,83 @@ const NOINDEX_ROBOTS: Record<string, string> = {
   unsubscribe: "noindex,nofollow",
 };
 
+type SeoTranslationField = "title" | "description";
+
+function getTranslatedSeoFallback(
+  translate: (key: string) => string,
+  pageKey: string,
+  field: SeoTranslationField,
+): string {
+  const translationKey = `seo.${pageKey}.${field}`;
+  const value = translate(translationKey).trim();
+  return value === translationKey ? "" : value;
+}
+
 interface PageSeoProps {
   pageKey: string;
 }
 
 const PageSeo = ({ pageKey }: PageSeoProps) => {
-  const { language } = useLanguageContext();
+  const { language, t } = useLanguageContext();
   const { pageSeo, seo, identity } = useSettings();
   const location = useLocation();
 
   const entry = pageSeo?.[pageKey];
   const forcedRobots = NOINDEX_ROBOTS[pageKey];
-
-  if (!entry) {
-    if (forcedRobots) {
-      return (
-        <Helmet>
-          <meta name="robots" content={forcedRobots} />
-        </Helmet>
-      );
-    }
-    return null;
-  }
+  const fallbackTitle = getTranslatedSeoFallback(t, pageKey, "title");
+  const fallbackDescription = getTranslatedSeoFallback(
+    t,
+    pageKey,
+    "description",
+  );
 
   const siteUrl =
     safeAbsoluteHttpUrl(seo?.siteUrl) ||
     (typeof window !== "undefined" ? window.location.origin : "");
   const canonicalUrl =
-    safeAbsoluteHttpUrl(entry.canonical_url) ||
+    safeAbsoluteHttpUrl(entry?.canonical_url) ||
     (siteUrl
-      ? `${siteUrl}${location.pathname === "/" ? "" : location.pathname}`
+      ? joinUrlPath(siteUrl, location.pathname === "/" ? "" : location.pathname)
       : "");
-  const title = getLocalizedLabel(language, entry.title_pl, entry.title_en);
-  const description = getLocalizedLabel(
-    language,
-    entry.description_pl,
-    entry.description_en,
-  );
+  const title = entry
+    ? getLocalizedLabel(language, entry.title_pl, entry.title_en) ||
+      fallbackTitle
+    : fallbackTitle;
+  const description = entry
+    ? getLocalizedLabel(language, entry.description_pl, entry.description_en) ||
+      fallbackDescription
+    : fallbackDescription;
   const ogTitle =
-    getLocalizedLabel(language, entry.og_title_pl, entry.og_title_en) || title;
+    (entry
+      ? getLocalizedLabel(language, entry.og_title_pl, entry.og_title_en)
+      : "") || title;
   const ogDescription =
-    getLocalizedLabel(
-      language,
-      entry.og_description_pl,
-      entry.og_description_en,
-    ) || description;
+    (entry
+      ? getLocalizedLabel(
+          language,
+          entry.og_description_pl,
+          entry.og_description_en,
+        )
+      : "") || description;
   const robots =
     forcedRobots ??
-    getRobots(entry.indexable, entry.robots, seo?.robots || "index,follow");
+    (entry
+      ? getRobots(entry.indexable, entry.robots, seo?.robots || "index,follow")
+      : seo?.robots || "index,follow");
   const ogImage =
-    safeImageUrl(entry.og_image_url) ||
+    safeImageUrl(entry?.og_image_url) ||
     safeImageUrl(identity?.defaultOgImageUrl) ||
     safeImageUrl(identity?.logoUrl) ||
-    (siteUrl ? `${siteUrl}/og-image.png` : "");
+    (siteUrl ? joinUrlPath(siteUrl, "/og-image.png") : "");
   const ogSiteName =
     seo?.ogSiteName || identity?.siteName || seo?.siteTitle || "";
-  const structuredDataJson = getSafeStructuredDataJson(
-    entry.structured_data_json,
-  );
+  const structuredDataJson = entry
+    ? getSafeStructuredDataJson(entry.structured_data_json)
+    : null;
+
+  if (!entry && !forcedRobots && !title && !description) {
+    return null;
+  }
 
   const pathWithoutLocale = stripLocaleFromPathname(location.pathname);
   const alternatePathSuffix =
@@ -89,7 +112,7 @@ const PageSeo = ({ pageKey }: PageSeoProps) => {
   const hreflangUrls = siteUrl
     ? SUPPORTED_LOCALES.map((locale) => ({
         locale,
-        url: `${siteUrl}${localizedPath(locale, alternatePathSuffix)}`,
+        url: joinUrlPath(siteUrl, localizedPath(locale, alternatePathSuffix)),
       }))
     : [];
   const xDefaultUrl = hreflangUrls.find((item) => item.locale === "en")?.url;
@@ -102,8 +125,12 @@ const PageSeo = ({ pageKey }: PageSeoProps) => {
     name: title || undefined,
     description: description || undefined,
     inLanguage: language === "pl" ? "pl-PL" : "en-US",
-    isPartOf: siteUrl ? { "@id": `${siteUrl}/#website` } : undefined,
-    publisher: siteUrl ? { "@id": `${siteUrl}/#organization` } : undefined,
+    isPartOf: siteUrl
+      ? { "@id": joinUrlPath(siteUrl, "/#website") }
+      : undefined,
+    publisher: siteUrl
+      ? { "@id": joinUrlPath(siteUrl, "/#organization") }
+      : undefined,
   };
 
   return (
