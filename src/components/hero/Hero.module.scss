@@ -85,6 +85,17 @@
   justify-content: center;
 }
 
+@media (max-width: 639px) {
+  .sectionHero {
+    min-height: 74vh;
+    min-height: 74dvh;
+  }
+
+  .heroInner {
+    padding: clamp(4.5rem, 10vh, 5.75rem) 1rem 2rem;
+  }
+}
+
 @media (min-width: 640px) {
   .logoPlate {
     width: 96px;
