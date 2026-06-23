@@ -2,7 +2,11 @@ import { Helmet } from "react-helmet-async";
 import { useSettings } from "@/hooks/useSettings";
 import { useLocation } from "react-router-dom";
 import { useLanguageContext } from "@/hooks/useLanguage";
-import { safeAbsoluteHttpUrl, safeImageUrl } from "@/utils/safeHref";
+import {
+  joinUrlPath,
+  safeAbsoluteHttpUrl,
+  safeImageUrl,
+} from "@/utils/safeHref";
 import {
   getPageKeyFromPath,
   isDynamicContentPath,
@@ -11,26 +15,31 @@ import {
 import { localizedPath, stripLocaleFromPathname } from "@/routing/locale";
 
 const SEO = () => {
-  const { seo, identity, pageSeo } = useSettings();
+  const { seo, identity } = useSettings();
   const { language } = useLanguageContext();
   const location = useLocation();
 
   if (!seo && !identity) return null;
 
   const pageKey = getPageKeyFromPath(location.pathname);
-  const hasDedicatedPageSeo = pageKey ? Boolean(pageSeo?.[pageKey]) : false;
   const shouldSuppressFallbackSeo = isDynamicContentPath(location.pathname);
   const siteUrl =
     safeAbsoluteHttpUrl(seo?.siteUrl) ||
     (typeof window !== "undefined" ? window.location.origin : "");
   const pathWithoutLocale = stripLocaleFromPathname(location.pathname);
   const canonicalUrl = siteUrl
-    ? `${siteUrl}${localizedPath(language, pathWithoutLocale === "/" ? "" : pathWithoutLocale.slice(1))}`
+    ? joinUrlPath(
+        siteUrl,
+        localizedPath(
+          language,
+          pathWithoutLocale === "/" ? "" : pathWithoutLocale.slice(1),
+        ),
+      )
     : "";
   const ogImage =
     safeImageUrl(identity?.defaultOgImageUrl) ||
     safeImageUrl(identity?.logoUrl) ||
-    (siteUrl ? `${siteUrl}/og-image.png` : "");
+    (siteUrl ? joinUrlPath(siteUrl, "/og-image.png") : "");
   const siteDescription = seo?.siteDescription || undefined;
   const robots =
     seo?.robots ||
@@ -40,10 +49,11 @@ const SEO = () => {
   const ogLocale = language === "pl" ? "pl_PL" : "en_US";
   const ogLocaleAlternate = language === "pl" ? "en_US" : "pl_PL";
 
-  const showFallback = !hasDedicatedPageSeo && !shouldSuppressFallbackSeo;
+  const showFallback =
+    !pageKey && !shouldSuppressFallbackSeo && location.pathname === "/";
 
   return (
-    <Helmet {...(seo?.siteTitle ? { defaultTitle: seo.siteTitle } : {})}>
+    <Helmet>
       <html lang={language} />
       {safeImageUrl(identity?.faviconUrl) && (
         <link rel="icon" href={safeImageUrl(identity?.faviconUrl)} />
@@ -65,7 +75,7 @@ const SEO = () => {
         SUPPORTED_LOCALES.map((locale) => {
           const suffix =
             pathWithoutLocale === "/" ? "" : pathWithoutLocale.slice(1);
-          const href = `${siteUrl}${localizedPath(locale, suffix)}`;
+          const href = joinUrlPath(siteUrl, localizedPath(locale, suffix));
           return (
             <link key={locale} rel="alternate" hrefLang={locale} href={href} />
           );
@@ -74,7 +84,13 @@ const SEO = () => {
         <link
           rel="alternate"
           hrefLang="x-default"
-          href={`${siteUrl}${localizedPath("en", pathWithoutLocale === "/" ? "" : pathWithoutLocale.slice(1))}`}
+          href={joinUrlPath(
+            siteUrl,
+            localizedPath(
+              "en",
+              pathWithoutLocale === "/" ? "" : pathWithoutLocale.slice(1),
+            ),
+          )}
         />
       ) : null}
 
@@ -123,13 +139,13 @@ const SEO = () => {
             rel="alternate"
             type="application/rss+xml"
             title="VezVision Blog (PL)"
-            href={`${siteUrl}/pl/blog/feed.xml`}
+            href={joinUrlPath(siteUrl, "/pl/blog/feed.xml")}
           />
           <link
             rel="alternate"
             type="application/rss+xml"
             title="VezVision Blog (EN)"
-            href={`${siteUrl}/en/blog/feed.xml`}
+            href={joinUrlPath(siteUrl, "/en/blog/feed.xml")}
           />
         </>
       ) : null}
