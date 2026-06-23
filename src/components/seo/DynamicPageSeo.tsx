@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 
 import { SUPPORTED_LOCALES } from "@/routing/routes.config";
-import { safeImageUrl } from "@/utils/safeHref";
+import { joinUrlPath, safeImageUrl } from "@/utils/safeHref";
 import { safeJsonLd } from "@/utils/safeJsonLd";
 
 export type DynamicOgType = "article" | "website";
@@ -37,9 +37,8 @@ function buildAlternateUrl(
   locale: DynamicLocale,
   pathSuffix: string,
 ): string {
-  const base = siteUrl.replace(/\/$/, "");
   const suffix = pathSuffix.replace(/^\//, "");
-  return suffix ? `${base}/${locale}/${suffix}` : `${base}/${locale}`;
+  return joinUrlPath(siteUrl, suffix ? `/${locale}/${suffix}` : `/${locale}`);
 }
 
 export default function DynamicPageSeo({
@@ -76,8 +75,12 @@ export default function DynamicPageSeo({
         name: title,
         description: description || undefined,
         inLanguage: language === "pl" ? "pl-PL" : "en-US",
-        isPartOf: siteUrl ? { "@id": `${siteUrl}/#website` } : undefined,
-        publisher: siteUrl ? { "@id": `${siteUrl}/#organization` } : undefined,
+        isPartOf: siteUrl
+          ? { "@id": joinUrlPath(siteUrl, "/#website") }
+          : undefined,
+        publisher: siteUrl
+          ? { "@id": joinUrlPath(siteUrl, "/#organization") }
+          : undefined,
       })
     : null;
   const pathSuffix = localizedPathSuffix?.replace(/^\//, "") ?? "";
@@ -108,7 +111,10 @@ export default function DynamicPageSeo({
               "@type": "ListItem",
               position: index + 2,
               name: item.name,
-              item: `${siteUrl}/${language}/${item.path.replace(/^\//, "")}`,
+              item: joinUrlPath(
+                siteUrl,
+                `/${language}/${item.path.replace(/^\//, "")}`,
+              ),
             })),
           ],
         })
