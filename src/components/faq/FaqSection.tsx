@@ -45,7 +45,7 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
   );
 
   const faqItems = useMemo(() => {
-    const fallbackItems = [1, 2, 3, 4, 5].map((index) => ({
+    const fallbackItems = [1, 2, 3, 4, 5, 6, 7].map((index) => ({
       id: `faq-${index}`,
       question: t(`faq.q${index}`),
       answer: t(`faq.a${index}`),
