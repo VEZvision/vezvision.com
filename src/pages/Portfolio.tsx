@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Briefcase, FolderOpen } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { useLanguageContext } from "@/hooks/useLanguage";
+import { useLocalizedPath } from "@/hooks/useLocalizedPath";
 import { usePortfolio } from "../hooks/usePortfolio";
 import { getProjectImageUrl } from "@/services/portfolio";
 import PageSeo from "@/components/seo/PageSeo";
@@ -25,6 +26,7 @@ import socialInstagram from "@/assets/products/social-instagram.svg";
 
 const Portfolio = () => {
   const { t, language } = useLanguageContext();
+  const { toLocalizedPath } = useLocalizedPath();
   const { social, seo } = useSettings();
   const navigate = useNavigate();
   const { projects, loading, error } = usePortfolio();
@@ -61,7 +63,7 @@ const Portfolio = () => {
     if (contactSection) {
       contactSection.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
-      void navigate("/contact#kontakt");
+      void navigate(toLocalizedPath("contact") + "#kontakt");
     }
   };
 
@@ -150,25 +152,28 @@ const Portfolio = () => {
           </SectionReveal>
 
           <SectionReveal delay={0.08}>
-            <div className={styles.filters}>
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => {
-                    setActiveCategory(category);
-                    setVisibleCount(6);
-                  }}
-                  className={`${styles.filterTab} ${activeCategory === category ? styles.filterTabActive : ""}`}
-                >
-                  {getCategoryLabel(category)}
-                  <span className={styles.filterCount}>
-                    {category === "all"
-                      ? projects.length
-                      : projects.filter((p) => p.category === category).length}
-                  </span>
-                </button>
-              ))}
-            </div>
+            {projects.length > 0 && (
+              <div className={styles.filters}>
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => {
+                      setActiveCategory(category);
+                      setVisibleCount(6);
+                    }}
+                    className={`${styles.filterTab} ${activeCategory === category ? styles.filterTabActive : ""}`}
+                  >
+                    {getCategoryLabel(category)}
+                    <span className={styles.filterCount}>
+                      {category === "all"
+                        ? projects.length
+                        : projects.filter((p) => p.category === category)
+                            .length}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
           </SectionReveal>
 
           <div>
@@ -222,7 +227,7 @@ const Portfolio = () => {
                       key={`${activeCategory}-${project.id}-${index}`}
                     >
                       <Link
-                        to={`/portfolio/${project.slug}`}
+                        to={toLocalizedPath(`portfolio/${project.slug}`)}
                         className="block no-underline"
                       >
                         <article className={styles.card}>
