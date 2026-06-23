@@ -16,8 +16,8 @@ export const new_translations_for_services_pageTranslations = {
   "group23.always.title": "Wsparcie po wdrożeniu, gdy go potrzebujesz.",
   "group23.always.description":
     "Szybka reakcja i priorytetowe traktowanie zgłoszeń. Pomoc techniczna i rozwój po uruchomieniu projektu.",
-  "group23.always.feature1": "Sprawna pomoc",
-  "group23.always.feature2": "Opieka po wdrożeniu",
+  "group23.always.feature1": "Sprawna komunikacja",
+  "group23.always.feature2": "Wsparcie po wdrożeniu",
   "group23.growth.title": "Twój realny rozwój",
   "group23.growth.description":
     "Wdrażamy rozwiązania, które realnie wspierają codzienną pracę i pozwalają skoncentrować się na tym, co najważniejsze. Stawiamy na efekty, które widać w praktyce.",
