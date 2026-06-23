@@ -13,6 +13,9 @@ import {
 import { getSafeStructuredDataJson, safeJsonLd } from "@/utils/safeJsonLd";
 import { getLocalizedLabel } from "@/utils/i18n";
 
+const SITE_URL_FALLBACK =
+  import.meta.env.VITE_SITE_URL || "https://vezvision.com";
+
 function getRobots(indexable: boolean, robots: string, fallback: string) {
   if (!indexable) return "noindex,nofollow";
   return robots || fallback;
@@ -58,13 +61,17 @@ const PageSeo = ({ pageKey }: PageSeoProps) => {
     "description",
   );
 
-  const siteUrl =
-    safeAbsoluteHttpUrl(seo?.siteUrl) ||
-    (typeof window !== "undefined" ? window.location.origin : "");
+  const siteUrl = safeAbsoluteHttpUrl(seo?.siteUrl) || SITE_URL_FALLBACK;
   const canonicalUrl =
     safeAbsoluteHttpUrl(entry?.canonical_url) ||
     (siteUrl
-      ? joinUrlPath(siteUrl, location.pathname === "/" ? "" : location.pathname)
+      ? joinUrlPath(
+          siteUrl,
+          localizedPath(
+            language,
+            stripLocaleFromPathname(location.pathname).replace(/^\//, ""),
+          ),
+        )
       : "");
   const title = entry
     ? getLocalizedLabel(language, entry.title_pl, entry.title_en) ||
