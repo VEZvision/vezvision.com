@@ -4,10 +4,11 @@ export const why_chooseTranslations = {
   "why.header.title": "Why choose us?",
   "why.header.title.line1": "Why",
   "why.header.title.line2.italic": "choose us",
-  "why.header.subtitle": "Everything you need to build, optimize, and grow",
-  "why.card1.title": "Partnership for years",
+  "why.header.subtitle":
+    "Clear process, practical decisions, and support after launch",
+  "why.card1.title": "Long-term cooperation",
   "why.card1.desc":
-    "We are not just a contractor. We work as a partner in your business growth.",
+    "We stay after launch to improve, maintain, and develop the solution with you.",
   "why.card2.title": "Fast deployments",
   "why.card2.desc":
     "We work quickly from the first consultation to project launch.",
