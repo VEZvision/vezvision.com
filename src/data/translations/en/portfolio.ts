@@ -11,7 +11,7 @@ export const portfolioTranslations = {
   "portfolio.projects.title.line1": "Selected",
   "portfolio.projects.title.line2.italic": "projects",
   "portfolio.projects.subtitle":
-    "Discover our latest projects that showcase our capabilities and experience in building innovative digital solutions.",
+    "A curated space for selected projects, demos, and case studies showing how we approach digital work.",
   "portfolio.projects.category.webApps": "Web Application",
   "portfolio.projects.category.website": "Website",
   "portfolio.projects.category.tool": "Tool",
@@ -43,11 +43,11 @@ export const portfolioTranslations = {
   "portfolio.stats.title.line1": "How",
   "portfolio.stats.title.line2.italic": "we work",
   "portfolio.stats.subtitle":
-    "Learn about the principles and methodologies that guide our work and allow us to deliver exceptional solutions",
+    "Learn about the principles and methods that guide our work from first conversation to launch.",
   "portfolio.stats.cta.title": "Ready to collaborate?",
   "portfolio.stats.cta.desc":
-    "Contact us and see how our approach can help realize your project",
-  "portfolio.stats.cta.button": "Start project",
+    "Contact us and see how we can shape a practical plan for your project.",
+  "portfolio.stats.cta.button": "Discuss a project",
   "portfolio.approach.header.line1": "Our",
   "portfolio.approach.header.line2.italic": "approach",
   "portfolio.approach.subtitle":
@@ -64,7 +64,7 @@ export const portfolioTranslations = {
   "portfolio.approach.user.f4": "Feedback loops",
   "portfolio.approach.collab.title": "Collaboration & communication",
   "portfolio.approach.collab.desc":
-    "We work as a team transparently, staying in constant contact",
+    "We work transparently, with clear decisions and regular communication.",
   "portfolio.approach.collab.f1": "Transparency",
   "portfolio.approach.collab.f2": "Regular syncs",
   "portfolio.approach.collab.f3": "Joint planning",

@@ -60,7 +60,7 @@ export const footerTranslations = {
   "blog.article.cta_desc": "Napisz do nas. Porozmawiamy o Twoim projekcie.",
   "blog.article.cta_button": "Porozmawiajmy",
   "blog.article.recent": "Ostatnie artykuły",
-  "blog.list.loading": "Ładowanie artykułów...",
+  "blog.list.loading": "Artykuły pojawią się wkrótce",
   "blog.list.error": "Błąd podczas ładowania artykułów",
   "blog.list.empty": "Artykuły pojawią się wkrótce",
   "blog.list.empty_desc":

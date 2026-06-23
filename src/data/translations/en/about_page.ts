@@ -11,7 +11,7 @@ export const about_pageTranslations = {
   "about.hero.title.line2.before": "are still",
   "about.hero.title.line2.italic": "planning",
   "about.hero.description":
-    "We design and implement systems that learn together with your company.",
+    "We design and implement digital tools that can grow together with your company.",
   "about.hero.social.xAlt": "X (Twitter)",
   "about.hero.social.instagramAlt": "Instagram",
   "about.hero.social.linkedinAlt": "LinkedIn",

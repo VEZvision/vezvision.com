@@ -20,7 +20,7 @@ export const faqTranslations = {
     "Tak. Stosujemy szyfrowanie, kontrolę dostępu i praktyki zgodne z RODO. Kod i infrastruktura spełniają standardy branżowe.",
   "faq.q5": "Ile kosztuje projekt?",
   "faq.a5":
-    "Wycena zależy od zakresu. prosta strona wizytówka startuje od kilku tysięcy złotych. Aplikacje i automatyzacje wyceniamy indywidualnie po krótkiej rozmowie. Podajemy jasny koszt z góry.",
+    "Wycena zależy od zakresu. Prosta strona wizytówkowa może zostać uruchomiona szybciej, a większe projekty wymagają indywidualnego harmonogramu. Aplikacje i automatyzacje wyceniamy indywidualnie po krótkiej rozmowie. Podajemy jasny koszt z góry.",
   "faq.q6": "Czy oferujecie wsparcie po wdrożeniu?",
   "faq.a6":
     "Tak. Po uruchomieniu oferujemy opiekę techniczną, aktualizacje i rozwój funkcji. Możemy też przejąć monitoring i utrzymanie istniejącej strony lub aplikacji.",
