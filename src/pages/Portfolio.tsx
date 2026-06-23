@@ -16,7 +16,7 @@ import {
   StaggerReveal,
 } from "@/components/ui/SectionReveal";
 import { safeJsonLd } from "@/utils/safeJsonLd";
-import { safeAbsoluteHttpUrl } from "@/utils/safeHref";
+import { joinUrlPath, safeAbsoluteHttpUrl } from "@/utils/safeHref";
 import styles from "./Portfolio.module.css";
 import { useSettings } from "@/hooks/useSettings";
 import FacebookIcon from "@/assets/social-facebook";
@@ -32,7 +32,7 @@ const Portfolio = () => {
   const [visibleCount, setVisibleCount] = useState<number>(6);
   const currentLang = (language as "pl" | "en") || "pl";
   const siteUrl =
-    safeAbsoluteHttpUrl(seo?.siteUrl) ??
+    safeAbsoluteHttpUrl(seo?.siteUrl) ||
     (typeof window !== "undefined" ? window.location.origin : "");
 
   const categories = useMemo(() => {
@@ -86,7 +86,10 @@ const Portfolio = () => {
                   project.translations[currentLang]?.title ||
                   project.translations["pl"]?.title ||
                   project.slug,
-                url: `${siteUrl}/${language}/portfolio/${project.slug}`,
+                url: joinUrlPath(
+                  siteUrl,
+                  `/${language}/portfolio/${project.slug}`,
+                ),
               })),
             })}
           </script>

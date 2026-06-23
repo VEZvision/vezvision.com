@@ -22,6 +22,7 @@ import { useSettings } from "@/hooks/useSettings";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import {
+  joinUrlPath,
   safeAbsoluteHttpUrl,
   safeExternalHref,
   safeImageUrl,
@@ -91,7 +92,7 @@ export default function ProjectDetails() {
           }
           robots="noindex,nofollow"
           language={language}
-          siteUrl={safeAbsoluteHttpUrl(seo?.siteUrl) ?? undefined}
+          siteUrl={safeAbsoluteHttpUrl(seo?.siteUrl) || undefined}
           breadcrumbItems={[
             {
               name: language === "pl" ? "Portfolio" : "Portfolio",
@@ -131,8 +132,9 @@ export default function ProjectDetails() {
     ? `${projectTitle} | ${seo.siteTitle}`
     : projectTitle;
   const canonicalPath = toLocalizedPath(`portfolio/${project.slug}`);
-  const canonicalUrl = safeAbsoluteHttpUrl(seo?.siteUrl)
-    ? `${safeAbsoluteHttpUrl(seo?.siteUrl)}${canonicalPath}`
+  const siteUrl = safeAbsoluteHttpUrl(seo?.siteUrl) || undefined;
+  const canonicalUrl = siteUrl
+    ? joinUrlPath(siteUrl, canonicalPath)
     : canonicalPath;
   const ogDescription =
     project.translations?.[language]?.short_description ||
@@ -142,7 +144,7 @@ export default function ProjectDetails() {
     ? getProjectImageUrl(project.cover_path)
     : safeImageUrl(
         seo?.siteUrl
-          ? `${seo.siteUrl.replace(/\/$/, "")}/favicon.svg`
+          ? joinUrlPath(seo.siteUrl, "/favicon.svg")
           : "/favicon.svg",
       ) || "/favicon.svg";
   const availableLocales = getAvailablePortfolioLocales(project);
@@ -161,7 +163,7 @@ export default function ProjectDetails() {
         ogImage={safeImageUrl(ogImage) || ogImage}
         ogType="article"
         language={language}
-        siteUrl={safeAbsoluteHttpUrl(seo?.siteUrl) ?? undefined}
+        siteUrl={siteUrl}
         localizedPathSuffix={`portfolio/${project.slug}`}
         availableLocales={availableLocales}
         breadcrumbItems={[
