@@ -13,11 +13,11 @@ export const new_translations_for_services_pageTranslations = {
   "group23.modern.sub": "Modern approach",
   "group23.modern.title.line1": "Modern",
   "group23.modern.title.line2": "Approach",
-  "group23.always.title": "Always available when your company needs it.",
+  "group23.always.title": "Post-launch support when you need it.",
   "group23.always.description":
-    "Quick response and priority handling of requests. Technical support when you need it.",
-  "group23.always.feature1": "Quick help",
-  "group23.always.feature2": "Available 24/7",
+    "Fast response and priority handling of requests. Technical help and development after your project goes live.",
+  "group23.always.feature1": "Responsive help",
+  "group23.always.feature2": "Post-launch care",
   "group23.growth.title": "Your real growth",
   "group23.growth.description":
     "We implement solutions that truly support daily work and allow you to focus on what's most important. We focus on effects that are visible in practice.",
