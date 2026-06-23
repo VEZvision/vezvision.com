@@ -2,63 +2,34 @@ import { chromium, type Page } from "@playwright/test";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { join, dirname, resolve } from "node:path";
 import { spawn } from "node:child_process";
-import { getScriptSupabase } from "./lib/supabase";
-import { APP_ROUTES, SUPPORTED_LOCALES } from "@/routing/routes.config";
-import { applyPublishedBlogVisibilityFilter } from "@/services/blogFilters";
+
+import { getDynamicPaths, getStaticPaths } from "./prerender/route-paths";
+import {
+  attachPageDiagnostics,
+  getSeoDebugSnapshot,
+  SEO_READY_PREDICATE,
+  type PageDiagnostics,
+} from "./prerender/seo-readiness";
+import { stopPreviewServer, waitForServer } from "./prerender/preview-server";
+import { validateSeoRouteHtml } from "./seo-build-validation";
 
 const DIST_DIR = resolve(process.cwd(), "dist");
 const PREVIEW_PORT = 4173;
 const NAV_TIMEOUT = 20_000;
+const SEO_READY_TIMEOUT = 30_000;
 const SKIP_URLS = ["https://example.supabase.co", ""];
 
-function getStaticPaths(): string[] {
-  const paths: string[] = [];
-
-  for (const locale of SUPPORTED_LOCALES) {
-    for (const route of APP_ROUTES) {
-      if (route.pageKey === "not-found" || route.pageKey === "unsubscribe")
-        continue;
-      if (route.dynamic) continue;
-
-      const suffix = route.path === "" ? "" : `/${route.path}`;
-      paths.push(`/${locale}${suffix}`);
-    }
-  }
-
-  return paths;
+interface PrerenderResult {
+  readonly ok: boolean;
+  readonly routePath: string;
+  readonly reason?: string;
 }
 
-async function getDynamicPaths(): Promise<string[]> {
-  const paths: string[] = [];
-
-  try {
-    const supabase = await getScriptSupabase();
-
-    let blogQuery = supabase
-      .from("vv_blog_posts")
-      .select("slug")
-      .eq("status", "published")
-      .limit(100);
-    blogQuery = applyPublishedBlogVisibilityFilter(blogQuery);
-
-    const [blogResult, projectResult] = await Promise.all([
-      blogQuery,
-      supabase.from("vv_projects").select("slug").limit(100),
-    ]);
-
-    for (const locale of SUPPORTED_LOCALES) {
-      for (const post of blogResult.data ?? []) {
-        paths.push(`/${locale}/blog/${post.slug}`);
-      }
-      for (const project of projectResult.data ?? []) {
-        paths.push(`/${locale}/portfolio/${project.slug}`);
-      }
-    }
-  } catch {
-    // Supabase unavailable — skip dynamic paths
-  }
-
-  return paths;
+interface PrerenderRouteInput {
+  readonly page: Page;
+  readonly diagnostics: PageDiagnostics;
+  readonly routePath: string;
+  readonly port: number;
 }
 
 function buildPrerenderedHtml(
@@ -69,11 +40,12 @@ function buildPrerenderedHtml(
   return `<!doctype html>\n<html lang="${htmlLang}">\n${headHtml}\n${bodyHtml}\n</html>`;
 }
 
-async function prerenderRoute(
-  page: Page,
-  routePath: string,
-  port: number,
-): Promise<boolean> {
+async function prerenderRoute({
+  page,
+  diagnostics,
+  routePath,
+  port,
+}: PrerenderRouteInput): Promise<PrerenderResult> {
   const url = `http://127.0.0.1:${port}${routePath}`;
 
   try {
@@ -81,21 +53,33 @@ async function prerenderRoute(
       timeout: NAV_TIMEOUT,
       waitUntil: "domcontentloaded",
     });
-  } catch {
-    console.warn(`  skip: ${routePath} (navigation timeout)`);
-    return false;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return { ok: false, routePath, reason: `navigation failed: ${message}` };
   }
 
   try {
-    await page.waitForSelector('meta[property="og:title"]', {
-      timeout: 15_000,
+    await page.waitForFunction(SEO_READY_PREDICATE, undefined, {
+      timeout: SEO_READY_TIMEOUT,
     });
-  } catch {
-    const pageTitle = await page.title();
-    console.warn(
-      `  skip: ${routePath} (no OG title within 15s — page title: "${pageTitle}")`,
-    );
-    return false;
+  } catch (error) {
+    const html = await page.evaluate(() => document.documentElement.outerHTML);
+    const validationErrors = validateSeoRouteHtml(routePath, html);
+    const snapshot = await getSeoDebugSnapshot(page);
+    const pageMessages = diagnostics.messages();
+    const message =
+      error instanceof Error ? error.message.split("\n")[0] : String(error);
+    const diagnosticSuffix = [
+      `snapshot: ${snapshot}`,
+      pageMessages.length > 0
+        ? `events: ${pageMessages.join(" | ")}`
+        : "events: none",
+    ].join("; ");
+    const reason =
+      validationErrors.length > 0
+        ? `SEO not ready: ${validationErrors.join("; ")}; ${diagnosticSuffix}`
+        : `SEO readiness timed out: ${message}; ${diagnosticSuffix}`;
+    return { ok: false, routePath, reason };
   }
 
   const headHtml: string = await page.evaluate(() => document.head.outerHTML);
@@ -103,6 +87,18 @@ async function prerenderRoute(
     () => document.documentElement.lang || "pl",
   );
   const bodyHtml: string = await page.evaluate(() => document.body.outerHTML);
+  const fullHtml: string = await page.evaluate(
+    () => document.documentElement.outerHTML,
+  );
+  const validationErrors = validateSeoRouteHtml(routePath, fullHtml);
+
+  if (validationErrors.length > 0) {
+    return {
+      ok: false,
+      routePath,
+      reason: `SEO validation failed: ${validationErrors.join("; ")}`,
+    };
+  }
 
   const prerendered = buildPrerenderedHtml(headHtml, htmlLang, bodyHtml);
 
@@ -112,30 +108,24 @@ async function prerenderRoute(
   await mkdir(dirname(outPath), { recursive: true });
   await writeFile(outPath, prerendered, "utf-8");
 
-  return true;
-}
-
-async function waitForServer(url: string, timeoutMs: number): Promise<boolean> {
-  const start = Date.now();
-  while (Date.now() - start < timeoutMs) {
-    try {
-      const res = await fetch(url);
-      if (res.ok || res.status === 404) return true;
-    } catch {
-      await new Promise((r) => setTimeout(r, 500));
-    }
-  }
-  return false;
+  return { ok: true, routePath };
 }
 
 async function main() {
+  const skipPrerender = process.env.SKIP_PRERENDER === "1";
   const supabaseUrl = process.env.VITE_SUPABASE_URL?.trim() ?? "";
 
   if (SKIP_URLS.includes(supabaseUrl)) {
-    console.log(
-      "Skipping prerendering — VITE_SUPABASE_URL not configured (test/placeholder env)",
+    if (skipPrerender) {
+      console.log(
+        "Skipping prerendering — SKIP_PRERENDER=1 (CI without real Supabase credentials)",
+      );
+      process.exit(0);
+    }
+    console.error(
+      "Prerendering requires a real VITE_SUPABASE_URL; refusing to ship an unprerendered SEO build",
     );
-    return;
+    process.exit(1);
   }
 
   const template = await readFile(join(DIST_DIR, "index.html"), "utf-8");
@@ -144,7 +134,7 @@ async function main() {
     console.error(
       "dist/index.html is missing or invalid — run vite build first",
     );
-    process.exit(0);
+    process.exit(1);
   }
 
   const staticPaths = getStaticPaths();
@@ -174,9 +164,11 @@ async function main() {
   );
 
   if (!serverReady) {
-    console.warn("vite preview server did not start — skipping prerendering");
-    previewProcess.kill();
-    return;
+    console.error(
+      "vite preview server did not start — cannot prerender SEO HTML",
+    );
+    await stopPreviewServer(previewProcess);
+    process.exit(1);
   }
 
   console.log("Preview server ready");
@@ -184,41 +176,63 @@ async function main() {
   let browser;
   try {
     browser = await chromium.launch({ headless: true });
-  } catch {
-    console.warn(
-      "Chromium not available — skipping prerendering. Run: npx playwright install chromium",
+  } catch (error) {
+    const message = error instanceof Error ? ` ${error.message}` : "";
+    console.error(
+      `Chromium not available — cannot prerender SEO HTML.${message} Run: npx playwright install chromium`,
     );
-    previewProcess.kill();
-    return;
+    await stopPreviewServer(previewProcess);
+    process.exit(1);
   }
 
   const page = await browser.newPage();
+  const diagnostics = attachPageDiagnostics(page);
   let successCount = 0;
   let skipCount = 0;
+  const failures: PrerenderResult[] = [];
 
   for (const routePath of allPaths) {
-    const ok = await prerenderRoute(page, routePath, PREVIEW_PORT);
-    if (ok) {
+    const result = await prerenderRoute({
+      page,
+      diagnostics,
+      routePath,
+      port: PREVIEW_PORT,
+    });
+    if (result.ok) {
       successCount++;
       console.log(`  done: ${routePath}`);
     } else {
       skipCount++;
+      failures.push(result);
+      console.warn(
+        `  failed: ${routePath} (${result.reason ?? "unknown error"})`,
+      );
     }
   }
 
   await page.close();
   await browser.close();
-  previewProcess.kill();
+  await stopPreviewServer(previewProcess);
 
   console.log(
     `\nPrerendered ${successCount}/${allPaths.length} routes (${skipCount} skipped)`,
   );
+
+  if (failures.length > 0) {
+    console.error("\nPrerendering failed for required routes:");
+    for (const failure of failures) {
+      console.error(
+        `- ${failure.routePath}: ${failure.reason ?? "unknown error"}`,
+      );
+    }
+    process.exit(1);
+  }
 }
 
 main().catch((err) => {
-  console.warn(
-    "Prerendering skipped:",
+  console.error(
+    "Prerendering failed:",
     err instanceof Error ? err.message : String(err),
   );
-  process.exit(0);
+  process.exit(1);
 });

@@ -12,7 +12,11 @@ import { useLanguageContext } from "@/hooks/useLanguage";
 import { useSettings } from "@/hooks/useSettings";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
 import { sanitizeCmsHtml } from "@/utils/sanitizeCmsHtml";
-import { safeAbsoluteHttpUrl, safeImageUrl } from "@/utils/safeHref";
+import {
+  joinUrlPath,
+  safeAbsoluteHttpUrl,
+  safeImageUrl,
+} from "@/utils/safeHref";
 import { stripHtmlForJsonLd } from "@/utils/stripHtmlForJsonLd";
 
 import { ArrowLeft, Clock, Calendar } from "lucide-react";
@@ -46,7 +50,7 @@ function BlogArticle() {
     }
   }, [post?.slug, incrementViewCount]);
 
-  const siteUrl = safeAbsoluteHttpUrl(seo?.siteUrl) ?? undefined;
+  const siteUrl = safeAbsoluteHttpUrl(seo?.siteUrl) || undefined;
   const notFoundTitle = seo?.siteTitle
     ? `${t("blog.article.not_found")} | ${seo.siteTitle}`
     : t("blog.article.not_found");
@@ -78,7 +82,7 @@ function BlogArticle() {
           description={errorDescription}
           canonicalUrl={
             siteUrl
-              ? `${siteUrl}${toLocalizedPath(`blog/${slug ?? ""}`)}`
+              ? joinUrlPath(siteUrl, toLocalizedPath(`blog/${slug ?? ""}`))
               : toLocalizedPath(`blog/${slug ?? ""}`)
           }
           robots="noindex,nofollow"
@@ -140,10 +144,12 @@ function BlogArticle() {
 
   const fullTitle = seo?.siteTitle ? `${title} | ${seo.siteTitle}` : title;
   const canonicalPath = toLocalizedPath(`blog/${post.slug}`);
-  const canonicalUrl = siteUrl ? `${siteUrl}${canonicalPath}` : canonicalPath;
+  const canonicalUrl = siteUrl
+    ? joinUrlPath(siteUrl, canonicalPath)
+    : canonicalPath;
   const ogImage =
     safeImageUrl(post.featured_image) ||
-    (siteUrl ? `${siteUrl.replace(/\/$/, "")}/og-image.png` : "/og-image.png");
+    (siteUrl ? joinUrlPath(siteUrl, "/og-image.png") : "/og-image.png");
   const siteName = seo?.ogSiteName || seo?.siteTitle || "VezVision";
   const articleDescription = stripHtmlForJsonLd(
     excerpt || seo?.siteDescription || "",
@@ -188,12 +194,12 @@ function BlogArticle() {
           author: {
             "@type": "Organization",
             name: siteName,
-            "@id": siteUrl ? `${siteUrl}/#organization` : undefined,
+            "@id": siteUrl ? joinUrlPath(siteUrl, "/#organization") : undefined,
           },
           publisher: {
             "@type": "Organization",
             name: siteName,
-            "@id": siteUrl ? `${siteUrl}/#organization` : undefined,
+            "@id": siteUrl ? joinUrlPath(siteUrl, "/#organization") : undefined,
           },
           articleSection: category,
           keywords: translation?.seo_keywords?.join(", ") || undefined,

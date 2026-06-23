@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { useSettings } from "@/hooks/useSettings";
 import { useLanguageContext } from "@/hooks/useLanguage";
 import {
+  joinUrlPath,
   safeAbsoluteHttpUrl,
   safeExternalHref,
   safeImageUrl,
@@ -34,7 +35,7 @@ export function GlobalJsonLd() {
 
   const organization: Record<string, unknown> = {
     "@type": "Organization",
-    "@id": `${siteUrl}/#organization`,
+    "@id": joinUrlPath(siteUrl, "/#organization"),
     name: siteName,
     url: siteUrl,
     description,
@@ -72,11 +73,11 @@ export function GlobalJsonLd() {
 
   const website: Record<string, unknown> = {
     "@type": "WebSite",
-    "@id": `${siteUrl}/#website`,
+    "@id": joinUrlPath(siteUrl, "/#website"),
     name: siteName,
     url: siteUrl,
     inLanguage: language === "pl" ? "pl-PL" : "en-US",
-    publisher: { "@id": `${siteUrl}/#organization` },
+    publisher: { "@id": joinUrlPath(siteUrl, "/#organization") },
   };
 
   const graph: Record<string, unknown>[] = [organization, website];
@@ -84,7 +85,7 @@ export function GlobalJsonLd() {
   if (contact?.email || contact?.phone || company?.legalName) {
     const localBusiness: Record<string, unknown> = {
       "@type": "ProfessionalService",
-      "@id": `${siteUrl}/#business`,
+      "@id": joinUrlPath(siteUrl, "/#business"),
       name: company?.legalName || siteName,
       url: siteUrl,
       email: contact?.email || undefined,
@@ -110,9 +111,9 @@ export function GlobalJsonLd() {
 
   graph.push({
     "@type": "Service",
-    "@id": `${siteUrl}/#service`,
+    "@id": joinUrlPath(siteUrl, "/#service"),
     serviceType: "AI integration, web development, automation",
-    provider: { "@id": `${siteUrl}/#organization` },
+    provider: { "@id": joinUrlPath(siteUrl, "/#organization") },
     areaServed: ["PL", "EU", "Global"],
     description,
     url: siteUrl,
