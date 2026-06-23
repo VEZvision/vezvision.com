@@ -114,18 +114,26 @@ if (!htaccess) {
 
 addAssetErrors();
 
-const seoRoutePaths = new Set(getRequiredStaticSeoPaths());
-const sitemapXml = readTextFile(sitemapPath);
-if (!sitemapXml) {
-  errors.push("dist/sitemap.xml is missing — SEO route validation cannot run");
-} else {
-  for (const routePath of extractSitemapRoutePaths(sitemapXml, siteOrigin)) {
-    seoRoutePaths.add(routePath);
-  }
-}
+const skipSeoRouteValidation = process.env.SKIP_PRERENDER === "1";
 
-for (const routePath of Array.from(seoRoutePaths).sort()) {
-  addSeoRouteErrors(routePath);
+if (skipSeoRouteValidation) {
+  console.log("Skipping SEO route validation — SKIP_PRERENDER=1");
+} else {
+  const seoRoutePaths = new Set(getRequiredStaticSeoPaths());
+  const sitemapXml = readTextFile(sitemapPath);
+  if (!sitemapXml) {
+    errors.push(
+      "dist/sitemap.xml is missing — SEO route validation cannot run",
+    );
+  } else {
+    for (const routePath of extractSitemapRoutePaths(sitemapXml, siteOrigin)) {
+      seoRoutePaths.add(routePath);
+    }
+  }
+
+  for (const routePath of Array.from(seoRoutePaths).sort()) {
+    addSeoRouteErrors(routePath);
+  }
 }
 
 if (errors.length > 0) {
