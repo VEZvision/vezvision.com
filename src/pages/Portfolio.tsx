@@ -33,7 +33,8 @@ const Portfolio = () => {
   const currentLang = (language as "pl" | "en") || "pl";
   const siteUrl =
     safeAbsoluteHttpUrl(seo?.siteUrl) ||
-    (typeof window !== "undefined" ? window.location.origin : "");
+    import.meta.env.VITE_SITE_URL ||
+    "https://vezvision.com";
 
   const categories = useMemo(() => {
     const uniqueCats = Array.from(new Set(projects.map((p) => p.category)));

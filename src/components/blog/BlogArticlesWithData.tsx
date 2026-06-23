@@ -45,7 +45,8 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
   const { seo } = useSettings();
   const siteBaseUrl =
     safeAbsoluteHttpUrl(seo?.siteUrl) ||
-    (typeof window !== "undefined" ? window.location.origin : "");
+    import.meta.env.VITE_SITE_URL ||
+    "https://vezvision.com";
   const [featuredPost, setFeaturedPost] = useState<BlogPostWithDetails | null>(
     null,
   );
