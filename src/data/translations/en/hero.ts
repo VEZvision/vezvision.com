@@ -1,6 +1,7 @@
 export const heroTranslations = {
-    'hero.badge': 'We transform businesses',
-    'hero.subtitle': 'We build the digital future of your company',
-    'hero.cta.consult': 'Book a free consultation',
-    'hero.cta.services': 'See our services',
-} as const
+  "hero.badge": "For companies that want clearer digital work",
+  "hero.subtitle":
+    "We build websites and applications that help your company work better",
+  "hero.cta.consult": "Book a free consultation",
+  "hero.cta.services": "See our services",
+} as const;
