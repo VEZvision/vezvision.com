@@ -16,8 +16,8 @@ export const new_translations_for_services_pageTranslations = {
   "group23.always.title": "Post-launch support when you need it.",
   "group23.always.description":
     "Fast response and priority handling of requests. Technical help and development after your project goes live.",
-  "group23.always.feature1": "Responsive help",
-  "group23.always.feature2": "Post-launch care",
+  "group23.always.feature1": "Clear communication",
+  "group23.always.feature2": "Post-launch support",
   "group23.growth.title": "Your real growth",
   "group23.growth.description":
     "We implement solutions that truly support daily work and allow you to focus on what's most important. We focus on effects that are visible in practice.",

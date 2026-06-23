@@ -125,8 +125,12 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
       >
         <div className={styles.container}>
           <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="mt-2 text-gray-600">{t("blog.list.loading")}</p>
+            <h2 className={styles.sectionTitle}>{t("blog.list.empty")}</h2>
+            <p className="text-gray-600 mt-4">{t("blog.list.empty_desc")}</p>
+            <div
+              className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400 mt-6"
+              aria-hidden="true"
+            />
           </div>
         </div>
       </section>

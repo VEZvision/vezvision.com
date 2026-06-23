@@ -105,7 +105,7 @@ export const portfolioTranslations = {
   "portfolio.grid.error": "Błąd wczytywania",
   "portfolio.grid.empty": "Pierwsze realizacje pojawią się wkrótce",
   "portfolio.grid.empty_desc":
-    "Aktualnie przygotowujemy przykładowe projekty i case studies.",
+    "Aktualnie przygotowujemy wybrane projekty demonstracyjne i case studies.",
   "portfolio.detail.not_found": "Projekt nie znaleziony",
   "portfolio.detail.not_found_desc":
     "Projekt, którego szukasz, nie istnieje lub został przeniesiony.",

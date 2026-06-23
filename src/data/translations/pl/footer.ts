@@ -64,7 +64,7 @@ export const footerTranslations = {
   "blog.list.error": "Błąd podczas ładowania artykułów",
   "blog.list.empty": "Artykuły pojawią się wkrótce",
   "blog.list.empty_desc":
-    "Przygotowujemy praktyczne materiały o stronach, aplikacjach, automatyzacjach i AI dla firm.",
+    "Przygotowujemy praktyczne materiały o stronach internetowych, aplikacjach, automatyzacjach i AI dla firm.",
   "blog.list.show_more": "Pokaż więcej",
   "unsubscribe.title": "Rezygnacja z newslettera",
   "unsubscribe.processing": "Chwila...",
