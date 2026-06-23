@@ -37,9 +37,9 @@ export const footerTranslations = {
   "newsletter.error.captcha": "Please confirm you are not a bot.",
   "contact.form.error.captcha": "Please confirm you are not a bot.",
   "blog.hero.badge": "BLOG & NEWS",
-  "blog.hero.title": "Knowledge that drives innovation",
+  "blog.hero.title": "Practical notes about technology",
   "blog.hero.description":
-    "Discover the latest trends in IT, AI, and marketing. Practical guides, case studies, and expert analyses.",
+    "Practical articles about websites, applications, automations, AI and digital work for business.",
   "blog.hero.cta.aria": "Go to contact",
   "blog.hero.cta.text": "Contact us",
   "blog.articles.badge": "BLOG",
@@ -58,7 +58,7 @@ export const footerTranslations = {
   "blog.article.cta_desc": "Write to us. We can talk about your project.",
   "blog.article.cta_button": "Let's talk",
   "blog.article.recent": "Recent Articles",
-  "blog.list.loading": "Loading articles...",
+  "blog.list.loading": "Articles will appear soon",
   "blog.list.error": "Error while loading articles",
   "blog.list.empty": "Articles will appear soon",
   "blog.list.empty_desc":

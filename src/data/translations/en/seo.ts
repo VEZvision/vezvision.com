@@ -1,7 +1,7 @@
 export const seoTranslations = {
   "seo.home.title": "VezVision - Modern Websites and Web Applications",
   "seo.home.description":
-    "We create innovative websites, web applications, and digital solutions that help businesses grow. Check our offer!",
+    "We design websites, web applications, and digital tools that help companies organize work and grow with confidence.",
   "seo.services.title": "Services - VezVision",
   "seo.services.description":
     "Comprehensive development services: websites, web apps, e-commerce, process automation. See what we can do for you.",
@@ -16,7 +16,7 @@ export const seoTranslations = {
     "Contact us. Let's talk about your project and find the best solution for your business.",
   "seo.about.title": "About Us - VezVision",
   "seo.about.description":
-    "Meet the VezVision team. We are technology enthusiasts creating solutions for the future.",
+    "Meet VezVision and see how we work on websites, applications, automations, and digital tools for business.",
   "seo.products.title": "Products - VezVision",
   "seo.products.description":
     "See digital products and tools that help organize work and business processes.",
