@@ -78,17 +78,17 @@ const PortfolioFeatures = () => {
           <header className={styles.header}>
             <div className={styles.badge}>
               <Sparkles size={14} />
-              {isPl ? "Nasze Możliwości" : "Our Capabilities"}
+              {isPl ? "Zapowiedź realizacji" : "Case study preview"}
             </div>
             <h2 className={styles.sectionTitle}>
               {isPl
-                ? "Co możemy dla Ciebie zrobić?"
-                : "What can we do for you?"}
+                ? "Jakie projekty będziemy tu pokazywać"
+                : "What we will showcase here"}
             </h2>
             <p className={styles.sectionSubtitle}>
               {isPl
-                ? "Rozwiązania IT dopasowane do tego, czego naprawdę potrzebuje Twoja firma."
-                : "IT solutions built around what your company actually needs."}
+                ? "To będzie uporządkowane miejsce na wybrane realizacje, projekty demonstracyjne i case studies — bez udawania dużego portfolio."
+                : "This will become a curated place for selected projects, demo work and case studies — without pretending to have a large portfolio."}
             </p>
           </header>
         </SectionReveal>
@@ -103,26 +103,24 @@ const PortfolioFeatures = () => {
                   {[
                     {
                       icon: X,
-                      text: isPl ? "Pełna kontrola" : "Full control",
+                      text: isPl ? "Problem i kontekst" : "Problem and context",
                       done: true,
                     },
                     {
                       icon: Sparkles,
-                      text: isPl
-                        ? "Bez zbędnych formalności"
-                        : "No unnecessary formalities",
+                      text: isPl ? "Decyzje projektowe" : "Design decisions",
                       done: true,
                     },
                     {
                       icon: Clock,
                       text: isPl
-                        ? "Więcej czasu na rozwój"
-                        : "More time for growth",
+                        ? "Wdrożenie i wnioski"
+                        : "Delivery and learnings",
                       done: true,
                     },
                     {
                       icon: DollarSign,
-                      text: isPl ? "Szybsze procesy" : "Faster processes",
+                      text: isPl ? "Efekt biznesowy" : "Business outcome",
                       done: true,
                     },
                   ].map((item, i) => (
@@ -143,12 +141,12 @@ const PortfolioFeatures = () => {
               </div>
               <div className={styles.content}>
                 <h3 className={styles.title}>
-                  {isPl ? "Więcej czasu na rozwój." : "More time for growth."}
+                  {isPl ? "Strony internetowe" : "Websites"}
                 </h3>
                 <p className={styles.description}>
                   {isPl
-                    ? "Automatyzacja procesów IT dla przedsiębiorstw nastawionych na efektywność."
-                    : "IT process automation for efficiency-focused enterprises."}
+                    ? "Wybrane strony będziemy opisywać przez cel, strukturę treści, UX i sposób przygotowania do publikacji."
+                    : "Selected websites will be described through their goal, content structure, UX decisions and launch preparation."}
                 </p>
               </div>
             </StaggerItem>
@@ -188,12 +186,12 @@ const PortfolioFeatures = () => {
               </div>
               <div className={styles.content}>
                 <h3 className={styles.title}>
-                  {isPl ? "Zarządzanie bez stresu" : "Stress-free management"}
+                  {isPl ? "Sklepy internetowe" : "E-commerce stores"}
                 </h3>
                 <p className={styles.description}>
                   {isPl
-                    ? "Zmieniamy sposób, w jaki Twój zespół pracuje z narzędziami IT. Pełna płynność pracy, zero chaosu."
-                    : "Transforming how your team works with IT tools. Full workflow fluidity, zero chaos."}
+                    ? "Case studies pokażą, jak projektować ścieżkę zakupową, katalog, płatności i podstawy dalszego rozwoju sprzedaży."
+                    : "Case studies will show how we approach the buying journey, catalogue, payments and foundations for future sales growth."}
                 </p>
               </div>
             </StaggerItem>
@@ -215,14 +213,14 @@ const PortfolioFeatures = () => {
                   <div className={styles.suggestions}>
                     {[
                       isPl
-                        ? "Badanie konkurencji w Twojej branży"
-                        : "Competition research in your industry",
+                        ? "Hipotezy i założenia projektu"
+                        : "Project hypotheses and assumptions",
                       isPl
-                        ? "Analiza UX oraz zachowań użytkowników"
-                        : "UX and user behavior analysis",
+                        ? "Decyzje UX i architektura informacji"
+                        : "UX decisions and information architecture",
                       isPl
-                        ? "Wskaźniki zwiększające konwersję..."
-                        : "Conversion-boosting metrics...",
+                        ? "Wnioski po wdrożeniu..."
+                        : "Post-launch learnings...",
                     ].map((text, i) => (
                       <div key={i} className={styles.suggestionItem}>
                         <div className={styles.suggestionLeft}>
@@ -237,14 +235,12 @@ const PortfolioFeatures = () => {
               </div>
               <div className={styles.content}>
                 <h3 className={styles.title}>
-                  {isPl
-                    ? "Znajduj odpowiedzi zanim o nie zapytasz"
-                    : "Find answers before you ask"}
+                  {isPl ? "Aplikacje webowe" : "Web applications"}
                 </h3>
                 <p className={styles.description}>
                   {isPl
-                    ? "Twoja wiedza. Nasza technologia. Przewaga od pierwszego kliknięcia."
-                    : "Your knowledge. Our technology. Advantage from the first click."}
+                    ? "Pokażemy interfejsy, proces projektowania funkcji oraz decyzje techniczne, które wpływają na wygodę użytkowników."
+                    : "We will show interfaces, feature-design decisions and technical choices that shape the user experience."}
                 </p>
               </div>
             </StaggerItem>
@@ -302,12 +298,12 @@ const PortfolioFeatures = () => {
               </div>
               <div className={styles.content}>
                 <h3 className={styles.title}>
-                  {isPl ? "Kodujemy Twój sukces" : "We code your success"}
+                  {isPl ? "Automatyzacje AI" : "AI automations"}
                 </h3>
                 <p className={styles.description}>
                   {isPl
-                    ? "Wdrażamy unikalne skrypty i narzędzia IT, które automatyzują zadania w firmie"
-                    : "We implement unique scripts and IT tools that automate tasks in your company"}
+                    ? "W realizacjach opiszemy konkretne procesy, ograniczenia, integracje i sposób kontroli jakości automatyzacji."
+                    : "Future case studies will describe concrete processes, constraints, integrations and quality control for automation work."}
                 </p>
               </div>
             </StaggerItem>
@@ -347,14 +343,12 @@ const PortfolioFeatures = () => {
               </div>
               <div className={styles.content}>
                 <h3 className={styles.title}>
-                  {isPl
-                    ? "Łączymy ludzi i systemy"
-                    : "Connecting people and systems"}
+                  {isPl ? "Systemy dla firm" : "Business systems"}
                 </h3>
                 <p className={styles.description}>
                   {isPl
-                    ? "Szybka współpraca, analiza wyników, wygodna wymiana danych."
-                    : "Fast collaboration, results analysis, convenient data exchange."}
+                    ? "Będziemy pokazywać projekty od problemu operacyjnego przez projekt procesu po działające narzędzie."
+                    : "We will show projects from an operational problem through process design to a working tool."}
                 </p>
               </div>
             </StaggerItem>
