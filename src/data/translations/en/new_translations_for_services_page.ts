@@ -1,5 +1,5 @@
 export const new_translations_for_services_pageTranslations = {
-  "services.hero.badge": "NEW GENERATION OF IT SERVICES FOR BUSINESS",
+  "services.hero.badge": "IT SERVICES FOR COMPANIES",
   "services.hero.title.line1": "Technology that ",
   "services.hero.title.line2": "drives your ",
   "services.hero.title.emphasis": "business",
@@ -9,20 +9,23 @@ export const new_translations_for_services_pageTranslations = {
   "group23.header": "Why choose us",
   "group23.header.line1": "Why",
   "group23.header.line2.italic": "choose us",
-  "group23.subtitle": "Discover reasons to choose VezVision.",
-  "group23.modern.sub": "Modern approach",
+  "group23.subtitle": "Three principles behind every cooperation.",
+  "group23.modern.sub": "Practical process",
   "group23.modern.title.line1": "Modern",
-  "group23.modern.title.line2": "Approach",
-  "group23.always.title": "Post-launch support when you need it.",
+  "group23.modern.title.line2": "approach",
+  "group23.modern.description":
+    "We choose technology around the business goal, not around trends or showpiece features.",
+  "group23.always.title": "Clear communication",
   "group23.always.description":
-    "Fast response and priority handling of requests. Technical help and development after your project goes live.",
-  "group23.always.feature1": "Clear communication",
-  "group23.always.feature2": "Post-launch support",
-  "group23.growth.title": "Your real growth",
+    "We agree priorities, report progress clearly, and respond quickly throughout the project.",
+  "group23.always.feature1": "Clear scope",
+  "group23.always.feature2": "Regular updates",
+  "group23.growth.title": "Post-launch support",
   "group23.growth.description":
-    "We implement solutions that truly support daily work and allow you to focus on what's most important. We focus on effects that are visible in practice.",
-  "group23.growth.chart.value": "$90,376",
-  "group23.growth.chart.aria": "Value growth chart, 90,376",
+    "After release, we help with maintenance, fixes, and further development of your website or app.",
+  "group23.growth.chart.value": "Continuous improvement",
+  "group23.growth.chart.aria":
+    "Illustration of continuous improvement after launch",
   "workflow.badge": "PROCESS",
   "workflow.subtitle":
     "Transparent timeline, clear stages, and refined details. All with attention to quality and user experience.",
