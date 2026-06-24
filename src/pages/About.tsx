@@ -1,50 +1,46 @@
-import '../styles/GridBackground.css';
-import { Info } from 'lucide-react';
+import "../styles/GridBackground.css";
+import { Info } from "lucide-react";
 
-import VideoHeroSection from '@/components/common/VideoHeroSection';
-import { useLanguageContext } from '@/hooks/useLanguage';
-import { useSettings } from '@/hooks/useSettings';
-import { usePageSectionConfig } from '@/hooks/usePageSection';
-import { CmsPage } from '@/pagekit';
-import { useHeroContactAction } from '@/hooks/useHeroContactAction';
-import FacebookIcon from '@/assets/social-facebook';
-import socialInstagram from '@/assets/products/social-instagram.svg';
-import LinkedInIcon from '@/assets/social-linkedin';
-import AboutHeader from '@/components/about/AboutHeader';
-import AboutCards from '@/components/about/AboutCards';
-import ValuesSection from '@/components/about/ValuesSection';
-import WhyChooseSection from '@/components/why-choose/WhyChooseSection';
-import AboutComparison from '@/components/about/AboutComparison';
-import FaqSection from '@/components/faq/FaqSection';
-import ContactSection from '@/components/contact/ContactSection';
+import VideoHeroSection from "@/components/common/VideoHeroSection";
+import { useLanguageContext } from "@/hooks/useLanguage";
+import { useSettings } from "@/hooks/useSettings";
+import { usePageSectionConfig } from "@/hooks/usePageSection";
+import { CmsPage } from "@/pagekit";
+import { useHeroContactAction } from "@/hooks/useHeroContactAction";
+import { buildHeroSocialLinks } from "@/components/common/heroSocialLinks";
+import AboutHeader from "@/components/about/AboutHeader";
+import AboutCards from "@/components/about/AboutCards";
+import ValuesSection from "@/components/about/ValuesSection";
+import WhyChooseSection from "@/components/why-choose/WhyChooseSection";
+import AboutComparison from "@/components/about/AboutComparison";
+import FaqSection from "@/components/faq/FaqSection";
+import ContactSection from "@/components/contact/ContactSection";
 
 function AboutHero() {
   const { t } = useLanguageContext();
   const { social } = useSettings();
-  const sectionConfig = usePageSectionConfig('about', 'hero');
+  const sectionConfig = usePageSectionConfig("about", "hero");
   const handleContactClick = useHeroContactAction(sectionConfig.contactHref);
 
   return (
     <VideoHeroSection
       title={
         <>
-          <span className="block">{t('about.hero.title.line1')}</span>
+          <span className="block">{t("about.hero.title.line1")}</span>
           <span className="block">
-            {t('about.hero.title.line2.before')}{' '}
-            <span className="font-sans">{t('about.hero.title.line2.italic')}</span>
+            {t("about.hero.title.line2.before")}{" "}
+            <span className="font-sans">
+              {t("about.hero.title.line2.italic")}
+            </span>
           </span>
         </>
       }
-      subtitle={t('about.hero.description')}
-      buttonText={t('nav.contact')}
+      subtitle={t("about.hero.description")}
+      buttonText={t("nav.contact")}
       onButtonClick={handleContactClick}
-      badge={t('about.hero.badge')}
+      badge={t("about.hero.badge")}
       icon={<Info className="w-3.5 h-3.5" />}
-      socialLinks={[
-        { href: social?.facebook || social?.x, icon: <FacebookIcon />, label: 'Facebook' },
-        { href: social?.instagram, icon: <img src={socialInstagram} className="w-6 h-6" alt="" />, label: 'Instagram' },
-        { href: social?.linkedin, icon: <LinkedInIcon />, label: 'LinkedIn' },
-      ]}
+      socialLinks={buildHeroSocialLinks(social)}
     />
   );
 }
@@ -61,14 +57,14 @@ const ABOUT_SECTIONS = {
 } as const;
 
 const ABOUT_FALLBACK = [
-  'hero',
-  'header',
-  'cards',
-  'values',
-  'about_comparison',
-  'why_choose',
-  'faq',
-  'contact',
+  "hero",
+  "header",
+  "cards",
+  "values",
+  "about_comparison",
+  "why_choose",
+  "faq",
+  "contact",
 ] as const;
 
 export default function About() {
@@ -77,7 +73,10 @@ export default function About() {
       pageKey="about"
       fallbackKeys={ABOUT_FALLBACK}
       sections={ABOUT_SECTIONS}
-      shell={{ className: 'min-h-screen', style: { backgroundColor: '#f5f5f5', position: 'relative', zIndex: 1 } }}
+      shell={{
+        className: "min-h-screen",
+        style: { backgroundColor: "#f5f5f5", position: "relative", zIndex: 1 },
+      }}
     />
   );
 }
