@@ -1,17 +1,17 @@
 export const portfolioTranslations = {
-  "portfolio.hero.badge": "Nowa generacja usług IT dla biznesu",
-  "portfolio.hero.title.line1": "Rozwiązania dopasowane ",
-  "portfolio.hero.title.line2.italic": "do Twoich potrzeb",
+  "portfolio.hero.badge": "Realizacje i case studies",
+  "portfolio.hero.title.line1": "Portfolio",
+  "portfolio.hero.title.line2.italic": "VEZvision",
   "portfolio.hero.description":
-    "Wybierz usługę, która realnie wspiera rozwój Twojej firmy.",
+    "W tym miejscu będziemy publikować wybrane realizacje, projekty demonstracyjne i case studies pokazujące, jak technologia, design i automatyzacje mogą wspierać rozwój firm.",
   "portfolio.hero.cta.aria": "Przejdź do kontaktu",
   "portfolio.hero.social.aria": "Linki społecznościowe",
   "portfolio.hero.logoAlt": "Logo VezVision",
-  "portfolio.projects.badge": "NASZE PROJEKTY",
-  "portfolio.projects.title.line1": "Wybrane",
-  "portfolio.projects.title.line2.italic": "realizacje",
+  "portfolio.projects.badge": "ZAPOWIEDŹ CASE STUDIES",
+  "portfolio.projects.title.line1": "Pierwsze",
+  "portfolio.projects.title.line2.italic": "realizacje w przygotowaniu",
   "portfolio.projects.subtitle":
-    "Poznaj nasze najnowsze projekty, które pokazują nasze możliwości i doświadczenie w tworzeniu innowacyjnych rozwiązań cyfrowych.",
+    "Portfolio będzie rozwijane wraz z kolejnymi wdrożeniami. Każdy opis pokaże problem, proces, decyzje projektowe i efekt biznesowy.",
   "portfolio.projects.category.webApps": "Aplikacja Web",
   "portfolio.projects.category.website": "Strona Internetowa",
   "portfolio.projects.category.tool": "Narzędzie",
@@ -106,6 +106,9 @@ export const portfolioTranslations = {
   "portfolio.grid.empty": "Pierwsze realizacje pojawią się wkrótce.",
   "portfolio.grid.empty_desc":
     "Aktualnie przygotowujemy wybrane projekty demonstracyjne i case studies.",
+  "portfolio.grid.empty_cta.title":
+    "Chcesz stworzyć projekt, który może stać się jedną z naszych pierwszych realizacji?",
+  "portfolio.grid.empty_cta.button": "Porozmawiajmy o projekcie",
   "portfolio.detail.not_found": "Projekt nie znaleziony",
   "portfolio.detail.not_found_desc":
     "Projekt, którego szukasz, nie istnieje lub został przeniesiony.",

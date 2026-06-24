@@ -1,16 +1,16 @@
-import { Navigate, Outlet, useLocation, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
-import { isSupportedLocale } from '@/routing/routes.config';
-import { resolveLocaleRedirect } from '@/routing/locale';
-import { detectInitialLanguage } from '@/data/translations/loadLocale';
-import { useLanguageContext } from '@/hooks/useLanguage';
+import { Navigate, Outlet, useLocation, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { isSupportedLocale } from "@/routing/routes.config";
+import { resolveLocaleRedirect } from "@/routing/locale";
+import { useLanguageContext } from "@/hooks/useLanguage";
 
 export function LocaleRedirect() {
   const location = useLocation();
-  const preferred = detectInitialLanguage();
-  const target = resolveLocaleRedirect(location.pathname, preferred);
+  const target = resolveLocaleRedirect(location.pathname);
 
-  return <Navigate to={`${target}${location.search}${location.hash}`} replace />;
+  return (
+    <Navigate to={`${target}${location.search}${location.hash}`} replace />
+  );
 }
 
 export function LocaleGate() {
@@ -25,7 +25,7 @@ export function LocaleGate() {
   }, [lang, setLanguage]);
 
   if (!isSupportedLocale(lang)) {
-    return <Navigate to={resolveLocaleRedirect(location.pathname, detectInitialLanguage())} replace />;
+    return <Navigate to={resolveLocaleRedirect(location.pathname)} replace />;
   }
 
   return <Outlet />;

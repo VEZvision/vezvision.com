@@ -1,17 +1,17 @@
 export const portfolioTranslations = {
-  "portfolio.hero.badge": "New generation of IT services for business",
-  "portfolio.hero.title.line1": "Solutions matched ",
-  "portfolio.hero.title.line2.italic": "to your needs",
+  "portfolio.hero.badge": "Projects and case studies",
+  "portfolio.hero.title.line1": "VEZvision",
+  "portfolio.hero.title.line2.italic": "Portfolio",
   "portfolio.hero.description":
-    "Choose a service that genuinely supports your company's growth.",
+    "This is where we will publish selected projects, demo work and case studies showing how technology, design and automation can support business growth.",
   "portfolio.hero.cta.aria": "Go to contact",
   "portfolio.hero.social.aria": "Social links",
   "portfolio.hero.logoAlt": "VezVision Logo",
-  "portfolio.projects.badge": "OUR PROJECTS",
-  "portfolio.projects.title.line1": "Selected",
-  "portfolio.projects.title.line2.italic": "projects",
+  "portfolio.projects.badge": "CASE STUDY PREVIEW",
+  "portfolio.projects.title.line1": "First",
+  "portfolio.projects.title.line2.italic": "projects in preparation",
   "portfolio.projects.subtitle":
-    "A curated space for selected projects, demos, and case studies showing how we approach digital work.",
+    "The portfolio will grow with future launches. Each write-up will show the problem, the process, design decisions and business outcome.",
   "portfolio.projects.category.webApps": "Web Application",
   "portfolio.projects.category.website": "Website",
   "portfolio.projects.category.tool": "Tool",
@@ -99,6 +99,9 @@ export const portfolioTranslations = {
   "portfolio.grid.empty": "First projects will appear soon.",
   "portfolio.grid.empty_desc":
     "We are currently preparing selected demo projects and case studies.",
+  "portfolio.grid.empty_cta.title":
+    "Want to build a project that could become one of our first case studies?",
+  "portfolio.grid.empty_cta.button": "Let’s talk about your project",
   "portfolio.filters.concepts": "Concepts",
   "portfolio.filters.prototypes": "Prototypes",
   "portfolio.filters.demos": "Demos",

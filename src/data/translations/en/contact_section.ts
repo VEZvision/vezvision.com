@@ -17,7 +17,7 @@ export const contact_sectionTranslations = {
     "Leave us some information or schedule a short conversation.",
   "contact.tile.meeting.action": "Go to contact",
   "contact.footer": "We usually respond within 24 hours",
-  "contact.hero.badge": "New generation of IT services for business",
+  "contact.hero.badge": "Project conversation",
   "contact.hero.title.line1": "Got a challenge? ",
   "contact.hero.title.line2.italic": "Let's talk!",
   "contact.hero.description":

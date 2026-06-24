@@ -191,6 +191,9 @@ const Portfolio = () => {
               <PortfolioEmptyState
                 title={t("portfolio.grid.empty")}
                 description={t("portfolio.grid.empty_desc")}
+                ctaTitle={t("portfolio.grid.empty_cta.title")}
+                ctaLabel={t("portfolio.grid.empty_cta.button")}
+                ctaHref={toLocalizedPath("contact")}
               />
             ) : filteredProjects.length === 0 ? (
               <PortfolioEmptyState

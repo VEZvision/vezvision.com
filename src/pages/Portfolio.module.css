@@ -324,6 +324,45 @@
   margin: 0;
 }
 
+.emptyCta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.emptyCtaText {
+  max-width: 420px;
+  margin: 0;
+  color: #344054;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.emptyCtaLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 18px;
+  color: #ffffff;
+  background: #101828;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.emptyCtaLink:hover,
+.emptyCtaLink:focus-visible {
+  background: #1d2939;
+  transform: translateY(-1px);
+}
+
 /* Load More */
 .loadMore {
   display: flex;
@@ -447,6 +486,10 @@
 
   .emptyCopy {
     text-align: center;
+  }
+
+  .emptyCta {
+    justify-content: center;
   }
 
   .emptyDesc {
