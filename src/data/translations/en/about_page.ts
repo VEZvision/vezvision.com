@@ -7,9 +7,9 @@ export const about_pageTranslations = {
   "about.header.tempWord": "classic",
   "about.header.finalWord": "modern",
   "about.hero.badge": "NEW GENERATION OF IT SERVICES FOR BUSINESS",
-  "about.hero.title.line1": "We build what others ",
-  "about.hero.title.line2.before": "are still",
-  "about.hero.title.line2.italic": "planning",
+  "about.hero.title.line1": "We build digital tools ",
+  "about.hero.title.line2.before": "matched to real",
+  "about.hero.title.line2.italic": "business needs",
   "about.hero.description":
     "We design and implement digital tools that can grow together with your company.",
   "about.hero.social.xAlt": "X (Twitter)",
