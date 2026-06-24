@@ -1,11 +1,9 @@
-import { Fragment, memo, useEffect, useRef, type ReactNode } from "react";
+import { Fragment, memo, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import logoNavbar from "../../assets/logo-navbar.svg";
 
-import FacebookIcon from "@/assets/social-facebook";
-import socialInstagram from "@/assets/products/social-instagram.svg";
-import LinkedInIcon from "@/assets/social-linkedin";
+import { buildHeroSocialLinks } from "@/components/common/heroSocialLinks";
 import { useLanguageContext } from "../../hooks/useLanguage";
 import { usePrefersReducedData } from "@/hooks/usePrefersReducedData";
 import SectionBadge from "@/components/ui/SectionBadge";
@@ -18,12 +16,6 @@ import styles from "./Hero.module.scss";
 
 const HERO_VIDEO_SRC = "/hero-bg.mp4";
 const SITE_URL = import.meta.env.VITE_SITE_URL || "https://vezvision.com";
-
-interface SocialLink {
-  href: string | undefined;
-  icon: ReactNode;
-  label: string;
-}
 
 const Hero = memo(() => {
   const { t, language } = useLanguageContext();
@@ -75,27 +67,7 @@ const Hero = memo(() => {
     };
   }, [prefersReducedData]);
 
-  const socialLinks: SocialLink[] = [
-    {
-      href: social?.facebook || social?.x,
-      icon: <FacebookIcon />,
-      label: "Facebook",
-    },
-    {
-      href: social?.instagram,
-      icon: (
-        <img
-          src={socialInstagram}
-          className="w-6 h-6"
-          alt=""
-          loading="lazy"
-          decoding="async"
-        />
-      ),
-      label: "Instagram",
-    },
-    { href: social?.linkedin, icon: <LinkedInIcon />, label: "LinkedIn" },
-  ];
+  const socialLinks = buildHeroSocialLinks(social);
   const primaryHref = localizeInternalHref(
     safeCmsHref(sectionConfig.primaryHref, "/contact"),
     language,
