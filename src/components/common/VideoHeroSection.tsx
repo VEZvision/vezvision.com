@@ -138,6 +138,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
           muted
           playsInline
           preload="metadata"
+          poster="/og-image.png"
           aria-hidden="true"
           onError={() => {}}
           disableRemotePlayback
@@ -145,7 +146,6 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
         >
           <source src="/footer-bg.webm" type="video/webm" />
           <source src="/footer-bg.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
         </video>
       )}
 
