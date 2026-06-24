@@ -1,12 +1,11 @@
 import "../styles/GridBackground.css";
 import { useState, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Briefcase, FolderOpen } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { useLanguageContext } from "@/hooks/useLanguage";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
 import { usePortfolio } from "../hooks/usePortfolio";
-import { getProjectImageUrl } from "@/services/portfolio";
 import PageSeo from "@/components/seo/PageSeo";
 import VideoHeroSection from "@/components/common/VideoHeroSection";
 import PortfolioFeatures from "../components/portfolio/PortfolioFeatures";
@@ -20,9 +19,9 @@ import { safeJsonLd } from "@/utils/safeJsonLd";
 import { joinUrlPath, safeAbsoluteHttpUrl } from "@/utils/safeHref";
 import styles from "./Portfolio.module.css";
 import { useSettings } from "@/hooks/useSettings";
-import FacebookIcon from "@/assets/social-facebook";
-import LinkedInIcon from "@/assets/social-linkedin";
-import socialInstagram from "@/assets/products/social-instagram.svg";
+import { buildHeroSocialLinks } from "@/components/common/heroSocialLinks";
+import PortfolioEmptyState from "./PortfolioEmptyState";
+import PortfolioProjectCard from "./PortfolioProjectCard";
 
 const Portfolio = () => {
   const { t, language } = useLanguageContext();
@@ -113,19 +112,7 @@ const Portfolio = () => {
         onButtonClick={handleContactClick}
         badge={t("portfolio.hero.badge")}
         icon={<FolderOpen className="w-3.5 h-3.5" />}
-        socialLinks={[
-          {
-            href: social?.facebook || social?.x,
-            icon: <FacebookIcon />,
-            label: "Facebook",
-          },
-          {
-            href: social?.instagram,
-            icon: <img src={socialInstagram} className="w-6 h-6" alt="" />,
-            label: "Instagram",
-          },
-          { href: social?.linkedin, icon: <LinkedInIcon />, label: "LinkedIn" },
-        ]}
+        socialLinks={buildHeroSocialLinks(social)}
         ariaLabelledBy="portfolio-hero-title"
       />
 
@@ -195,85 +182,32 @@ const Portfolio = () => {
                 </div>
               ))
             ) : error ? (
-              <div className={styles.empty}>
-                <FolderOpen className={styles.emptyIcon} />
-                <h3 className={styles.emptyTitle}>
-                  {t("portfolio.grid.error")}
-                </h3>
-                <p className={styles.emptyDesc}>{error.message}</p>
-              </div>
+              <PortfolioEmptyState
+                compact
+                title={t("portfolio.grid.error")}
+                description={error.message}
+              />
+            ) : projects.length === 0 ? (
+              <PortfolioEmptyState
+                title={t("portfolio.grid.empty")}
+                description={t("portfolio.grid.empty_desc")}
+              />
             ) : filteredProjects.length === 0 ? (
-              <div className={styles.empty}>
-                <FolderOpen className={styles.emptyIcon} />
-                <h3 className={styles.emptyTitle}>
-                  {t("portfolio.grid.empty")}
-                </h3>
-                <p className={styles.emptyDesc}>
-                  {t("portfolio.grid.empty_desc")}
-                </p>
-              </div>
+              <PortfolioEmptyState
+                title={t("portfolio.empty.title")}
+                description={t("portfolio.empty.description")}
+              />
             ) : (
               <StaggerReveal className={styles.grid}>
-                {visibleProjects.map((project, index) => {
-                  const title =
-                    project.translations[currentLang]?.title ||
-                    project.translations["pl"]?.title;
-                  const description =
-                    project.translations[currentLang]?.short_description ||
-                    project.translations["pl"]?.short_description;
-
-                  return (
-                    <StaggerItem
-                      key={`${activeCategory}-${project.id}-${index}`}
-                    >
-                      <Link
-                        to={toLocalizedPath(`portfolio/${project.slug}`)}
-                        className="block no-underline"
-                      >
-                        <article className={styles.card}>
-                          <div className={styles.cardImage}>
-                            {project.cover_path ? (
-                              <img
-                                src={getProjectImageUrl(project.cover_path)}
-                                alt={title}
-                                loading="lazy"
-                                decoding="async"
-                              />
-                            ) : (
-                              <div className={styles.cardImagePlaceholder}>
-                                <FolderOpen size={32} />
-                              </div>
-                            )}
-                          </div>
-                          <div className={styles.cardContent}>
-                            <span className={styles.cardCategory}>
-                              {project.category?.replace("-", " ")}
-                            </span>
-                            <h3 className={styles.cardTitle}>{title}</h3>
-                            {description && (
-                              <p className={styles.cardDesc}>{description}</p>
-                            )}
-                            {project.technologies &&
-                              project.technologies.length > 0 && (
-                                <div className={styles.cardTech}>
-                                  {project.technologies
-                                    .slice(0, 3)
-                                    .map((tech) => (
-                                      <span
-                                        key={tech.id || tech.name}
-                                        className={styles.techTag}
-                                      >
-                                        {tech.name}
-                                      </span>
-                                    ))}
-                                </div>
-                              )}
-                          </div>
-                        </article>
-                      </Link>
-                    </StaggerItem>
-                  );
-                })}
+                {visibleProjects.map((project, index) => (
+                  <StaggerItem key={`${activeCategory}-${project.id}-${index}`}>
+                    <PortfolioProjectCard
+                      project={project}
+                      language={currentLang}
+                      href={toLocalizedPath(`portfolio/${project.slug}`)}
+                    />
+                  </StaggerItem>
+                ))}
               </StaggerReveal>
             )}
           </div>
