@@ -19,7 +19,7 @@ export const contact_sectionTranslations = {
   "contact.footer": "We usually respond within 24 hours",
   "contact.hero.badge": "Project conversation",
   "contact.hero.title.line1": "Got a challenge? ",
-  "contact.hero.title.line2.italic": "Let's talk!",
+  "contact.hero.title.line2.italic": "Let\u2019s talk!",
   "contact.hero.description":
     "Write, call or book a short consultation. We will help you choose the next step.",
   "contact.hero.cta.aria": "Go to the contact form",
@@ -28,7 +28,7 @@ export const contact_sectionTranslations = {
   "contact.form.title.line1": "Contact",
   "contact.form.title.line2.italic": "us",
   "contact.form.subtitle":
-    "Have a question or need details? Send us a message.",
+    "Have a question or want to discuss a project? Send us a message \u2014 we\u2019ll help you choose the right direction.",
   "contact.form.email.prompt.line1": "Have questions or need details?",
   "contact.form.email.prompt.line2": "Write to us!",
   "contact.form.phone.prompt.line1": "Prefer to talk?",
