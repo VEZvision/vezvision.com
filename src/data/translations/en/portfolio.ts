@@ -96,7 +96,7 @@ export const portfolioTranslations = {
   "portfolio.promises.partnership": "Partnership relations",
   "portfolio.filters.all": "All",
   "portfolio.grid.error": "Loading error",
-  "portfolio.grid.empty": "First projects will appear soon",
+  "portfolio.grid.empty": "First projects will appear soon.",
   "portfolio.grid.empty_desc":
     "We are currently preparing selected demo projects and case studies.",
   "portfolio.filters.concepts": "Concepts",

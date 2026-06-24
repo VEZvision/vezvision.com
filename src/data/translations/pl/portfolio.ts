@@ -103,7 +103,7 @@ export const portfolioTranslations = {
   "portfolio.filters.tools": "Narzędzia",
   "portfolio.filters.mobile-apps": "Aplikacje Mobile",
   "portfolio.grid.error": "Błąd wczytywania",
-  "portfolio.grid.empty": "Pierwsze realizacje pojawią się wkrótce",
+  "portfolio.grid.empty": "Pierwsze realizacje pojawią się wkrótce.",
   "portfolio.grid.empty_desc":
     "Aktualnie przygotowujemy wybrane projekty demonstracyjne i case studies.",
   "portfolio.detail.not_found": "Projekt nie znaleziony",

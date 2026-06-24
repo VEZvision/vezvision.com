@@ -1,119 +1,139 @@
-import styles from './Features.module.css';
-import FeatureCard from './FeatureCard';
-import aiSupportImage from '@/assets/features/ai-support-image.png';
-import automationImage from '@/assets/features/automation-image.png';
-import aiSupportImageSrcset from '@/assets/features/ai-support-image.png?w=600;1200&format=webp&as=srcset';
-import aiSupportImageAvifSrcset from '@/assets/features/ai-support-image.png?w=600;1200&format=avif&as=srcset';
-import automationImageSrcset from '@/assets/features/automation-image.png?w=600;1200&format=webp&as=srcset';
-import automationImageAvifSrcset from '@/assets/features/automation-image.png?w=600;1200&format=avif&as=srcset';
-import { useLanguageContext } from '@/hooks/useLanguage';
-import SectionHeader from '@/components/ui/SectionHeader';
-import { StaggerReveal, StaggerItem, SectionReveal } from '@/components/ui/SectionReveal';
-import { Zap, BrainCircuit, Globe, TrendingUp } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { usePageSectionConfig } from '@/hooks/usePageSection';
-import { safeCmsHref } from '@/utils/safeHref';
+import styles from "./Features.module.css";
+import FeatureCard from "./FeatureCard";
+import aiSupportImage from "@/assets/features/ai-support-image.png";
+import automationImage from "@/assets/features/automation-image.png";
+import aiSupportImageSrcset from "@/assets/features/ai-support-image.png?w=600;1200&format=webp&as=srcset";
+import aiSupportImageAvifSrcset from "@/assets/features/ai-support-image.png?w=600;1200&format=avif&as=srcset";
+import automationImageSrcset from "@/assets/features/automation-image.png?w=600;1200&format=webp&as=srcset";
+import automationImageAvifSrcset from "@/assets/features/automation-image.png?w=600;1200&format=avif&as=srcset";
+import { useLanguageContext } from "@/hooks/useLanguage";
+import SectionHeader from "@/components/ui/SectionHeader";
+import {
+  StaggerReveal,
+  StaggerItem,
+  SectionReveal,
+} from "@/components/ui/SectionReveal";
+import { Zap, BrainCircuit, Globe, TrendingUp } from "lucide-react";
+import { Link } from "react-router-dom";
+import { usePageSectionConfig } from "@/hooks/usePageSection";
+import { safeCmsHref } from "@/utils/safeHref";
+import { localizeInternalHref } from "@/routing/locale";
 
-function Features() { const { t } = useLanguageContext();
-const sectionConfig = usePageSectionConfig('home', 'features');
-const primaryHref = safeCmsHref(sectionConfig.primaryHref, '/contact');
-const secondaryHref = safeCmsHref(sectionConfig.secondaryHref, '/services');
+function Features() {
+  const { t, language } = useLanguageContext();
+  const sectionConfig = usePageSectionConfig("home", "features");
+  const primaryHref = localizeInternalHref(
+    safeCmsHref(sectionConfig.primaryHref, "/contact"),
+    language,
+  );
+  const secondaryHref = localizeInternalHref(
+    safeCmsHref(sectionConfig.secondaryHref, "/services"),
+    language,
+  );
 
-return (
-  <section id="features" className={styles.featuresSection} aria-labelledby="features-heading">
-    <div className={styles.container}>
-      <SectionReveal>
-      <SectionHeader
-        badgeText={t('features.badge')}
-        badgeIcon={<Zap className="w-3.5 h-3.5" />}
-        title={
-          <>
-            {t('features.title.line1')} <span className="font-sans">{t('features.title.line2.italic')}</span>
-          </>
-        }
-        subtitle={t('features.subtitle')}
-        id="features-heading"
-      />
-      </SectionReveal>
+  return (
+    <section
+      id="features"
+      className={styles.featuresSection}
+      aria-labelledby="features-heading"
+    >
+      <div className={styles.container}>
+        <SectionReveal>
+          <SectionHeader
+            badgeText={t("features.badge")}
+            badgeIcon={<Zap className="w-3.5 h-3.5" />}
+            title={
+              <>
+                {t("features.title.line1")}{" "}
+                <span className="font-sans">
+                  {t("features.title.line2.italic")}
+                </span>
+              </>
+            }
+            subtitle={t("features.subtitle")}
+            id="features-heading"
+          />
+        </SectionReveal>
 
-      <StaggerReveal className={styles.featuresGrid}>
-        <div className={styles.topRow}>
-          <StaggerItem className={styles.featureCardLarge}>
-            <FeatureCard
-              variant="large"
-              title={t('features.card.ai.title')}
-              description={t('features.card.ai.desc')}
-              image={aiSupportImage}
-              imageSrcSet={aiSupportImageSrcset}
-              imageAvifSrcSet={aiSupportImageAvifSrcset}
-              icon={<BrainCircuit className="w-5 h-5" />}
-            />
-          </StaggerItem>
-          <StaggerItem className={styles.featureCardMedium}>
-            <FeatureCard
-              variant="medium"
-              title={t('features.card.web.title')}
-              description={t('features.card.web.desc')}
-              icon={<Globe className="w-5 h-5" />}
-            />
-          </StaggerItem>
-        </div>
-        <div className={styles.bottomRow}>
-          <StaggerItem className={styles.featureCardMedium}>
-            <FeatureCard
-              variant="medium"
-              title={t('features.card.marketing.title')}
-              description={t('features.card.marketing.desc')}
-              icon={<TrendingUp className="w-5 h-5" />}
-            />
-          </StaggerItem>
-          <StaggerItem className={styles.featureCardLarge}>
-            <FeatureCard
-              variant="large"
-              title={t('features.card.automation.title')}
-              description={t('features.card.automation.desc')}
-              image={automationImage}
-              imageSrcSet={automationImageSrcset}
-              imageAvifSrcSet={automationImageAvifSrcset}
-              icon={<Zap className="w-5 h-5" />}
-            />
-          </StaggerItem>
-        </div>
-      </StaggerReveal>
+        <StaggerReveal className={styles.featuresGrid}>
+          <div className={styles.topRow}>
+            <StaggerItem className={styles.featureCardLarge}>
+              <FeatureCard
+                variant="large"
+                title={t("features.card.ai.title")}
+                description={t("features.card.ai.desc")}
+                image={aiSupportImage}
+                imageSrcSet={aiSupportImageSrcset}
+                imageAvifSrcSet={aiSupportImageAvifSrcset}
+                icon={<BrainCircuit className="w-5 h-5" />}
+              />
+            </StaggerItem>
+            <StaggerItem className={styles.featureCardMedium}>
+              <FeatureCard
+                variant="medium"
+                title={t("features.card.web.title")}
+                description={t("features.card.web.desc")}
+                icon={<Globe className="w-5 h-5" />}
+              />
+            </StaggerItem>
+          </div>
+          <div className={styles.bottomRow}>
+            <StaggerItem className={styles.featureCardMedium}>
+              <FeatureCard
+                variant="medium"
+                title={t("features.card.marketing.title")}
+                description={t("features.card.marketing.desc")}
+                icon={<TrendingUp className="w-5 h-5" />}
+              />
+            </StaggerItem>
+            <StaggerItem className={styles.featureCardLarge}>
+              <FeatureCard
+                variant="large"
+                title={t("features.card.automation.title")}
+                description={t("features.card.automation.desc")}
+                image={automationImage}
+                imageSrcSet={automationImageSrcset}
+                imageAvifSrcSet={automationImageAvifSrcset}
+                icon={<Zap className="w-5 h-5" />}
+              />
+            </StaggerItem>
+          </div>
+        </StaggerReveal>
 
-      <SectionReveal delay={0.3}>
-      <div className={styles.cta}>
-        <Link
-          to={primaryHref}
-          className="inline-flex items-center gap-2 rounded-lg bg-black text-white px-6 py-3 text-sm font-semibold shadow-md hover:bg-zinc-900 hover:-translate-y-0.5 transition transform"
-        >
-          <span>{t('features.cta.primary')}</span>
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 20 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M7.5 15L12.5 10L7.5 5"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </Link>
-        <Link
-          to={secondaryHref}
-          className="inline-flex items-center justify-center rounded-lg bg-[#f5f5f5] text-black font-medium text-[14px] px-6 py-[11px] shadow-[inset_0px_3px_1px_0px_#ffffff,0px_1px_1px_-1px_rgba(0,0,0,0.1)] transition-transform hover:-translate-y-0.5"
-        >
-          {t('features.cta.secondary')}
-        </Link>
+        <SectionReveal delay={0.3}>
+          <div className={styles.cta}>
+            <Link
+              to={primaryHref}
+              className="inline-flex items-center gap-2 rounded-lg bg-black text-white px-6 py-3 text-sm font-semibold shadow-md hover:bg-zinc-900 hover:-translate-y-0.5 transition transform"
+            >
+              <span>{t("features.cta.primary")}</span>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M7.5 15L12.5 10L7.5 5"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </Link>
+            <Link
+              to={secondaryHref}
+              className="inline-flex items-center justify-center rounded-lg bg-[#f5f5f5] text-black font-medium text-[14px] px-6 py-[11px] shadow-[inset_0px_3px_1px_0px_#ffffff,0px_1px_1px_-1px_rgba(0,0,0,0.1)] transition-transform hover:-translate-y-0.5"
+            >
+              {t("features.cta.secondary")}
+            </Link>
+          </div>
+        </SectionReveal>
       </div>
-      </SectionReveal>
-    </div>
-  </section>
-); };
+    </section>
+  );
+}
 
 export default Features;
