@@ -1,31 +1,44 @@
-import Lenis from 'lenis';
-import 'lenis/dist/lenis.css';
+import Lenis from "lenis";
+import "lenis/dist/lenis.css";
 
-import { getLenisOptions, shouldUseNativeScroll, type ScrollMode } from '@/scroll/config';
+import {
+  getLenisOptions,
+  shouldUseNativeScroll,
+  type ScrollMode,
+} from "@/scroll/config";
 
 let lenis: Lenis | null = null;
 let resizeListenersAttached = false;
+let resizeFrame = 0;
 
 function scheduleResize(): void {
-  requestAnimationFrame(() => lenis?.resize());
+  if (resizeFrame !== 0) return;
+  resizeFrame = requestAnimationFrame(() => {
+    resizeFrame = 0;
+    lenis?.resize();
+  });
 }
 
 function attachResizeListeners(): void {
-  if (resizeListenersAttached || typeof window === 'undefined') return;
+  if (resizeListenersAttached || typeof window === "undefined") return;
   resizeListenersAttached = true;
-  window.addEventListener('load', scheduleResize, { once: true });
-  window.addEventListener('resize', scheduleResize, { passive: true });
+  window.addEventListener("load", scheduleResize, { once: true });
+  window.addEventListener("resize", scheduleResize, { passive: true });
 }
 
 function detachResizeListeners(): void {
-  if (!resizeListenersAttached || typeof window === 'undefined') return;
+  if (!resizeListenersAttached || typeof window === "undefined") return;
   resizeListenersAttached = false;
-  window.removeEventListener('load', scheduleResize);
-  window.removeEventListener('resize', scheduleResize);
+  if (resizeFrame !== 0) {
+    window.cancelAnimationFrame(resizeFrame);
+    resizeFrame = 0;
+  }
+  window.removeEventListener("load", scheduleResize);
+  window.removeEventListener("resize", scheduleResize);
 }
 
 export function getScrollMode(): ScrollMode {
-  return lenis ? 'lenis' : 'native';
+  return lenis ? "lenis" : "native";
 }
 
 export function initLenis(): Lenis | null {
@@ -56,7 +69,7 @@ export function refreshLenis(): void {
 }
 
 export function getScrollY(): number {
-  return lenis?.scroll ?? (typeof window !== 'undefined' ? window.scrollY : 0);
+  return lenis?.scroll ?? (typeof window !== "undefined" ? window.scrollY : 0);
 }
 
 export function scrollToTopInstant(): void {
@@ -65,33 +78,36 @@ export function scrollToTopInstant(): void {
     refreshLenis();
     return;
   }
-  if (typeof window !== 'undefined') {
-    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+  if (typeof window !== "undefined") {
+    window.scrollTo({ top: 0, behavior: "auto" });
   }
 }
 
 export function scrollToElement(
   target: Element | string | null | undefined,
-  options?: { offset?: number; behavior?: 'smooth' | 'instant' },
+  options?: { offset?: number; behavior?: "smooth" | "instant" },
 ): void {
-  if (typeof window === 'undefined' || !target) return;
+  if (typeof window === "undefined" || !target) return;
 
-  const element = typeof target === 'string'
-    ? document.getElementById(target.replace(/^#/, ''))
-    : target instanceof HTMLElement ? target : null;
+  const element =
+    typeof target === "string"
+      ? document.getElementById(target.replace(/^#/, ""))
+      : target instanceof HTMLElement
+        ? target
+        : null;
 
   if (!element) return;
 
   const offset = options?.offset ?? 0;
   const scrollY = getScrollY();
   const top = element.getBoundingClientRect().top + scrollY + offset;
-  const useInstant = shouldUseNativeScroll() || options?.behavior === 'instant';
+  const useInstant = shouldUseNativeScroll() || options?.behavior === "instant";
 
   if (lenis && !useInstant) {
     lenis.scrollTo(top);
   } else if (lenis) {
     lenis.scrollTo(top, { immediate: true });
   } else {
-    window.scrollTo({ top, behavior: useInstant ? 'auto' : 'smooth' });
+    window.scrollTo({ top, behavior: useInstant ? "auto" : "smooth" });
   }
 }

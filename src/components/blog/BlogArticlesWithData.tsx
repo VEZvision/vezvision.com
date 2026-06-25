@@ -64,23 +64,23 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
   }, [posts, limit]);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const updateVisibleCount = (isMobile: boolean) => {
+      if (isMobile) {
         setVisibleCount((prev) => (prev === 6 ? 3 : prev)); // Only reset if it was default desktop
       } else {
         setVisibleCount((prev) => (prev === 3 ? 6 : prev)); // Only reset if it was default mobile
       }
     };
 
-    // Set initial
-    if (window.innerWidth < 768) {
-      setVisibleCount(3);
-    } else {
-      setVisibleCount(6);
-    }
+    updateVisibleCount(mediaQuery.matches);
 
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    const handleChange = (event: MediaQueryListEvent) => {
+      updateVisibleCount(event.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
 
   const handleShowMore = () => {
