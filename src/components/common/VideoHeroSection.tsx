@@ -66,7 +66,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
       if (!entry) return;
 
       if (entry.isIntersecting) {
-        videoEl.play().catch(() => {});
+        videoEl.play().catch(ignoreExpectedMediaPlayError);
       } else {
         videoEl.pause();
       }
@@ -133,6 +133,8 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
         <video
           ref={videoRef}
           className={styles.videoBg}
+          width="1920"
+          height="1080"
           autoPlay
           loop
           muted
@@ -140,7 +142,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
           preload="metadata"
           poster="/og-image.png"
           aria-hidden="true"
-          onError={() => {}}
+          tabIndex={-1}
           disableRemotePlayback
           x-webkit-airplay="deny"
         >
@@ -162,6 +164,8 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
               <img
                 src={logoNavbar}
                 alt="VezVision"
+                width="838"
+                height="153"
                 className="h-[48px] sm:h-[64px] w-auto object-contain"
               />
             </div>
@@ -235,5 +239,16 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
     </section>
   );
 };
+
+function ignoreExpectedMediaPlayError(error: unknown): void {
+  if (
+    error instanceof DOMException &&
+    (error.name === "AbortError" || error.name === "NotAllowedError")
+  ) {
+    return;
+  }
+
+  throw error;
+}
 
 export default VideoHeroSection;

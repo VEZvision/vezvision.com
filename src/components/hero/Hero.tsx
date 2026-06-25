@@ -15,7 +15,17 @@ import { localizeInternalHref } from "@/routing/locale";
 import styles from "./Hero.module.scss";
 
 const HERO_VIDEO_SRC = "/hero-bg.mp4";
-const SITE_URL = import.meta.env.VITE_SITE_URL || "https://vezvision.com";
+
+function ignoreExpectedMediaPlayError(error: unknown): void {
+  if (
+    error instanceof DOMException &&
+    (error.name === "AbortError" || error.name === "NotAllowedError")
+  ) {
+    return;
+  }
+
+  throw error;
+}
 
 const Hero = memo(() => {
   const { t, language } = useLanguageContext();
@@ -31,7 +41,7 @@ const Hero = memo(() => {
     if (!videoEl || prefersReducedData) return;
 
     const playVideo = () => {
-      void videoEl.play().catch(() => {});
+      void videoEl.play().catch(ignoreExpectedMediaPlayError);
     };
 
     videoEl.addEventListener("loadeddata", playVideo);
@@ -81,30 +91,20 @@ const Hero = memo(() => {
     <section ref={sectionRef} className={styles.sectionHero}>
       <Helmet>
         <link rel="preload" as="image" href={logoNavbar} fetchPriority="high" />
-        {!prefersReducedData && (
-          <script type="application/ld+json">
-            {JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "VideoObject",
-              name: "VezVision Hero",
-              description:
-                "VezVision — modern AI & automation solutions for business",
-              thumbnailUrl: logoNavbar,
-              uploadDate: "2026-03-28",
-              contentUrl: `${typeof window !== "undefined" ? window.location.origin : SITE_URL}/hero-bg.mp4`,
-            })}
-          </script>
-        )}
       </Helmet>
       {!prefersReducedData && (
         <video
           ref={videoRef}
           className={styles.videoBg}
+          width="1920"
+          height="1080"
           muted
           loop
           playsInline
           preload="metadata"
+          poster="/og-image.png"
           aria-hidden="true"
+          tabIndex={-1}
           disableRemotePlayback
           x-webkit-airplay="deny"
         >
@@ -132,6 +132,8 @@ const Hero = memo(() => {
             <img
               src={logoNavbar}
               alt="VezVision"
+              width="838"
+              height="153"
               className="h-[48px] sm:h-[64px] w-auto object-contain"
               fetchPriority="high"
             />

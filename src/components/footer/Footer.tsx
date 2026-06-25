@@ -25,6 +25,17 @@ function isExternal(href: string) {
   return isSafeExternalHref(href);
 }
 
+function ignoreExpectedMediaPlayError(error: unknown): void {
+  if (
+    error instanceof DOMException &&
+    (error.name === "AbortError" || error.name === "NotAllowedError")
+  ) {
+    return;
+  }
+
+  throw error;
+}
+
 export default function Footer() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const footerRef = useRef<HTMLElement>(null);
@@ -49,7 +60,7 @@ export default function Footer() {
     if (!videoEl || !showVideo) return;
 
     const playVideo = () => {
-      videoEl.play().catch(() => {});
+      videoEl.play().catch(ignoreExpectedMediaPlayError);
     };
     const pauseVideo = () => {
       videoEl.pause();
@@ -163,11 +174,15 @@ export default function Footer() {
             {showVideo && (
               <video
                 ref={videoRef}
+                width="1920"
+                height="1080"
                 muted
                 loop
                 playsInline
                 preload="metadata"
+                poster="/og-image.png"
                 aria-hidden="true"
+                tabIndex={-1}
                 data-lenis-prevent
                 className={styles.footerVideo}
                 disableRemotePlayback
@@ -192,6 +207,8 @@ export default function Footer() {
                     <img
                       src={logoNavbar}
                       alt="VezVision"
+                      width="838"
+                      height="153"
                       className={styles.logoImage}
                       decoding="async"
                     />
@@ -212,6 +229,8 @@ export default function Footer() {
                     <img
                       src={arrowIcon}
                       alt=""
+                      width="20"
+                      height="20"
                       className={styles.ctaIcon}
                       aria-hidden="true"
                       decoding="async"
@@ -223,6 +242,8 @@ export default function Footer() {
                     <img
                       src={arrowIcon}
                       alt=""
+                      width="20"
+                      height="20"
                       className={styles.ctaIcon}
                       aria-hidden="true"
                       decoding="async"
