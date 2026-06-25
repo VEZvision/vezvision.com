@@ -236,6 +236,10 @@ export default function ProjectDetails() {
                 src={getProjectImageUrl(project.cover_path)}
                 alt={t("title", "Project Cover")}
                 className={styles.coverImage}
+                width="1200"
+                height="675"
+                fetchPriority="high"
+                decoding="async"
               />
             </div>
           </div>
@@ -313,6 +317,8 @@ export default function ProjectDetails() {
                         <img
                           src={getProjectImageUrl(img.path)}
                           alt={`${projectTitle} - ${tl("portfolio.detail.gallery")}`}
+                          width="720"
+                          height="405"
                           loading="lazy"
                           decoding="async"
                         />
@@ -410,6 +416,9 @@ export default function ProjectDetails() {
             <img
               src={lightboxImage}
               alt={`${projectTitle} - ${tl("portfolio.detail.fullview_alt")}`}
+              width="1200"
+              height="675"
+              decoding="async"
             />
           </div>
         </div>

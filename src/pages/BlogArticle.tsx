@@ -249,6 +249,8 @@ function BlogArticle() {
               <img
                 src={logo}
                 alt="VezVision"
+                width="40"
+                height="40"
                 className="w-10 h-10 rounded-full bg-gray-100 p-1"
               />
               <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
@@ -271,6 +273,8 @@ function BlogArticle() {
               src={featuredImageSrc}
               alt={title}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              width="1200"
+              height="675"
               lazy={false}
               fetchPriority="high"
               onError={(e: React.SyntheticEvent<HTMLImageElement>) => {

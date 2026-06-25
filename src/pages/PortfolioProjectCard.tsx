@@ -30,6 +30,8 @@ export default function PortfolioProjectCard({
             <img
               src={getProjectImageUrl(project.cover_path)}
               alt={title}
+              width="960"
+              height="540"
               loading="lazy"
               decoding="async"
             />
