@@ -28,9 +28,9 @@ export function buildContentSecurityPolicy(supabaseHost) {
   return [
     "default-src 'self'",
     `script-src ${scriptSrc}`,
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://api.fontshare.com",
+    "style-src 'self' 'unsafe-inline' https://api.fontshare.com",
     "style-src-attr 'unsafe-inline'",
-    "font-src 'self' https://fonts.gstatic.com https://api.fontshare.com https://cdn.fontshare.com",
+    "font-src 'self' https://api.fontshare.com https://cdn.fontshare.com",
     "img-src 'self' data: blob: https:",
     "media-src 'self' data: blob: https:",
     "object-src 'none'",
@@ -41,4 +41,3 @@ export function buildContentSecurityPolicy(supabaseHost) {
     "form-action 'self'",
   ].join('; ')
 }
-

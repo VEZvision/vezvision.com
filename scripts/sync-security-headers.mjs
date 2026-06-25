@@ -30,13 +30,17 @@ const htaccessTemplate = `<IfModule mod_headers.c>
   Header always set Cross-Origin-Opener-Policy "same-origin"
   Header always set Content-Security-Policy "${csp}"
 
-  <FilesMatch "\\.(js|mjs|css|svg|png|jpg|jpeg|gif|webp|mp4|woff|woff2|html)$">
+  <FilesMatch "\\.(js|mjs|css|svg|png|jpg|jpeg|gif|webp|mp4|webm|woff|woff2|ico|br|gz)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 
-  <FilesMatch "^index\\.html$">
+  <FilesMatch "\\.(html|xml|txt)$">
     Header set Cache-Control "no-cache, no-store, must-revalidate"
     Header append Vary Accept-Encoding
+  </FilesMatch>
+
+  <FilesMatch "\\.webmanifest$">
+    Header set Cache-Control "public, max-age=3600"
   </FilesMatch>
 </IfModule>
 
@@ -148,9 +152,21 @@ const vercelConfig = {
       ],
     },
     {
-      source: '/(.*\\.(js|css|woff2|webp|png|jpg|jpeg|gif|svg|ico))',
+      source: '/(.*\\.(js|css|woff2|webp|webm|mp4|png|jpg|jpeg|gif|svg|ico|br|gz))',
       headers: [
         { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+      ],
+    },
+    {
+      source: '/(.*\\.(html|xml|txt))',
+      headers: [
+        { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+      ],
+    },
+    {
+      source: '/(.*\\.webmanifest)',
+      headers: [
+        { key: 'Cache-Control', value: 'public, max-age=3600' },
       ],
     },
   ],
