@@ -1,5 +1,5 @@
 import { StrictMode } from "react";
-import { createRoot, hydrateRoot } from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 import App from "./App";
@@ -77,10 +77,10 @@ function removePrerenderedHelmetTags(): void {
 
 if (rootElement.hasChildNodes()) {
   removePrerenderedHelmetTags();
-  hydrateRoot(rootElement, app);
-} else {
-  createRoot(rootElement).render(app);
+  rootElement.replaceChildren();
 }
+
+createRoot(rootElement).render(app);
 
 // Sentry loads only when analytics consent is already granted.
 if (typeof window.requestIdleCallback === "function") {
