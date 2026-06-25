@@ -21,6 +21,8 @@ const NotFound = () => {
               className={styles.logo}
               src={logoNavbar}
               alt={t("notfound.logoAlt")}
+              width="838"
+              height="153"
             />
           </div>
           <h1 className={styles.brandName}>VEZVISION</h1>
@@ -35,7 +37,13 @@ const NotFound = () => {
         <div className={styles.actionSection}>
           <Link to={toLocalizedPath()} className={styles.primaryButton}>
             <span className={styles.buttonText}>{t("notfound.cta.home")}</span>
-            <img className={styles.arrowIcon} src={arrowRight} alt="" />
+            <img
+              className={styles.arrowIcon}
+              src={arrowRight}
+              alt=""
+              width="22"
+              height="23"
+            />
           </Link>
 
           <Link

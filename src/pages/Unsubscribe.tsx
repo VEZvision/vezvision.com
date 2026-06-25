@@ -44,7 +44,13 @@ const Unsubscribe = () => {
       <PageSeo pageKey="unsubscribe" />
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 text-center">
         <div className="mb-8 flex justify-center">
-          <img src={logoNavbar} alt="VezVision" className="h-12" />
+          <img
+            src={logoNavbar}
+            alt="VezVision"
+            width="838"
+            height="153"
+            className="h-12 w-auto"
+          />
         </div>
 
         <h1 className="text-2xl font-bold text-gray-900 mb-4">

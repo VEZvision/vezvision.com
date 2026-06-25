@@ -12,7 +12,15 @@ export function buildHeroSocialLinks(
     social?.x
       ? {
           href: social.x,
-          icon: <img src={twitterIcon} className="w-6 h-6" alt="" />,
+          icon: (
+            <img
+              src={twitterIcon}
+              width="24"
+              height="24"
+              className="w-6 h-6"
+              alt=""
+            />
+          ),
           label: "X (Twitter)",
         }
       : null,
@@ -26,7 +34,15 @@ export function buildHeroSocialLinks(
     social?.instagram
       ? {
           href: social.instagram,
-          icon: <img src={socialInstagram} className="w-6 h-6" alt="" />,
+          icon: (
+            <img
+              src={socialInstagram}
+              width="24"
+              height="24"
+              className="w-6 h-6"
+              alt=""
+            />
+          ),
           label: "Instagram",
         }
       : null,
