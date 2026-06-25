@@ -28,6 +28,8 @@ function LoadingScreen({
           <img
             src={logoNavbar}
             alt={t("common.logoAlt")}
+            width="838"
+            height="153"
             className={styles.logo}
           />
         </div>

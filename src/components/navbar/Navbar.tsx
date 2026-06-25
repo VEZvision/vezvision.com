@@ -164,6 +164,8 @@ const Navbar = memo(() => {
                     <img
                       src={logoNavbar}
                       alt="VezVision Logo"
+                      width="838"
+                      height="153"
                       className="h-6 w-auto"
                     />
                   </Link>

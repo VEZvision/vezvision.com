@@ -25,6 +25,8 @@ export function FooterSocial({ links }: FooterSocialProps) {
           <img
             src={icon}
             alt={alt}
+            width="20"
+            height="20"
             className="w-5 h-5"
             loading="lazy"
             decoding="async"

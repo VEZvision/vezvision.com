@@ -11,7 +11,13 @@ export default function AppBootShell() {
       aria-label="Loading"
     >
       <div className={styles.logoContainer}>
-        <img src={logoNavbar} alt="VezVision" className={styles.logo} />
+        <img
+          src={logoNavbar}
+          alt="VezVision"
+          width="838"
+          height="153"
+          className={styles.logo}
+        />
       </div>
       <div className={styles.spinnerContainer}>
         <div className={styles.spinner} aria-hidden="true" />
