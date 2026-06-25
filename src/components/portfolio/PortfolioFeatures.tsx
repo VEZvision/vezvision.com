@@ -159,6 +159,8 @@ const PortfolioFeatures = () => {
                     <img
                       src={logoNavbar}
                       alt=""
+                      width="838"
+                      height="153"
                       className={styles.centerLogo}
                       loading="lazy"
                       decoding="async"
@@ -322,7 +324,11 @@ const PortfolioFeatures = () => {
                     <img
                       src={logoNavbar}
                       alt=""
+                      width="838"
+                      height="153"
                       className={styles.integrationLogo}
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
                   <div className={styles.integrationIcon}>

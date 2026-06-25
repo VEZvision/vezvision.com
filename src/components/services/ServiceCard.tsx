@@ -72,6 +72,8 @@ function ServiceCard({
             <img
               src={safeImageUrl(normalizedIcon)}
               alt=""
+              width="28"
+              height="28"
               aria-hidden="true"
               loading="lazy"
               decoding="async"
