@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useLanguageContext } from "@/hooks/useLanguage";
 import BenefitItem from "./BenefitItem";
 import styles from "./MoreBenefits.module.css";
@@ -43,16 +43,21 @@ const MoreBenefits: React.FC = () => {
     let setWidth = 0;
     let isVisible = true;
 
-    const measure = () => {
-      const w = Math.ceil(set.getBoundingClientRect().width);
-      if (w <= 0) return;
-      setWidth = w;
+    const measure = (width: number) => {
+      const nextWidth = Math.ceil(width);
+      if (nextWidth <= 0) return;
+      setWidth = nextWidth;
     };
 
-    measure();
+    measure(set.scrollWidth);
 
-    const resizeObserver = new ResizeObserver(() => {
-      measure();
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.target === set) {
+          measure(entry.contentRect.width);
+          return;
+        }
+      }
     });
     resizeObserver.observe(set);
     resizeObserver.observe(track);
@@ -123,7 +128,7 @@ const MoreBenefits: React.FC = () => {
         <div
           ref={trackRef}
           className={styles.slideTrack}
-          style={{ willChange: "transform" } as CSSProperties}
+          style={{ willChange: "transform" }}
         >
           {Array.from({ length: initialCopyCount }, (_, copyIndex) => (
             <div

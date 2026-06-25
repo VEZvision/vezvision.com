@@ -1,5 +1,5 @@
-import { memo } from 'react';
-import styles from './BenefitItem.module.css';
+import { memo } from "react";
+import styles from "./BenefitItem.module.css";
 
 interface BenefitItemProps {
   icon: string;
@@ -10,13 +10,21 @@ interface BenefitItemProps {
 function BenefitItem({ icon, text, ariaHidden = false }: BenefitItemProps) {
   return (
     <div className={styles.benefitItem} aria-hidden={ariaHidden || undefined}>
-      <img src={icon} alt={`${text} icon`} className={styles.icon} loading="lazy" decoding="async" />
+      <img
+        src={icon}
+        alt={`${text} icon`}
+        className={styles.icon}
+        width="32"
+        height="32"
+        loading="lazy"
+        decoding="async"
+      />
       <span className={styles.text}>{text}</span>
     </div>
   );
 }
 
 const MemoizedBenefitItem = memo(BenefitItem);
-MemoizedBenefitItem.displayName = 'BenefitItem';
+MemoizedBenefitItem.displayName = "BenefitItem";
 
 export default MemoizedBenefitItem;

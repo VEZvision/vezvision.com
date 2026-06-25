@@ -9,9 +9,13 @@
   align-items: center;
   justify-content: flex-end;
   border-radius: 24px;
-  box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 1px 1px -1px #00000014,
-    0px 2px 2px -1px #00000014, 0px 4px 4px -2px #00000012,
-    0px 7px 7px -3px #00000012, 0px 14px 14px -3px #0000000d,
+  box-shadow:
+    inset 0px 3px 1px 0px #ffffff,
+    0px 1px 1px -1px #00000014,
+    0px 2px 2px -1px #00000014,
+    0px 4px 4px -2px #00000012,
+    0px 7px 7px -3px #00000012,
+    0px 14px 14px -3px #0000000d,
     0px 30px 30px -4px #00000005;
   background: var(--color-grey-96, #f5f5f5);
   width: 100%;
@@ -42,12 +46,20 @@
 }
 
 .desktopAnimate2::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 50% 14%, rgba(16, 185, 129, 0.11), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(245, 245, 245, 0) 44%);
+    radial-gradient(
+      circle at 50% 14%,
+      rgba(16, 185, 129, 0.11),
+      transparent 34%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.7) 0%,
+      rgba(245, 245, 245, 0) 44%
+    );
   pointer-events: none;
   z-index: 0;
 }
@@ -71,7 +83,9 @@
   line-height: 26px;
   letter-spacing: -0.2px;
   color: #101828;
-  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-family:
+    Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial,
+    Helvetica, sans-serif;
   font-size: 19px;
   font-weight: 600;
   text-align: center;
@@ -94,7 +108,9 @@
   line-height: 24px;
   letter-spacing: 0;
   color: #344054;
-  font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial, Helvetica, sans-serif;
+  font-family:
+    Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial,
+    Helvetica, sans-serif;
   font-size: 16px;
   text-align: center;
   opacity: 0.86;
@@ -109,8 +125,11 @@
   flex-shrink: 0;
   opacity: 0.7;
   border-radius: 100px;
-  box-shadow: inset 0px -3px 1px 0px #e3e3e375, 0px 1px 1px -1px #00000029,
-    0px 2px 2px -2px #00000026, 0px 5px 5px -3px #00000021,
+  box-shadow:
+    inset 0px -3px 1px 0px #e3e3e375,
+    0px 1px 1px -1px #00000029,
+    0px 2px 2px -2px #00000026,
+    0px 5px 5px -3px #00000021,
     0px 16px 16px -4px #0000000a;
   background: var(--color-grey-96, #f5f5f5);
   width: 248px;
@@ -129,9 +148,13 @@
   justify-content: center;
   z-index: 1;
   border-radius: 16px;
-  box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 1px 1px -1px #00000014,
-    0px 2px 2px -1px #00000014, 0px 4px 4px -2px #00000012,
-    0px 7px 7px -3px #00000012, 0px 14px 14px -3px #0000000d,
+  box-shadow:
+    inset 0px 3px 1px 0px #ffffff,
+    0px 1px 1px -1px #00000014,
+    0px 2px 2px -1px #00000014,
+    0px 4px 4px -2px #00000012,
+    0px 7px 7px -3px #00000012,
+    0px 14px 14px -3px #0000000d,
     0px 30px 30px -4px #00000005;
   background: var(--color-grey-96, #f5f5f5);
   padding: 0;
@@ -158,9 +181,13 @@
   justify-content: center;
   z-index: 2;
   border-radius: 100px;
-  box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 1px 1px -1px #00000014,
-    0px 2px 2px -1px #00000014, 0px 4px 4px -2px #00000012,
-    0px 7px 7px -3px #00000012, 0px 14px 14px -3px #0000000d,
+  box-shadow:
+    inset 0px 3px 1px 0px #ffffff,
+    0px 1px 1px -1px #00000014,
+    0px 2px 2px -1px #00000014,
+    0px 4px 4px -2px #00000012,
+    0px 7px 7px -3px #00000012,
+    0px 14px 14px -3px #0000000d,
     0px 30px 30px -4px #00000005;
   background: var(--color-grey-96, #f5f5f5);
   padding: 9px;
@@ -168,6 +195,7 @@
   height: 126px;
   overflow: visible; /* pozwala na efekt fali poza okręgiem */
   animation: pulseGlow 3.2s ease-in-out infinite;
+  will-change: transform;
 }
 
 /* Efekt fali/pulsacji */
@@ -176,23 +204,21 @@
   position: absolute;
   inset: -2px;
   border-radius: inherit;
-  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   animation: rippleRing 3.2s ease-out infinite;
+  will-change: opacity, transform;
   pointer-events: none;
 }
 
 @keyframes pulseGlow {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(-50%) scale(1);
-    box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 1px 1px -1px #00000014,
-      0px 2px 2px -1px #00000014, 0px 4px 4px -2px #00000012,
-      0px 7px 7px -3px #00000012, 0px 14px 14px -3px #0000000d,
-      0px 30px 30px -4px #00000005;
+    opacity: 1;
   }
   50% {
     transform: translateX(-50%) scale(1.04);
-    box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 6px 12px -4px rgba(0,0,0,0.10),
-      0px 12px 24px -6px rgba(0,0,0,0.08);
+    opacity: 0.96;
   }
 }
 
@@ -200,17 +226,14 @@
   0% {
     opacity: 0.28;
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(0,0,0,0.08);
   }
   60% {
     opacity: 0;
     transform: scale(1.22);
-    box-shadow: 0 0 0 14px rgba(0,0,0,0);
   }
   100% {
     opacity: 0;
     transform: scale(1.22);
-    box-shadow: 0 0 0 14px rgba(0,0,0,0);
   }
 }
 
@@ -233,9 +256,13 @@
   width: 100%;
   height: 100%;
   border-radius: 100px;
-  box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 1px 1px -1px #00000014,
-    0px 2px 2px -1px #00000014, 0px 4px 4px -2px #00000012,
-    0px 7px 7px -3px #00000012, 0px 14px 14px -3px #0000000d,
+  box-shadow:
+    inset 0px 3px 1px 0px #ffffff,
+    0px 1px 1px -1px #00000014,
+    0px 2px 2px -1px #00000014,
+    0px 4px 4px -2px #00000012,
+    0px 7px 7px -3px #00000012,
+    0px 14px 14px -3px #0000000d,
     0px 30px 30px -4px #00000005;
   background: var(--color-grey-96, #f5f5f5);
   padding: 0;
@@ -266,49 +293,49 @@
   .dial {
     transform: translateX(-50%) scale(0.84);
   }
-  
+
   .textContainer {
     padding: 28px 24px;
   }
-  
+
   .jednoMiejsceWieleMoL {
     min-height: 52px;
     font-size: 20px;
     line-height: 26px;
     letter-spacing: -0.2px;
   }
-  
+
   .odKreatywnegoProjekt {
     width: 100%;
     min-height: 66px;
     font-size: 15px;
     line-height: 22px;
   }
-  
+
   .shape {
     width: 228px;
     height: 228px;
     top: -24px;
   }
-  
+
   .container {
     top: 162px;
     width: 48px;
     height: 48px;
   }
-  
+
   .component1 {
     width: 24px;
     height: 24px;
   }
-  
+
   .backgroundShadow {
     top: 28px;
     width: 116px;
     height: 116px;
     padding: 8px;
   }
-  
+
   .icon {
     width: 58px;
     height: 58px;
@@ -330,36 +357,36 @@
   .dial {
     transform: translateX(-50%) scale(0.82);
   }
-  
+
   .textContainer {
     padding: 20px;
     margin-right: 0;
     margin-left: 0;
   }
-  
+
   .jednoMiejsceWieleMoL {
     min-height: 44px;
     font-size: 17px;
     line-height: 22px;
   }
-  
+
   .odKreatywnegoProjekt {
     width: 100%;
     min-height: 60px;
     font-size: 14px;
     line-height: 20px;
   }
-  
+
   .shape {
     width: 208px;
     height: 208px;
     top: -22px;
   }
-  
+
   .container {
     top: 150px;
   }
-  
+
   .backgroundShadow {
     top: 26px;
     width: 104px;
@@ -381,48 +408,46 @@
   .dial {
     transform: translateX(-50%) scale(0.8);
   }
-  
+
   .textContainer {
     padding: 15px;
   }
-  
+
   .jednoMiejsceWieleMoL {
     min-height: 44px;
     font-size: 16px;
   }
-  
+
   .odKreatywnegoProjekt {
     min-height: 52px;
     font-size: 13px;
   }
-  
+
   .shape {
     width: 176px;
     height: 176px;
   }
-  
+
   .backgroundShadow {
     top: 22px;
     width: 86px;
     height: 86px;
     padding: 6px;
   }
-  
+
   .container {
     width: 40px;
     height: 40px;
     top: 126px;
   }
-  
+
   .component1 {
     width: 20px;
     height: 20px;
   }
-  
+
   .icon {
     width: 48px;
     height: 48px;
   }
 }
-
-
