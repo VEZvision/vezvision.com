@@ -45,7 +45,9 @@ function LoadingScreen({
         <div className={styles.progressContainer}>
           <div
             className={styles.progressBar}
-            style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+            style={{
+              transform: `scaleX(${Math.min(100, Math.max(0, progress)) / 100})`,
+            }}
             aria-hidden="true"
           />
         </div>

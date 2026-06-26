@@ -22,11 +22,17 @@
   height: 100%;
   --highlight-color: rgba(128, 128, 128, 0.08);
   background-image:
-    linear-gradient(to bottom, transparent, var(--highlight-color), transparent),
+    linear-gradient(
+      to bottom,
+      transparent,
+      var(--highlight-color),
+      transparent
+    ),
     linear-gradient(to right, transparent, var(--highlight-color), transparent);
-  background-size: 100% 3px, 3px 100%;
+  background-size:
+    100% 3px,
+    3px 100%;
   background-repeat: no-repeat;
-  animation: grid-highlight 8s ease-in-out infinite;
   pointer-events: none;
   z-index: -1;
 }
@@ -49,7 +55,7 @@
 .spinner {
   width: 48px;
   height: 48px;
-  border: 4px solid rgba(0,0,0,0.1);
+  border: 4px solid rgba(0, 0, 0, 0.1);
   border-top: 4px solid #000000;
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -57,7 +63,7 @@
 
 .message {
   color: #000000;
-  font-family: 'Satoshi', sans-serif;
+  font-family: "Satoshi", sans-serif;
   font-size: 16px;
   font-weight: 400;
   margin-top: 16px;
@@ -67,18 +73,20 @@
 .progressContainer {
   width: 200px;
   height: 4px;
-  background: rgba(255,107,53,0.2);
+  background: rgba(255, 107, 53, 0.2);
   border-radius: 2px;
   margin-top: 24px;
   overflow: hidden;
 }
 
 .progressBar {
+  width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, #FF6B35 0%, #FF8A65 100%);
+  background: linear-gradient(90deg, #ff6b35 0%, #ff8a65 100%);
   border-radius: 2px;
-  transition: width 0.3s ease-out;
-  animation: progressGlow 2s ease-in-out infinite;
+  transform-origin: left center;
+  transition: transform 0.3s ease-out;
+  will-change: transform;
 }
 
 /* Animations */
@@ -103,7 +111,8 @@
 }
 
 @keyframes logoPulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -131,34 +140,6 @@
   }
 }
 
-@keyframes grid-highlight {
-  0%, 100% {
-    background-position: 0% 0%, 0% 0%;
-    opacity: 0.3;
-  }
-  25% {
-    background-position: 0% 25%, 25% 0%;
-    opacity: 0.6;
-  }
-  50% {
-    background-position: 0% 50%, 50% 0%;
-    opacity: 0.8;
-  }
-  75% {
-    background-position: 0% 75%, 75% 0%;
-    opacity: 0.6;
-  }
-}
-
-@keyframes progressGlow {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(255,107,53,0.3);
-  }
-  50% {
-    box-shadow: 0 0 15px rgba(255,107,53,0.6);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .grid,
   .logo,
@@ -173,12 +154,12 @@
   .container {
     padding: 40px;
   }
-  
+
   .spinner {
     width: 48px;
     height: 48px;
   }
-  
+
   .logo {
     width: 120px;
   }
@@ -188,21 +169,21 @@
   .container {
     padding: 20px;
   }
-  
+
   .spinner {
     width: 40px;
     height: 40px;
     border-width: 3px;
   }
-  
+
   .logo {
     width: 100px;
   }
-  
+
   .message {
     font-size: 14px;
   }
-  
+
   .progressContainer {
     width: 160px;
   }
@@ -214,19 +195,19 @@
     height: 32px;
     border-width: 3px;
   }
-  
+
   .logo {
     width: 80px;
   }
-  
+
   .message {
     font-size: 12px;
   }
-  
+
   .progressContainer {
     width: 140px;
   }
-  
+
   .logoContainer {
     margin-bottom: 30px;
   }
