@@ -5,7 +5,8 @@
   padding: 72px 24px 72px;
   background: #f5f5f5;
   border-radius: 20px;
-  box-shadow: inset 0 3px 1px #ffffff,
+  box-shadow:
+    inset 0 3px 1px #ffffff,
     0 1px 1px -1px rgba(0, 0, 0, 0.08),
     0 2px 2px -1px rgba(0, 0, 0, 0.08),
     0 4px 4px -2px rgba(0, 0, 0, 0.07),
@@ -15,13 +16,21 @@
 }
 
 .section::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(800px 800px at 15% 10%, rgba(128, 128, 128, 0.06), transparent 60%),
-    radial-gradient(800px 800px at 85% 20%, rgba(128, 128, 128, 0.05), transparent 60%);
+    radial-gradient(
+      800px 800px at 15% 10%,
+      rgba(128, 128, 128, 0.06),
+      transparent 60%
+    ),
+    radial-gradient(
+      800px 800px at 85% 20%,
+      rgba(128, 128, 128, 0.05),
+      transparent 60%
+    );
   border-radius: inherit;
   z-index: 0;
 }
@@ -48,8 +57,9 @@
   border-radius: 60px;
   background: #f5f5f5;
   padding: 4px 12px;
-  box-shadow: inset 0 3px 1px #fff,
-    0 1px 1px -1px rgba(0, 0, 0, 0.10),
+  box-shadow:
+    inset 0 3px 1px #fff,
+    0 1px 1px -1px rgba(0, 0, 0, 0.1),
     0 2px 2px -1px rgba(0, 0, 0, 0.09),
     0 4px 4px -2px rgba(0, 0, 0, 0.09),
     0 7px 7px -2px rgba(0, 0, 0, 0.09),
@@ -101,9 +111,13 @@
   border-radius: 20px;
   height: 360px;
   overflow: hidden;
-  box-shadow: inset 0 3px 1px #ffffff, 0 1px 1px -1px #00000014,
-    0 2px 2px -1px #00000014, 0 4px 4px -2px #00000012,
-    0 7px 7px -3px #00000012, 0 14px 14px -3px #0000000d,
+  box-shadow:
+    inset 0 3px 1px #ffffff,
+    0 1px 1px -1px #00000014,
+    0 2px 2px -1px #00000014,
+    0 4px 4px -2px #00000012,
+    0 7px 7px -3px #00000012,
+    0 14px 14px -3px #0000000d,
     0 30px 30px -4px #00000005;
 }
 
@@ -152,19 +166,27 @@
   height: 100%;
   border-radius: 100px;
   background: #f5f5f5;
-  box-shadow: inset 0 1px 1px -1px #00000014, inset 0 2px 2px -1px #00000014,
-    inset 0 4px 4px -2px #00000012, inset 0 7px 7px -3px #00000012,
-    inset 0 14px 14px -3px #0000000d, inset 0 30px 30px -4px #00000005;
+  box-shadow:
+    inset 0 1px 1px -1px #00000014,
+    inset 0 2px 2px -1px #00000014,
+    inset 0 4px 4px -2px #00000012,
+    inset 0 7px 7px -3px #00000012,
+    inset 0 14px 14px -3px #0000000d,
+    inset 0 30px 30px -4px #00000005;
   animation: gaugeSpin 20s linear infinite;
 }
 
 @keyframes gaugeSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .gauge::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 30px;
   right: 50px;
@@ -172,14 +194,18 @@
   height: 20px;
   border-radius: 100px;
   background: #f5f5f5;
-  box-shadow: inset 0 3px 1px #ffffff, 0 1px 1px -1px #00000014,
-    0 2px 2px -1px #00000014, 0 4px 4px -2px #00000012,
-    0 7px 7px -3px #00000012, 0 14px 14px -3px #0000000d,
+  box-shadow:
+    inset 0 3px 1px #ffffff,
+    0 1px 1px -1px #00000014,
+    0 2px 2px -1px #00000014,
+    0 4px 4px -2px #00000012,
+    0 7px 7px -3px #00000012,
+    0 14px 14px -3px #0000000d,
     0 30px 30px -4px #00000005;
 }
 
 .gaugeInner::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 28px;
   left: 108px;
@@ -187,8 +213,13 @@
   height: 87px;
   border-radius: 100px;
   background: #f5f5f5;
-  box-shadow: inset 0 3px 1px #ffffff, 0 1px 1px -1px #00000033, 0 2px 2px -1px #00000030,
-    0 4px 4px -2px #0000002e, 0 7px 7px -3px #0000002b, 0 14px 14px -3px #00000021,
+  box-shadow:
+    inset 0 3px 1px #ffffff,
+    0 1px 1px -1px #00000033,
+    0 2px 2px -1px #00000030,
+    0 4px 4px -2px #0000002e,
+    0 7px 7px -3px #0000002b,
+    0 14px 14px -3px #00000021,
     0 30px 30px -4px #0000000d;
   transform: rotate(52deg);
 }
@@ -206,9 +237,13 @@
   width: 43px;
   border-radius: 8px;
   background: #e8e8e8;
-  box-shadow: inset 0 3px 1px #ffffff, 0 1px 1px -1px #00000014,
-    0 2px 2px -1px #00000014, 0 4px 4px -2px #00000012,
-    0 7px 7px -3px #00000012, 0 14px 14px -3px #0000000d,
+  box-shadow:
+    inset 0 3px 1px #ffffff,
+    0 1px 1px -1px #00000014,
+    0 2px 2px -1px #00000014,
+    0 4px 4px -2px #00000012,
+    0 7px 7px -3px #00000012,
+    0 14px 14px -3px #0000000d,
     0 30px 30px -4px #00000005;
 }
 
@@ -264,40 +299,85 @@
   animation: stemSway 6s ease-in-out infinite;
 }
 
-.stem:nth-child(1) { animation-delay: 0s; }
-.stem:nth-child(2) { animation-delay: 0.8s; }
-.stem:nth-child(3) { animation-delay: 1.6s; }
-.stem:nth-child(4) { animation-delay: 2.4s; }
-.stem:nth-child(5) { animation-delay: 3.2s; }
-.stem:nth-child(6) { animation-delay: 4.0s; }
-.stem:nth-child(7) { animation-delay: 4.8s; }
+.stem:nth-child(1) {
+  animation-delay: 0s;
+}
+.stem:nth-child(2) {
+  animation-delay: 0.8s;
+}
+.stem:nth-child(3) {
+  animation-delay: 1.6s;
+}
+.stem:nth-child(4) {
+  animation-delay: 2.4s;
+}
+.stem:nth-child(5) {
+  animation-delay: 3.2s;
+}
+.stem:nth-child(6) {
+  animation-delay: 4s;
+}
+.stem:nth-child(7) {
+  animation-delay: 4.8s;
+}
 
 .stemDot {
   animation: dotBreathe 2.5s ease-in-out infinite;
 }
 
-.stem:nth-child(1) .stemDot { animation-delay: 0s; }
-.stem:nth-child(2) .stemDot { animation-delay: 0.35s; }
-.stem:nth-child(3) .stemDot { animation-delay: 0.7s; }
-.stem:nth-child(4) .stemDot { animation-delay: 1.05s; }
-.stem:nth-child(5) .stemDot { animation-delay: 1.4s; }
-.stem:nth-child(6) .stemDot { animation-delay: 1.75s; }
-.stem:nth-child(7) .stemDot { animation-delay: 2.1s; }
+.stem:nth-child(1) .stemDot {
+  animation-delay: 0s;
+}
+.stem:nth-child(2) .stemDot {
+  animation-delay: 0.35s;
+}
+.stem:nth-child(3) .stemDot {
+  animation-delay: 0.7s;
+}
+.stem:nth-child(4) .stemDot {
+  animation-delay: 1.05s;
+}
+.stem:nth-child(5) .stemDot {
+  animation-delay: 1.4s;
+}
+.stem:nth-child(6) .stemDot {
+  animation-delay: 1.75s;
+}
+.stem:nth-child(7) .stemDot {
+  animation-delay: 2.1s;
+}
 
 @keyframes dotBreathe {
-  0%, 100% { r: 9; opacity: 0.7; }
-  50% { r: 14; opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 @keyframes stemSway {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(1.5deg); }
-  75% { transform: rotate(-1.5deg); }
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(1.5deg);
+  }
+  75% {
+    transform: rotate(-1.5deg);
+  }
 }
 
 @keyframes networkPulse {
-  0%, 100% { opacity: 0.85; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

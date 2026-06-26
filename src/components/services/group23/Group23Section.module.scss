@@ -319,9 +319,8 @@
 }
 
 .chartLinePath {
-  stroke-dasharray: 600;
-  stroke-dashoffset: 600;
-  animation: chartLineCycle 4.5s ease-in-out infinite;
+  stroke-dasharray: none;
+  stroke-dashoffset: 0;
 }
 
 .chartDot {
@@ -332,13 +331,6 @@
   0%, 18% { opacity: 0; }
   30%, 72% { opacity: 1; }
   85%, 100% { opacity: 0; }
-}
-
-@keyframes chartLineCycle {
-  0% { stroke-dashoffset: 600; }
-  22% { stroke-dashoffset: 0; }
-  78% { stroke-dashoffset: 0; }
-  100% { stroke-dashoffset: 600; }
 }
 
 @keyframes chartDotCycle {
