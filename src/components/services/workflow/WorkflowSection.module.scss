@@ -47,17 +47,6 @@
 .snake {
   stroke-linecap: round;
   stroke-dasharray: 4 14;
-  animation: snake-flow 12s linear infinite;
-}
-
-@keyframes snake-flow {
-  0% {
-    stroke-dashoffset: 0;
-  }
-
-  100% {
-    stroke-dashoffset: -140;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
