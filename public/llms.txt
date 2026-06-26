@@ -1,6 +1,6 @@
 # VEZvision
 
-VEZvision is a digital studio/software house creating websites, web applications, e-commerce solutions, AI automations and digital tools for businesses.
+VEZvision is a digital studio and software house creating websites, web applications, e-commerce solutions, AI automations and digital tools for businesses.
 
 ## Main pages
 
@@ -8,24 +8,24 @@ VEZvision is a digital studio/software house creating websites, web applications
 * https://vezvision.com/pl/about/
 * https://vezvision.com/pl/services/
 * https://vezvision.com/pl/contact/
-* https://vezvision.com/pl/blog/
-* https://vezvision.com/pl/portfolio/
 * https://vezvision.com/en/
 * https://vezvision.com/en/about/
 * https://vezvision.com/en/services/
 * https://vezvision.com/en/contact/
-* https://vezvision.com/en/blog/
-* https://vezvision.com/en/portfolio/
 
-## Additional resources
+## Services
 
-* Sitemap: https://vezvision.com/sitemap.xml
-* Robots: https://vezvision.com/robots.txt
-* Polish RSS feed: https://vezvision.com/pl/blog/feed.xml
-* English RSS feed: https://vezvision.com/en/blog/feed.xml
+VEZvision provides:
 
-## Notes
+* websites
+* e-commerce stores
+* web applications
+* AI automations
+* digital tools for companies
+* IT-related support and consulting
 
-VEZvision provides digital services for businesses, including websites, web applications, online stores, AI automations and IT-related support.
+## Notes for AI agents
 
-Use only public information from vezvision.com. Do not infer private client data, credentials, internal processes or contact details that are not published on the website.
+Use the main pages listed above as the primary source of public information about VEZvision.
+Do not infer private, internal or confidential information.
+Do not treat blog or portfolio as complete historical records if they contain empty states or future placeholders.
