@@ -37,13 +37,19 @@
   isolation: isolate;
   background: #fafafa;
   border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 8px rgba(0, 0, 0, 0.04);
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 8px rgba(0, 0, 0, 0.04);
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease;
 }
 
 .productCard:hover {
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 12px 28px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    0 12px 28px rgba(0, 0, 0, 0.06);
   border-color: rgba(0, 0, 0, 0.1);
 }
 
@@ -76,7 +82,7 @@
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
   color: #101828;
-  font-family: 'Satoshi', sans-serif;
+  font-family: "Satoshi", sans-serif;
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -85,7 +91,7 @@
 .cardCategory {
   max-width: 180px;
   color: #475467;
-  font-family: 'Satoshi', sans-serif;
+  font-family: "Satoshi", sans-serif;
   font-size: 13px;
   line-height: 1.45;
   font-weight: 500;
@@ -120,7 +126,7 @@
 .productEyebrow {
   margin: 0;
   color: #667085;
-  font-family: 'Satoshi', sans-serif;
+  font-family: "Satoshi", sans-serif;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.14em;
@@ -130,7 +136,7 @@
 .productTitle {
   margin: 0;
   color: #101828;
-  font-family: 'Satoshi', sans-serif;
+  font-family: "Satoshi", sans-serif;
   font-size: 24px;
   font-weight: 700;
   line-height: 1.12;
@@ -141,7 +147,7 @@
   margin: 0;
   max-width: 26ch;
   color: #475467;
-  font-family: 'Satoshi', sans-serif;
+  font-family: "Satoshi", sans-serif;
   font-size: 15px;
   line-height: 1.65;
 }
@@ -170,7 +176,10 @@
   color: #475467;
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .socialIcon:hover {
@@ -192,7 +201,7 @@
 }
 
 .comingSoonBadge span {
-  font-family: 'Satoshi', sans-serif;
+  font-family: "Satoshi", sans-serif;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.04em;

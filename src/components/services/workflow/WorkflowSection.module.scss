@@ -83,7 +83,7 @@
     0px 6px 10px -2px #00000012,
     0px 14px 18px -3px #0000000d;
   padding: 18px 16px 16px;
-  transition: transform .2s ease, box-shadow .2s ease;
+  transition: transform .2s ease;
 }
 
 .stepCard:hover {
@@ -156,7 +156,7 @@
   border-radius: 10px;
   font-weight: 600;
   box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-  transition: all .25s ease;
+  transition: background-color .25s ease, border-color .25s ease, color .25s ease, transform .25s ease;
 }
 
 .ctaButton:hover {
