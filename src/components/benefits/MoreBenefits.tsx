@@ -49,8 +49,6 @@ const MoreBenefits: React.FC = () => {
       setWidth = nextWidth;
     };
 
-    measure(set.scrollWidth);
-
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         if (entry.target === set) {
@@ -60,7 +58,6 @@ const MoreBenefits: React.FC = () => {
       }
     });
     resizeObserver.observe(set);
-    resizeObserver.observe(track);
 
     const visibilityObserver = new IntersectionObserver(
       ([entry]) => {
