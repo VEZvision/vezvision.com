@@ -1,4 +1,5 @@
 import "../styles/GridBackground.css";
+import { lazy } from "react";
 import { useHeroContactAction } from "@/hooks/useHeroContactAction";
 import { Briefcase } from "lucide-react";
 
@@ -7,11 +8,22 @@ import { useLanguageContext } from "@/hooks/useLanguage";
 import { useSettings } from "@/hooks/useSettings";
 import { StaticPage } from "@/pagekit";
 import { buildHeroSocialLinks } from "@/components/common/heroSocialLinks";
-import Group23Section from "@/components/services/group23/Group23Section";
-import WorkflowSection from "@/components/services/workflow/WorkflowSection";
-import ServicesSection from "@/components/services/ServicesSection";
-import NewsletterSection from "@/components/newsletter/NewsletterSection";
-import ContactSection from "@/components/contact/ContactSection";
+
+const Group23Section = lazy(
+  () => import("@/components/services/group23/Group23Section"),
+);
+const WorkflowSection = lazy(
+  () => import("@/components/services/workflow/WorkflowSection"),
+);
+const ServicesSection = lazy(
+  () => import("@/components/services/ServicesSection"),
+);
+const NewsletterSection = lazy(
+  () => import("@/components/newsletter/NewsletterSection"),
+);
+const ContactSection = lazy(
+  () => import("@/components/contact/ContactSection"),
+);
 
 function ServicesHero() {
   const { t } = useLanguageContext();
@@ -51,11 +63,11 @@ export default function Services() {
       }}
       sections={[
         { key: "hero", Component: ServicesHero, eager: true },
-        { key: "group23", Component: Group23Section, eager: true },
-        { key: "workflow", Component: WorkflowSection, eager: true },
-        { key: "services", Component: ServicesSection, eager: true },
-        { key: "newsletter", Component: NewsletterSection, eager: true },
-        { key: "contact", Component: ContactSection, eager: true },
+        { key: "group23", Component: Group23Section, minHeight: "620px" },
+        { key: "workflow", Component: WorkflowSection, minHeight: "640px" },
+        { key: "services", Component: ServicesSection, minHeight: "680px" },
+        { key: "newsletter", Component: NewsletterSection, minHeight: "420px" },
+        { key: "contact", Component: ContactSection, minHeight: "560px" },
       ]}
     />
   );

@@ -1,4 +1,5 @@
 import "../styles/GridBackground.css";
+import { lazy } from "react";
 import { Info } from "lucide-react";
 
 import VideoHeroSection from "@/components/common/VideoHeroSection";
@@ -10,11 +11,18 @@ import { useHeroContactAction } from "@/hooks/useHeroContactAction";
 import { buildHeroSocialLinks } from "@/components/common/heroSocialLinks";
 import AboutHeader from "@/components/about/AboutHeader";
 import AboutCards from "@/components/about/AboutCards";
-import ValuesSection from "@/components/about/ValuesSection";
-import WhyChooseSection from "@/components/why-choose/WhyChooseSection";
-import AboutComparison from "@/components/about/AboutComparison";
-import FaqSection from "@/components/faq/FaqSection";
-import ContactSection from "@/components/contact/ContactSection";
+
+const ValuesSection = lazy(() => import("@/components/about/ValuesSection"));
+const WhyChooseSection = lazy(
+  () => import("@/components/why-choose/WhyChooseSection"),
+);
+const AboutComparison = lazy(
+  () => import("@/components/about/AboutComparison"),
+);
+const FaqSection = lazy(() => import("@/components/faq/FaqSection"));
+const ContactSection = lazy(
+  () => import("@/components/contact/ContactSection"),
+);
 
 function AboutHero() {
   const { t } = useLanguageContext();
@@ -49,11 +57,11 @@ const ABOUT_SECTIONS = {
   hero: { Component: AboutHero, eager: true },
   header: { Component: AboutHeader, eager: true },
   cards: { Component: AboutCards, eager: true },
-  values: { Component: ValuesSection, eager: true },
-  about_comparison: { Component: AboutComparison, eager: true },
-  why_choose: { Component: WhyChooseSection, eager: true },
-  faq: { Component: FaqSection, eager: true },
-  contact: { Component: ContactSection, eager: true },
+  values: { Component: ValuesSection, minHeight: "520px" },
+  about_comparison: { Component: AboutComparison, minHeight: "680px" },
+  why_choose: { Component: WhyChooseSection, minHeight: "640px" },
+  faq: { Component: FaqSection, minHeight: "560px" },
+  contact: { Component: ContactSection, minHeight: "560px" },
 } as const;
 
 const ABOUT_FALLBACK = [

@@ -1,4 +1,5 @@
 import "../styles/GridBackground.css";
+import { lazy } from "react";
 import { Phone } from "lucide-react";
 
 import VideoHeroSection from "@/components/common/VideoHeroSection";
@@ -9,8 +10,11 @@ import { usePageSectionConfig } from "@/hooks/usePageSection";
 import { scrollToElement } from "@/scroll";
 import { CmsPage } from "@/pagekit";
 import { buildHeroSocialLinks } from "@/components/common/heroSocialLinks";
-import FaqSection from "@/components/faq/FaqSection";
-import ContactSection from "@/components/contact/ContactSection";
+
+const FaqSection = lazy(() => import("@/components/faq/FaqSection"));
+const ContactSection = lazy(
+  () => import("@/components/contact/ContactSection"),
+);
 
 function ContactHero() {
   const { t } = useLanguageContext();
@@ -55,8 +59,12 @@ function ContactHero() {
 const CONTACT_SECTIONS = {
   hero: { Component: ContactHero, eager: true },
   form: { Component: ContactFormPageSection, eager: true },
-  faq: { Component: FaqSection, props: { showContactCta: false }, eager: true },
-  contact: { Component: ContactSection, eager: true },
+  faq: {
+    Component: FaqSection,
+    props: { showContactCta: false },
+    minHeight: "560px",
+  },
+  contact: { Component: ContactSection, minHeight: "560px" },
 } as const;
 
 const CONTACT_FALLBACK = ["hero", "form", "faq", "contact"] as const;
