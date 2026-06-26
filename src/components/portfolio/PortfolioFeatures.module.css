@@ -128,8 +128,7 @@
 .description {
   font-family: "Satoshi", sans-serif;
   font-size: 15px;
-  color: #000;
-  opacity: 0.7;
+  color: #475467;
   line-height: 1.5;
   margin: 0;
 }
@@ -441,7 +440,7 @@
 
 .searchInput {
   font-size: 13px;
-  color: #98a2b3;
+  color: #475467;
   flex: 1;
 }
 
@@ -606,7 +605,7 @@
 }
 
 .lineNumber {
-  color: #d0d5dd;
+  color: #667085;
   min-width: 16px;
   text-align: right;
 }
@@ -617,7 +616,6 @@
   overflow: hidden;
   white-space: nowrap;
   width: 100%;
-  clip-path: inset(0 100% 0 0);
   animation: codeTyping 3.2s infinite;
 }
 
@@ -654,11 +652,13 @@
   0%,
   6%,
   100% {
-    clip-path: inset(0 100% 0 0);
+    opacity: 0;
+    transform: translateX(-4px);
   }
   22%,
   78% {
-    clip-path: inset(0 0 0 0);
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
