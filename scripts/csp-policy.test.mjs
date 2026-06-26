@@ -27,4 +27,10 @@ describe('buildContentSecurityPolicy', () => {
     assert.match(policy, /base-uri 'self'/)
     assert.match(policy, /form-action 'self'/)
   })
+
+  it('enforces trusted types for script sinks', () => {
+    const policy = buildContentSecurityPolicy()
+    assert.match(policy, /require-trusted-types-for 'script'/)
+    assert.match(policy, /trusted-types default dompurify react-helmet/)
+  })
 })
