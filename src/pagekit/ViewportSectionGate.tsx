@@ -4,6 +4,12 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 const DEFAULT_ROOT_MARGIN = "500px 0px";
 
+declare global {
+  interface Window {
+    __VEZ_PRERENDER__?: boolean;
+  }
+}
+
 export type ViewportSectionGateProps = {
   children: ReactNode;
   className?: string;
@@ -23,6 +29,7 @@ export function ViewportSectionGate({
 
   useEffect(() => {
     if (
+      window.__VEZ_PRERENDER__ ||
       reducedMotion ||
       typeof window === "undefined" ||
       !("IntersectionObserver" in window)

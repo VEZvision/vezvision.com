@@ -197,6 +197,9 @@ async function main() {
   }
 
   const page = await browser.newPage();
+  await page.addInitScript(() => {
+    window.__VEZ_PRERENDER__ = true;
+  });
   const diagnostics = attachPageDiagnostics(page);
   let successCount = 0;
   let skipCount = 0;
