@@ -1,9 +1,15 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
-import { Toaster } from 'sonner';
-import { memo, lazy, Suspense, type ReactNode } from "react";
+import {
+  memo,
+  lazy,
+  Suspense,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 import RouteErrorBoundary from "@/components/layout/RouteErrorBoundary";
-import { SmoothScrollProvider } from '@/contexts/SmoothScrollContext';
-import { ReducedMotionProvider } from '@/contexts/ReducedMotionContext';
+import { SmoothScrollProvider } from "@/contexts/SmoothScrollContext";
+import { ReducedMotionProvider } from "@/contexts/ReducedMotionContext";
 import { CookieConsentProvider } from "@/contexts/CookieConsentContext";
 import { LanguageProvider } from "@/contexts/LanguageProvider";
 import { SettingsProvider } from "@/contexts/SettingsContext";
@@ -28,38 +34,49 @@ const PrivacyPolicy = lazy(() => import("@/pages/PrivacyPolicy"));
 const Terms = lazy(() => import("@/pages/Terms"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const Unsubscribe = lazy(() => import("@/pages/Unsubscribe"));
-const CookiePreferences = lazy(() => import("@/components/cookies/CookiePreferences").then(m => ({ default: m.CookiePreferences })));
-const PrivacyCenter = lazy(() => import("@/components/cookies/PrivacyCenter").then(m => ({ default: m.PrivacyCenter })));
-import { MaintenanceGuard } from '@/components/layout/MaintenanceGuard';
-import CodeInjector from '@/components/system/CodeInjector';
-import { useScrollToTopOnRouteChange } from '@/hooks/useScrollToTopOnRouteChange';
-import { useCookieConsent } from '@/hooks/useCookieConsent';
+const CookiePreferences = lazy(() =>
+  import("@/components/cookies/CookiePreferences").then((m) => ({
+    default: m.CookiePreferences,
+  })),
+);
+const PrivacyCenter = lazy(() =>
+  import("@/components/cookies/PrivacyCenter").then((m) => ({
+    default: m.PrivacyCenter,
+  })),
+);
+const LazyToaster = lazy(() =>
+  import("sonner").then((m) => ({ default: m.Toaster })),
+);
+import { MaintenanceGuard } from "@/components/layout/MaintenanceGuard";
+import CodeInjector from "@/components/system/CodeInjector";
+import { useScrollToTopOnRouteChange } from "@/hooks/useScrollToTopOnRouteChange";
+import { useCookieConsent } from "@/hooks/useCookieConsent";
 
-const enableE2eRoutes = import.meta.env.VITE_ENABLE_E2E_ROUTES === 'true';
+const enableE2eRoutes = import.meta.env.VITE_ENABLE_E2E_ROUTES === "true";
 
 const e2eRouteChildren = (() => {
   if (!enableE2eRoutes) return [];
 
-  const E2eErrorTrigger = lazy(() => import('@/pages/E2eErrorTrigger'));
-  return [{ path: '__e2e__/error', element: <E2eErrorTrigger /> }];
+  const E2eErrorTrigger = lazy(() => import("@/pages/E2eErrorTrigger"));
+  return [{ path: "__e2e__/error", element: <E2eErrorTrigger /> }];
 })();
 
 const routeElements: Record<string, ReactNode> = {
-  '': <Home />,
+  "": <Home />,
   about: <About />,
   services: <Services />,
   portfolio: <Portfolio />,
-  'portfolio/:slug': <ProjectDetails />,
+  "portfolio/:slug": <ProjectDetails />,
   blog: <Blog />,
-  'blog/:slug': <BlogArticle />,
+  "blog/:slug": <BlogArticle />,
   newsletter: <Newsletter />,
   products: <Products />,
   contact: <Contact />,
-  'cookie-policy': <CookiePolicy />,
-  'privacy-policy': <PrivacyPolicy />,
+  "cookie-policy": <CookiePolicy />,
+  "privacy-policy": <PrivacyPolicy />,
   terms: <Terms />,
   unsubscribe: <Unsubscribe />,
-  '404': <NotFound />,
+  "404": <NotFound />,
 };
 
 const localizedChildren = APP_ROUTES.map((route) => ({
@@ -72,7 +89,7 @@ const Layout = memo(() => {
 
   return (
     <PublicChrome>
-      <main id="main-content" style={{ minHeight: '100vh' }} role="main">
+      <main id="main-content" style={{ minHeight: "100vh" }} role="main">
         <Suspense fallback={<AppBootShell />}>
           <Outlet />
         </Suspense>
@@ -81,15 +98,15 @@ const Layout = memo(() => {
   );
 });
 
-Layout.displayName = 'Layout';
+Layout.displayName = "Layout";
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <LocaleRedirect />,
   },
   {
-    path: '/:lang',
+    path: "/:lang",
     element: <Layout />,
     errorElement: <RouteErrorBoundary />,
     children: [
@@ -97,14 +114,14 @@ const router = createBrowserRouter([
         element: <LocaleGate />,
         children: [
           ...localizedChildren,
-          { path: '*', element: <NotFound /> },
+          { path: "*", element: <NotFound /> },
           ...e2eRouteChildren,
         ],
       },
     ],
   },
   {
-    path: '*',
+    path: "*",
     element: <LocaleRedirect />,
   },
 ]);
@@ -124,7 +141,33 @@ const CookieModalsGate = memo(() => {
   );
 });
 
-CookieModalsGate.displayName = 'CookieModalsGate';
+CookieModalsGate.displayName = "CookieModalsGate";
+
+const ToasterGate = memo(() => {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    if (typeof window.requestIdleCallback === "function") {
+      const idleId = window.requestIdleCallback(() => setReady(true), {
+        timeout: 3000,
+      });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timer = window.setTimeout(() => setReady(true), 1);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  if (!ready) return null;
+
+  return (
+    <Suspense fallback={null}>
+      <LazyToaster richColors closeButton position="top-right" />
+    </Suspense>
+  );
+});
+
+ToasterGate.displayName = "ToasterGate";
 
 export default function App() {
   return (
@@ -132,7 +175,7 @@ export default function App() {
       <ReducedMotionProvider>
         <SettingsProvider>
           <SmoothScrollProvider>
-            <Toaster richColors closeButton position="top-right" />
+            <ToasterGate />
             <CookieConsentProvider>
               <MaintenanceGuard>
                 <CodeInjector />
