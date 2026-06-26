@@ -61,10 +61,21 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
       setAccess(accessible ? "clear" : "blocked");
     };
 
-    void resolveAccess();
+    let idleId: number | null = null;
+    let timer: number | null = null;
+
+    if (typeof window.requestIdleCallback === "function") {
+      idleId = window.requestIdleCallback(() => void resolveAccess(), {
+        timeout: 2500,
+      });
+    } else {
+      timer = window.setTimeout(() => void resolveAccess(), 1);
+    }
 
     return () => {
       cancelled = true;
+      if (idleId !== null) window.cancelIdleCallback(idleId);
+      if (timer !== null) window.clearTimeout(timer);
     };
   }, [
     settingsLoading,

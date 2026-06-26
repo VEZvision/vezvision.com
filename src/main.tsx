@@ -29,11 +29,22 @@ if ("scrollRestoration" in window.history) {
 }
 
 initGoogleAnalyticsConsentDefaults();
-initWebVitalsReporting();
+
+const scheduleIdleWork = (work: () => void, timeout = 3000): void => {
+  if (typeof window.requestIdleCallback === "function") {
+    window.requestIdleCallback(work, { timeout });
+    return;
+  }
+
+  globalThis.setTimeout(work, 1);
+};
 
 const initialLanguage = detectInitialLanguage();
 prefetchLocale(initialLanguage);
-prefetchLocale(initialLanguage === "pl" ? "en" : "pl");
+scheduleIdleWork(() => {
+  void initWebVitalsReporting();
+  prefetchLocale(initialLanguage === "pl" ? "en" : "pl");
+});
 
 const rootElement = document.getElementById("root");
 
@@ -83,15 +94,6 @@ if (rootElement.hasChildNodes()) {
 createRoot(rootElement).render(app);
 
 // Sentry loads only when analytics consent is already granted.
-if (typeof window.requestIdleCallback === "function") {
-  window.requestIdleCallback(
-    () => {
-      void initSentryIfConsented();
-    },
-    { timeout: 3000 },
-  );
-} else {
-  globalThis.setTimeout(() => {
-    void initSentryIfConsented();
-  }, 1);
-}
+scheduleIdleWork(() => {
+  void initSentryIfConsented();
+});

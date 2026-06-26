@@ -1,4 +1,4 @@
-import { onCLS, onINP, onLCP, onFCP, onTTFB, type Metric } from "web-vitals";
+import type { Metric } from "web-vitals";
 
 function sendToAnalytics(metric: Metric): void {
   if (!import.meta.env.PROD || !import.meta.env.VITE_GA_ID) return;
@@ -21,7 +21,10 @@ function sendToAnalytics(metric: Metric): void {
   });
 }
 
-export function initWebVitalsReporting(): void {
+export async function initWebVitalsReporting(): Promise<void> {
+  if (!import.meta.env.PROD || !import.meta.env.VITE_GA_ID) return;
+
+  const { onCLS, onINP, onLCP, onFCP, onTTFB } = await import("web-vitals");
   onCLS(sendToAnalytics);
   onINP(sendToAnalytics);
   onLCP(sendToAnalytics);

@@ -4,6 +4,7 @@ import {
   useEffect,
   useCallback,
   useMemo,
+  useState,
   type ReactNode,
 } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -35,10 +36,26 @@ const SettingsContext = createContext<SettingsContextType>({
 
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const cachedSnapshot = readPublicSettingsCache();
+  const [canFetch, setCanFetch] = useState(Boolean(cachedSnapshot));
+
+  useEffect(() => {
+    if (canFetch) return;
+
+    if (typeof window.requestIdleCallback === "function") {
+      const idleId = window.requestIdleCallback(() => setCanFetch(true), {
+        timeout: 2500,
+      });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timer = window.setTimeout(() => setCanFetch(true), 1);
+    return () => window.clearTimeout(timer);
+  }, [canFetch]);
 
   const query = useQuery({
     queryKey: SETTINGS_QUERY_KEY,
     queryFn: loadSettingsSnapshot,
+    enabled: canFetch,
     initialData: cachedSnapshot
       ? { ...cachedSnapshot.settings, error: null, degraded: false }
       : undefined,
@@ -49,7 +66,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const snapshot = query.data ?? defaultSnapshot;
   const { error, degraded, ...settings } = snapshot;
 
-  const loading = query.isLoading && !query.data;
+  const loading = canFetch && query.isLoading && !query.data;
 
   useEffect(() => {
     if (!query.data) return;
