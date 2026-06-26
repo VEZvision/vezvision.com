@@ -53,14 +53,6 @@ function getObserver(
   return observer;
 }
 
-function isAboveFold(el: HTMLElement): boolean {
-  const rect = el.getBoundingClientRect();
-  return (
-    (rect.top < window.innerHeight * 0.95 && rect.bottom > 0) ||
-    rect.bottom <= 0
-  );
-}
-
 export type RegisterRevealOptions = {
   once?: boolean;
   rootMargin?: string | undefined;
@@ -84,11 +76,6 @@ export function registerRevealElement(
   if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
     reveal(el, onReveal);
     return () => {};
-  }
-
-  if (isAboveFold(el)) {
-    reveal(el, onReveal);
-    if (once) return () => {};
   }
 
   const observer = getObserver(rootMargin, threshold);
