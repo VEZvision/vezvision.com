@@ -147,6 +147,10 @@ const ToasterGate = memo(() => {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    if (window.__VEZ_PRERENDER__) {
+      return;
+    }
+
     if (typeof window.requestIdleCallback === "function") {
       const idleId = window.requestIdleCallback(() => setReady(true), {
         timeout: 3000,
@@ -158,7 +162,7 @@ const ToasterGate = memo(() => {
     return () => window.clearTimeout(timer);
   }, []);
 
-  if (!ready) return null;
+  if (window.__VEZ_PRERENDER__ || !ready) return null;
 
   return (
     <Suspense fallback={null}>

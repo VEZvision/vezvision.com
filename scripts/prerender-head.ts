@@ -44,6 +44,51 @@ function buildPrerenderedHtml(
   return `<!doctype html>\n<html lang="${htmlLang}">\n${headHtml}\n${bodyHtml}\n</html>`;
 }
 
+const HOME_ROUTE_PATHS = new Set(["/pl", "/en"]);
+
+const NON_CRITICAL_HOME_ASSET_PATTERNS = [
+  /\/assets\/AboutComparison-[^"'<>\s]+\.(?:css|js)/,
+  /\/assets\/Benefits-[^"'<>\s]+\.(?:css|js)/,
+  /\/assets\/ContactSection-[^"'<>\s]+\.(?:css|js)/,
+  /\/assets\/Features-[^"'<>\s]+\.(?:css|js)/,
+  /\/assets\/NewsletterSection-[^"'<>\s]+\.(?:css|js)/,
+  /\/assets\/PotentialSection-[^"'<>\s]+\.(?:css|js)/,
+  /\/assets\/ProcessSection-[^"'<>\s]+\.(?:css|js)/,
+  /\/assets\/ProductsSection-[^"'<>\s]+\.(?:css|js)/,
+  /\/assets\/ResponsiveImage-[^"'<>\s]+\.js/,
+  /\/assets\/SectionHeader-[^"'<>\s]+\.(?:css|js)/,
+  /\/assets\/SectionReveal-[^"'<>\s]+\.js/,
+  /\/assets\/contactValidation-[^"'<>\s]+\.js/,
+  /\/assets\/index-[^"'<>\s]+\.js/,
+  /\/assets\/newslette?r-[^"'<>\s]+\.js/,
+  /\/assets\/useHeroContactAction-[^"'<>\s]+\.js/,
+  /\/assets\/vendor-zod-[^"'<>\s]+\.js/,
+  /\/assets\/vendor-sonner-[^"'<>\s]+\.js/,
+];
+
+function shouldDropHomeAssetHint(tagHtml: string): boolean {
+  if (!/(?:rel=["']stylesheet["']|rel=["']modulepreload["'])/i.test(tagHtml)) {
+    return false;
+  }
+
+  return NON_CRITICAL_HOME_ASSET_PATTERNS.some((pattern) =>
+    pattern.test(tagHtml),
+  );
+}
+
+function removeNonCriticalHomeAssetHints(
+  headHtml: string,
+  routePath: string,
+): string {
+  if (!HOME_ROUTE_PATHS.has(routePath)) {
+    return headHtml;
+  }
+
+  return headHtml.replace(/<link\b[^>]*>/gi, (tagHtml) =>
+    shouldDropHomeAssetHint(tagHtml) ? "" : tagHtml,
+  );
+}
+
 async function prerenderRoute({
   page,
   diagnostics,
@@ -105,7 +150,10 @@ async function prerenderRoute({
     };
   }
 
-  const normalizedHead = headHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN);
+  const normalizedHead = removeNonCriticalHomeAssetHints(
+    headHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN),
+    routePath,
+  );
   const normalizedBody = bodyHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN);
   const prerendered = buildPrerenderedHtml(
     normalizedHead,
