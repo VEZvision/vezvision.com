@@ -35,7 +35,26 @@ vi.mock("@/pages/MaintenancePage", () => ({
 
 describe("MaintenanceGuard", () => {
   afterEach(() => {
+    delete window.__VEZ_PRERENDER__;
     vi.clearAllMocks();
+  });
+
+  it("keeps prerendered SEO routes accessible without checking maintenance", () => {
+    window.__VEZ_PRERENDER__ = true;
+    useSettingsMock.mockReturnValue({
+      maintenance: { enabled: true, message: "Maintenance", description: "" },
+      loading: false,
+    });
+
+    render(
+      <MaintenanceGuard>
+        <div>SEO route content</div>
+      </MaintenanceGuard>,
+    );
+
+    expect(screen.getByText("SEO route content")).toBeInTheDocument();
+    expect(fetchMaintenanceAccessMock).not.toHaveBeenCalled();
+    expect(fetchMaintenanceEnabledFromDbMock).not.toHaveBeenCalled();
   });
 
   it("renders children immediately while settings are loading (optimistic)", () => {

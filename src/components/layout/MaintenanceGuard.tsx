@@ -21,18 +21,22 @@ type MaintenanceGuardProps = {
  * Only swaps to MaintenancePage if maintenance is confirmed active.
  */
 export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
+  const isPrerender = window.__VEZ_PRERENDER__ === true;
   const {
     maintenance,
     loading: settingsLoading,
     error: settingsError,
   } = useSettings();
   const [access, setAccess] = useState<MaintenanceAccessState>(
-    readMaintenanceFlagFromCache() === true ? "blocked" : "checking",
+    isPrerender || readMaintenanceFlagFromCache() !== true
+      ? "checking"
+      : "blocked",
   );
   const hasMaintenanceSettings = maintenance != null;
   const settingsMaintenanceEnabled = maintenance?.enabled === true;
 
   useEffect(() => {
+    if (isPrerender) return;
     if (settingsLoading) return;
 
     let cancelled = false;
@@ -78,6 +82,7 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
       if (timer !== null) window.clearTimeout(timer);
     };
   }, [
+    isPrerender,
     settingsLoading,
     settingsError,
     hasMaintenanceSettings,
