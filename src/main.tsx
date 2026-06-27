@@ -95,15 +95,18 @@ function seedBootSettingsCache(): void {
 
 async function bootstrap(root: HTMLElement): Promise<void> {
   seedBootSettingsCache();
-  document.documentElement.removeAttribute("data-vez-prerender");
+  const isPrerendered =
+    document.documentElement.hasAttribute("data-vez-prerender");
 
   const initialLanguage = detectInitialLanguage();
   prefetchLocale(initialLanguage);
   await ensureLocaleLoaded(initialLanguage);
 
   removePrerenderedHelmetTags();
+  document.documentElement.removeAttribute("data-vez-prerender");
 
-  if (root.hasChildNodes()) {
+  // Keep prerendered hero in the DOM until React paints — clearing first delays LCP.
+  if (!isPrerendered && root.hasChildNodes()) {
     root.replaceChildren();
   }
 

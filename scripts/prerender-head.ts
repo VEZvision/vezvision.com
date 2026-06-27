@@ -49,21 +49,34 @@ const HOME_ROUTE_PATHS = new Set(["/pl", "/en"]);
 const NON_CRITICAL_HOME_ASSET_PATTERNS = [
   /\/assets\/AboutComparison-[^"'<>\s]+\.(?:css|js)/,
   /\/assets\/Benefits-[^"'<>\s]+\.(?:css|js)/,
+  /\/assets\/Breadcrumbs-[^"'<>\s]+\.js/,
+  /\/assets\/CmsPage-[^"'<>\s]+\.js/,
+  /\/assets\/codeInjection-[^"'<>\s]+\.js/,
   /\/assets\/ContactSection-[^"'<>\s]+\.(?:css|js)/,
   /\/assets\/Features-[^"'<>\s]+\.(?:css|js)/,
-  /\/assets\/FounderNote-[^"'<>\s]+\.css/,
+  /\/assets\/FounderNote-[^"'<>\s]+\.(?:css|js)/,
   /\/assets\/GridBackground-[^"'<>\s]+\.css/,
+  /\/assets\/loaders-[^"'<>\s]+\.js/,
+  /\/assets\/maintenanceAccess-[^"'<>\s]+\.js/,
   /\/assets\/NewsletterSection-[^"'<>\s]+\.(?:css|js)/,
+  /\/assets\/PageSeo-[^"'<>\s]+\.js/,
+  /\/assets\/PageShell-[^"'<>\s]+\.js/,
   /\/assets\/PotentialSection-[^"'<>\s]+\.(?:css|js)/,
   /\/assets\/ProcessSection-[^"'<>\s]+\.(?:css|js)/,
   /\/assets\/ProductsSection-[^"'<>\s]+\.(?:css|js)/,
   /\/assets\/ResponsiveImage-[^"'<>\s]+\.js/,
+  /\/assets\/revealRegistry-[^"'<>\s]+\.js/,
+  /\/assets\/SectionBadge-[^"'<>\s]+\.js/,
   /\/assets\/SectionHeader-[^"'<>\s]+\.(?:css|js)/,
   /\/assets\/SectionReveal-[^"'<>\s]+\.js/,
+  /\/assets\/supabase-[^"'<>\s]+\.js/,
   /\/assets\/contactValidation-[^"'<>\s]+\.js/,
   /\/assets\/index-[^"'<>\s]+\.js/,
   /\/assets\/newslette?r-[^"'<>\s]+\.js/,
   /\/assets\/useHeroContactAction-[^"'<>\s]+\.js/,
+  /\/assets\/usePageSection-[^"'<>\s]+\.js/,
+  /\/assets\/useReducedMotion-[^"'<>\s]+\.js/,
+  /\/assets\/vendor-lenis-[^"'<>\s]+\.(?:css|js)/,
   /\/assets\/vendor-zod-[^"'<>\s]+\.js/,
   /\/assets\/vendor-sonner-[^"'<>\s]+\.js/,
 ];
@@ -88,6 +101,18 @@ function removeNonCriticalHomeAssetHints(
 
   return headHtml.replace(/<link\b[^>]*>/gi, (tagHtml) =>
     shouldDropHomeAssetHint(tagHtml) ? "" : tagHtml,
+  );
+}
+
+function injectHomeCssPreload(headHtml: string, routePath: string): string {
+  if (!HOME_ROUTE_PATHS.has(routePath)) {
+    return headHtml;
+  }
+
+  return headHtml.replace(
+    /(<link\b[^>]*rel=["']stylesheet["'][^>]*href=["'](\/assets\/Home-[^"']+\.css)["'][^>]*>)/i,
+    (match, _full, href) =>
+      `<link rel="preload" href="${href}" as="style">\n    ${match}`,
   );
 }
 
@@ -173,8 +198,11 @@ async function prerenderRoute({
   }
 
   const normalizedHead = injectBootSettingsScript(
-    removeNonCriticalHomeAssetHints(
-      headHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN),
+    injectHomeCssPreload(
+      removeNonCriticalHomeAssetHints(
+        headHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN),
+        routePath,
+      ),
       routePath,
     ),
     bootSettingsJson,
