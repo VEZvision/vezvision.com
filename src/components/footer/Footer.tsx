@@ -180,7 +180,6 @@ export default function Footer() {
                 loop
                 playsInline
                 preload="metadata"
-                poster="/og-image.png"
                 aria-hidden="true"
                 tabIndex={-1}
                 data-lenis-prevent
