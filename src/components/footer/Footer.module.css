@@ -38,7 +38,7 @@
   transform: translate(-50%, -50%);
   object-fit: cover;
   z-index: 0;
-  filter: grayscale(100%) brightness(2);
+  filter: grayscale(100%) brightness(1.7) contrast(1.03);
   backface-visibility: hidden;
 }
 
@@ -47,7 +47,7 @@
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 251, 246, 0.82);
 }
 
 .footerContainer {
@@ -59,7 +59,7 @@
 
 @media (pointer: coarse) {
   .videoOverlay {
-    background: rgba(255, 255, 255, 0.82);
+    background: rgba(255, 251, 246, 0.66);
   }
 }
 

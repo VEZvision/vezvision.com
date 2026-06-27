@@ -123,7 +123,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
         />
       )}
 
-      <div className="absolute inset-0 bg-white/90 z-10" />
+      <div className={styles.videoOverlay} aria-hidden="true" />
 
       <div
         className={`relative z-20 mx-auto text-center ${
