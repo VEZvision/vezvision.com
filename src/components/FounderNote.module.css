@@ -11,10 +11,14 @@
 }
 
 .section::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(120% 70% at 50% 12%, rgba(255, 255, 255, 0.86) 0%, rgba(255, 255, 255, 0) 64%);
+  background: radial-gradient(
+    120% 70% at 50% 12%,
+    rgba(255, 255, 255, 0.86) 0%,
+    rgba(255, 255, 255, 0) 64%
+  );
   pointer-events: none;
 }
 
@@ -28,8 +32,13 @@
 
 .homeLine {
   margin: 0;
-  display: inline;
-  font-family: 'Satoshi', system-ui, -apple-system, sans-serif;
+  display: block;
+  position: relative;
+  font-family:
+    "Satoshi",
+    system-ui,
+    -apple-system,
+    sans-serif;
   font-size: clamp(15px, 1.7vw, 19px);
   line-height: 1.6;
   font-weight: 400;
@@ -38,10 +47,24 @@
   white-space: nowrap;
   opacity: 0;
   transform: translateY(12px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
 }
 
-.homeLine[data-visible='true'] {
+.reserveText {
+  display: block;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.typedLayer {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.homeLine[data-visible="true"] {
   opacity: 1;
   transform: translateY(0);
 }
@@ -72,7 +95,7 @@
   opacity: 0;
 }
 
-.blogLine[data-visible='true'] .char {
+.blogLine[data-visible="true"] .char {
   animation: charTypeIn 0.3s ease-out forwards;
   animation-delay: calc(var(--line) * 0.2s + var(--i) * 0.04s);
 }
@@ -97,8 +120,7 @@
   45% {
     opacity: 1;
     filter: brightness(1.3);
-    text-shadow:
-      0 0 2px rgba(255, 255, 255, 0.4);
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.4);
   }
   100% {
     opacity: 1;
@@ -125,10 +147,14 @@
 }
 
 .blogSection::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(120% 70% at 50% 12%, rgba(255, 255, 255, 0.86) 0%, rgba(255, 255, 255, 0) 64%);
+  background: radial-gradient(
+    120% 70% at 50% 12%,
+    rgba(255, 255, 255, 0.86) 0%,
+    rgba(255, 255, 255, 0) 64%
+  );
   pointer-events: none;
 }
 
@@ -148,7 +174,12 @@
 .blogLine {
   margin: 0;
   display: block;
-  font-family: 'Satoshi', system-ui, -apple-system, sans-serif;
+  position: relative;
+  font-family:
+    "Satoshi",
+    system-ui,
+    -apple-system,
+    sans-serif;
   font-size: clamp(14px, 1.5vw, 17px);
   line-height: 1.6;
   font-weight: 400;
@@ -175,7 +206,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .char,
-  .blogLine[data-visible='true'] .char {
+  .blogLine[data-visible="true"] .char {
     opacity: 1;
     animation: none;
     filter: none;

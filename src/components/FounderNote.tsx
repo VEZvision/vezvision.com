@@ -1,35 +1,38 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import styles from './FounderNote.module.css';
-import { useLanguageContext } from '../hooks/useLanguage';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { registerRevealElement, revealImmediately } from '@/reveal/revealRegistry';
+import styles from "./FounderNote.module.css";
+import { useLanguageContext } from "../hooks/useLanguage";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import {
+  registerRevealElement,
+  revealImmediately,
+} from "@/reveal/revealRegistry";
 
 type FounderNoteProps = {
   className?: string;
-  variant?: 'home' | 'blog';
+  variant?: "home" | "blog";
 };
 
 const TYPE_SPEED = 45;
 
-function FounderNote({ className = '', variant = 'home' }: FounderNoteProps) {
+function FounderNote({ className = "", variant = "home" }: FounderNoteProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const { t } = useLanguageContext();
   const reducedMotion = useReducedMotion();
   const [isRevealed, setIsRevealed] = useState(false);
-  const [displayText, setDisplayText] = useState('');
+  const [displayText, setDisplayText] = useState("");
   const [showCursor, setShowCursor] = useState(true);
 
-  const isBlog = variant === 'blog';
+  const isBlog = variant === "blog";
   const sectionClass = isBlog ? styles.blogSection : styles.section;
   const innerClass = isBlog ? styles.blogInner : styles.homeInner;
 
   const quoteLines = useMemo(() => {
-    const prefix = isBlog ? 'founder.blog' : 'founder';
+    const prefix = isBlog ? "founder.blog" : "founder";
 
     return [
       {
-        id: 'line-one',
+        id: "line-one",
         segments: [
           { text: t(`${prefix}.line1.a`) },
           { text: t(`${prefix}.line1.b`), highlight: true },
@@ -37,7 +40,7 @@ function FounderNote({ className = '', variant = 'home' }: FounderNoteProps) {
         ],
       },
       {
-        id: 'line-two',
+        id: "line-two",
         segments: [
           { text: t(`${prefix}.line2.a`) },
           { text: t(`${prefix}.line2.b`), highlight: true },
@@ -45,7 +48,7 @@ function FounderNote({ className = '', variant = 'home' }: FounderNoteProps) {
         ],
       },
       {
-        id: 'line-three',
+        id: "line-three",
         segments: [
           { text: t(`${prefix}.line3.a`) },
           { text: t(`${prefix}.line3.b`), highlight: true },
@@ -56,12 +59,17 @@ function FounderNote({ className = '', variant = 'home' }: FounderNoteProps) {
   }, [isBlog, t]);
 
   const fullText = useMemo(() => {
-    const lines = quoteLines.map((line) => line.segments.map((segment) => segment.text).join(''));
-    return isBlog ? lines.join('\n') : lines.join('');
+    const lines = quoteLines.map((line) =>
+      line.segments.map((segment) => segment.text).join(""),
+    );
+    return isBlog ? lines.join("\n") : lines.join("");
   }, [isBlog, quoteLines]);
 
   const accessibleQuote = useMemo(
-    () => quoteLines.map((line) => line.segments.map((segment) => segment.text).join('')).join(' '),
+    () =>
+      quoteLines
+        .map((line) => line.segments.map((segment) => segment.text).join(""))
+        .join(" "),
     [quoteLines],
   );
 
@@ -80,7 +88,7 @@ function FounderNote({ className = '', variant = 'home' }: FounderNoteProps) {
     return registerRevealElement(target, {
       once: true,
       amount: isBlog ? 0.3 : 0,
-      rootMargin: isBlog ? '0px 0px -15% 0px' : undefined,
+      rootMargin: isBlog ? "0px 0px -15% 0px" : undefined,
       onReveal,
     });
   }, [reducedMotion, isBlog, onReveal]);
@@ -128,35 +136,37 @@ function FounderNote({ className = '', variant = 'home' }: FounderNoteProps) {
     >
       <div className={innerClass}>
         <h2 id="founder-note-heading" className="sr-only">
-          {t('founder.srHeading')}
+          {t("founder.srHeading")}
         </h2>
         <p className="sr-only">{accessibleQuote}</p>
 
         {isBlog ? (
           <p
             className={styles.blogLine}
-            data-visible={isRevealed ? 'true' : 'false'}
+            data-visible={isRevealed ? "true" : "false"}
             aria-hidden="true"
           >
-            <span className={styles.typedText}>
-              {displayText}
+            <span className={styles.reserveText}>{fullText}</span>
+            <span className={styles.typedLayer}>
+              <span className={styles.typedText}>{displayText}</span>
+              <span
+                className={`${styles.cursor} ${showCursor ? styles.cursorVisible : styles.cursorHidden}`}
+              />
             </span>
-            <span
-              className={`${styles.cursor} ${showCursor ? styles.cursorVisible : styles.cursorHidden}`}
-            />
           </p>
         ) : (
           <p
             className={styles.homeLine}
-            data-visible={isRevealed ? 'true' : 'false'}
+            data-visible={isRevealed ? "true" : "false"}
             aria-hidden="true"
           >
-            <span className={styles.typedText}>
-              {displayText}
+            <span className={styles.reserveText}>{fullText}</span>
+            <span className={styles.typedLayer}>
+              <span className={styles.typedText}>{displayText}</span>
+              <span
+                className={`${styles.cursor} ${showCursor ? styles.cursorVisible : styles.cursorHidden}`}
+              />
             </span>
-            <span
-              className={`${styles.cursor} ${showCursor ? styles.cursorVisible : styles.cursorHidden}`}
-            />
           </p>
         )}
       </div>
