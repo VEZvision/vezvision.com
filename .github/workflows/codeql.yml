@@ -32,3 +32,6 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+        with:
+          # Repo does not have GitHub code scanning enabled; run analysis without SARIF upload.
+          upload: never
