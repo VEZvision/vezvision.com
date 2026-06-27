@@ -15,6 +15,7 @@ import { localizeInternalHref } from "@/routing/locale";
 import styles from "./Hero.module.scss";
 import {
   bindBackgroundVideoPlayback,
+  installBackgroundVideoRecovery,
   playBackgroundVideo,
 } from "@/utils/backgroundVideo";
 
@@ -40,10 +41,12 @@ const Hero = memo(() => {
     };
 
     const unbindPlayback = bindBackgroundVideoPlayback(videoEl, playVideo);
+    const unbindRecovery = installBackgroundVideoRecovery(videoEl, playVideo);
     playVideo();
 
     if (!sectionEl || !("IntersectionObserver" in window)) {
       return () => {
+        unbindRecovery();
         unbindPlayback();
         videoEl.pause();
       };
@@ -65,6 +68,7 @@ const Hero = memo(() => {
 
     return () => {
       observer.disconnect();
+      unbindRecovery();
       unbindPlayback();
       videoEl.pause();
     };

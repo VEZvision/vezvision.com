@@ -16,7 +16,7 @@ import { SettingsProvider } from "@/contexts/SettingsContext";
 import { CookieBanner } from "@/components/cookies/CookieBanner";
 import PublicChrome from "@/components/layout/PublicChrome";
 import AppBootShell from "@/components/layout/AppBootShell";
-const Home = lazy(() => import("@/pages/Home"));
+import Home from "@/pages/Home";
 import { LocaleGate, LocaleRedirect } from "@/routing/LocaleShell";
 import { APP_ROUTES } from "@/routing/routes.config";
 

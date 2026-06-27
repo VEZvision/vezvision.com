@@ -2,6 +2,7 @@ import { useEffect, useRef, type RefObject } from "react";
 
 import {
   bindBackgroundVideoPlayback,
+  installBackgroundVideoRecovery,
   playBackgroundVideo,
 } from "@/utils/backgroundVideo";
 
@@ -62,7 +63,9 @@ export function useBackgroundVideoSection({
     if (!sectionEl || !("IntersectionObserver" in window)) {
       isVisibleRef.current = true;
       playVideo();
+      const unbindRecovery = installBackgroundVideoRecovery(videoEl, playVideo);
       return () => {
+        unbindRecovery();
         unbindPlayback();
         pauseVideo();
       };
@@ -87,8 +90,15 @@ export function useBackgroundVideoSection({
       playVideo();
     }
 
+    const unbindRecovery = installBackgroundVideoRecovery(videoEl, () => {
+      if (isVisibleRef.current) {
+        playVideo();
+      }
+    });
+
     return () => {
       observer.disconnect();
+      unbindRecovery();
       unbindPlayback();
       pauseVideo();
     };

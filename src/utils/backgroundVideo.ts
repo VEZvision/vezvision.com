@@ -22,6 +22,34 @@ export function playBackgroundVideo(video: HTMLVideoElement): void {
   void video.play().catch(ignoreExpectedMediaPlayError);
 }
 
+export function installBackgroundVideoRecovery(
+  _video: HTMLVideoElement,
+  onPlay: () => void,
+): () => void {
+  const retry = () => {
+    onPlay();
+  };
+
+  const onVisibilityChange = () => {
+    if (document.visibilityState === "visible") {
+      retry();
+    }
+  };
+
+  window.addEventListener("pageshow", retry);
+  document.addEventListener("visibilitychange", onVisibilityChange);
+  document.addEventListener("touchstart", retry, { once: true, passive: true });
+  document.addEventListener("pointerdown", retry, {
+    once: true,
+    passive: true,
+  });
+
+  return () => {
+    window.removeEventListener("pageshow", retry);
+    document.removeEventListener("visibilitychange", onVisibilityChange);
+  };
+}
+
 type BindBackgroundVideoPlaybackOptions = {
   canPlay?: () => boolean;
 };
