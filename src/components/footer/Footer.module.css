@@ -38,7 +38,7 @@
   transform: translate(-50%, -50%);
   object-fit: cover;
   z-index: 0;
-  filter: grayscale(100%) brightness(1.7) contrast(1.03);
+  filter: var(--vez-video-filter);
   backface-visibility: hidden;
 }
 
@@ -47,7 +47,7 @@
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: rgba(255, 251, 246, 0.82);
+  background: var(--vez-video-overlay-footer);
 }
 
 .footerContainer {
@@ -55,12 +55,6 @@
   width: 100%;
   display: flex;
   align-items: flex-start;
-}
-
-@media (pointer: coarse) {
-  .videoOverlay {
-    background: rgba(255, 251, 246, 0.66);
-  }
 }
 
 .contentWrapper {

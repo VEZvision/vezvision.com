@@ -55,7 +55,7 @@
   z-index: 1;
   opacity: 1;
   pointer-events: none;
-  filter: grayscale(100%) brightness(1.7) contrast(1.03);
+  filter: var(--vez-video-filter);
   backface-visibility: hidden;
   transform: translateZ(0);
 }
@@ -64,14 +64,8 @@
   position: absolute;
   inset: 0;
   z-index: 10;
-  background: rgba(255, 251, 246, 0.78);
+  background: var(--vez-video-overlay);
   pointer-events: none;
-}
-
-@media (pointer: coarse) {
-  .videoOverlay {
-    background: rgba(255, 251, 246, 0.66);
-  }
 }
 
 .logoPlate {

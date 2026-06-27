@@ -5,7 +5,7 @@
   height: 100%;
   object-fit: cover;
   z-index: 0;
-  filter: grayscale(100%) brightness(1.7) contrast(1.03);
+  filter: var(--vez-video-filter);
   backface-visibility: hidden;
   transform: translateZ(0);
 }
@@ -15,11 +15,5 @@
   inset: 0;
   z-index: 10;
   pointer-events: none;
-  background: rgba(255, 251, 246, 0.78);
-}
-
-@media (pointer: coarse) {
-  .videoOverlay {
-    background: rgba(255, 251, 246, 0.66);
-  }
+  background: var(--vez-video-overlay);
 }
