@@ -5,9 +5,13 @@
   align-items: center;
   justify-content: flex-end;
   border-radius: 24px;
-  box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 1px 1px -1px #00000014,
-    0px 2px 2px -1px #00000014, 0px 4px 4px -2px #00000012,
-    0px 7px 7px -3px #00000012, 0px 14px 14px -3px #0000000d,
+  box-shadow:
+    inset 0px 3px 1px 0px #ffffff,
+    0px 1px 1px -1px #00000014,
+    0px 2px 2px -1px #00000014,
+    0px 4px 4px -2px #00000012,
+    0px 7px 7px -3px #00000012,
+    0px 14px 14px -3px #0000000d,
     0px 30px 30px -4px #00000005;
   background: var(--color-grey-96, #f5f5f5);
   width: 100%;
@@ -19,11 +23,14 @@
 }
 
 .container::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, rgba(245, 245, 245, 0) 42%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(245, 245, 245, 0) 42%
+  );
   pointer-events: none;
   z-index: 0;
 }
@@ -55,19 +62,27 @@
   height: 100%;
   border-radius: 100px;
   background: #f5f5f5;
-  box-shadow: inset 0 1px 1px -1px #00000014, inset 0 2px 2px -1px #00000014,
-    inset 0 4px 4px -2px #00000012, inset 0 7px 7px -3px #00000012,
-    inset 0 14px 14px -3px #0000000d, inset 0 30px 30px -4px #00000005;
+  box-shadow:
+    inset 0 1px 1px -1px #00000014,
+    inset 0 2px 2px -1px #00000014,
+    inset 0 4px 4px -2px #00000012,
+    inset 0 7px 7px -3px #00000012,
+    inset 0 14px 14px -3px #0000000d,
+    inset 0 30px 30px -4px #00000005;
   animation: gaugeSpin 20s linear infinite;
 }
 
 @keyframes gaugeSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .gauge::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 30px;
   right: 50px;
@@ -75,14 +90,18 @@
   height: 20px;
   border-radius: 100px;
   background: #f5f5f5;
-  box-shadow: inset 0 3px 1px #ffffff, 0 1px 1px -1px #00000014,
-    0 2px 2px -1px #00000014, 0 4px 4px -2px #00000012,
-    0 7px 7px -3px #00000012, 0 14px 14px -3px #0000000d,
+  box-shadow:
+    inset 0 3px 1px #ffffff,
+    0 1px 1px -1px #00000014,
+    0 2px 2px -1px #00000014,
+    0 4px 4px -2px #00000012,
+    0 7px 7px -3px #00000012,
+    0 14px 14px -3px #0000000d,
     0 30px 30px -4px #00000005;
 }
 
 .gaugeInner::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 28px;
   left: 108px;
@@ -90,8 +109,13 @@
   height: 87px;
   border-radius: 100px;
   background: #f5f5f5;
-  box-shadow: inset 0 3px 1px #ffffff, 0 1px 1px -1px #00000033, 0 2px 2px -1px #00000030,
-    0 4px 4px -2px #0000002e, 0 7px 7px -3px #0000002b, 0 14px 14px -3px #00000021,
+  box-shadow:
+    inset 0 3px 1px #ffffff,
+    0 1px 1px -1px #00000033,
+    0 2px 2px -1px #00000030,
+    0 4px 4px -2px #0000002e,
+    0 7px 7px -3px #0000002b,
+    0 14px 14px -3px #00000021,
     0 30px 30px -4px #0000000d;
   transform: rotate(52deg);
 }
@@ -113,7 +137,9 @@
   line-height: 26px;
   letter-spacing: -0.2px;
   color: #101828;
-  font-family: Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', SimHei, Arial, Helvetica, sans-serif;
+  font-family:
+    Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial,
+    Helvetica, sans-serif;
   font-size: 19px;
   font-weight: 600;
   text-align: center;
@@ -126,7 +152,9 @@
   line-height: 24px;
   letter-spacing: 0;
   color: #344054;
-  font-family: Inter, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', SimHei, Arial, Helvetica, sans-serif;
+  font-family:
+    Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", SimHei, Arial,
+    Helvetica, sans-serif;
   font-size: 16px;
   text-align: center;
   opacity: 0.86;
@@ -134,6 +162,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .gaugeInner {
+    animation: none;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
   .gaugeInner {
     animation: none;
   }
@@ -232,5 +266,3 @@
     font-size: 13px;
   }
 }
-
-

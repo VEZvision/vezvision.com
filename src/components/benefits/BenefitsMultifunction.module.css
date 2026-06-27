@@ -248,6 +248,13 @@
   }
 }
 
+@media (hover: none), (pointer: coarse) {
+  .backgroundShadow,
+  .backgroundShadow::after {
+    animation: none;
+  }
+}
+
 .shape2 {
   display: flex;
   flex: 1 1 auto;
