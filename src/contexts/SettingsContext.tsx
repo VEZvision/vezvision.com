@@ -18,6 +18,7 @@ import type {
   SettingsState,
 } from "./SettingsContextDefinition";
 import { defaultSnapshot, defaultState } from "./SettingsContextDefinition";
+import { scheduleAfterWindowLoad } from "@/lib/scheduleAfterWindowLoad";
 
 export type { SettingsContextType, SettingsState };
 
@@ -36,34 +37,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const cachedSnapshot = readPublicSettingsCache();
   const [canFetch, setCanFetch] = useState(false);
 
-  useEffect(() => {
-    const armFetch = (): (() => void) => {
-      if (typeof window.requestIdleCallback === "function") {
-        const idleId = window.requestIdleCallback(() => setCanFetch(true), {
-          timeout: 5000,
-        });
-        return () => window.cancelIdleCallback(idleId);
-      }
-
-      const timer = window.setTimeout(() => setCanFetch(true), 2500);
-      return () => window.clearTimeout(timer);
-    };
-
-    if (document.readyState === "complete") {
-      return armFetch();
-    }
-
-    let cleanup: (() => void) | undefined;
-    const onLoad = () => {
-      cleanup = armFetch();
-    };
-    window.addEventListener("load", onLoad, { once: true });
-
-    return () => {
-      window.removeEventListener("load", onLoad);
-      cleanup?.();
-    };
-  }, []);
+  useEffect(() => scheduleAfterWindowLoad(() => setCanFetch(true), 5000), []);
 
   const query = useQuery({
     queryKey: SETTINGS_QUERY_KEY,

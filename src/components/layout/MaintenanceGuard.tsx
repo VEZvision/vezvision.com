@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect, useState, type ReactNode } from "react";
 import AppBootShell from "@/components/layout/AppBootShell";
 import { useSettings } from "@/hooks/useSettings";
 import { readMaintenanceFlagFromCache } from "@/lib/publicSettingsCache";
+import { scheduleAfterWindowLoad } from "@/lib/scheduleAfterWindowLoad";
 
 const MaintenancePage = lazy(() => import("@/pages/MaintenancePage"));
 
@@ -35,8 +36,6 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
     if (settingsLoading) return;
 
     let cancelled = false;
-    let idleId: number | null = null;
-    let timer: number | null = null;
 
     const resolveAccess = async () => {
       const {
@@ -67,33 +66,13 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
       setAccess(accessible ? "clear" : "blocked");
     };
 
-    const scheduleAccessCheck = () => {
-      if (typeof window.requestIdleCallback === "function") {
-        idleId = window.requestIdleCallback(() => void resolveAccess(), {
-          timeout: 5000,
-        });
-        return;
-      }
-
-      timer = window.setTimeout(() => void resolveAccess(), 1);
-    };
-
-    const start = () => {
-      if (cancelled) return;
-      scheduleAccessCheck();
-    };
-
-    if (document.readyState === "complete") {
-      start();
-    } else {
-      window.addEventListener("load", start, { once: true });
-    }
+    const cancelSchedule = scheduleAfterWindowLoad(() => {
+      void resolveAccess();
+    }, 5000);
 
     return () => {
       cancelled = true;
-      window.removeEventListener("load", start);
-      if (idleId !== null) window.cancelIdleCallback(idleId);
-      if (timer !== null) window.clearTimeout(timer);
+      cancelSchedule();
     };
   }, [
     isPrerender,

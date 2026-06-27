@@ -12,6 +12,7 @@ import { useSocial } from "@/hooks/useSettings";
 import { usePageSectionConfig } from "@/hooks/usePageSection";
 import { safeCmsHref } from "@/utils/safeHref";
 import { localizeInternalHref } from "@/routing/locale";
+import { useDeferredHeroVideo } from "@/hooks/useDeferredHeroVideo";
 import styles from "./Hero.module.scss";
 
 const HERO_VIDEO_SRC = "/hero-bg.mp4";
@@ -32,6 +33,7 @@ const Hero = memo(() => {
   const social = useSocial();
   const sectionConfig = usePageSectionConfig("home", "hero");
   const prefersReducedData = usePrefersReducedData();
+  const showHeroVideo = useDeferredHeroVideo();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const sectionRef = useRef<HTMLElement | null>(null);
 
@@ -75,7 +77,7 @@ const Hero = memo(() => {
       videoEl.removeEventListener("loadeddata", playVideo);
       videoEl.pause();
     };
-  }, [prefersReducedData]);
+  }, [prefersReducedData, showHeroVideo]);
 
   const socialLinks = buildHeroSocialLinks(social);
   const primaryHref = localizeInternalHref(
@@ -92,7 +94,7 @@ const Hero = memo(() => {
       <Helmet>
         <link rel="preload" as="image" href={logoNavbar} fetchPriority="high" />
       </Helmet>
-      {!prefersReducedData && (
+      {!prefersReducedData && showHeroVideo && (
         <video
           ref={videoRef}
           className={styles.videoBg}
@@ -101,8 +103,7 @@ const Hero = memo(() => {
           muted
           loop
           playsInline
-          preload="metadata"
-          poster="/og-image.png"
+          preload="none"
           aria-hidden="true"
           tabIndex={-1}
           disableRemotePlayback

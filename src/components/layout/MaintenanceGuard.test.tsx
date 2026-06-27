@@ -33,6 +33,13 @@ vi.mock("@/pages/MaintenancePage", () => ({
   default: () => <div>Maintenance page</div>,
 }));
 
+vi.mock("@/lib/scheduleAfterWindowLoad", () => ({
+  scheduleAfterWindowLoad: (work: () => void) => {
+    work();
+    return () => {};
+  },
+}));
+
 describe("MaintenanceGuard", () => {
   afterEach(() => {
     delete window.__VEZ_PRERENDER__;

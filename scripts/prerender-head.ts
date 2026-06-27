@@ -1,5 +1,5 @@
 import { chromium, type Page } from "@playwright/test";
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir, readdir } from "node:fs/promises";
 import { join, dirname, resolve } from "node:path";
 import { spawn } from "node:child_process";
 
@@ -104,15 +104,50 @@ function removeNonCriticalHomeAssetHints(
   );
 }
 
-function injectHomeCssPreload(headHtml: string, routePath: string): string {
+let cachedHomeStylesheetCss: string | null = null;
+
+async function getHomeStylesheetCss(): Promise<string> {
+  if (cachedHomeStylesheetCss) return cachedHomeStylesheetCss;
+
+  const assetsDir = join(DIST_DIR, "assets");
+  const files = await readdir(assetsDir);
+  const homeCssFile = files.find((file) => /^Home-.*\.css$/.test(file));
+  if (!homeCssFile) {
+    cachedHomeStylesheetCss = "";
+    return cachedHomeStylesheetCss;
+  }
+
+  cachedHomeStylesheetCss = await readFile(
+    join(assetsDir, homeCssFile),
+    "utf8",
+  );
+  return cachedHomeStylesheetCss;
+}
+
+async function inlineHomeStylesheet(
+  headHtml: string,
+  routePath: string,
+): Promise<string> {
   if (!HOME_ROUTE_PATHS.has(routePath)) {
     return headHtml;
   }
 
-  return headHtml.replace(
-    /(<link\b[^>]*rel=["']stylesheet["'][^>]*href=["'](\/assets\/Home-[^"']+\.css)["'][^>]*>)/i,
-    (match, _full, href) =>
-      `<link rel="preload" href="${href}" as="style">\n    ${match}`,
+  const css = await getHomeStylesheetCss();
+  if (!css) return headHtml;
+
+  const withoutHomeLinks = headHtml
+    .replace(
+      /<link\b[^>]*href=["']\/assets\/Home-[^"']+\.css["'][^>]*>\s*/gi,
+      "",
+    )
+    .replace(
+      /<link\b[^>]*rel=["']preload["'][^>]*href=["']\/assets\/Home-[^"']+\.css["'][^>]*>\s*/gi,
+      "",
+    );
+
+  return withoutHomeLinks.replace(
+    "</head>",
+    `<style id="vez-home-css">${css.replace(/<\//g, "<\\/")}</style>\n</head>`,
   );
 }
 
@@ -220,7 +255,7 @@ async function prerenderRoute({
   }
 
   const normalizedHead = injectBootSettingsScript(
-    injectHomeCssPreload(
+    await inlineHomeStylesheet(
       stripHomePreconnects(
         removeNonCriticalHomeAssetHints(
           headHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN),

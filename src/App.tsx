@@ -48,7 +48,7 @@ const LazyToaster = lazy(() =>
   import("sonner").then((m) => ({ default: m.Toaster })),
 );
 import { MaintenanceGuard } from "@/components/layout/MaintenanceGuard";
-import CodeInjector from "@/components/system/CodeInjector";
+import { scheduleAfterWindowLoad } from "@/lib/scheduleAfterWindowLoad";
 import { useScrollToTopOnRouteChange } from "@/hooks/useScrollToTopOnRouteChange";
 import { useCookieConsent } from "@/hooks/useCookieConsent";
 
@@ -173,6 +173,24 @@ const ToasterGate = memo(() => {
 
 ToasterGate.displayName = "ToasterGate";
 
+const CodeInjector = lazy(() => import("@/components/system/CodeInjector"));
+
+const DeferredCodeInjector = memo(() => {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => scheduleAfterWindowLoad(() => setReady(true), 5000), []);
+
+  if (!ready) return null;
+
+  return (
+    <Suspense fallback={null}>
+      <CodeInjector />
+    </Suspense>
+  );
+});
+
+DeferredCodeInjector.displayName = "DeferredCodeInjector";
+
 export default function App() {
   return (
     <LanguageProvider>
@@ -182,7 +200,7 @@ export default function App() {
             <ToasterGate />
             <CookieConsentProvider>
               <MaintenanceGuard>
-                <CodeInjector />
+                <DeferredCodeInjector />
                 <RouterProvider router={router} />
               </MaintenanceGuard>
 

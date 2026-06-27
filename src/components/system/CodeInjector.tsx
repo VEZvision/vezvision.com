@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { sanitizeCmsHtml } from "@/utils/sanitizeCmsHtml";
+import { scheduleAfterWindowLoad } from "@/lib/scheduleAfterWindowLoad";
 
 /** SEO-critical rels (canonical, alternate) are app-owned via Helmet — never from CMS head. */
 const ALLOWED_LINK_RELS = new Set([
@@ -129,18 +130,11 @@ const CodeInjector = ({ delayMs = 0 }: CodeInjectorProps) => {
       }, delayMs);
     };
 
-    if (typeof window.requestIdleCallback === "function") {
-      const idleId = window.requestIdleCallback(load, { timeout: 3000 });
-      return () => {
-        active = false;
-        window.cancelIdleCallback(idleId);
-        if (timer) clearTimeout(timer);
-      };
-    }
+    const cancelSchedule = scheduleAfterWindowLoad(load, 5000);
 
-    load();
     return () => {
       active = false;
+      cancelSchedule();
       if (timer) clearTimeout(timer);
     };
   }, [delayMs]);
