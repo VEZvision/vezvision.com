@@ -37,15 +37,32 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [canFetch, setCanFetch] = useState(false);
 
   useEffect(() => {
-    if (typeof window.requestIdleCallback === "function") {
-      const idleId = window.requestIdleCallback(() => setCanFetch(true), {
-        timeout: 2500,
-      });
-      return () => window.cancelIdleCallback(idleId);
+    const armFetch = (): (() => void) => {
+      if (typeof window.requestIdleCallback === "function") {
+        const idleId = window.requestIdleCallback(() => setCanFetch(true), {
+          timeout: 5000,
+        });
+        return () => window.cancelIdleCallback(idleId);
+      }
+
+      const timer = window.setTimeout(() => setCanFetch(true), 2500);
+      return () => window.clearTimeout(timer);
+    };
+
+    if (document.readyState === "complete") {
+      return armFetch();
     }
 
-    const timer = window.setTimeout(() => setCanFetch(true), 1);
-    return () => window.clearTimeout(timer);
+    let cleanup: (() => void) | undefined;
+    const onLoad = () => {
+      cleanup = armFetch();
+    };
+    window.addEventListener("load", onLoad, { once: true });
+
+    return () => {
+      window.removeEventListener("load", onLoad);
+      cleanup?.();
+    };
   }, []);
 
   const query = useQuery({

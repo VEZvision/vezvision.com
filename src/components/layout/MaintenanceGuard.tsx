@@ -35,6 +35,8 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
     if (settingsLoading) return;
 
     let cancelled = false;
+    let idleId: number | null = null;
+    let timer: number | null = null;
 
     const resolveAccess = async () => {
       const {
@@ -65,19 +67,31 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
       setAccess(accessible ? "clear" : "blocked");
     };
 
-    let idleId: number | null = null;
-    let timer: number | null = null;
+    const scheduleAccessCheck = () => {
+      if (typeof window.requestIdleCallback === "function") {
+        idleId = window.requestIdleCallback(() => void resolveAccess(), {
+          timeout: 5000,
+        });
+        return;
+      }
 
-    if (typeof window.requestIdleCallback === "function") {
-      idleId = window.requestIdleCallback(() => void resolveAccess(), {
-        timeout: 2500,
-      });
-    } else {
       timer = window.setTimeout(() => void resolveAccess(), 1);
+    };
+
+    const start = () => {
+      if (cancelled) return;
+      scheduleAccessCheck();
+    };
+
+    if (document.readyState === "complete") {
+      start();
+    } else {
+      window.addEventListener("load", start, { once: true });
     }
 
     return () => {
       cancelled = true;
+      window.removeEventListener("load", start);
       if (idleId !== null) window.cancelIdleCallback(idleId);
       if (timer !== null) window.clearTimeout(timer);
     };

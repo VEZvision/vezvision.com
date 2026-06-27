@@ -48,13 +48,6 @@ export function getCachedLocale(
   return localeCache.get(language);
 }
 
-export function seedLocaleCache(
-  language: Language,
-  dict: Record<string, string>,
-): void {
-  localeCache.set(language, dict);
-}
-
 export async function ensureLocaleLoaded(
   language: Language,
 ): Promise<Record<string, string>> {

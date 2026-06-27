@@ -12,8 +12,6 @@ import {
 } from "./prerender/seo-readiness";
 import { stopPreviewServer, waitForServer } from "./prerender/preview-server";
 import { validateSeoRouteHtml } from "./seo-build-validation";
-import { enTranslations } from "../src/data/translations/en/index";
-import { plTranslations } from "../src/data/translations/pl/index";
 
 const DIST_DIR = resolve(process.cwd(), "dist");
 const PREVIEW_PORT = 4173;
@@ -118,6 +116,17 @@ function injectHomeCssPreload(headHtml: string, routePath: string): string {
   );
 }
 
+function stripHomePreconnects(headHtml: string, routePath: string): string {
+  if (!HOME_ROUTE_PATHS.has(routePath)) {
+    return headHtml;
+  }
+
+  return headHtml.replace(
+    /<link\b[^>]*rel=["'](?:preconnect|dns-prefetch)["'][^>]*(?:supabase|googletagmanager|cloudflare)[^>]*>\s*/gi,
+    "",
+  );
+}
+
 function injectBootSettingsScript(
   headHtml: string,
   bootSettingsJson: string | null,
@@ -125,21 +134,6 @@ function injectBootSettingsScript(
   if (!bootSettingsJson) return headHtml;
 
   const scriptTag = `<script id="vez-boot-settings" type="application/json">${bootSettingsJson.replace(/<\//g, "<\\/")}</script>`;
-  return headHtml.replace("</head>", `${scriptTag}\n</head>`);
-}
-
-function localeForRoute(routePath: string): "pl" | "en" | null {
-  if (routePath === "/pl" || routePath.startsWith("/pl/")) return "pl";
-  if (routePath === "/en" || routePath.startsWith("/en/")) return "en";
-  return null;
-}
-
-function injectBootLocaleScript(headHtml: string, routePath: string): string {
-  const language = localeForRoute(routePath);
-  if (!language) return headHtml;
-
-  const dict = language === "pl" ? plTranslations : enTranslations;
-  const scriptTag = `<script id="vez-boot-locale" type="application/json">${JSON.stringify(dict).replace(/<\//g, "<\\/")}</script>`;
   return headHtml.replace("</head>", `${scriptTag}\n</head>`);
 }
 
@@ -225,18 +219,18 @@ async function prerenderRoute({
     };
   }
 
-  const normalizedHead = injectBootLocaleScript(
-    injectBootSettingsScript(
-      injectHomeCssPreload(
+  const normalizedHead = injectBootSettingsScript(
+    injectHomeCssPreload(
+      stripHomePreconnects(
         removeNonCriticalHomeAssetHints(
           headHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN),
           routePath,
         ),
         routePath,
       ),
-      bootSettingsJson,
+      routePath,
     ),
-    routePath,
+    bootSettingsJson,
   );
   const normalizedBody = optimizeHomePrerenderBody(
     bodyHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN),
