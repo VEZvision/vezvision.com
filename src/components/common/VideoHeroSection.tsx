@@ -1,13 +1,17 @@
 import type { FC, ReactNode } from "react";
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
 import { usePrefersReducedData } from "@/hooks/usePrefersReducedData";
+import { useBackgroundVideoSection } from "@/hooks/useBackgroundVideoSection";
 import SectionBadge from "@/components/ui/SectionBadge";
 import logoNavbar from "@/assets/logo-navbar.svg";
 import { safeExternalHref, safePublicHref } from "@/utils/safeHref";
 import { scrollToElement } from "@/scroll";
 import styles from "./VideoHeroSection.module.css";
+
+const PAGE_HERO_VIDEO_MP4 = "/footer-bg.mp4";
+const PAGE_HERO_VIDEO_WEBM = "/footer-bg.webm";
 
 export interface SocialLink {
   href: string | undefined;
@@ -47,47 +51,16 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
   const prefersReducedData = usePrefersReducedData();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const sectionRef = useRef<HTMLElement | null>(null);
+  const showVideo = !prefersReducedData;
 
-  useEffect(() => {
-    if (
-      typeof window === "undefined" ||
-      prefersReducedData ||
-      !sectionRef.current ||
-      !videoRef.current
-    ) {
-      return;
-    }
-
-    const videoEl = videoRef.current;
-    const sectionEl = sectionRef.current;
-
-    const handleVisibilityChange = (entries: IntersectionObserverEntry[]) => {
-      const [entry] = entries;
-      if (!entry) return;
-
-      if (entry.isIntersecting) {
-        videoEl.play().catch(ignoreExpectedMediaPlayError);
-      } else {
-        videoEl.pause();
-      }
-    };
-
-    let observer: IntersectionObserver | null = null;
-
-    if ("IntersectionObserver" in window) {
-      observer = new IntersectionObserver(handleVisibilityChange, {
-        threshold: 0.2,
-      });
-      observer.observe(sectionEl);
-    }
-
-    return () => {
-      if (observer) {
-        observer.unobserve(sectionEl);
-      }
-      videoEl.pause();
-    };
-  }, [prefersReducedData]);
+  useBackgroundVideoSection({
+    enabled: showVideo,
+    sectionRef,
+    videoRef,
+    initiallyVisible: true,
+    threshold: 0.2,
+    reloadKey: PAGE_HERO_VIDEO_MP4,
+  });
 
   const handleButtonClick = () => {
     if (onButtonClick) {
@@ -124,12 +97,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
       }
       aria-labelledby={ariaLabelledBy}
     >
-      {prefersReducedData ? (
-        <div
-          className="absolute inset-0 z-0 bg-gradient-to-br from-[#f3f4f6] via-white to-[#e5e7eb]"
-          aria-hidden="true"
-        />
-      ) : (
+      {showVideo ? (
         <video
           ref={videoRef}
           className={styles.videoBg}
@@ -140,15 +108,19 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
           muted
           playsInline
           preload="metadata"
-          poster="/og-image.png"
           aria-hidden="true"
           tabIndex={-1}
           disableRemotePlayback
           x-webkit-airplay="deny"
         >
-          <source src="/footer-bg.webm" type="video/webm" />
-          <source src="/footer-bg.mp4" type="video/mp4" />
+          <source src={PAGE_HERO_VIDEO_MP4} type="video/mp4" />
+          <source src={PAGE_HERO_VIDEO_WEBM} type="video/webm" />
         </video>
+      ) : (
+        <div
+          className="absolute inset-0 z-0 bg-gradient-to-br from-[#f3f4f6] via-white to-[#e5e7eb]"
+          aria-hidden="true"
+        />
       )}
 
       <div className="absolute inset-0 bg-white/90 z-10" />
@@ -239,16 +211,5 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
     </section>
   );
 };
-
-function ignoreExpectedMediaPlayError(error: unknown): void {
-  if (
-    error instanceof DOMException &&
-    (error.name === "AbortError" || error.name === "NotAllowedError")
-  ) {
-    return;
-  }
-
-  throw error;
-}
 
 export default VideoHeroSection;

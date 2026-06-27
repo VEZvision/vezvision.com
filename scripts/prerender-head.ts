@@ -184,6 +184,29 @@ function injectHeroVideoPreload(headHtml: string, routePath: string): string {
   return headHtml.replace("</head>", `${tags}\n</head>`);
 }
 
+function sanitizePrerenderVideo(
+  openTag: string,
+  rest: string,
+  kind: "hero" | "footer",
+): string {
+  let tag = openTag.replace(/\sposter="[^"]*"/gi, "");
+  tag = tag.replace(/\spreload="[^"]*"/gi, "");
+  tag = tag.replace(/\sautoplay(="[^"]*")?/gi, "");
+
+  if (!/\bmuted\b/i.test(tag)) {
+    tag += " muted";
+  }
+  if (!/\bplaysinline\b/i.test(tag)) {
+    tag += " playsinline";
+  }
+
+  if (kind === "hero") {
+    return `${tag} autoplay preload="metadata"${rest}`;
+  }
+
+  return `${tag} preload="none"${rest}`;
+}
+
 function optimizeHomePrerenderBody(
   bodyHtml: string,
   routePath: string,
@@ -192,23 +215,17 @@ function optimizeHomePrerenderBody(
     return bodyHtml;
   }
 
-  return bodyHtml.replace(
-    /(<video\b(?=[^>]*(?:videoBg|_videoBg_|footerVideo|_footerVideo_))[^>]*)(>[\s\S]*?<\/video>)/gi,
-    (_match, openTag: string, rest: string) => {
-      let tag = openTag.replace(/\sposter="[^"]*"/gi, "");
-      tag = tag.replace(/\spreload="[^"]*"/gi, "");
-      if (!/\bautoplay\b/i.test(tag)) {
-        tag += " autoplay";
-      }
-      if (!/\bmuted\b/i.test(tag)) {
-        tag += " muted";
-      }
-      if (!/\bplaysinline\b/i.test(tag)) {
-        tag += " playsinline";
-      }
-      return `${tag} preload="auto"${rest}`;
-    },
-  );
+  return bodyHtml
+    .replace(
+      /(<video\b(?=[^>]*(?:videoBg|_videoBg_))[^>]*)(>[\s\S]*?<\/video>)/gi,
+      (_match, openTag: string, rest: string) =>
+        sanitizePrerenderVideo(openTag, rest, "hero"),
+    )
+    .replace(
+      /(<video\b(?=[^>]*(?:footerVideo|_footerVideo_))[^>]*)(>[\s\S]*?<\/video>)/gi,
+      (_match, openTag: string, rest: string) =>
+        sanitizePrerenderVideo(openTag, rest, "footer"),
+    );
 }
 
 async function prerenderRoute({

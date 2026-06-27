@@ -93,7 +93,25 @@ function seedBootSettingsCache(): void {
   }
 }
 
+function respectSaveDataBeforeHydration(): void {
+  const conn = (
+    navigator as Navigator & { connection?: { saveData?: boolean } }
+  ).connection;
+  if (!conn?.saveData) return;
+
+  document
+    .querySelectorAll('link[rel="preload"][as="video"]')
+    .forEach((element) => element.remove());
+
+  document.querySelectorAll("video").forEach((video) => {
+    video.removeAttribute("autoplay");
+    video.setAttribute("preload", "none");
+    video.pause();
+  });
+}
+
 async function bootstrap(root: HTMLElement): Promise<void> {
+  respectSaveDataBeforeHydration();
   seedBootSettingsCache();
   const isPrerendered =
     document.documentElement.hasAttribute("data-vez-prerender");

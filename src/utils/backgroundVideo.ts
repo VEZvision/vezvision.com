@@ -22,23 +22,33 @@ export function playBackgroundVideo(video: HTMLVideoElement): void {
   void video.play().catch(ignoreExpectedMediaPlayError);
 }
 
+type BindBackgroundVideoPlaybackOptions = {
+  canPlay?: () => boolean;
+};
+
 export function bindBackgroundVideoPlayback(
   video: HTMLVideoElement,
   onPlay: () => void,
+  options?: BindBackgroundVideoPlaybackOptions,
 ): () => void {
   const events = ["loadedmetadata", "loadeddata", "canplay"] as const;
 
+  const tryPlay = () => {
+    if (options?.canPlay && !options.canPlay()) return;
+    onPlay();
+  };
+
   for (const eventName of events) {
-    video.addEventListener(eventName, onPlay);
+    video.addEventListener(eventName, tryPlay);
   }
 
   if (video.readyState >= HTMLMediaElement.HAVE_METADATA) {
-    onPlay();
+    tryPlay();
   }
 
   return () => {
     for (const eventName of events) {
-      video.removeEventListener(eventName, onPlay);
+      video.removeEventListener(eventName, tryPlay);
     }
   };
 }

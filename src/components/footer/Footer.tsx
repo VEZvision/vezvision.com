@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useLanguageContext } from "@/hooks/useLanguage";
 import {
@@ -9,6 +9,7 @@ import {
 } from "@/hooks/useSettings";
 import { useCookieConsent } from "@/hooks/useCookieConsent";
 import { usePrefersReducedData } from "@/hooks/usePrefersReducedData";
+import { useBackgroundVideoSection } from "@/hooks/useBackgroundVideoSection";
 import { isSafeExternalHref, safePublicHref } from "@/utils/safeHref";
 import { localizeInternalHref } from "@/routing/locale";
 import { getLocalizedLabel } from "@/utils/i18n";
@@ -20,10 +21,6 @@ import linkedinIcon from "@/assets/footer/linkedin-icon.svg";
 import arrowIcon from "@/assets/arrow-icon.svg";
 import logoNavbar from "@/assets/logo-navbar.svg";
 import styles from "./Footer.module.css";
-import {
-  bindBackgroundVideoPlayback,
-  playBackgroundVideo,
-} from "@/utils/backgroundVideo";
 
 function isExternal(href: string) {
   return isSafeExternalHref(href);
@@ -47,45 +44,14 @@ export default function Footer() {
   const videoWebmSrc = isHome ? "/hero-bg.webm" : "/footer-bg.webm";
   const showVideo = !prefersReducedData;
 
-  useEffect(() => {
-    const videoEl = videoRef.current;
-    const footerEl = footerRef.current;
-    if (!videoEl || !showVideo) return;
-
-    const playVideo = () => {
-      playBackgroundVideo(videoEl);
-    };
-    const pauseVideo = () => {
-      videoEl.pause();
-    };
-
-    const unbindPlayback = bindBackgroundVideoPlayback(videoEl, playVideo);
-
-    if (!footerEl || !("IntersectionObserver" in window)) {
-      return () => {
-        unbindPlayback();
-        pauseVideo();
-      };
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          playVideo();
-        } else {
-          pauseVideo();
-        }
-      },
-      { threshold: 0, rootMargin: "120px" },
-    );
-
-    observer.observe(footerEl);
-    return () => {
-      observer.disconnect();
-      unbindPlayback();
-      pauseVideo();
-    };
-  }, [videoSrc, showVideo]);
+  useBackgroundVideoSection({
+    enabled: showVideo,
+    sectionRef: footerRef,
+    videoRef,
+    threshold: 0,
+    rootMargin: "120px",
+    reloadKey: videoSrc,
+  });
 
   const socialLinks = [
     social?.x
@@ -175,8 +141,7 @@ export default function Footer() {
                 muted
                 loop
                 playsInline
-                autoPlay
-                preload="auto"
+                preload={isHome ? "none" : "auto"}
                 aria-hidden="true"
                 tabIndex={-1}
                 data-lenis-prevent
