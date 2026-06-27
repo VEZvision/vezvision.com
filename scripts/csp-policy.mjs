@@ -28,9 +28,9 @@ export function buildContentSecurityPolicy(supabaseHost) {
   return [
     "default-src 'self'",
     `script-src ${scriptSrc}`,
-    "style-src 'self' 'unsafe-inline' https://api.fontshare.com",
+    "style-src 'self' 'unsafe-inline'",
     "style-src-attr 'unsafe-inline'",
-    "font-src 'self' https://api.fontshare.com https://cdn.fontshare.com",
+    "font-src 'self'",
     "img-src 'self' data: blob: https:",
     "media-src 'self' data: blob: https:",
     "object-src 'none'",
