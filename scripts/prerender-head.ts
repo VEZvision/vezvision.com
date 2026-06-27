@@ -172,6 +172,19 @@ function injectBootSettingsScript(
   return headHtml.replace("</head>", `${scriptTag}\n</head>`);
 }
 
+function injectHeroVideoPreload(headHtml: string, routePath: string): string {
+  if (!HOME_ROUTE_PATHS.has(routePath)) {
+    return headHtml;
+  }
+
+  const tags = [
+    `<link rel="preload" href="/hero-bg.webm" as="video" type="video/webm">`,
+    `<link rel="preload" href="/hero-bg.mp4" as="video" type="video/mp4">`,
+  ].join("\n    ");
+
+  return headHtml.replace("</head>", `${tags}\n</head>`);
+}
+
 function optimizeHomePrerenderBody(
   bodyHtml: string,
   routePath: string,
@@ -180,7 +193,23 @@ function optimizeHomePrerenderBody(
     return bodyHtml;
   }
 
-  return bodyHtml.replace(/<video\b[^>]*>[\s\S]*?<\/video>/gi, "");
+  return bodyHtml.replace(
+    /(<video\b(?=[^>]*(?:videoBg|_videoBg_))[^>]*)(>[\s\S]*?<\/video>)/gi,
+    (_match, openTag: string, rest: string) => {
+      let tag = openTag.replace(/\sposter="[^"]*"/gi, "");
+      tag = tag.replace(/\spreload="[^"]*"/gi, "");
+      if (!/\bautoplay\b/i.test(tag)) {
+        tag += " autoplay";
+      }
+      if (!/\bmuted\b/i.test(tag)) {
+        tag += " muted";
+      }
+      if (!/\bplaysinline\b/i.test(tag)) {
+        tag += " playsinline";
+      }
+      return `${tag} preload="auto"${rest}`;
+    },
+  );
 }
 
 async function prerenderRoute({
@@ -255,10 +284,13 @@ async function prerenderRoute({
   }
 
   const normalizedHead = injectBootSettingsScript(
-    await inlineHomeStylesheet(
-      stripHomePreconnects(
-        removeNonCriticalHomeAssetHints(
-          headHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN),
+    injectHeroVideoPreload(
+      await inlineHomeStylesheet(
+        stripHomePreconnects(
+          removeNonCriticalHomeAssetHints(
+            headHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN),
+            routePath,
+          ),
           routePath,
         ),
         routePath,

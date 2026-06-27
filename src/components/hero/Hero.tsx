@@ -91,6 +91,22 @@ const Hero = memo(() => {
     <section ref={sectionRef} className={styles.sectionHero}>
       <Helmet>
         <link rel="preload" as="image" href={logoNavbar} fetchPriority="high" />
+        {!prefersReducedData && (
+          <>
+            <link
+              rel="preload"
+              as="video"
+              href="/hero-bg.webm"
+              type="video/webm"
+            />
+            <link
+              rel="preload"
+              as="video"
+              href={HERO_VIDEO_SRC}
+              type="video/mp4"
+            />
+          </>
+        )}
       </Helmet>
       {!prefersReducedData && (
         <video
@@ -101,8 +117,8 @@ const Hero = memo(() => {
           muted
           loop
           playsInline
-          preload="metadata"
-          poster="/og-image.png"
+          autoPlay
+          preload="auto"
           aria-hidden="true"
           tabIndex={-1}
           disableRemotePlayback
