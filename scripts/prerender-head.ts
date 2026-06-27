@@ -178,7 +178,6 @@ function injectHeroVideoPreload(headHtml: string, routePath: string): string {
   }
 
   const tags = [
-    `<link rel="preload" href="/hero-bg.webm" as="video" type="video/webm">`,
     `<link rel="preload" href="/hero-bg.mp4" as="video" type="video/mp4">`,
   ].join("\n    ");
 
@@ -194,7 +193,7 @@ function optimizeHomePrerenderBody(
   }
 
   return bodyHtml.replace(
-    /(<video\b(?=[^>]*(?:videoBg|_videoBg_))[^>]*)(>[\s\S]*?<\/video>)/gi,
+    /(<video\b(?=[^>]*(?:videoBg|_videoBg_|footerVideo|_footerVideo_))[^>]*)(>[\s\S]*?<\/video>)/gi,
     (_match, openTag: string, rest: string) => {
       let tag = openTag.replace(/\sposter="[^"]*"/gi, "");
       tag = tag.replace(/\spreload="[^"]*"/gi, "");

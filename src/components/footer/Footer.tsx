@@ -20,20 +20,13 @@ import linkedinIcon from "@/assets/footer/linkedin-icon.svg";
 import arrowIcon from "@/assets/arrow-icon.svg";
 import logoNavbar from "@/assets/logo-navbar.svg";
 import styles from "./Footer.module.css";
+import {
+  bindBackgroundVideoPlayback,
+  playBackgroundVideo,
+} from "@/utils/backgroundVideo";
 
 function isExternal(href: string) {
   return isSafeExternalHref(href);
-}
-
-function ignoreExpectedMediaPlayError(error: unknown): void {
-  if (
-    error instanceof DOMException &&
-    (error.name === "AbortError" || error.name === "NotAllowedError")
-  ) {
-    return;
-  }
-
-  throw error;
 }
 
 export default function Footer() {
@@ -60,15 +53,17 @@ export default function Footer() {
     if (!videoEl || !showVideo) return;
 
     const playVideo = () => {
-      videoEl.play().catch(ignoreExpectedMediaPlayError);
+      playBackgroundVideo(videoEl);
     };
     const pauseVideo = () => {
       videoEl.pause();
     };
 
+    const unbindPlayback = bindBackgroundVideoPlayback(videoEl, playVideo);
+
     if (!footerEl || !("IntersectionObserver" in window)) {
-      playVideo();
       return () => {
+        unbindPlayback();
         pauseVideo();
       };
     }
@@ -87,6 +82,7 @@ export default function Footer() {
     observer.observe(footerEl);
     return () => {
       observer.disconnect();
+      unbindPlayback();
       pauseVideo();
     };
   }, [videoSrc, showVideo]);
@@ -179,7 +175,8 @@ export default function Footer() {
                 muted
                 loop
                 playsInline
-                preload="metadata"
+                autoPlay
+                preload="auto"
                 aria-hidden="true"
                 tabIndex={-1}
                 data-lenis-prevent
@@ -187,8 +184,8 @@ export default function Footer() {
                 disableRemotePlayback
                 x-webkit-airplay="deny"
               >
-                <source src={videoWebmSrc} type="video/webm" />
                 <source src={videoSrc} type="video/mp4" />
+                <source src={videoWebmSrc} type="video/webm" />
               </video>
             )}
             <div className={styles.videoOverlay} />

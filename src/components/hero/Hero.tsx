@@ -13,19 +13,13 @@ import { usePageSectionConfig } from "@/hooks/usePageSection";
 import { safeCmsHref } from "@/utils/safeHref";
 import { localizeInternalHref } from "@/routing/locale";
 import styles from "./Hero.module.scss";
+import {
+  bindBackgroundVideoPlayback,
+  playBackgroundVideo,
+} from "@/utils/backgroundVideo";
 
 const HERO_VIDEO_SRC = "/hero-bg.mp4";
-
-function ignoreExpectedMediaPlayError(error: unknown): void {
-  if (
-    error instanceof DOMException &&
-    (error.name === "AbortError" || error.name === "NotAllowedError")
-  ) {
-    return;
-  }
-
-  throw error;
-}
+const HERO_VIDEO_WEBM_SRC = "/hero-bg.webm";
 
 const Hero = memo(() => {
   const { t, language } = useLanguageContext();
@@ -41,17 +35,14 @@ const Hero = memo(() => {
     if (!videoEl || prefersReducedData) return;
 
     const playVideo = () => {
-      void videoEl.play().catch(ignoreExpectedMediaPlayError);
+      playBackgroundVideo(videoEl);
     };
 
-    videoEl.addEventListener("loadeddata", playVideo);
-    if (videoEl.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-      playVideo();
-    }
+    const unbindPlayback = bindBackgroundVideoPlayback(videoEl, playVideo);
 
     if (!sectionEl || !("IntersectionObserver" in window)) {
       return () => {
-        videoEl.removeEventListener("loadeddata", playVideo);
+        unbindPlayback();
         videoEl.pause();
       };
     }
@@ -72,7 +63,7 @@ const Hero = memo(() => {
 
     return () => {
       observer.disconnect();
-      videoEl.removeEventListener("loadeddata", playVideo);
+      unbindPlayback();
       videoEl.pause();
     };
   }, [prefersReducedData]);
@@ -92,20 +83,12 @@ const Hero = memo(() => {
       <Helmet>
         <link rel="preload" as="image" href={logoNavbar} fetchPriority="high" />
         {!prefersReducedData && (
-          <>
-            <link
-              rel="preload"
-              as="video"
-              href="/hero-bg.webm"
-              type="video/webm"
-            />
-            <link
-              rel="preload"
-              as="video"
-              href={HERO_VIDEO_SRC}
-              type="video/mp4"
-            />
-          </>
+          <link
+            rel="preload"
+            as="video"
+            href={HERO_VIDEO_SRC}
+            type="video/mp4"
+          />
         )}
       </Helmet>
       {!prefersReducedData && (
@@ -124,8 +107,8 @@ const Hero = memo(() => {
           disableRemotePlayback
           x-webkit-airplay="deny"
         >
-          <source src="/hero-bg.webm" type="video/webm" />
           <source src={HERO_VIDEO_SRC} type="video/mp4" />
+          <source src={HERO_VIDEO_WEBM_SRC} type="video/webm" />
         </video>
       )}
 
