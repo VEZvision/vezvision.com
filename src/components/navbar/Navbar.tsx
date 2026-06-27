@@ -214,9 +214,7 @@ const Navbar = memo(() => {
                 <button
                   onClick={toggleLanguage}
                   className={`px-3 py-1 text-sm rounded-md transition-colors ${navTextClass} ${navHoverClass}`}
-                  aria-label={
-                    language === "en" ? "Switch to Polish" : "Switch to English"
-                  }
+                  aria-label={`${language.toUpperCase()}, ${language === "en" ? "Switch to Polish" : "Switch to English"}`}
                   data-testid="language-toggle-desktop"
                 >
                   {language.toUpperCase()}
@@ -324,9 +322,7 @@ const Navbar = memo(() => {
                 <button
                   onClick={toggleLanguage}
                   className={`px-3 py-1 text-sm rounded-md transition-colors text-black hover:bg-white/50`}
-                  aria-label={
-                    language === "en" ? "Switch to Polish" : "Switch to English"
-                  }
+                  aria-label={`${language.toUpperCase()}, ${language === "en" ? "Switch to Polish" : "Switch to English"}`}
                   data-testid="language-toggle-mobile"
                 >
                   {language.toUpperCase()}

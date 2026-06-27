@@ -114,7 +114,6 @@ export const CookieBanner = memo(({ className = "" }: CookieBannerProps) => {
               <button
                 onClick={handleShowPreferences}
                 className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-black bg-white border border-black rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 transition-colors duration-200"
-                aria-label={t("cookie.banner.settings")}
                 type="button"
               >
                 <Settings className="w-4 h-4" aria-hidden="true" />
@@ -148,20 +147,22 @@ export const CookieBanner = memo(({ className = "" }: CookieBannerProps) => {
 
           {/* Keyboard shortcuts info — desktop only */}
           <div className="hidden lg:flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
-            <div className="text-xs text-gray-400">
+            <div className="text-xs text-gray-600">
               <span className="inline-flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 text-xs font-mono bg-white border border-gray-300 rounded">
+                <kbd className="px-1.5 py-0.5 text-xs font-mono text-gray-800 bg-white border border-gray-300 rounded">
                   Esc
                 </kbd>
                 <span>{t("cookie.banner.shortcuts.necessary")}</span>
               </span>
-              <span className="mx-3">•</span>
+              <span className="mx-3 text-gray-500" aria-hidden="true">
+                •
+              </span>
               <span className="inline-flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 text-xs font-mono bg-white border border-gray-300 rounded">
+                <kbd className="px-1.5 py-0.5 text-xs font-mono text-gray-800 bg-white border border-gray-300 rounded">
                   Ctrl
                 </kbd>
-                <span>+</span>
-                <kbd className="px-1.5 py-0.5 text-xs font-mono bg-white border border-gray-300 rounded">
+                <span aria-hidden="true">+</span>
+                <kbd className="px-1.5 py-0.5 text-xs font-mono text-gray-800 bg-white border border-gray-300 rounded">
                   Enter
                 </kbd>
                 <span>{t("cookie.banner.shortcuts.accept")}</span>
@@ -170,7 +171,7 @@ export const CookieBanner = memo(({ className = "" }: CookieBannerProps) => {
 
             <button
               onClick={handleRejectOptional}
-              className="p-1 text-gray-400 hover:text-black focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 rounded transition-colors duration-200"
+              className="p-1 text-gray-600 hover:text-black focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 rounded transition-colors duration-200"
               aria-label={t("cookie.banner.close")}
               type="button"
             >
