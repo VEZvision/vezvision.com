@@ -12,6 +12,8 @@ import {
 } from "./prerender/seo-readiness";
 import { stopPreviewServer, waitForServer } from "./prerender/preview-server";
 import { validateSeoRouteHtml } from "./seo-build-validation";
+import { enTranslations } from "../src/data/translations/en/index";
+import { plTranslations } from "../src/data/translations/pl/index";
 
 const DIST_DIR = resolve(process.cwd(), "dist");
 const PREVIEW_PORT = 4173;
@@ -126,6 +128,32 @@ function injectBootSettingsScript(
   return headHtml.replace("</head>", `${scriptTag}\n</head>`);
 }
 
+function localeForRoute(routePath: string): "pl" | "en" | null {
+  if (routePath === "/pl" || routePath.startsWith("/pl/")) return "pl";
+  if (routePath === "/en" || routePath.startsWith("/en/")) return "en";
+  return null;
+}
+
+function injectBootLocaleScript(headHtml: string, routePath: string): string {
+  const language = localeForRoute(routePath);
+  if (!language) return headHtml;
+
+  const dict = language === "pl" ? plTranslations : enTranslations;
+  const scriptTag = `<script id="vez-boot-locale" type="application/json">${JSON.stringify(dict).replace(/<\//g, "<\\/")}</script>`;
+  return headHtml.replace("</head>", `${scriptTag}\n</head>`);
+}
+
+function optimizeHomePrerenderBody(
+  bodyHtml: string,
+  routePath: string,
+): string {
+  if (!HOME_ROUTE_PATHS.has(routePath)) {
+    return bodyHtml;
+  }
+
+  return bodyHtml.replace(/<video\b[^>]*>[\s\S]*?<\/video>/gi, "");
+}
+
 async function prerenderRoute({
   page,
   diagnostics,
@@ -197,17 +225,23 @@ async function prerenderRoute({
     };
   }
 
-  const normalizedHead = injectBootSettingsScript(
-    injectHomeCssPreload(
-      removeNonCriticalHomeAssetHints(
-        headHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN),
+  const normalizedHead = injectBootLocaleScript(
+    injectBootSettingsScript(
+      injectHomeCssPreload(
+        removeNonCriticalHomeAssetHints(
+          headHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN),
+          routePath,
+        ),
         routePath,
       ),
-      routePath,
+      bootSettingsJson,
     ),
-    bootSettingsJson,
+    routePath,
   );
-  const normalizedBody = bodyHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN);
+  const normalizedBody = optimizeHomePrerenderBody(
+    bodyHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN),
+    routePath,
+  );
   const prerendered = buildPrerenderedHtml(
     normalizedHead,
     htmlLang,

@@ -12,7 +12,9 @@ import { unregisterLegacyServiceWorkers } from "./utils/serviceWorkerCleanup";
 import {
   detectInitialLanguage,
   ensureLocaleLoaded,
+  getCachedLocale,
   prefetchLocale,
+  seedLocaleCache,
 } from "./data/translations/loadLocale";
 import "./index.css";
 import "./styles/reveal.css";
@@ -93,14 +95,32 @@ function seedBootSettingsCache(): void {
   }
 }
 
+function seedBootLocaleCache(): void {
+  const bootEl = document.getElementById("vez-boot-locale");
+  if (!bootEl?.textContent) return;
+
+  try {
+    const dict = JSON.parse(bootEl.textContent) as Record<string, string>;
+    seedLocaleCache(detectInitialLanguage(), dict);
+  } catch {
+    /* invalid json */
+  } finally {
+    bootEl.remove();
+  }
+}
+
 async function bootstrap(root: HTMLElement): Promise<void> {
   seedBootSettingsCache();
+  seedBootLocaleCache();
   const isPrerendered =
     document.documentElement.hasAttribute("data-vez-prerender");
 
   const initialLanguage = detectInitialLanguage();
   prefetchLocale(initialLanguage);
-  await ensureLocaleLoaded(initialLanguage);
+
+  if (!isPrerendered || !getCachedLocale(initialLanguage)) {
+    await ensureLocaleLoaded(initialLanguage);
+  }
 
   removePrerenderedHelmetTags();
   document.documentElement.removeAttribute("data-vez-prerender");

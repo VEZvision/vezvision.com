@@ -1,44 +1,63 @@
-export type Language = 'pl' | 'en';
+export type Language = "pl" | "en";
 
-const LANGUAGE_STORAGE_KEY = 'vezvision_language';
+const LANGUAGE_STORAGE_KEY = "vezvision_language";
 
 const localeCache = new Map<Language, Record<string, string>>();
 const localePromises = new Map<Language, Promise<Record<string, string>>>();
 
-async function importLocale(language: Language): Promise<Record<string, string>> {
-  if (language === 'pl') {
-    const mod = await import('./pl');
+async function importLocale(
+  language: Language,
+): Promise<Record<string, string>> {
+  if (language === "pl") {
+    const mod = await import("./pl");
     return mod.plTranslations as Record<string, string>;
   }
 
-  const mod = await import('./en');
+  const mod = await import("./en");
   return mod.enTranslations as Record<string, string>;
 }
 
 export function detectInitialLanguage(): Language {
   try {
-    if (typeof window !== 'undefined') {
-      const firstSegment = window.location.pathname.split('/').filter(Boolean)[0];
-      if (firstSegment === 'pl' || firstSegment === 'en') {
+    if (typeof window !== "undefined") {
+      const firstSegment = window.location.pathname
+        .split("/")
+        .filter(Boolean)[0];
+      if (firstSegment === "pl" || firstSegment === "en") {
         return firstSegment;
       }
     }
 
     const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    if (stored === 'pl' || stored === 'en') return stored;
-    const langs = (navigator.languages?.length ? navigator.languages : [navigator.language]) as string[];
-    const hasPL = langs.some((lang) => typeof lang === 'string' && lang.toLowerCase().startsWith('pl'));
-    return hasPL ? 'pl' : 'en';
+    if (stored === "pl" || stored === "en") return stored;
+    const langs = (
+      navigator.languages?.length ? navigator.languages : [navigator.language]
+    ) as string[];
+    const hasPL = langs.some(
+      (lang) => typeof lang === "string" && lang.toLowerCase().startsWith("pl"),
+    );
+    return hasPL ? "pl" : "en";
   } catch {
-    return 'en';
+    return "en";
   }
 }
 
-export function getCachedLocale(language: Language): Record<string, string> | undefined {
+export function getCachedLocale(
+  language: Language,
+): Record<string, string> | undefined {
   return localeCache.get(language);
 }
 
-export async function ensureLocaleLoaded(language: Language): Promise<Record<string, string>> {
+export function seedLocaleCache(
+  language: Language,
+  dict: Record<string, string>,
+): void {
+  localeCache.set(language, dict);
+}
+
+export async function ensureLocaleLoaded(
+  language: Language,
+): Promise<Record<string, string>> {
   const cached = localeCache.get(language);
   if (cached) return cached;
 
