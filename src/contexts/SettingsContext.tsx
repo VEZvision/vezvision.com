@@ -9,17 +9,15 @@ import {
 } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
-  loadSettingsSnapshot,
-  defaultSnapshot,
-  defaultState,
   readPublicSettingsCache,
   writePublicSettingsCache,
   writeMaintenanceFlagToCache,
-} from "./settings/loaders";
+} from "@/lib/publicSettingsCache";
 import type {
   SettingsContextType,
   SettingsState,
 } from "./SettingsContextDefinition";
+import { defaultSnapshot, defaultState } from "./SettingsContextDefinition";
 
 export type { SettingsContextType, SettingsState };
 
@@ -36,11 +34,9 @@ const SettingsContext = createContext<SettingsContextType>({
 
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const cachedSnapshot = readPublicSettingsCache();
-  const [canFetch, setCanFetch] = useState(Boolean(cachedSnapshot));
+  const [canFetch, setCanFetch] = useState(false);
 
   useEffect(() => {
-    if (canFetch) return;
-
     if (typeof window.requestIdleCallback === "function") {
       const idleId = window.requestIdleCallback(() => setCanFetch(true), {
         timeout: 2500,
@@ -50,11 +46,14 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
 
     const timer = window.setTimeout(() => setCanFetch(true), 1);
     return () => window.clearTimeout(timer);
-  }, [canFetch]);
+  }, []);
 
   const query = useQuery({
     queryKey: SETTINGS_QUERY_KEY,
-    queryFn: loadSettingsSnapshot,
+    queryFn: async () => {
+      const { loadSettingsSnapshot } = await import("./settings/loaders");
+      return loadSettingsSnapshot();
+    },
     enabled: canFetch,
     initialData: cachedSnapshot
       ? { ...cachedSnapshot.settings, error: null, degraded: false }

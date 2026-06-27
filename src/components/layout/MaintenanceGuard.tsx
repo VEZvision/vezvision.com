@@ -2,11 +2,6 @@ import { Suspense, lazy, useEffect, useState, type ReactNode } from "react";
 import AppBootShell from "@/components/layout/AppBootShell";
 import { useSettings } from "@/hooks/useSettings";
 import { readMaintenanceFlagFromCache } from "@/lib/publicSettingsCache";
-import {
-  fetchMaintenanceAccess,
-  fetchMaintenanceEnabledFromDb,
-  isSiteAccessible,
-} from "@/services/maintenanceAccess";
 
 const MaintenancePage = lazy(() => import("@/pages/MaintenancePage"));
 
@@ -42,6 +37,11 @@ export function MaintenanceGuard({ children }: MaintenanceGuardProps) {
     let cancelled = false;
 
     const resolveAccess = async () => {
+      const {
+        fetchMaintenanceAccess,
+        fetchMaintenanceEnabledFromDb,
+        isSiteAccessible,
+      } = await import("@/services/maintenanceAccess");
       const snapshot = await fetchMaintenanceAccess();
       if (cancelled) return;
 

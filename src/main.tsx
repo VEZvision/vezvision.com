@@ -11,6 +11,7 @@ import { queryClient } from "./lib/queryClient";
 import { unregisterLegacyServiceWorkers } from "./utils/serviceWorkerCleanup";
 import {
   detectInitialLanguage,
+  ensureLocaleLoaded,
   prefetchLocale,
 } from "./data/translations/loadLocale";
 import "./index.css";
@@ -38,13 +39,6 @@ const scheduleIdleWork = (work: () => void, timeout = 3000): void => {
 
   globalThis.setTimeout(work, 1);
 };
-
-const initialLanguage = detectInitialLanguage();
-prefetchLocale(initialLanguage);
-scheduleIdleWork(() => {
-  void initWebVitalsReporting();
-  prefetchLocale(initialLanguage === "pl" ? "en" : "pl");
-});
 
 const rootElement = document.getElementById("root");
 
@@ -86,14 +80,43 @@ function removePrerenderedHelmetTags(): void {
     .forEach((element) => element.remove());
 }
 
-if (rootElement.hasChildNodes()) {
-  removePrerenderedHelmetTags();
-  rootElement.replaceChildren();
+function seedBootSettingsCache(): void {
+  const bootEl = document.getElementById("vez-boot-settings");
+  if (!bootEl?.textContent) return;
+
+  try {
+    window.localStorage.setItem("vez-public-settings-v1", bootEl.textContent);
+  } catch {
+    /* private mode / quota */
+  } finally {
+    bootEl.remove();
+  }
 }
 
-createRoot(rootElement).render(app);
+async function bootstrap(root: HTMLElement): Promise<void> {
+  seedBootSettingsCache();
+  document.documentElement.removeAttribute("data-vez-prerender");
 
-// Sentry loads only when analytics consent is already granted.
-scheduleIdleWork(() => {
-  void initSentryIfConsented();
-});
+  const initialLanguage = detectInitialLanguage();
+  prefetchLocale(initialLanguage);
+  await ensureLocaleLoaded(initialLanguage);
+
+  removePrerenderedHelmetTags();
+
+  if (root.hasChildNodes()) {
+    root.replaceChildren();
+  }
+
+  createRoot(root).render(app);
+
+  scheduleIdleWork(() => {
+    void initWebVitalsReporting();
+    prefetchLocale(initialLanguage === "pl" ? "en" : "pl");
+  });
+
+  scheduleIdleWork(() => {
+    void initSentryIfConsented();
+  });
+}
+
+void bootstrap(rootElement);

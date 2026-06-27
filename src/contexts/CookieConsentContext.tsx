@@ -26,6 +26,40 @@ const initialState: CookieConsentState = {
   consentId: "",
 };
 
+function createInitialCookieConsentState(): CookieConsentState {
+  try {
+    const storedConsent = storageManager.loadConsent();
+
+    if (storedConsent) {
+      if (storedConsent.version !== COOKIE_CONSENT_VERSION) {
+        return {
+          ...initialState,
+          showBanner: true,
+          consentId: generateConsentId(),
+        };
+      }
+
+      return {
+        ...initialState,
+        hasConsent: true,
+        preferences: storedConsent.preferences,
+        consentId: storedConsent.consentId,
+        lastUpdated: storedConsent.timestamp,
+        version: storedConsent.version,
+        showBanner: false,
+      };
+    }
+  } catch {
+    /* fall through to first-visit banner */
+  }
+
+  return {
+    ...initialState,
+    showBanner: true,
+    consentId: generateConsentId(),
+  };
+}
+
 function cookieConsentReducer(
   state: CookieConsentState,
   action: CookieConsentActionType,
@@ -140,7 +174,11 @@ interface CookieConsentProviderProps {
 export function CookieConsentProvider({
   children,
 }: CookieConsentProviderProps) {
-  const [state, dispatch] = useReducer(cookieConsentReducer, initialState);
+  const [state, dispatch] = useReducer(
+    cookieConsentReducer,
+    undefined,
+    createInitialCookieConsentState,
+  );
 
   const applyCookiePreferences = useCallback(
     (preferences: CookiePreferences) => {
@@ -261,28 +299,9 @@ export function CookieConsentProvider({
   const value = useMemo(() => ({ state, actions }), [state, actions]);
 
   useEffect(() => {
-    const loadStoredConsent = () => {
-      try {
-        const storedConsent = storageManager.loadConsent();
-
-        if (storedConsent) {
-          if (storedConsent.version !== COOKIE_CONSENT_VERSION) {
-            dispatch({ type: "SHOW_BANNER" });
-            return;
-          }
-
-          dispatch({ type: "LOAD_CONSENT", payload: storedConsent });
-          applyCookiePreferences(storedConsent.preferences);
-        } else {
-          dispatch({ type: "SHOW_BANNER" });
-        }
-      } catch {
-        dispatch({ type: "SHOW_BANNER" });
-      }
-    };
-
-    loadStoredConsent();
-  }, [applyCookiePreferences]);
+    if (!state.hasConsent) return;
+    applyCookiePreferences(state.preferences);
+  }, [applyCookiePreferences, state.hasConsent, state.preferences]);
 
   return (
     <CookieConsentContext.Provider value={value}>

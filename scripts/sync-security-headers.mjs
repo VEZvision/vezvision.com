@@ -30,7 +30,7 @@ const htaccessTemplate = `<IfModule mod_headers.c>
   Header always set Cross-Origin-Opener-Policy "same-origin"
   Header always set Content-Security-Policy "${csp}"
 
-  <FilesMatch "\\.(js|mjs|css|svg|png|jpg|jpeg|gif|webp|mp4|webm|woff|woff2|ico|br|gz)$">
+  <FilesMatch "\\.(js|mjs|css|svg|png|jpg|jpeg|gif|webp|avif|mp4|webm|woff|woff2|ico|br|gz)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 
@@ -152,7 +152,7 @@ const vercelConfig = {
       ],
     },
     {
-      source: '/(.*\\.(js|css|woff2|webp|webm|mp4|png|jpg|jpeg|gif|svg|ico|br|gz))',
+      source: '/(.*\\.(js|css|woff2|webp|webm|mp4|png|jpg|jpeg|gif|svg|ico|avif|br|gz))',
       headers: [
         { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
       ],

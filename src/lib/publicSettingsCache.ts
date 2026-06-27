@@ -1,6 +1,7 @@
 import type { SettingsState } from "@/contexts/SettingsContext";
 
 const CACHE_KEY = "vez-public-settings-v1";
+const BOOT_SETTINGS_ELEMENT_ID = "vez-boot-settings";
 const CACHE_TTL_MS = 5 * 60 * 1000;
 const MAINTENANCE_FLAG_KEY = "vez-maintenance-flag";
 
@@ -21,6 +22,17 @@ export function readPublicSettingsCache(): CachedPublicSettings | undefined {
   if (typeof window === "undefined") return undefined;
 
   try {
+    const embedded = document.getElementById(BOOT_SETTINGS_ELEMENT_ID);
+    if (embedded?.textContent) {
+      const parsed = JSON.parse(embedded.textContent) as CachedPublicSettings;
+      if (parsed?.savedAt && parsed.settings) {
+        return {
+          savedAt: parsed.savedAt,
+          settings: stripVolatileSettings(parsed.settings),
+        };
+      }
+    }
+
     const raw = window.localStorage.getItem(CACHE_KEY);
     if (!raw) return undefined;
 

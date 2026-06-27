@@ -33,3 +33,23 @@ export interface SettingsContextType extends SettingsState {
   degraded: boolean;
   refreshSettings: () => Promise<void>;
 }
+
+export const defaultState: SettingsState = {
+  identity: null,
+  contact: null,
+  social: null,
+  seo: null,
+  maintenance: null,
+  seo_files: null,
+  company: null,
+  navigation: null,
+  footer: null,
+  pageSeo: {},
+  pageSections: {},
+};
+
+export const defaultSnapshot = {
+  ...defaultState,
+  error: null,
+  degraded: false,
+};

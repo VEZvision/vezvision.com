@@ -41,7 +41,7 @@ function buildPrerenderedHtml(
   htmlLang: string,
   bodyHtml: string,
 ): string {
-  return `<!doctype html>\n<html lang="${htmlLang}">\n${headHtml}\n${bodyHtml}\n</html>`;
+  return `<!doctype html>\n<html lang="${htmlLang}" data-vez-prerender="true">\n${headHtml}\n${bodyHtml}\n</html>`;
 }
 
 const HOME_ROUTE_PATHS = new Set(["/pl", "/en"]);
@@ -51,6 +51,8 @@ const NON_CRITICAL_HOME_ASSET_PATTERNS = [
   /\/assets\/Benefits-[^"'<>\s]+\.(?:css|js)/,
   /\/assets\/ContactSection-[^"'<>\s]+\.(?:css|js)/,
   /\/assets\/Features-[^"'<>\s]+\.(?:css|js)/,
+  /\/assets\/FounderNote-[^"'<>\s]+\.css/,
+  /\/assets\/GridBackground-[^"'<>\s]+\.css/,
   /\/assets\/NewsletterSection-[^"'<>\s]+\.(?:css|js)/,
   /\/assets\/PotentialSection-[^"'<>\s]+\.(?:css|js)/,
   /\/assets\/ProcessSection-[^"'<>\s]+\.(?:css|js)/,
@@ -89,6 +91,16 @@ function removeNonCriticalHomeAssetHints(
   );
 }
 
+function injectBootSettingsScript(
+  headHtml: string,
+  bootSettingsJson: string | null,
+): string {
+  if (!bootSettingsJson) return headHtml;
+
+  const scriptTag = `<script id="vez-boot-settings" type="application/json">${bootSettingsJson.replace(/<\//g, "<\\/")}</script>`;
+  return headHtml.replace("</head>", `${scriptTag}\n</head>`);
+}
+
 async function prerenderRoute({
   page,
   diagnostics,
@@ -111,6 +123,13 @@ async function prerenderRoute({
     await page.waitForFunction(SEO_READY_PREDICATE, undefined, {
       timeout: SEO_READY_TIMEOUT,
     });
+    await page
+      .waitForFunction(
+        () => window.localStorage.getItem("vez-public-settings-v1") !== null,
+        undefined,
+        { timeout: SEO_READY_TIMEOUT },
+      )
+      .catch(() => undefined);
   } catch (error) {
     const html = await page.evaluate(() => document.documentElement.outerHTML);
     const validationErrors = validateSeoRouteHtml(routePath, html);
@@ -136,6 +155,9 @@ async function prerenderRoute({
     () => document.documentElement.lang || "pl",
   );
   const bodyHtml: string = await page.evaluate(() => document.body.outerHTML);
+  const bootSettingsJson: string | null = await page.evaluate(() => {
+    return window.localStorage.getItem("vez-public-settings-v1");
+  });
   const fullHtml: string = await page.evaluate(
     () => document.documentElement.outerHTML,
   );
@@ -150,9 +172,12 @@ async function prerenderRoute({
     };
   }
 
-  const normalizedHead = removeNonCriticalHomeAssetHints(
-    headHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN),
-    routePath,
+  const normalizedHead = injectBootSettingsScript(
+    removeNonCriticalHomeAssetHints(
+      headHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN),
+      routePath,
+    ),
+    bootSettingsJson,
   );
   const normalizedBody = bodyHtml.split(PREVIEW_ORIGIN).join(SITE_ORIGIN);
   const prerendered = buildPrerenderedHtml(

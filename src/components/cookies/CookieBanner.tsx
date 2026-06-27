@@ -60,7 +60,7 @@ export const CookieBanner = memo(({ className = "" }: CookieBannerProps) => {
       className={`fixed bottom-0 left-0 right-0 z-[9999] transition-opacity duration-300 ease-out contain-layout contain-paint ${
         isShown ? "opacity-100" : "opacity-0"
       } ${isHidden ? "pointer-events-none" : ""} ${className}`}
-      role="banner"
+      role="region"
       aria-labelledby="cookie-banner-title"
       aria-describedby="cookie-banner-description"
       aria-hidden={isHidden}

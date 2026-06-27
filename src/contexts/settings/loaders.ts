@@ -16,31 +16,12 @@ import {
 } from "@/services/pageSections";
 import { setCmsTranslationsRegistry } from "@/services/cmsTranslationsRegistry";
 import type { SettingsState } from "../SettingsContextDefinition";
+import { defaultState } from "../SettingsContextDefinition";
 
 export interface SettingsSnapshot extends SettingsState {
   error: unknown;
   degraded: boolean;
 }
-
-export const defaultState: SettingsState = {
-  identity: null,
-  contact: null,
-  social: null,
-  seo: null,
-  maintenance: null,
-  seo_files: null,
-  company: null,
-  navigation: null,
-  footer: null,
-  pageSeo: {},
-  pageSections: {},
-};
-
-export const defaultSnapshot: SettingsSnapshot = {
-  ...defaultState,
-  error: null,
-  degraded: false,
-};
 
 interface CoreSettingsSnapshot {
   settings: SettingsState;

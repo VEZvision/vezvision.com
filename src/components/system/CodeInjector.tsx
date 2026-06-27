@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { sanitizeCmsHtml } from "@/utils/sanitizeCmsHtml";
-import { fetchCodeInjection } from "@/services/codeInjection";
 
 /** SEO-critical rels (canonical, alternate) are app-owned via Helmet — never from CMS head. */
 const ALLOWED_LINK_RELS = new Set([
@@ -117,14 +116,16 @@ const CodeInjector = ({ delayMs = 0 }: CodeInjectorProps) => {
 
     const load = () => {
       timer = setTimeout(() => {
-        void fetchCodeInjection().then((code) => {
-          if (active) {
-            setMarkup({
-              head: code.head.trim(),
-              body: code.body.trim(),
-            });
-          }
-        });
+        void import("@/services/codeInjection").then(({ fetchCodeInjection }) =>
+          fetchCodeInjection().then((code) => {
+            if (active) {
+              setMarkup({
+                head: code.head.trim(),
+                body: code.body.trim(),
+              });
+            }
+          }),
+        );
       }, delayMs);
     };
 
