@@ -60,22 +60,18 @@
   transform: translateZ(0);
 }
 
-@media (pointer: coarse) {
-  .videoBg {
-    filter: none;
-  }
-
-  .videoOverlay {
-    background: rgba(255, 255, 255, 0.58);
-  }
-}
-
 .videoOverlay {
   position: absolute;
   inset: 0;
   z-index: 10;
   background: rgba(255, 255, 255, 0.9);
   pointer-events: none;
+}
+
+@media (pointer: coarse) {
+  .videoOverlay {
+    background: rgba(255, 255, 255, 0.82);
+  }
 }
 
 .logoPlate {

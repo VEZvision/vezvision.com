@@ -9,9 +9,3 @@
   backface-visibility: hidden;
   transform: translateZ(0);
 }
-
-@media (pointer: coarse) {
-  .videoBg {
-    filter: none;
-  }
-}

@@ -1,4 +1,4 @@
-import { useEffect, type RefObject } from "react";
+import { useEffect, useRef, type RefObject } from "react";
 
 import {
   bindBackgroundVideoPlayback,
@@ -13,6 +13,8 @@ type UseBackgroundVideoSectionOptions = {
   threshold?: number;
   rootMargin?: string;
   reloadKey?: string;
+  /** When false, media events can trigger play even if IO says off-screen. */
+  gateMediaEventsOnVisibility?: boolean;
 };
 
 export function useBackgroundVideoSection({
@@ -23,10 +25,19 @@ export function useBackgroundVideoSection({
   threshold = 0.05,
   rootMargin,
   reloadKey,
+  gateMediaEventsOnVisibility = true,
 }: UseBackgroundVideoSectionOptions): void {
+  const previousReloadKeyRef = useRef<string | undefined>(undefined);
+
   useEffect(() => {
     if (!enabled || reloadKey === undefined) return;
-    videoRef.current?.load();
+
+    const previousKey = previousReloadKeyRef.current;
+    previousReloadKeyRef.current = reloadKey;
+
+    if (previousKey !== undefined && previousKey !== reloadKey) {
+      videoRef.current?.load();
+    }
   }, [enabled, reloadKey, videoRef]);
 
   useEffect(() => {
@@ -42,9 +53,11 @@ export function useBackgroundVideoSection({
       videoEl.pause();
     };
 
-    const unbindPlayback = bindBackgroundVideoPlayback(videoEl, playVideo, {
-      canPlay: () => isVisibleRef.current,
-    });
+    const unbindPlayback = gateMediaEventsOnVisibility
+      ? bindBackgroundVideoPlayback(videoEl, playVideo, {
+          canPlay: () => isVisibleRef.current,
+        })
+      : bindBackgroundVideoPlayback(videoEl, playVideo);
 
     if (!sectionEl || !("IntersectionObserver" in window)) {
       isVisibleRef.current = true;
@@ -70,6 +83,10 @@ export function useBackgroundVideoSection({
 
     observer.observe(sectionEl);
 
+    if (initiallyVisible) {
+      playVideo();
+    }
+
     return () => {
       observer.disconnect();
       unbindPlayback();
@@ -77,6 +94,7 @@ export function useBackgroundVideoSection({
     };
   }, [
     enabled,
+    gateMediaEventsOnVisibility,
     initiallyVisible,
     reloadKey,
     rootMargin,

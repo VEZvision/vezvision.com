@@ -201,7 +201,7 @@ function sanitizePrerenderVideo(
   }
 
   if (kind === "hero") {
-    return `${tag} autoplay preload="metadata"${rest}`;
+    return `${tag} autoplay preload="auto"${rest}`;
   }
 
   return `${tag} preload="none"${rest}`;

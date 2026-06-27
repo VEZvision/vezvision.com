@@ -1,4 +1,4 @@
-import { Fragment, memo, useRef } from "react";
+import { Fragment, memo, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import logoNavbar from "../../assets/logo-navbar.svg";
@@ -6,7 +6,6 @@ import logoNavbar from "../../assets/logo-navbar.svg";
 import { buildHeroSocialLinks } from "@/components/common/heroSocialLinks";
 import { useLanguageContext } from "../../hooks/useLanguage";
 import { usePrefersReducedData } from "@/hooks/usePrefersReducedData";
-import { useBackgroundVideoSection } from "@/hooks/useBackgroundVideoSection";
 import SectionBadge from "@/components/ui/SectionBadge";
 import { Sparkles } from "lucide-react";
 import { useSocial } from "@/hooks/useSettings";
@@ -14,10 +13,13 @@ import { usePageSectionConfig } from "@/hooks/usePageSection";
 import { safeCmsHref } from "@/utils/safeHref";
 import { localizeInternalHref } from "@/routing/locale";
 import styles from "./Hero.module.scss";
+import {
+  bindBackgroundVideoPlayback,
+  playBackgroundVideo,
+} from "@/utils/backgroundVideo";
 
 const HERO_VIDEO_SRC = "/hero-bg.mp4";
 const HERO_VIDEO_WEBM_SRC = "/hero-bg.webm";
-const HERO_VIDEO_RELOAD_KEY = "hero-bg";
 
 const Hero = memo(() => {
   const { t, language } = useLanguageContext();
@@ -28,15 +30,45 @@ const Hero = memo(() => {
   const sectionRef = useRef<HTMLElement | null>(null);
   const showVideo = !prefersReducedData;
 
-  useBackgroundVideoSection({
-    enabled: showVideo,
-    sectionRef,
-    videoRef,
-    initiallyVisible: true,
-    threshold: 0.05,
-    rootMargin: "80px",
-    reloadKey: HERO_VIDEO_RELOAD_KEY,
-  });
+  useEffect(() => {
+    const sectionEl = sectionRef.current;
+    const videoEl = videoRef.current;
+    if (!videoEl || !showVideo) return;
+
+    const playVideo = () => {
+      playBackgroundVideo(videoEl);
+    };
+
+    const unbindPlayback = bindBackgroundVideoPlayback(videoEl, playVideo);
+    playVideo();
+
+    if (!sectionEl || !("IntersectionObserver" in window)) {
+      return () => {
+        unbindPlayback();
+        videoEl.pause();
+      };
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry) return;
+        if (entry.isIntersecting) {
+          playVideo();
+        } else {
+          videoEl.pause();
+        }
+      },
+      { threshold: 0.05, rootMargin: "80px" },
+    );
+
+    observer.observe(sectionEl);
+
+    return () => {
+      observer.disconnect();
+      unbindPlayback();
+      videoEl.pause();
+    };
+  }, [showVideo]);
 
   const socialLinks = buildHeroSocialLinks(social);
   const primaryHref = localizeInternalHref(
@@ -52,6 +84,14 @@ const Hero = memo(() => {
     <section ref={sectionRef} className={styles.sectionHero}>
       <Helmet>
         <link rel="preload" as="image" href={logoNavbar} fetchPriority="high" />
+        {showVideo && (
+          <link
+            rel="preload"
+            as="video"
+            href={HERO_VIDEO_SRC}
+            type="video/mp4"
+          />
+        )}
       </Helmet>
       {showVideo && (
         <video
@@ -63,7 +103,7 @@ const Hero = memo(() => {
           loop
           playsInline
           autoPlay
-          preload="metadata"
+          preload="auto"
           aria-hidden="true"
           tabIndex={-1}
           disableRemotePlayback

@@ -58,12 +58,8 @@
 }
 
 @media (pointer: coarse) {
-  .footerVideo {
-    filter: none;
-  }
-
   .videoOverlay {
-    background: rgba(255, 255, 255, 0.58);
+    background: rgba(255, 255, 255, 0.82);
   }
 }
 
