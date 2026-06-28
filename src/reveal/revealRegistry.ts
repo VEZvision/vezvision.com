@@ -126,4 +126,7 @@ export function resetRevealRegistryState(): void {
   }
   observers.clear();
   tracked.clear();
+  pendingReveals.clear();
+  pendingCallbacks.clear();
+  flushScheduled = false;
 }

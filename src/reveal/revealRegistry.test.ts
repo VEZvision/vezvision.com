@@ -39,7 +39,7 @@ describe("revealRegistry", () => {
     vi.restoreAllMocks();
   });
 
-  it("observes without synchronous layout measurement", () => {
+  it("observes without synchronous layout measurement", async () => {
     const el = document.createElement("section");
     const measure = vi.spyOn(el, "getBoundingClientRect");
 
@@ -59,11 +59,13 @@ describe("revealRegistry", () => {
       {} as IntersectionObserver,
     );
 
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
     expect(el.dataset.revealed).toBe("true");
     cleanup();
   });
 
-  it("observes below-fold elements and reveals on intersect", () => {
+  it("observes below-fold elements and reveals on intersect", async () => {
     const el = document.createElement("section");
 
     registerRevealElement(el, { once: true });
@@ -80,6 +82,8 @@ describe("revealRegistry", () => {
       ],
       {} as IntersectionObserver,
     );
+
+    await new Promise((resolve) => requestAnimationFrame(resolve));
 
     expect(el.dataset.revealed).toBe("true");
     expect(unobserve).toHaveBeenCalledWith(el);
