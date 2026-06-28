@@ -1,25 +1,25 @@
-import { Fragment } from 'react'
-import { Link } from 'react-router-dom'
-import type { Language } from '@/hooks/useLanguage'
-import { getLocalizedLabel } from '@/utils/i18n'
+import { Fragment } from "react";
+import { Link } from "react-router-dom";
+import type { Language } from "@/hooks/useLanguage";
+import { getLocalizedLabel } from "@/utils/i18n";
 
 interface NavItem {
-  id: string
-  href: string
-  labelPl: string
-  labelEn: string
-  enabled: boolean
+  id: string;
+  href: string;
+  labelPl: string;
+  labelEn: string;
+  enabled: boolean;
 }
 
 interface FooterNavProps {
-  navLinks: NavItem[]
-  legalLinks: NavItem[]
-  language: Language
-  onPrivacySettings: () => void
-  brandName: string
-  isExternal: (href: string) => boolean
-  linkClass: string
-  legalLinkClass: string
+  navLinks: NavItem[];
+  legalLinks: NavItem[];
+  language: Language;
+  onPrivacySettings: () => void;
+  brandName: string;
+  isExternal: (href: string) => boolean;
+  linkClass: string;
+  legalLinkClass: string;
 }
 
 export function FooterNavLegal({
@@ -54,7 +54,7 @@ export function FooterNavLegal({
         )}
       </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm text-gray-400 mb-4">
+      <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm text-gray-600 mb-4">
         {legalLinks.map((item, index) => (
           <Fragment key={item.id}>
             {isExternal(item.href) ? (
@@ -75,14 +75,18 @@ export function FooterNavLegal({
           </Fragment>
         ))}
         {legalLinks.length > 0 && <span>•</span>}
-        <button type="button" onClick={onPrivacySettings} className={legalLinkClass}>
-          {language === 'en' ? 'Privacy Settings' : 'Ustawienia prywatności'}
+        <button
+          type="button"
+          onClick={onPrivacySettings}
+          className={legalLinkClass}
+        >
+          {language === "en" ? "Privacy Settings" : "Ustawienia prywatności"}
         </button>
       </div>
 
-      <div className="text-center text-sm text-gray-400">
+      <div className="text-center text-sm text-gray-600">
         {brandName} © {new Date().getFullYear()}.
       </div>
     </nav>
-  )
+  );
 }

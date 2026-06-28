@@ -200,7 +200,7 @@ export function CookiePreferences({ className = "" }: CookiePreferencesProps) {
             </div>
             <button
               onClick={actions.hidePreferencesModal}
-              className="p-2 text-gray-400 hover:text-black focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded-lg transition-colors duration-200"
+              className="p-2 text-gray-600 hover:text-black focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded-lg transition-colors duration-200"
               aria-label={t("cookie.preferences.close")}
             >
               <X className="w-6 h-6" aria-hidden="true" />
@@ -299,7 +299,7 @@ export function CookiePreferences({ className = "" }: CookiePreferencesProps) {
                                 isExpanded ? null : category.id,
                               )
                             }
-                            className="p-1 text-gray-400 hover:text-black focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded transition-colors duration-200"
+                            className="p-1 text-gray-600 hover:text-black focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded transition-colors duration-200"
                             aria-label={`${isExpanded ? t("cookie.preferences.collapse") : t("cookie.preferences.expand")} ${category.name}`}
                             aria-expanded={isExpanded}
                           >
