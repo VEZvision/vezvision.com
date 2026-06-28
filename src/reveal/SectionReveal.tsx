@@ -5,11 +5,11 @@ import {
   type ReactElement,
   type ReactNode,
   type CSSProperties,
-} from 'react';
+} from "react";
 
-import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { Reveal } from '@/reveal/Reveal';
-import type { RevealOptions, StaggerItemProps } from '@/reveal/types';
+import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { Reveal } from "@/reveal/Reveal";
+import type { RevealOptions, StaggerItemProps } from "@/reveal/types";
 
 type SectionRevealProps = RevealOptions & {
   children: React.ReactNode;
@@ -19,10 +19,10 @@ type SectionRevealProps = RevealOptions & {
 
 export function SectionReveal({
   children,
-  className = '',
+  className = "",
   delay = 0,
   once = true,
-  amount = 0,
+  amount = 0.2,
   rootMargin,
 }: SectionRevealProps) {
   const reducedMotion = useReducedMotion();
@@ -49,7 +49,9 @@ type StaggerRevealProps = RevealOptions & {
   className?: string;
 };
 
-function isStaggerItem(element: ReactElement): element is ReactElement<StaggerItemProps> {
+function isStaggerItem(
+  element: ReactElement,
+): element is ReactElement<StaggerItemProps> {
   return element.type === StaggerItem;
 }
 
@@ -70,7 +72,10 @@ function assignStaggerIndices(
     }
 
     if ((child.props as Record<string, unknown>).children != null) {
-      const nested = assignStaggerIndices((child.props as Record<string, unknown>).children as ReactNode, index);
+      const nested = assignStaggerIndices(
+        (child.props as Record<string, unknown>).children as ReactNode,
+        index,
+      );
       index = nested.nextIndex;
       return cloneElement(child, undefined, nested.children);
     }
@@ -83,9 +88,9 @@ function assignStaggerIndices(
 
 export function StaggerReveal({
   children,
-  className = '',
+  className = "",
   once = true,
-  amount = 0,
+  amount = 0.2,
   rootMargin,
 }: StaggerRevealProps) {
   const reducedMotion = useReducedMotion();
@@ -111,17 +116,15 @@ export function StaggerReveal({
 
 export function StaggerItem({
   children,
-  className = '',
+  className = "",
   staggerIndex = 0,
 }: StaggerItemProps) {
   return (
     <div
-      className={`vez-stagger-item${className ? ` ${className}` : ''}`}
-      style={{ '--vez-stagger-i': staggerIndex } as CSSProperties}
+      className={`vez-stagger-item${className ? ` ${className}` : ""}`}
+      style={{ "--vez-stagger-i": staggerIndex } as CSSProperties}
     >
       {children}
     </div>
   );
 }
-
-

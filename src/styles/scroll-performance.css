@@ -33,30 +33,30 @@ html.vez-smooth-scroll {
   pointer-events: none;
 }
 
-[data-lenis-events] section,
-[data-lenis-events] [data-reveal],
-[data-lenis-events] [data-revealed] {
+[data-lenis-events] section {
   contain-intrinsic-size: auto 500px;
 }
 
+/* Disable content-visibility: auto on sections entirely. Toggling
+   contain-intrinsic-size vs real dimensions mid-scroll pulses scrollable
+   height under Lenis smooth scroll and produces the "stuck" stutter. */
 [data-lenis-events] section {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 800px;
+  content-visibility: visible;
 }
 
+[data-lenis-events] footer,
+[data-lenis-events] .sectionHero,
+[data-lenis-events] .videoBg,
+[data-lenis-events] .footerVideo {
+  content-visibility: visible;
+  contain-intrinsic-size: none;
+}
+
+/* Media elements keep stable intrinsic dimensions: content-visibility: auto on <img>/<video> swaps container size when they enter viewport and shifts scroll position under Lenis. */
 [data-lenis-events] img,
-[data-lenis-events] video {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 300px;
-}
-
-[data-lenis-events] [data-reveal],
-[data-lenis-events] [data-revealed] {
-  will-change: transform, opacity;
-}
-
-[data-lenis-events] [data-revealed="true"] {
-  will-change: auto;
+[data-lenis-events] video,
+[data-lenis-events] picture {
+  content-visibility: visible;
 }
 
 [data-marquee-paused="true"] {
