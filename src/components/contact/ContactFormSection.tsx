@@ -6,11 +6,7 @@ import { toast } from "sonner";
 import { Mail, Loader2, Send } from "lucide-react";
 import styles from "./ContactFormSection.module.scss";
 import SectionHeader from "@/components/ui/SectionHeader";
-import {
-  SectionReveal,
-  StaggerReveal,
-  StaggerItem,
-} from "@/components/ui/SectionReveal";
+import { SectionReveal } from "@/components/ui/SectionReveal";
 import { useSettings } from "@/hooks/useSettings";
 import { useLanguageContext } from "@/hooks/useLanguage";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
@@ -112,7 +108,7 @@ function ContactFormSection({ t }: Props) {
       id="contact-form-section"
       className={styles.sectionContactContainer}
     >
-      <SectionReveal amount={0.25}>
+      <SectionReveal>
         <SectionHeader
           badgeText={t("contact.form.badge")}
           badgeIcon={<Mail className="w-3.5 h-3.5" />}
@@ -127,10 +123,8 @@ function ContactFormSection({ t }: Props) {
           subtitle={t("contact.form.subtitle")}
           className="mb-16"
         />
-      </SectionReveal>
 
-      <StaggerReveal className={styles.section} amount={0.2}>
-        <StaggerItem>
+        <div className={styles.section}>
           <ContactInfoCards
             t={t}
             contact={{
@@ -141,9 +135,7 @@ function ContactFormSection({ t }: Props) {
             loading={settingsLoading}
             hasContact={hasContact}
           />
-        </StaggerItem>
 
-        <StaggerItem>
           <form
             className={styles.formContainer}
             onSubmit={handleSubmit(onSubmit)}
@@ -338,8 +330,8 @@ function ContactFormSection({ t }: Props) {
               )}
             </button>
           </form>
-        </StaggerItem>
-      </StaggerReveal>
+        </div>
+      </SectionReveal>
     </section>
   );
 }
