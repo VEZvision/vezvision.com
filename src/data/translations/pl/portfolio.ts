@@ -1,7 +1,7 @@
 export const portfolioTranslations = {
   "portfolio.hero.badge": "Realizacje i case studies",
   "portfolio.hero.title.line1": "Portfolio",
-  "portfolio.hero.title.line2.italic": "VEZvision",
+  "portfolio.hero.title.line2.italic": "",
   "portfolio.hero.description":
     "W tym miejscu będziemy publikować wybrane realizacje, projekty demonstracyjne i case studies pokazujące, jak technologia, design i automatyzacje mogą wspierać rozwój firm.",
   "portfolio.hero.cta.aria": "Przejdź do kontaktu",

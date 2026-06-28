@@ -41,10 +41,14 @@ const Portfolio = () => {
       <VideoHeroSection
         title={
           <>
-            <span className="block">{t("portfolio.hero.title.line1")}</span>
             <span className="block font-sans">
-              {t("portfolio.hero.title.line2.italic")}
+              {t("portfolio.hero.title.line1")}
             </span>
+            {t("portfolio.hero.title.line2.italic") && (
+              <span className="block font-sans">
+                {t("portfolio.hero.title.line2.italic")}
+              </span>
+            )}
           </>
         }
         subtitle={t("portfolio.hero.description")}
