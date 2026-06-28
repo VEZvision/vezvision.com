@@ -7,6 +7,7 @@ const DEFAULT_ROOT_MARGIN = "500px 0px";
 declare global {
   interface Window {
     __VEZ_PRERENDER__?: boolean;
+    __VEZ_HYDRATING_PRERENDER__?: boolean;
   }
 }
 
@@ -25,7 +26,14 @@ export function ViewportSectionGate({
 }: ViewportSectionGateProps) {
   const reducedMotion = useReducedMotion();
   const placeholderRef = useRef<HTMLDivElement>(null);
-  const [isRevealed, setIsRevealed] = useState(false);
+  // Lazy init reads pre-render flag during initial hydration so initial
+  // render = children (matching pre-rendered DOM). Otherwise React 19
+  // hydration patches children→placeholder→children, causing a flash.
+  const [isRevealed, setIsRevealed] = useState<boolean>(
+    () =>
+      typeof window !== "undefined" &&
+      Boolean(window.__VEZ_HYDRATING_PRERENDER__),
+  );
 
   useEffect(() => {
     if (
@@ -55,7 +63,7 @@ export function ViewportSectionGate({
     return () => observer.disconnect();
   }, [reducedMotion, rootMargin]);
 
-  if (reducedMotion || isRevealed) {
+  if (reducedMotion) {
     return <>{children}</>;
   }
 
@@ -63,11 +71,10 @@ export function ViewportSectionGate({
     <div
       ref={placeholderRef}
       className={className}
-      style={{
-        minHeight,
-        contain: "layout style",
-      }}
-      aria-hidden="true"
-    />
+      style={isRevealed ? undefined : { minHeight, contain: "layout style" }}
+      aria-hidden={isRevealed ? undefined : true}
+    >
+      {isRevealed ? children : null}
+    </div>
   );
 }
