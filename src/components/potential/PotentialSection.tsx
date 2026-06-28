@@ -53,10 +53,7 @@ function PotentialSection() {
           />
         </SectionReveal>
 
-        <StaggerReveal
-          className={styles.bentoGrid}
-          rootMargin="450px 0px 150px 0px"
-        >
+        <StaggerReveal className={styles.bentoGrid} amount={0.15}>
           <StaggerItem className={styles.cardSmall}>
             <div className={styles.card}>
               <div className={styles.graphicArea}>
@@ -97,7 +94,10 @@ function PotentialSection() {
                   <div className={styles.mockupHeader}>
                     <div className={styles.searchBarPill}>
                       <div className={styles.statusCircle} />
-                      <span className={styles.blinkingCursor} />
+                      <span
+                        className={styles.blinkingCursor}
+                        aria-hidden="true"
+                      />
                     </div>
                     <div className={styles.sendPillButton}>
                       {t("potential.card2.button")}
