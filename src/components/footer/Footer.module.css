@@ -38,7 +38,7 @@
   transform: translate(-50%, -50%);
   object-fit: cover;
   z-index: 0;
-  filter: grayscale(100%) brightness(1.85) contrast(1.02);
+  filter: grayscale(1) brightness(2.15) contrast(0.7);
   backface-visibility: hidden;
 }
 
@@ -47,14 +47,14 @@
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: rgba(255, 251, 246, 0.76);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.58);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 @media (pointer: coarse) {
   .videoOverlay {
-    background: rgba(255, 251, 246, 0.62);
+    background: rgba(255, 255, 255, 0.48);
   }
 }
 
