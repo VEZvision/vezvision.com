@@ -3,7 +3,10 @@
  * Avoids N observers + N React setStates (the main source of home-page hitches).
  */
 
-const DEFAULT_ROOT_MARGIN = "80px 0px 40px 0px";
+// Negative bottom margin shrinks root box so element must actually be
+// ~10% inside viewport before reveal fires — prevents animations triggering
+// before the user scrolls to the section.
+const DEFAULT_ROOT_MARGIN = "0px 0px -10% 0px";
 
 type Entry = {
   once: boolean;
@@ -13,6 +16,31 @@ type Entry = {
 
 const tracked = new Map<Element, Entry>();
 const observers = new Map<string, IntersectionObserver>();
+
+const pendingReveals = new Set<HTMLElement>();
+const pendingCallbacks = new Map<HTMLElement, (() => void) | undefined>();
+let flushScheduled = false;
+
+function flushPendingReveals(): void {
+  flushScheduled = false;
+  for (const el of pendingReveals) {
+    reveal(el, pendingCallbacks.get(el));
+  }
+  pendingReveals.clear();
+  pendingCallbacks.clear();
+}
+
+function scheduleReveal(el: HTMLElement, onReveal?: () => void): void {
+  if (el.dataset.revealed === "true") return;
+  if (onReveal !== undefined) {
+    pendingCallbacks.set(el, onReveal);
+  }
+  pendingReveals.add(el);
+  if (!flushScheduled) {
+    flushScheduled = true;
+    requestAnimationFrame(flushPendingReveals);
+  }
+}
 
 function reveal(el: HTMLElement, onReveal?: () => void) {
   if (el.dataset.revealed === "true") return;
@@ -29,7 +57,7 @@ function handleIntersect(entries: IntersectionObserverEntry[]) {
     if (!entry.isIntersecting) continue;
     const el = entry.target as HTMLElement;
     const meta = tracked.get(el);
-    reveal(el, meta?.onReveal);
+    scheduleReveal(el, meta?.onReveal);
     if (meta?.once) {
       observers.get(meta.observerKey)?.unobserve(el);
       tracked.delete(el);
