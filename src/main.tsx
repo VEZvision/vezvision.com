@@ -80,6 +80,14 @@ function removePrerenderedHelmetTags(): void {
     .forEach((element) => element.remove());
 }
 
+// Reset reveal-state attributes from prerendered HTML so CSS rise-in animations re-fire on mount instead of staying "completed".
+function resetPrerenderedRevealState(): void {
+  document.querySelectorAll('[data-revealed="true"]').forEach((el) => {
+    el.removeAttribute("data-revealed");
+    el.setAttribute("data-reveal-pending", "true");
+  });
+}
+
 function seedBootSettingsCache(): void {
   const bootEl = document.getElementById("vez-boot-settings");
   if (!bootEl?.textContent) return;
@@ -116,6 +124,14 @@ async function bootstrap(root: HTMLElement): Promise<void> {
   const isPrerendered =
     document.documentElement.hasAttribute("data-vez-prerender");
 
+  // Must run BEFORE any await: resets DOM attributes + signals React hydration
+  // before browser paints, so no "opacity 1→0→1" flash on .vez-reveal elements
+  // and no hydration mismatch patch from ViewportSectionGate placeholder swap.
+  if (isPrerendered) {
+    resetPrerenderedRevealState();
+    window.__VEZ_HYDRATING_PRERENDER__ = true;
+  }
+
   const initialLanguage = detectInitialLanguage();
   prefetchLocale(initialLanguage);
 
@@ -132,6 +148,8 @@ async function bootstrap(root: HTMLElement): Promise<void> {
     scheduleIdleWork(() => {
       void initWebVitalsReporting();
       prefetchLocale(initialLanguage === "pl" ? "en" : "pl");
+      // Clear so client-side nav uses useState(false) initial (IO gating).
+      window.__VEZ_HYDRATING_PRERENDER__ = false;
     });
 
     scheduleIdleWork(() => {

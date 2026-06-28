@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-const DEFAULT_ROOT_MARGIN = "500px 0px";
+const DEFAULT_ROOT_MARGIN = "900px 0px";
 
 declare global {
   interface Window {
