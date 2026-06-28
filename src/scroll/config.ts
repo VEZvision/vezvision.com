@@ -30,8 +30,8 @@ export function getLenisOptions(): LenisOptions {
 
   return {
     autoRaf: true,
-    lerp: 0.1,
-    wheelMultiplier: 1,
+    lerp: 0.08,
+    wheelMultiplier: 0.85,
     touchMultiplier: 1,
     smoothWheel: true,
     syncTouch: false,

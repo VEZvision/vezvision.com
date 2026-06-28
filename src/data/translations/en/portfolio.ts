@@ -1,7 +1,7 @@
 export const portfolioTranslations = {
   "portfolio.hero.badge": "Projects and case studies",
-  "portfolio.hero.title.line1": "VEZvision",
-  "portfolio.hero.title.line2.italic": "Portfolio",
+  "portfolio.hero.title.line1": "Portfolio",
+  "portfolio.hero.title.line2.italic": "",
   "portfolio.hero.description":
     "This is where we will publish selected projects, demo work and case studies showing how technology, design and automation can support business growth.",
   "portfolio.hero.cta.aria": "Go to contact",

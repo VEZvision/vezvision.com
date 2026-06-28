@@ -4,14 +4,14 @@ VEZvision is a digital studio and software house creating websites, web applicat
 
 ## Main pages
 
-* [Polish home](https://vezvision.com/pl/)
-* [Polish about page](https://vezvision.com/pl/about/)
-* [Polish services page](https://vezvision.com/pl/services/)
-* [Polish contact page](https://vezvision.com/pl/contact/)
-* [English home](https://vezvision.com/en/)
-* [English about page](https://vezvision.com/en/about/)
-* [English services page](https://vezvision.com/en/services/)
-* [English contact page](https://vezvision.com/en/contact/)
+* https://vezvision.com/pl/
+* https://vezvision.com/pl/about/
+* https://vezvision.com/pl/services/
+* https://vezvision.com/pl/contact/
+* https://vezvision.com/en/
+* https://vezvision.com/en/about/
+* https://vezvision.com/en/services/
+* https://vezvision.com/en/contact/
 
 ## Services
 

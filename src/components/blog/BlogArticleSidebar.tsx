@@ -62,7 +62,7 @@ export default function BlogArticleSidebar({
                     <span className="box-border line-clamp-2 max-h-10 overflow-hidden text-sm font-medium leading-snug text-gray-900 transition-colors group-hover:text-blue-600">
                       {translation?.title || "Brak tytułu"}
                     </span>
-                    <span className="mt-1 text-xs text-gray-400">
+                    <span className="mt-1 text-xs text-gray-600">
                       {new Date(
                         post.published_at || post.created_at,
                       ).toLocaleDateString(

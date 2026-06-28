@@ -11,7 +11,6 @@ html.lenis body {
 
 html.vez-smooth-scroll {
   scroll-behavior: auto !important;
-  will-change: scroll-position;
 }
 
 .lenis,
@@ -31,10 +30,6 @@ html.vez-smooth-scroll {
 .vez-is-scrolling video,
 .vez-is-scrolling picture {
   pointer-events: none;
-}
-
-[data-lenis-events] section {
-  contain-intrinsic-size: auto 500px;
 }
 
 /* Disable content-visibility: auto on sections entirely. Toggling
