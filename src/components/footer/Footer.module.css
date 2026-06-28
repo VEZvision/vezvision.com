@@ -38,7 +38,7 @@
   transform: translate(-50%, -50%);
   object-fit: cover;
   z-index: 0;
-  filter: var(--vez-video-filter);
+  filter: invert(1);
   backface-visibility: hidden;
 }
 
@@ -47,7 +47,7 @@
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: var(--vez-video-overlay-footer);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 .footerContainer {

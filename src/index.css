@@ -55,22 +55,10 @@
   --vez-line-strong: rgba(16, 24, 40, 0.18);
   --vez-shadow-soft: rgba(16, 24, 40, 0.08);
 
-  /* Milky background video: warm high-key wash with visible motion */
-  --vez-video-filter: grayscale(100%) sepia(0.1) brightness(2.25) contrast(0.86);
-  --vez-video-overlay: rgba(255, 253, 248, 0.58);
-  --vez-video-overlay-footer: rgba(255, 253, 248, 0.66);
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-@media (pointer: coarse) {
-  :root {
-    --vez-video-overlay: rgba(255, 253, 248, 0.48);
-    --vez-video-overlay-footer: rgba(255, 253, 248, 0.54);
-  }
 }
 
 html {
