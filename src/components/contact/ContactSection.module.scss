@@ -3,7 +3,9 @@
   width: 100%;
   padding: 60px 0 80px;
   background: var(--vez-surface-raised);
-  box-shadow: inset 0 1px 0 var(--vez-line), inset 0 -1px 0 var(--vez-line);
+  box-shadow:
+    inset 0 1px 0 var(--vez-line),
+    inset 0 -1px 0 var(--vez-line);
   position: relative;
   overflow: hidden;
 
@@ -23,7 +25,6 @@
 .contact-section__header {
   text-align: center;
   margin-bottom: 40px;
-  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .contact-section__divider {
@@ -31,7 +32,12 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto 32px;
-  background: linear-gradient(to right, transparent, var(--vez-line), transparent);
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--vez-line),
+    transparent
+  );
 }
 
 .contact-section__icon-wrapper {
@@ -66,15 +72,19 @@
   margin-right: auto;
 }
 
-
 .contact-section__footer {
   text-align: center;
-  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.6s both;
 }
 
 .contact-section__footer-text {
   margin: 0;
-  font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-family:
+    "Satoshi",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Roboto",
+    sans-serif;
   font-size: 16px;
   font-weight: 500;
   color: var(--vez-text-subtle);
@@ -85,43 +95,6 @@
   border: none;
   display: inline-block;
   box-shadow: none;
-}
-
-/* Animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
 }
 
 /* Responsive Design */
@@ -230,7 +203,6 @@
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-
   .contact-section__header,
   .contact-section__card--1,
   .contact-section__card--2,

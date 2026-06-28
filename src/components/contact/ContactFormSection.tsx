@@ -6,6 +6,11 @@ import { toast } from "sonner";
 import { Mail, Loader2, Send } from "lucide-react";
 import styles from "./ContactFormSection.module.scss";
 import SectionHeader from "@/components/ui/SectionHeader";
+import {
+  SectionReveal,
+  StaggerReveal,
+  StaggerItem,
+} from "@/components/ui/SectionReveal";
 import { useSettings } from "@/hooks/useSettings";
 import { useLanguageContext } from "@/hooks/useLanguage";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
@@ -107,7 +112,7 @@ function ContactFormSection({ t }: Props) {
       id="contact-form-section"
       className={styles.sectionContactContainer}
     >
-      <div>
+      <SectionReveal amount={0.25}>
         <SectionHeader
           badgeText={t("contact.form.badge")}
           badgeIcon={<Mail className="w-3.5 h-3.5" />}
@@ -122,215 +127,219 @@ function ContactFormSection({ t }: Props) {
           subtitle={t("contact.form.subtitle")}
           className="mb-16"
         />
-      </div>
+      </SectionReveal>
 
-      <div className={styles.section}>
-        <ContactInfoCards
-          t={t}
-          contact={{
-            email: contact?.email ?? "",
-            phone: contact?.phone ?? null,
-            address: contact?.address ?? null,
-          }}
-          loading={settingsLoading}
-          hasContact={hasContact}
-        />
+      <StaggerReveal className={styles.section} amount={0.2}>
+        <StaggerItem>
+          <ContactInfoCards
+            t={t}
+            contact={{
+              email: contact?.email ?? "",
+              phone: contact?.phone ?? null,
+              address: contact?.address ?? null,
+            }}
+            loading={settingsLoading}
+            hasContact={hasContact}
+          />
+        </StaggerItem>
 
-        <form
-          className={styles.formContainer}
-          onSubmit={handleSubmit(onSubmit)}
-          noValidate
-        >
-          <div className={styles.formField}>
-            <label className={styles.fieldLabel} htmlFor="contact-fullName">
-              {t("contact.form.label.fullName")}
-            </label>
-            <input
-              id="contact-fullName"
-              type="text"
-              {...register("fullName")}
-              className={fieldClass("fullName")}
-              placeholder={t("contact.form.placeholder.fullName")}
-              aria-invalid={Boolean(errors.fullName)}
-              aria-describedby={
-                errors.fullName ? "contact-fullName-error" : undefined
-              }
-            />
-            {errors.fullName && (
-              <span
-                id="contact-fullName-error"
-                className={styles.errorMessage}
-                role="alert"
-              >
-                {errors.fullName.message ? t(errors.fullName.message) : ""}
-              </span>
-            )}
-          </div>
-
-          <div className={styles.formField}>
-            <label className={styles.fieldLabel} htmlFor="contact-email">
-              {t("contact.form.label.email")}
-            </label>
-            <input
-              id="contact-email"
-              type="email"
-              {...register("email")}
-              className={fieldClass("email")}
-              placeholder={t("contact.form.placeholder.email")}
-              aria-invalid={Boolean(errors.email)}
-              aria-describedby={
-                errors.email ? "contact-email-error" : undefined
-              }
-            />
-            {errors.email && (
-              <span
-                id="contact-email-error"
-                className={styles.errorMessage}
-                role="alert"
-              >
-                {errors.email.message ? t(errors.email.message) : ""}
-              </span>
-            )}
-          </div>
-
-          <div className={styles.formField}>
-            <label className={styles.fieldLabel} htmlFor="contact-phone">
-              {t("contact.form.label.phoneOptional")}
-            </label>
-            <input
-              id="contact-phone"
-              type="tel"
-              {...register("phone")}
-              className={`${styles.fieldInput} ${errors.phone ? styles.error : ""}`}
-              placeholder={contact?.phone || ""}
-              aria-invalid={Boolean(errors.phone)}
-              aria-describedby={
-                errors.phone ? "contact-phone-error" : undefined
-              }
-            />
-            {errors.phone && (
-              <span
-                id="contact-phone-error"
-                className={styles.errorMessage}
-                role="alert"
-              >
-                {errors.phone.message ? t(errors.phone.message) : ""}
-              </span>
-            )}
-          </div>
-
-          <div className={styles.formField}>
-            <label className={styles.fieldLabel} htmlFor="contact-subject">
-              {t("contact.form.label.subject")}
-            </label>
-            <input
-              id="contact-subject"
-              type="text"
-              {...register("subject")}
-              className={fieldClass("subject")}
-              placeholder={t("contact.form.placeholder.subject")}
-              aria-invalid={Boolean(errors.subject)}
-              aria-describedby={
-                errors.subject ? "contact-subject-error" : undefined
-              }
-            />
-            {errors.subject && (
-              <span
-                id="contact-subject-error"
-                className={styles.errorMessage}
-                role="alert"
-              >
-                {errors.subject.message ? t(errors.subject.message) : ""}
-              </span>
-            )}
-          </div>
-
-          <div className={styles.formField}>
-            <label className={styles.fieldLabel} htmlFor="contact-message">
-              {t("contact.form.label.message")}
-            </label>
-            <textarea
-              id="contact-message"
-              {...register("message")}
-              className={`${styles.fieldTextarea} ${errors.message ? styles.error : ""}`}
-              placeholder={t("contact.form.placeholder.message")}
-              rows={4}
-              aria-invalid={Boolean(errors.message)}
-              aria-describedby={
-                errors.message ? "contact-message-error" : undefined
-              }
-            />
-            {errors.message && (
-              <span
-                id="contact-message-error"
-                className={styles.errorMessage}
-                role="alert"
-              >
-                {errors.message.message ? t(errors.message.message) : ""}
-              </span>
-            )}
-          </div>
-
-          <div className={`${styles.formField} !mb-6`}>
-            <label className="flex items-start gap-3 cursor-pointer group">
+        <StaggerItem>
+          <form
+            className={styles.formContainer}
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+          >
+            <div className={styles.formField}>
+              <label className={styles.fieldLabel} htmlFor="contact-fullName">
+                {t("contact.form.label.fullName")}
+              </label>
               <input
-                id="contact-consent"
-                type="checkbox"
-                {...register("consent")}
-                className="mt-1 w-4 h-4 text-black border-gray-300 rounded focus:ring-black cursor-pointer"
-                aria-invalid={Boolean(errors.consent)}
+                id="contact-fullName"
+                type="text"
+                {...register("fullName")}
+                className={fieldClass("fullName")}
+                placeholder={t("contact.form.placeholder.fullName")}
+                aria-invalid={Boolean(errors.fullName)}
                 aria-describedby={
-                  errors.consent ? "contact-consent-error" : undefined
+                  errors.fullName ? "contact-fullName-error" : undefined
                 }
               />
-              <span className="text-sm text-gray-500 group-hover:text-gray-700 transition-colors">
-                {t("contact.form.consent")}{" "}
-                <Link
-                  to={toLocalizedPath("privacy-policy")}
-                  className="underline hover:text-black"
+              {errors.fullName && (
+                <span
+                  id="contact-fullName-error"
+                  className={styles.errorMessage}
+                  role="alert"
                 >
-                  {t("footer.legal.privacy")}
-                </Link>
-                .
-              </span>
-            </label>
-            {errors.consent && (
-              <span
-                id="contact-consent-error"
-                className={styles.errorMessage}
-                role="alert"
-              >
-                {errors.consent.message ? t(errors.consent.message) : ""}
-              </span>
-            )}
-          </div>
+                  {errors.fullName.message ? t(errors.fullName.message) : ""}
+                </span>
+              )}
+            </div>
 
-          <TurnstileField
-            onTokenChange={handleTurnstileToken}
-            resetKey={turnstileResetKey}
-            className="mb-4"
-            loadErrorMessage={t("contact.form.error.captcha")}
-          />
+            <div className={styles.formField}>
+              <label className={styles.fieldLabel} htmlFor="contact-email">
+                {t("contact.form.label.email")}
+              </label>
+              <input
+                id="contact-email"
+                type="email"
+                {...register("email")}
+                className={fieldClass("email")}
+                placeholder={t("contact.form.placeholder.email")}
+                aria-invalid={Boolean(errors.email)}
+                aria-describedby={
+                  errors.email ? "contact-email-error" : undefined
+                }
+              />
+              {errors.email && (
+                <span
+                  id="contact-email-error"
+                  className={styles.errorMessage}
+                  role="alert"
+                >
+                  {errors.email.message ? t(errors.email.message) : ""}
+                </span>
+              )}
+            </div>
 
-          <button
-            type="submit"
-            className={`${styles.submitButton} ${isSubmitting ? styles.submitting : ""}`}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <span className="flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" strokeWidth={3} />
-                <span>{t("common.saving") || "Wysyłanie..."}</span>
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                <Send className="w-4 h-4" strokeWidth={2.5} />
-                <span>{t("contact.form.submit")}</span>
-              </span>
-            )}
-          </button>
-        </form>
-      </div>
+            <div className={styles.formField}>
+              <label className={styles.fieldLabel} htmlFor="contact-phone">
+                {t("contact.form.label.phoneOptional")}
+              </label>
+              <input
+                id="contact-phone"
+                type="tel"
+                {...register("phone")}
+                className={`${styles.fieldInput} ${errors.phone ? styles.error : ""}`}
+                placeholder={contact?.phone || ""}
+                aria-invalid={Boolean(errors.phone)}
+                aria-describedby={
+                  errors.phone ? "contact-phone-error" : undefined
+                }
+              />
+              {errors.phone && (
+                <span
+                  id="contact-phone-error"
+                  className={styles.errorMessage}
+                  role="alert"
+                >
+                  {errors.phone.message ? t(errors.phone.message) : ""}
+                </span>
+              )}
+            </div>
+
+            <div className={styles.formField}>
+              <label className={styles.fieldLabel} htmlFor="contact-subject">
+                {t("contact.form.label.subject")}
+              </label>
+              <input
+                id="contact-subject"
+                type="text"
+                {...register("subject")}
+                className={fieldClass("subject")}
+                placeholder={t("contact.form.placeholder.subject")}
+                aria-invalid={Boolean(errors.subject)}
+                aria-describedby={
+                  errors.subject ? "contact-subject-error" : undefined
+                }
+              />
+              {errors.subject && (
+                <span
+                  id="contact-subject-error"
+                  className={styles.errorMessage}
+                  role="alert"
+                >
+                  {errors.subject.message ? t(errors.subject.message) : ""}
+                </span>
+              )}
+            </div>
+
+            <div className={styles.formField}>
+              <label className={styles.fieldLabel} htmlFor="contact-message">
+                {t("contact.form.label.message")}
+              </label>
+              <textarea
+                id="contact-message"
+                {...register("message")}
+                className={`${styles.fieldTextarea} ${errors.message ? styles.error : ""}`}
+                placeholder={t("contact.form.placeholder.message")}
+                rows={4}
+                aria-invalid={Boolean(errors.message)}
+                aria-describedby={
+                  errors.message ? "contact-message-error" : undefined
+                }
+              />
+              {errors.message && (
+                <span
+                  id="contact-message-error"
+                  className={styles.errorMessage}
+                  role="alert"
+                >
+                  {errors.message.message ? t(errors.message.message) : ""}
+                </span>
+              )}
+            </div>
+
+            <div className={`${styles.formField} !mb-6`}>
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <input
+                  id="contact-consent"
+                  type="checkbox"
+                  {...register("consent")}
+                  className="mt-1 w-4 h-4 text-black border-gray-300 rounded focus:ring-black cursor-pointer"
+                  aria-invalid={Boolean(errors.consent)}
+                  aria-describedby={
+                    errors.consent ? "contact-consent-error" : undefined
+                  }
+                />
+                <span className="text-sm text-gray-500 group-hover:text-gray-700 transition-colors">
+                  {t("contact.form.consent")}{" "}
+                  <Link
+                    to={toLocalizedPath("privacy-policy")}
+                    className="underline hover:text-black"
+                  >
+                    {t("footer.legal.privacy")}
+                  </Link>
+                  .
+                </span>
+              </label>
+              {errors.consent && (
+                <span
+                  id="contact-consent-error"
+                  className={styles.errorMessage}
+                  role="alert"
+                >
+                  {errors.consent.message ? t(errors.consent.message) : ""}
+                </span>
+              )}
+            </div>
+
+            <TurnstileField
+              onTokenChange={handleTurnstileToken}
+              resetKey={turnstileResetKey}
+              className="mb-4"
+              loadErrorMessage={t("contact.form.error.captcha")}
+            />
+
+            <button
+              type="submit"
+              className={`${styles.submitButton} ${isSubmitting ? styles.submitting : ""}`}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" strokeWidth={3} />
+                  <span>{t("common.saving") || "Wysyłanie..."}</span>
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <Send className="w-4 h-4" strokeWidth={2.5} />
+                  <span>{t("contact.form.submit")}</span>
+                </span>
+              )}
+            </button>
+          </form>
+        </StaggerItem>
+      </StaggerReveal>
     </section>
   );
 }

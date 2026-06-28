@@ -9,28 +9,31 @@
   padding: 80px 20px;
 
   .headingReachUs {
-    font-family: 'Satoshi', sans-serif;
+    font-family: "Satoshi", sans-serif;
     font-size: clamp(32px, 5vw, 48px);
     font-weight: 600;
     line-height: 1.2;
     letter-spacing: -0.02em;
-    background: linear-gradient(135deg, var(--vez-ink) 0%, var(--vez-ink-soft) 50%, var(--vez-text-subtle) 100%);
+    background: linear-gradient(
+      135deg,
+      var(--vez-ink) 0%,
+      var(--vez-ink-soft) 50%,
+      var(--vez-text-subtle) 100%
+    );
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
     -webkit-text-fill-color: transparent;
     margin: 0 0 16px 0;
-    animation: fadeInUp 0.8s ease-out 0.2s both;
   }
 
   .paragraphDescription {
-    font-family: 'Satoshi', sans-serif;
+    font-family: "Satoshi", sans-serif;
     font-size: 16px;
     line-height: 1.6;
     color: var(--vez-text-muted);
     max-width: 500px;
     margin: 0;
-    animation: fadeInUp 0.8s ease-out 0.4s both;
   }
 }
 
@@ -71,7 +74,7 @@
       text-decoration: none;
       font: inherit;
       text-align: left;
-  transition: border-color 0.2s ease;
+      transition: border-color 0.2s ease;
       position: relative;
       overflow: hidden;
 
@@ -115,7 +118,7 @@
           position: relative;
 
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             top: 50%;
             left: 50%;
@@ -142,7 +145,7 @@
       }
 
       .contactText {
-        font-family: 'Satoshi', sans-serif;
+        font-family: "Satoshi", sans-serif;
         font-size: 15px;
         line-height: 1.5;
         color: #475569;
@@ -151,7 +154,7 @@
 
       .link {
         .contactInfo {
-          font-family: 'Satoshi', sans-serif;
+          font-family: "Satoshi", sans-serif;
           font-size: 15px;
           font-weight: 500;
           color: #0f172a;
@@ -181,123 +184,118 @@
     0px 30px 30px -4px rgba(0, 0, 0, 0.02);
 
   .formField {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 
-      .fieldLabel {
-        font-family: 'Satoshi', sans-serif;
-        font-size: 11px;
-        font-weight: 600;
-        color: var(--vez-text-subtle);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-
-      .fieldInput,
-      .fieldTextarea {
-        padding: 14px 16px;
-        border: none;
-        border-radius: 12px;
-        background: var(--vez-surface-soft);
-        font-family: 'Satoshi', sans-serif;
-        font-size: 14px;
-        color: var(--vez-text);
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-        box-shadow:
-          inset 0px 2px 1px 0px rgba(255, 255, 255, 0.8),
-          0px 1px 2px rgba(0, 0, 0, 0.06),
-          0px 2px 4px rgba(0, 0, 0, 0.04);
-
-        &::placeholder {
-          color: var(--vez-text-subtle);
-        }
-
-        &:focus {
-          outline: none;
-          box-shadow:
-            inset 0px 2px 1px 0px rgba(255, 255, 255, 0.8),
-            0px 0px 0px 3px var(--vez-line-strong),
-            0px 2px 4px rgba(0, 0, 0, 0.04);
-        }
-
-        &.error {
-          box-shadow:
-            inset 0px 2px 1px 0px rgba(255, 255, 255, 0.8),
-            0px 0px 0px 2px rgba(239, 68, 68, 0.3),
-            0px 2px 4px rgba(0, 0, 0, 0.04);
-        }
-      }
-
-      .fieldTextarea {
-        resize: none;
-        min-height: 120px;
-      }
-
-      .errorMessage {
-        font-family: 'Satoshi', sans-serif;
-        font-size: 11px;
-        font-weight: 500;
-        color: #ef4444;
-        margin-top: 2px;
-      }
+    .fieldLabel {
+      font-family: "Satoshi", sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--vez-text-subtle);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    .submitButton {
-      margin-top: 8px;
-      height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .fieldInput,
+    .fieldTextarea {
+      padding: 14px 16px;
       border: none;
       border-radius: 12px;
-      background: var(--vez-ink);
-      color: var(--vez-surface-raised);
-      font-family: 'Satoshi', sans-serif;
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+      background: var(--vez-surface-soft);
+      font-family: "Satoshi", sans-serif;
+      font-size: 14px;
+      color: var(--vez-text);
+      transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+      box-shadow:
+        inset 0px 2px 1px 0px rgba(255, 255, 255, 0.8),
+        0px 1px 2px rgba(0, 0, 0, 0.06),
+        0px 2px 4px rgba(0, 0, 0, 0.04);
 
-      span {
-        position: relative;
-        z-index: 1;
+      &::placeholder {
+        color: var(--vez-text-subtle);
       }
 
-      &:hover:not(:disabled) {
-        background: var(--vez-ink-soft);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      &:focus {
+        outline: none;
+        box-shadow:
+          inset 0px 2px 1px 0px rgba(255, 255, 255, 0.8),
+          0px 0px 0px 3px var(--vez-line-strong),
+          0px 2px 4px rgba(0, 0, 0, 0.04);
       }
 
-      &:active:not(:disabled) {
-        transform: translateY(0);
-      }
-
-      &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        background: var(--vez-text-subtle);
-      }
-
-      &.submitting {
-        pointer-events: none;
+      &.error {
+        box-shadow:
+          inset 0px 2px 1px 0px rgba(255, 255, 255, 0.8),
+          0px 0px 0px 2px rgba(239, 68, 68, 0.3),
+          0px 2px 4px rgba(0, 0, 0, 0.04);
       }
     }
-}
 
+    .fieldTextarea {
+      resize: none;
+      min-height: 120px;
+    }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
+    .errorMessage {
+      font-family: "Satoshi", sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      color: #ef4444;
+      margin-top: 2px;
+    }
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  .submitButton {
+    margin-top: 8px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 12px;
+    background: var(--vez-ink);
+    color: var(--vez-surface-raised);
+    font-family: "Satoshi", sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+
+    span {
+      position: relative;
+      z-index: 1;
+    }
+
+    &:hover:not(:disabled) {
+      background: var(--vez-ink-soft);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: var(--vez-text-subtle);
+    }
+
+    &.submitting {
+      pointer-events: none;
+    }
   }
 }
 
@@ -320,29 +318,5 @@
   .formContainer .submitButton:hover:not(:disabled),
   .formContainer .submitButton:active:not(:disabled) {
     transform: none;
-  }
-}
-
-@keyframes fadeInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
   }
 }
