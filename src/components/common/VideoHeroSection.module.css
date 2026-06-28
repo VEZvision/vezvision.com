@@ -7,7 +7,7 @@
   object-fit: cover;
   z-index: 0;
   transform: translate3d(-50%, -50%, 0) scale(1.06);
-  filter: saturate(1.05) brightness(1.04);
+  filter: grayscale(0.3) brightness(1.1) contrast(0.98);
   backface-visibility: hidden;
 }
 
@@ -18,10 +18,10 @@
   pointer-events: none;
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.42) 0%,
-    rgba(255, 255, 255, 0.58) 55%,
-    rgba(255, 255, 255, 0.5) 100%
+    rgba(255, 255, 255, 0.46) 0%,
+    rgba(255, 255, 255, 0.62) 55%,
+    rgba(255, 255, 255, 0.54) 100%
   );
-  backdrop-filter: blur(14px) saturate(125%);
-  -webkit-backdrop-filter: blur(14px) saturate(125%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
