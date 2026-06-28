@@ -88,14 +88,6 @@ const Hero = memo(() => {
     <section ref={sectionRef} className={styles.sectionHero}>
       <Helmet>
         <link rel="preload" as="image" href={logoNavbar} fetchPriority="high" />
-        {showVideo && (
-          <link
-            rel="preload"
-            as="video"
-            href={HERO_VIDEO_SRC}
-            type="video/mp4"
-          />
-        )}
       </Helmet>
       {showVideo && (
         <video
@@ -107,7 +99,7 @@ const Hero = memo(() => {
           loop
           playsInline
           autoPlay
-          preload="auto"
+          preload="metadata"
           aria-hidden="true"
           tabIndex={-1}
           disableRemotePlayback

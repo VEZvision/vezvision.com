@@ -141,7 +141,7 @@ export default function Footer() {
                 muted
                 loop
                 playsInline
-                preload={isHome ? "none" : "auto"}
+                preload={isHome ? "none" : "metadata"}
                 aria-hidden="true"
                 tabIndex={-1}
                 data-lenis-prevent

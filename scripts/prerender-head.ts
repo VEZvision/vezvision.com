@@ -178,7 +178,7 @@ function injectHeroVideoPreload(headHtml: string, routePath: string): string {
   }
 
   const tags = [
-    `<link rel="preload" href="/hero-bg.mp4" as="video" type="video/mp4">`,
+    `<link rel="preload" href="/hero-bg.mp4" as="fetch" type="video/mp4" crossorigin>`,
   ].join("\n    ");
 
   return headHtml.replace("</head>", `${tags}\n</head>`);
@@ -201,7 +201,7 @@ function sanitizePrerenderVideo(
   }
 
   if (kind === "hero") {
-    return `${tag} autoplay preload="auto"${rest}`;
+    return `${tag} autoplay preload="metadata"${rest}`;
   }
 
   return `${tag} preload="none"${rest}`;
@@ -255,6 +255,22 @@ async function prerenderRoute({
         () => window.localStorage.getItem("vez-public-settings-v1") !== null,
         undefined,
         { timeout: SEO_READY_TIMEOUT },
+      )
+      .catch(() => undefined);
+
+    // Subsequent routes inherit localStorage settings from the previous route,
+    // so the settings predicate returns immediately and the body is captured
+    // before React.lazy chunks resolve. Wait for network idle + real content.
+    await page
+      .waitForLoadState("networkidle", { timeout: SEO_READY_TIMEOUT })
+      .catch(() => undefined);
+    await page
+      .waitForFunction(
+        () =>
+          (document.body.innerText || "").replace(/\s+/g, " ").trim().length >
+          600,
+        undefined,
+        { timeout: 8_000 },
       )
       .catch(() => undefined);
   } catch (error) {
