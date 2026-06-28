@@ -159,7 +159,7 @@ const Hero = memo(() => {
             </Link>
             <Link
               to={secondaryHref}
-              className="inline-flex items-center justify-center rounded-lg bg-[#f5f5f5] text-black font-medium text-[14px] px-6 py-[11px] shadow-[inset_0px_3px_1px_0px_#ffffff,0px_1px_1px_-1px_rgba(0,0,0,0.1)] transition-transform hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center rounded-lg bg-[#f5f5f5] text-black font-medium text-[14px] px-6 py-[11px] transition-transform hover:-translate-y-0.5"
             >
               {t("hero.cta.services")}
             </Link>
