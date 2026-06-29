@@ -132,14 +132,14 @@ const MoreBenefits: React.FC = () => {
               key={copyIndex}
               ref={copyIndex === 0 ? setRef : undefined}
               className={styles.marqueeSet}
-              aria-hidden={copyIndex > 0 ? true : undefined}
+              aria-hidden="true"
             >
               {benefits.map((benefit, index) => (
                 <BenefitItem
                   key={`${copyIndex}-${index}`}
                   icon={benefit.icon}
                   text={benefit.text}
-                  ariaHidden={copyIndex > 0}
+                  ariaHidden={true}
                 />
               ))}
             </div>
