@@ -90,7 +90,11 @@ function PotentialSection() {
           <StaggerItem className={styles.cardLarge}>
             <div className={styles.card}>
               <div className={styles.graphicArea}>
-                <div className={styles.interactionMockup}>
+                <div
+                  className={styles.interactionMockup}
+                  aria-hidden="true"
+                  role="presentation"
+                >
                   <div className={styles.mockupHeader}>
                     <div className={styles.searchBarPill}>
                       <div className={styles.statusCircle} />
@@ -128,7 +132,11 @@ function PotentialSection() {
           <StaggerItem className={styles.cardLarge}>
             <div className={styles.card}>
               <div className={styles.graphicArea}>
-                <div className={styles.pillLayout}>
+                <div
+                  className={styles.pillLayout}
+                  aria-hidden="true"
+                  role="presentation"
+                >
                   <div className={styles.floatingTagPill}>
                     <span>{t("potential.card3.tag1")}</span>
                     <div className={styles.smallAvatar}>
