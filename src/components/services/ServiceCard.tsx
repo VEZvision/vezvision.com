@@ -88,7 +88,7 @@ function ServiceCard({
 
       <div className={styles.content}>
         <h3 className={styles.title}>{title}</h3>
-        <p className={styles.desc}>{description}</p>
+        {description.trim() && <p className={styles.desc}>{description}</p>}
       </div>
     </article>
   );
