@@ -98,7 +98,11 @@ const PortfolioFeatures = () => {
           <StaggerReveal className={styles.topRow}>
             {/* Card 1: Checklist */}
             <StaggerItem className={styles.card}>
-              <div className={styles.visualArea} aria-hidden="true">
+              <div
+                className={styles.visualArea}
+                aria-hidden="true"
+                role="presentation"
+              >
                 <div className={styles.checklistContainer}>
                   {[
                     {
@@ -153,7 +157,11 @@ const PortfolioFeatures = () => {
 
             {/* Card 2: Floating Icons */}
             <StaggerItem className={styles.card}>
-              <div className={styles.visualArea} aria-hidden="true">
+              <div
+                className={styles.visualArea}
+                aria-hidden="true"
+                role="presentation"
+              >
                 <div className={styles.iconsContainer}>
                   <div className={styles.centerStar}>
                     <img
@@ -203,7 +211,11 @@ const PortfolioFeatures = () => {
           <StaggerReveal className={styles.bottomRow}>
             {/* Card 3: AI Search */}
             <StaggerItem className={styles.card}>
-              <div className={styles.visualArea} aria-hidden="true">
+              <div
+                className={styles.visualArea}
+                aria-hidden="true"
+                role="presentation"
+              >
                 <div className={styles.searchContainer}>
                   <div className={styles.searchBar}>
                     <Search size={16} style={{ color: "#98a2b3" }} />
@@ -249,7 +261,11 @@ const PortfolioFeatures = () => {
 
             {/* Card 4: Code Editor */}
             <StaggerItem className={styles.card}>
-              <div className={styles.visualArea} aria-hidden="true">
+              <div
+                className={styles.visualArea}
+                aria-hidden="true"
+                role="presentation"
+              >
                 <div className={styles.codeContainer}>
                   <div className={styles.codeHeader}>
                     <div className={styles.codeDots}>
@@ -312,7 +328,11 @@ const PortfolioFeatures = () => {
 
             {/* Card 5: Integrations - IMPROVED */}
             <StaggerItem className={styles.card}>
-              <div className={styles.visualArea} aria-hidden="true">
+              <div
+                className={styles.visualArea}
+                aria-hidden="true"
+                role="presentation"
+              >
                 <div className={styles.integrationsGrid}>
                   {/* Row 1 */}
                   <div className={styles.integrationIcon}>
