@@ -133,6 +133,7 @@ const MoreBenefits: React.FC = () => {
               ref={copyIndex === 0 ? setRef : undefined}
               className={styles.marqueeSet}
               aria-hidden="true"
+              role="presentation"
             >
               {benefits.map((benefit, index) => (
                 <BenefitItem

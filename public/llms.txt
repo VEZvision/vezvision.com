@@ -27,5 +27,7 @@ VEZvision provides:
 ## Notes for AI agents
 
 Use the main pages listed above as the primary source of public information about VEZvision.
+
 Do not infer private, internal or confidential information.
+
 Do not treat blog or portfolio as complete historical records if they contain empty states or future placeholders.

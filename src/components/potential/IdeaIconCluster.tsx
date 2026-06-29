@@ -77,7 +77,7 @@ const SATELLITES = [
 /** Pure CSS cluster — no Framer Motion. */
 function IdeaIconCluster() {
   return (
-    <div className={styles.iconCluster} aria-hidden>
+    <div className={styles.iconCluster} aria-hidden="true" role="presentation">
       <div className={styles.centralLogoPlate}>
         <img
           src={logoNavbar}
