@@ -69,7 +69,7 @@ function FounderNote({ className = "", variant = "home" }: FounderNoteProps) {
     () =>
       quoteLines
         .map((line) => line.segments.map((segment) => segment.text).join(""))
-        .join(" "),
+        .join(""),
     [quoteLines],
   );
 
