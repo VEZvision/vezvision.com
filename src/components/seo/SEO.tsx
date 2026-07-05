@@ -116,7 +116,7 @@ const SEO = () => {
         <meta property="og:image:height" content="630" />
       ) : null}
       {showFallback && ogImage ? (
-        <meta property="og:image:alt" content={seo?.siteTitle || "VezVision"} />
+        <meta property="og:image:alt" content={seo?.siteTitle || "VEZvision"} />
       ) : null}
       <meta property="og:locale" content={ogLocale} />
       <meta property="og:locale:alternate" content={ogLocaleAlternate} />
@@ -140,13 +140,13 @@ const SEO = () => {
           <link
             rel="alternate"
             type="application/rss+xml"
-            title="VezVision Blog (PL)"
+            title="VEZvision Blog (PL)"
             href={joinUrlPath(siteUrl, "/pl/blog/feed.xml")}
           />
           <link
             rel="alternate"
             type="application/rss+xml"
-            title="VezVision Blog (EN)"
+            title="VEZvision Blog (EN)"
             href={joinUrlPath(siteUrl, "/en/blog/feed.xml")}
           />
         </>

@@ -148,10 +148,10 @@ function buildLlmsFull(
 ): string {
   const lines: string[] = [];
 
-  lines.push(`# VezVision — Full Content for AI Systems`);
+  lines.push(`# VEZvision — Full Content for AI Systems`);
   lines.push("");
   lines.push(
-    `> VezVision is a Polish technology company that builds modern websites, web applications, and AI/automation solutions for businesses. This file contains the full content of our most important pages for AI corpus ingestion.`,
+    `> VEZvision is a Polish technology company that builds modern websites, web applications, and AI/automation solutions for businesses. This file contains the full content of our most important pages for AI corpus ingestion.`,
   );
   lines.push("");
 

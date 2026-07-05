@@ -60,7 +60,7 @@
 ## 🚫 JUNIORSKIE ROZWIĄZANIA / CODE SMELLS
 
 - [x] 36. **`(e.currentTarget as HTMLImageElement).src = logo` w `BlogArticle.tsx:273`** — cast niepotrzebny. Typować callback: `onError={(e: React.SyntheticEvent<HTMLImageElement>) => { e.currentTarget.src = logo; }}`.
-- [x] 37. **`"VezVision Team"` hardcoded jako author** — `BlogArticle.tsx:253`. Użyć `post.author?.name ?? seo?.siteTitle ?? "VezVision"` (po dodaniu author relacji w service layer — `vv_blog_posts.author_id` FK do `auth.users`).
+- [x] 37. **`"VEZvision Team"` hardcoded jako author** — `BlogArticle.tsx:253`. Użyć `post.author?.name ?? seo?.siteTitle ?? "VEZvision"` (po dodaniu author relacji w service layer — `vv_blog_posts.author_id` FK do `auth.users`).
 - [x] 38. **`{ name: language === "pl" ? "Blog" : "Blog", path: "blog" }` — bezsensowne i18n** — `BlogArticle.tsx:89, 178`. Ternary zwraca to samo dla obu języków. Usunąć ternary, zostawić `{ name: "Blog", path: "blog" }`.
 - [x] 39. **`LocalizedTitle/Excerpt` w RSS — `'Untitled'` hardcoded angielski** — `scripts/generate-rss-feeds.ts:33-44`. `language === 'pl' ? 'Bez tytułu' : 'Untitled'`.
 - [x] 40. **`submit-contact` — `fromEmail` default `onboarding@resend.dev`** — linia 436. Testowy adres Resend → maile spam/blocked. Fail-closed: `if (!resendApiKey || !fromEmail) { console.warn(...); /* skip emails, still insert to DB */ }`. Nie defaultować do testowego.
@@ -82,7 +82,7 @@
 - [x] 53. **`index.html` — brak verification meta** — `<meta name="google-site-verification">` (GSC), `<meta name="yandex-verification">` (Yandex), Bing Webmaster. Przez CMS `code_injection.head` (CodeInjector dopuszcza `<meta name>`) lub hardcoded.
 - [x] 54. **Brak `hreflang` w statycznym `index.html` (prerendering required)** — powiązane z pkt 6 i 45. Bez prerenderingu AI crawlers nie widzą hreflang → nie wiedzą o EN/PL wersjach. — **Prerendering wdrożony (pkt 6) — hreflang teraz w statycznym HTML wszystkich routes.**
 - [x] 55. **`theme-color` hardcoded `#ffffff`** — `index.html:8`. Nie adaptuje do dark mode. Dwa `<meta>`: `media="(prefers-color-scheme: light)" content="#ffffff"` + `media="(prefers-color-scheme: dark)" content="#0a0a0a"`. Plus dwa manifesty lub default w `manifest.webmanifest`.
-- [x] 56. **Brak `<link rel="me"` dla Mastodon / Fediverse verification** — jeśli VezVision na Mastodon/Bluesky/Nostr — `<link rel="me" href="https://mastodon.social/@vezvision">` weryfikuje profil. AI social search używa Fediverse. Dodać do `index.html` lub CMS head injection.
+- [x] 56. **Brak `<link rel="me"` dla Mastodon / Fediverse verification** — jeśli VEZvision na Mastodon/Bluesky/Nostr — `<link rel="me" href="https://mastodon.social/@vezvision">` weryfikuje profil. AI social search używa Fediverse. Dodać do `index.html` lub CMS head injection.
 
 ## 🧪 TEST COVERAGE / JAKOŚĆ
 

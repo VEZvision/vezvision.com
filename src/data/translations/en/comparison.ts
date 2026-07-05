@@ -9,7 +9,7 @@ export const comparisonTranslations = {
   "about.differences.subtitle": "Speed, quality, and real support.",
   "comparison.subtitle":
     "See how a clear process, reliable delivery, and post-launch support change cooperation.",
-  "comparison.left.title": "VezVision",
+  "comparison.left.title": "VEZvision",
   "comparison.left.b1": "Individual approach to every brand",
   "comparison.left.b2": "Comprehensive service",
   "comparison.left.b3": "Modern design and intuitive solutions",

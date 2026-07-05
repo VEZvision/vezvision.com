@@ -22,7 +22,7 @@ export const footerTranslations = {
     "Nie udało się zapisać adresu. Spróbuj ponownie później.",
   "newsletter.error.unexpected":
     "Coś poszło nie tak. Spróbuj ponownie później.",
-  "newsletter.page.title": "Newsletter VezVision",
+  "newsletter.page.title": "Newsletter VEZvision",
   "newsletter.page.eyebrow": "Wiedza bez spamu",
   "newsletter.page.description":
     "Zapisz się, jeśli chcesz dostawać konkretne materiały o stronach, aplikacjach, AI i pracy z technologią.",
@@ -85,7 +85,7 @@ export const footerTranslations = {
   "routeError.unknown": "Wystąpił nieznany błąd.",
   "routeError.home": "Strona główna",
   "routeError.retry": "Spróbuj ponownie",
-  "notfound.logoAlt": "Logo VezVision",
+  "notfound.logoAlt": "Logo VEZvision",
   "notfound.title": "Strona nie została znaleziona",
   "notfound.description":
     "Przepraszamy, ale strona której szukasz nie istnieje lub została przeniesiona.",

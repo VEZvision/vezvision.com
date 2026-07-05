@@ -20,7 +20,7 @@ export const footerTranslations = {
   "newsletter.error.invalid": "Please enter a valid email address",
   "newsletter.error.general": "We could not save this email. Try again later.",
   "newsletter.error.unexpected": "Something went wrong. Try again later.",
-  "newsletter.page.title": "VezVision Newsletter",
+  "newsletter.page.title": "VEZvision Newsletter",
   "newsletter.page.eyebrow": "Useful notes, no spam",
   "newsletter.page.description":
     "Leave your email if you want practical notes about websites, apps, AI and working with technology.",
@@ -84,7 +84,7 @@ export const footerTranslations = {
   "routeError.unknown": "An unknown error occurred.",
   "routeError.home": "Home",
   "routeError.retry": "Try again",
-  "notfound.logoAlt": "VezVision Logo",
+  "notfound.logoAlt": "VEZvision Logo",
   "notfound.title": "Page not found",
   "notfound.description":
     "Sorry, the page you are looking for does not exist or has been moved.",

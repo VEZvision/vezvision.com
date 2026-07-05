@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in the VezVision website, please report it privately.
+If you discover a security vulnerability in the VEZvision website, please report it privately.
 
 **DO NOT** open a public issue.
 

@@ -246,7 +246,7 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
             {safeJsonLd({
               "@context": "https://schema.org",
               "@type": "Blog",
-              name: "VezVision Blog",
+              name: "VEZvision Blog",
               description:
                 language === "pl"
                   ? "Inspiracje, porady i nowości ze świata IT, AI oraz marketingu"
@@ -281,8 +281,8 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
                     ...(post.published_at
                       ? { datePublished: post.published_at }
                       : {}),
-                    author: { "@type": "Organization", name: "VezVision" },
-                    publisher: { "@type": "Organization", name: "VezVision" },
+                    author: { "@type": "Organization", name: "VEZvision" },
+                    publisher: { "@type": "Organization", name: "VEZvision" },
                   };
                 }),
             })}

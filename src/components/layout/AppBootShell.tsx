@@ -13,7 +13,7 @@ export default function AppBootShell() {
       <div className={styles.logoContainer}>
         <img
           src={logoNavbar}
-          alt="VezVision"
+          alt="VEZvision"
           width="838"
           height="153"
           className={styles.logo}

@@ -1,9 +1,9 @@
 export const LEGAL_TEMPLATES = {
     privacy_policy: {
-pl: `# Polityka Prywatności VezVision
+pl: `# Polityka Prywatności VEZvision
 
 ## 1. Postanowienia Ogólne
-Niniejsza Polityka Prywatności określa zasady przetwarzania i ochrony danych osobowych przekazanych przez Użytkowników w związku z korzystaniem z serwisu internetowego **VezVision** dostępnego pod adresem vezvision.com (dalej "Serwis").
+Niniejsza Polityka Prywatności określa zasady przetwarzania i ochrony danych osobowych przekazanych przez Użytkowników w związku z korzystaniem z serwisu internetowego **VEZvision** dostępnego pod adresem vezvision.com (dalej "Serwis").
 
 ## 2. Administrator Danych
 Administratorem danych osobowych zawartych w serwisie jest **POLIFORM SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ** z siedzibą w Bielsku-Białej, przy Złote Łany 11, 43-300 Bielsko-Biała, KRS: 0000831630, NIP: 5472217672, REGON: 385670222 (dalej "Administrator").
@@ -70,10 +70,10 @@ Zastrzegamy sobie prawo do zmiany w polityce ochrony prywatności serwisu, na kt
 
 ## 10. Kontakt
 W razie wątpliwości co do któregokolwiek z zapisów niniejszej polityki prywatności jesteśmy do dyspozycji - nasze dane znaleźć można w zakładce lub stopce - KONTAKT.`,
-        en: `# Privacy Policy of VezVision
+        en: `# Privacy Policy of VEZvision
 
 ## 1. General Provisions
-This Privacy Policy sets out the rules for the processing and protection of personal data provided by Users in connection with the use of the **VezVision** website available at vezvision.com (hereinafter the "Website").
+This Privacy Policy sets out the rules for the processing and protection of personal data provided by Users in connection with the use of the **VEZvision** website available at vezvision.com (hereinafter the "Website").
 
 ## 2. Data Controller
 The data controller responsible for personal data contained in the website is **POLIFORM SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ** with its registered office in Bielsko-Biała, at Złote Łany 11, 43-300 Bielsko-Biała, KRS: 0000831630, NIP: 5472217672, REGON: 385670222 (hereinafter the "Data Controller").
@@ -145,7 +145,7 @@ If you have any doubts regarding any of the provisions of this privacy policy, w
         pl: `# Regulamin Świadczenia Usług Drogą Elektroniczną
 
 ## §1. Postanowienia Ogólne
-1.  Niniejszy Regulamin określa zasady korzystania z serwisu internetowego **VezVision**, dostępnego pod adresem vezvision.com.
+1.  Niniejszy Regulamin określa zasady korzystania z serwisu internetowego **VEZvision**, dostępnego pod adresem vezvision.com.
 2.  Właścicielem serwisu jest **POLIFORM SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ** z siedzibą w Bielsko-Białej, Złote Łany 11, 43-300 Bielsko-Biała, KRS: 0000831630, NIP: 5472217672, REGON: 385670222.
 3.  Kontakt z Usługodawcą możliwy jest za pośrednictwem adresu e-mail: **contact@vezvision.com**.
 
@@ -201,7 +201,7 @@ If you have any doubts regarding any of the provisions of this privacy policy, w
         en: `# Terms of Service
 
 ## §1. General Provisions
-1.  These Terms of Service set out the rules for using the **VezVision** website, available at vezvision.com.
+1.  These Terms of Service set out the rules for using the **VEZvision** website, available at vezvision.com.
 2.  The owner of the website is **POLIFORM SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ** with its registered office in Bielsko-Biała, Złote Łany 11, 43-300 Bielsko-Biała, KRS: 0000831630, NIP: 5472217672, REGON: 385670222.
 3.  Contact with the Service Provider is possible via e-mail address: **contact@vezvision.com**.
 
@@ -262,7 +262,7 @@ If you have any doubts regarding any of the provisions of this privacy policy, w
 Pliki cookies (tzw. "ciasteczka") to małe pliki tekstowe wysyłane przez serwis internetowy, który odwiedzasz, i zapisywane na Twoim urządzeniu końcowym (komputerze, laptopie, smartfonie), z którego korzystasz podczas przeglądania stron internetowych.
 
 ## 2. Jakich plików cookies używamy?
-W ramach Serwisu VezVision stosowane są dwa zasadnicze rodzaje plików cookies: "sesyjne" (session cookies) oraz "stałe" (persistent cookies).
+W ramach Serwisu VEZvision stosowane są dwa zasadnicze rodzaje plików cookies: "sesyjne" (session cookies) oraz "stałe" (persistent cookies).
 
 Cookies "sesyjne" są plikami tymczasowymi, które przechowywane są w urządzeniu końcowym Użytkownika do czasu wylogowania, opuszczenia strony internetowej lub wyłączenia oprogramowania (przeglądarki internetowej).
 
@@ -278,7 +278,7 @@ Cookies "sesyjne" są plikami tymczasowymi, które przechowywane są w urządzen
 
 | Nazwa ciasteczka | Kategoria | Cel | Dostawca | Czas ważności | Rodzaj |
 |---|---|---|---|---|---|
-| vezvision_cookie_consent | Niezbędne | Przechowuje preferencje dotyczące zgody na pliki cookies | VezVision | 1 rok | First-party |
+| vezvision_cookie_consent | Niezbędne | Przechowuje preferencje dotyczące zgody na pliki cookies | VEZvision | 1 rok | First-party |
 | sb-access-token | Niezbędne | Token uwierzytelniający dla Supabase (autoryzacja) | Supabase | Sesyjne | First-party |
 | sb-refresh-token | Niezbędne | Token odświeżania dla Supabase (autoryzacja) | Supabase | Sesyjne | First-party |
 | Sentry scent / replay cookies | Analityczne | Monitorowanie błędów, wydajności i sesji replik dla celów diagnostycznych | Sentry (funkcionalność Sentry) | Sesyjne | Third-party |
@@ -317,7 +317,7 @@ Zastrzegamy sobie prawo do zmiany w polityce plików cookies. O wszelkich zmiana
 Cookies are small text files sent by the website you visit and stored on your end device (computer, laptop, smartphone) that you use when browsing websites.
 
 ## 2. What cookies do we use?
-The VezVision Service uses two basic types of cookies: "session" cookies and "persistent" cookies.
+The VEZvision Service uses two basic types of cookies: "session" cookies and "persistent" cookies.
 
 "Session" cookies are temporary files that are stored on the User end device until logging out, leaving the website or turning off the software (web browser).
 
@@ -333,7 +333,7 @@ The VezVision Service uses two basic types of cookies: "session" cookies and "pe
 
 | Cookie name | Category | Purpose | Provider | Expiry | Type |
 |---|---|---|---|---|---|
-| vezvision_cookie_consent | Essential | Stores your cookie consent preferences | VezVision | 1 year | First-party |
+| vezvision_cookie_consent | Essential | Stores your cookie consent preferences | VEZvision | 1 year | First-party |
 | sb-access-token | Essential | Authentication token for Supabase (authorisation) | Supabase | Session | First-party |
 | sb-refresh-token | Essential | Authentication refresh token for Supabase (authorisation) | Supabase | Session | First-party |
 | Sentry scent / replay cookies | Analytical | Error monitoring, performance tracking and session replay for diagnostic purposes | Sentry (Functional Software, Inc.) | Session | Third-party |

@@ -236,7 +236,7 @@ Deno.serve(async (req: Request) => {
         const logId = await createSendLog(supabase, String(id), "notification");
         const result = await sendEmailViaResend(
           resendApiKey,
-          `VezVision <${fromEmail}>`,
+          `VEZvision <${fromEmail}>`,
           notifyEmail,
           getNotificationSubject(bodyLanguage, subject),
           buildContactNotificationHtml({
@@ -264,7 +264,7 @@ Deno.serve(async (req: Request) => {
         const logId = await createSendLog(supabase, String(id), "auto_reply");
         const result = await sendEmailViaResend(
           resendApiKey,
-          `VezVision <${fromEmail}>`,
+          `VEZvision <${fromEmail}>`,
           email,
           getAutoReplySubject(bodyLanguage),
           buildAutoReplyHtml({

@@ -17,7 +17,7 @@ export function GlobalJsonLd() {
 
   const siteUrl = safeAbsoluteHttpUrl(seo?.siteUrl);
   const siteName =
-    seo?.ogSiteName || identity?.siteName || seo?.siteTitle || "VezVision";
+    seo?.ogSiteName || identity?.siteName || seo?.siteTitle || "VEZvision";
   const logoUrl =
     safeImageUrl(identity?.logoUrl) ||
     safeImageUrl(identity?.defaultOgImageUrl);

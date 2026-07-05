@@ -6,7 +6,7 @@ export const portfolioTranslations = {
     "W tym miejscu będziemy publikować wybrane realizacje, projekty demonstracyjne i case studies pokazujące, jak technologia, design i automatyzacje mogą wspierać rozwój firm.",
   "portfolio.hero.cta.aria": "Przejdź do kontaktu",
   "portfolio.hero.social.aria": "Linki społecznościowe",
-  "portfolio.hero.logoAlt": "Logo VezVision",
+  "portfolio.hero.logoAlt": "Logo VEZvision",
   "portfolio.projects.badge": "ZAPOWIEDŹ CASE STUDIES",
   "portfolio.projects.title.line1": "Pierwsze",
   "portfolio.projects.title.line2.italic": "realizacje w przygotowaniu",

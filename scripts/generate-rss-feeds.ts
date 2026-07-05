@@ -83,7 +83,7 @@ function buildFeedXml(posts: BlogPostForRSS[], language: "pl" | "en"): string {
     process.env.VITE_SITE_URL || "https://vezvision.com"
   ).replace(/\/$/, "");
   const localePath = `${baseUrl}/${language}`;
-  const title = language === "en" ? "VezVision Blog" : "Blog VezVision";
+  const title = language === "en" ? "VEZvision Blog" : "Blog VEZvision";
   const description =
     language === "en"
       ? "Articles about AI, automation, web development and digital products for business."

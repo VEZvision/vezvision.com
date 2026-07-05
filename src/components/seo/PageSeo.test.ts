@@ -4,8 +4,8 @@ import { getSafeStructuredDataJson } from '@/utils/safeJsonLd'
 
 describe('getSafeStructuredDataJson', () => {
   it('serializes valid structured data safely', () => {
-    expect(getSafeStructuredDataJson('{"name":"<VezVision>","@type":"WebSite"}')).toBe(
-      '{"name":"\\u003cVezVision\\u003e","@type":"WebSite"}'
+    expect(getSafeStructuredDataJson('{"name":"<VEZvision>","@type":"WebSite"}')).toBe(
+      '{"name":"\\u003cVEZvision\\u003e","@type":"WebSite"}'
     )
   })
 

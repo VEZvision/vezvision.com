@@ -5,7 +5,7 @@ export const COOKIE_DEFINITIONS: CookieDefinition[] = [
     name: "vezvision_cookie_consent",
     category: "necessary",
     purpose: "Stores your cookie consent preferences",
-    provider: "VezVision",
+    provider: "VEZvision",
     expiry: "1 year",
     domain: typeof window !== "undefined" ? window.location.hostname : "",
     isFirstParty: true,

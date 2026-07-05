@@ -135,7 +135,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
             <div className="flex items-center justify-center">
               <img
                 src={logoNavbar}
-                alt="VezVision"
+                alt="VEZvision"
                 width="838"
                 height="153"
                 className="h-[48px] sm:h-[64px] w-auto object-contain"

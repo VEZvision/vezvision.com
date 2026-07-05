@@ -1,8 +1,8 @@
-# VezVision CMS Schema (public website)
+# VEZvision CMS Schema (public website)
 
 Reference for tables and keys used by the marketing site (`src/services/`).
 
-Content is authored in **VezCore** (separate admin app, same Supabase project). This repo is read-only for CMS data — there is no `/admin` route here.
+Content is authored in **VEZcore**, the private core for managing the grupa VEZ ecosystem. CMS is one VEZcore module, alongside CRM and other internal operational modules. This repo is read-only for CMS data and does not expose an `/admin` route.
 
 ## `vv_site_settings` (public keys)
 

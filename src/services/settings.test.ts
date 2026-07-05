@@ -8,7 +8,7 @@ describe('normalizeSettingsEntries', () => {
       {
         key: 'site_identity',
         value: {
-          siteName: 'VezVision',
+          siteName: 'VEZvision',
           logoUrl: 'https://cdn.example.com/logo.svg',
           faviconUrl: 'https://cdn.example.com/favicon.svg',
           defaultOgImageUrl: 'https://cdn.example.com/og.png',
@@ -29,12 +29,12 @@ describe('normalizeSettingsEntries', () => {
       {
         key: 'seo',
         value: {
-          siteTitle: 'VezVision',
+          siteTitle: 'VEZvision',
           siteDescription: 'Modern websites',
           keywords: ['ai', 'web'],
           siteUrl: 'https://vezvision.com',
           robots: 'index,follow',
-          ogSiteName: 'VezVision',
+          ogSiteName: 'VEZvision',
         },
         updated_at: '2026-03-31T00:00:00Z',
       },
@@ -90,7 +90,7 @@ describe('normalizeSettingsEntries', () => {
       },
     ])
 
-    expect(settings.identity.siteName).toBe('VezVision')
+    expect(settings.identity.siteName).toBe('VEZvision')
     expect(settings.contact.address).toBe('Złote Łany 11, Bielsko-Biała')
     expect(settings.seo.keywords).toEqual(['ai', 'web'])
     expect(settings.maintenance.enabled).toBe(true)

@@ -128,7 +128,7 @@ const Hero = memo(() => {
           <div className="mb-5 flex items-center justify-center">
             <img
               src={logoNavbar}
-              alt="VezVision"
+              alt="VEZvision"
               width="838"
               height="153"
               className="h-[48px] sm:h-[64px] w-auto object-contain"

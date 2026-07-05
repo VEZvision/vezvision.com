@@ -1,6 +1,6 @@
 import { APP_ROUTES, SUPPORTED_LOCALES } from "@/routing/routes.config";
 
-const GENERIC_TITLES = new Set(["", "VezVision"]);
+const GENERIC_TITLES = new Set(["", "VEZvision"]);
 const REQUIRED_HREFLANGS = ["pl", "en", "x-default"] as const;
 
 type HtmlAttributeMap = Readonly<Record<string, string>>;

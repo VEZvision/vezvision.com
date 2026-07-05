@@ -162,7 +162,7 @@ const PageSeo = ({ pageKey }: PageSeoProps) => {
       {ogImage ? <meta property="og:image:width" content="1200" /> : null}
       {ogImage ? <meta property="og:image:height" content="630" /> : null}
       {ogImage ? (
-        <meta property="og:image:alt" content={ogTitle || "VezVision"} />
+        <meta property="og:image:alt" content={ogTitle || "VEZvision"} />
       ) : null}
       {ogSiteName ? (
         <meta property="og:site_name" content={ogSiteName} />

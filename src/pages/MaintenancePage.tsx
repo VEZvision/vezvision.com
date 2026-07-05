@@ -31,7 +31,7 @@ const MaintenancePage = () => {
                 </p>
 
                 <div className="text-sm text-gray-400 font-sans">
-                    &copy; {new Date().getFullYear()} VezVision. All rights reserved.
+                    &copy; {new Date().getFullYear()} VEZvision. All rights reserved.
                 </div>
             </div>
         </>

@@ -1,5 +1,5 @@
 export const why_chooseTranslations = {
-  "why.header.aria": "Dlaczego warto wybrać VezVision",
+  "why.header.aria": "Dlaczego warto wybrać VEZvision",
   "why.header.tag": "Zaufanie",
   "why.header.title": "Dlaczego warto wybrać nas?",
   "why.header.title.line1": "Dlaczego warto",

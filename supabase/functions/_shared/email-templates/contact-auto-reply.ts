@@ -15,7 +15,7 @@ export function buildAutoReplyHtml(data: AutoReplyData): string {
     ? "Dziękujemy za wiadomość. Odpiszemy możliwie szybko, zwykle w ciągu 24 godzin."
     : "Thanks for your message. We will reply as soon as we can, usually within 24 hours.";
   const closing = isPl ? "Pozdrawiamy" : "Kind regards";
-  const team = "VezVision";
+  const team = "VEZvision";
   const logoUrl = data.storageBaseUrl
     ? `${data.storageBaseUrl}/logo-navbar.svg`
     : "";
@@ -82,6 +82,6 @@ export function buildAutoReplyHtml(data: AutoReplyData): string {
 
 export function getAutoReplySubject(lang: string): string {
   return lang === "pl"
-    ? "Potwierdzenie wiadomości VezVision"
-    : "Message received by VezVision";
+    ? "Potwierdzenie wiadomości VEZvision"
+    : "Message received by VEZvision";
 }

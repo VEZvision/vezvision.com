@@ -42,8 +42,8 @@ export function buildHeader(
 ): string {
   const safeUrl = siteUrl || "https://vezvision.com";
   const logo = logoUrl
-    ? `<img src="${logoUrl}" alt="VezVision" height="28" style="display:block;height:28px;width:auto;" />`
-    : '<span style="font-size:20px;font-weight:700;">VezVision</span>';
+    ? `<img src="${logoUrl}" alt="VEZvision" height="28" style="display:block;height:28px;width:auto;" />`
+    : '<span style="font-size:20px;font-weight:700;">VEZvision</span>';
   return `    <tr>
       <td style="padding:28px 32px 20px 32px;text-align:center;">
         <a href="${safeUrl}" style="display:inline-block;text-decoration:none;">

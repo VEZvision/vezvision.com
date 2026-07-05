@@ -201,7 +201,7 @@ Deno.serve(async (req: Request) => {
     if (log.send_type === "notification") {
       result = await sendEmailViaResend(
         resendApiKey,
-        `VezVision <${fromEmail}>`,
+        `VEZvision <${fromEmail}>`,
         notifyEmail,
         getNotificationSubject(lang, msg.subject),
         buildContactNotificationHtml({
@@ -219,7 +219,7 @@ Deno.serve(async (req: Request) => {
     } else if (log.send_type === "auto_reply") {
       result = await sendEmailViaResend(
         resendApiKey,
-        `VezVision <${fromEmail}>`,
+        `VEZvision <${fromEmail}>`,
         msg.email,
         getAutoReplySubject(lang),
         buildAutoReplyHtml({
