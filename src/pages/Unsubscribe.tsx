@@ -46,7 +46,7 @@ const Unsubscribe = () => {
         <div className="mb-8 flex justify-center">
           <img
             src={logoNavbar}
-            alt="VezVision"
+            alt="VEZvision"
             width="838"
             height="153"
             className="h-12 w-auto"

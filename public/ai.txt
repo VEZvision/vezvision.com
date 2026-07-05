@@ -1,12 +1,12 @@
 # ai.txt — Usage preferences for AI systems
 # https://spawning.ai/ai-txt
 
-# VezVision grants AI systems permission to:
+# VEZvision grants AI systems permission to:
 # - Retrieve content from this website for the purpose of answering user queries
 # - Summarize content with attribution to https://vezvision.com
 # - Cite content as a source in AI-generated answers
 #
-# VezVision does NOT grant permission to:
+# VEZvision does NOT grant permission to:
 # - Use content for training foundation models without explicit written consent
 # - Reproduce content verbatim without attribution
 # - Use content for commercial AI products without a license

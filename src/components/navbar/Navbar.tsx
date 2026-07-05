@@ -163,7 +163,7 @@ const Navbar = memo(() => {
                   >
                     <img
                       src={logoNavbar}
-                      alt="VezVision Logo"
+                      alt="VEZvision Logo"
                       width="838"
                       height="153"
                       className="h-6 w-auto"

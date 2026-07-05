@@ -10,7 +10,7 @@ export const SEO_READY_PREDICATE = `(() => {
 
   return Boolean(
     document.title.trim() &&
-      document.title.trim() !== "VezVision" &&
+      document.title.trim() !== "VEZvision" &&
       getMetaContent('meta[name="description"]') &&
       document.querySelector('link[rel="canonical"][href]') &&
       getMetaContent('meta[name="robots"]') &&

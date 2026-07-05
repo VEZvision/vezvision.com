@@ -152,7 +152,7 @@ export default function ProjectDetails() {
   const githubUrl = safeExternalHref(project.github_url);
   const motionClass = reducedMotion ? "" : styles.motionEnter;
 
-  const siteName = seo?.ogSiteName || seo?.siteTitle || "VezVision";
+  const siteName = seo?.ogSiteName || seo?.siteTitle || "VEZvision";
 
   return (
     <div className={styles.page}>

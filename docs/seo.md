@@ -1,8 +1,8 @@
-# VezVision SEO Strategy
+# VEZvision SEO Strategy
 
 ## Overview
 
-VezVision employs a world-class SEO strategy covering traditional search (Google), AI search (ChatGPT, Perplexity, Google SGE), and social media (Open Graph).
+VEZvision employs a world-class SEO strategy covering traditional search (Google), AI search (ChatGPT, Perplexity, Google SGE), and social media (Open Graph).
 
 ## Structured Data (JSON-LD)
 

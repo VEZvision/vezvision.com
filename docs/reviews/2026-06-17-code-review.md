@@ -1,4 +1,4 @@
-# Code Review — VezVision Website · Lista zadań
+# Code Review — VEZvision Website · Lista zadań
 
 > Zakres: całe repo (`src/`, `supabase/`, `scripts/`, `public/`, konfiguracja, CI, baza Supabase `vezvisionWEB` — `pcxcqbpygyidkusetghk`).
 > Data review: 2026-06-17. Weryfikacja: typecheck ✅, lint ✅ (0 błędów/0 warningów), test:unit ✅ 86/86, build ✅ 3.92s, npm audit ✅ 0 podatności.

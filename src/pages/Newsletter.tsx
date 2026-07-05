@@ -53,8 +53,8 @@ const Newsletter = () => {
                 className="mx-auto mb-5 max-w-3xl font-sans text-[clamp(38px,6.5vw,80px)] font-normal leading-[1.05] tracking-[-1.6px] text-black"
                 aria-label={t('newsletter.page.title')}
               >
-                {language === 'pl' ? 'Newsletter ' : 'VezVision '}
-                <span className="font-sans">{language === 'pl' ? 'VezVision' : 'Newsletter'}</span>
+                {language === 'pl' ? 'Newsletter ' : 'VEZvision '}
+                <span className="font-sans">{language === 'pl' ? 'VEZvision' : 'Newsletter'}</span>
               </h1>
               <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600 md:text-xl">
                 {t('newsletter.page.description')}

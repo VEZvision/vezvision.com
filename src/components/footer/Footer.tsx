@@ -126,7 +126,7 @@ export default function Footer() {
     safePublicHref(footer?.ctaHref, "/contact") || "/contact",
     language,
   );
-  const brandName = identity?.siteName || "VezVision";
+  const brandName = identity?.siteName || "VEZvision";
 
   return (
     <footer ref={footerRef} className={styles.footer}>
@@ -167,7 +167,7 @@ export default function Footer() {
                   <div className={styles.logoContainer}>
                     <img
                       src={logoNavbar}
-                      alt="VezVision"
+                      alt="VEZvision"
                       width="838"
                       height="153"
                       className={styles.logoImage}

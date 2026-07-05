@@ -150,7 +150,7 @@ function BlogArticle() {
   const ogImage =
     safeImageUrl(post.featured_image) ||
     (siteUrl ? joinUrlPath(siteUrl, "/og-image.png") : "/og-image.png");
-  const siteName = seo?.ogSiteName || seo?.siteTitle || "VezVision";
+  const siteName = seo?.ogSiteName || seo?.siteTitle || "VEZvision";
   const articleDescription = stripHtmlForJsonLd(
     excerpt || seo?.siteDescription || "",
   );
@@ -248,14 +248,14 @@ function BlogArticle() {
             <div className="flex items-center gap-4 py-4 border-t border-b border-gray-100">
               <img
                 src={logo}
-                alt="VezVision"
+                alt="VEZvision"
                 width="40"
                 height="40"
                 className="w-10 h-10 rounded-full bg-gray-100 p-1"
               />
               <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
                 <span className="font-semibold text-gray-900">
-                  VezVision Team
+                  VEZvision Team
                 </span>
                 <span className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-gray-50">
                   <Calendar size={14} /> {date}

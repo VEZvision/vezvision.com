@@ -1,8 +1,8 @@
 export const loadingTranslations = {
-  "common.logoAlt": "Logo VezVision",
+  "common.logoAlt": "Logo VEZvision",
   "loading.message": "Ładowanie...",
-  "loading.splash.aria": "Ekran powitalny VezVision",
-  "loading.splash.welcome": "Witaj w VezVision",
+  "loading.splash.aria": "Ekran powitalny VEZvision",
+  "loading.splash.welcome": "Witaj w VEZvision",
   "loading.splash.subtitle":
     "Strony, aplikacje i automatyzacje dla sprawniejszej pracy firm",
 } as const;

@@ -4,7 +4,7 @@ test('home page renders and exposes core navigation', async ({ page }) => {
   await page.goto('/')
 
   await expect(page).toHaveURL(/\/(pl|en)\/?$/)
-  await expect(page).toHaveTitle(/VezVision/i)
+  await expect(page).toHaveTitle(/VEZvision/i)
   await expect(page.getByRole('navigation').first()).toBeVisible()
   await expect(page.getByRole('main')).toBeVisible()
 })

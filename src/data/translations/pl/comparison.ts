@@ -8,7 +8,7 @@ export const comparisonTranslations = {
     'about.differences.title.line2.italic': 'wyróżnia',
     'about.differences.subtitle': 'Szybkość działania, jakość i realne wsparcie.',
     'comparison.subtitle': 'Zobacz, czym różni się partnerska współpraca od przypadkowej realizacji bez dalszego wsparcia.',
-    'comparison.left.title': 'VezVision',
+    'comparison.left.title': 'VEZvision',
     'comparison.left.b1': 'Indywidualne podejście do każdej marki',
     'comparison.left.b2': 'Kompleksowa obsługa',
     'comparison.left.b3': 'Nowoczesny design i intuicyjne rozwiązania',

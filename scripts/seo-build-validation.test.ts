@@ -12,17 +12,17 @@ import {
 const completeHtml = `<!doctype html>
 <html lang="pl">
 <head>
-  <title>Usługi - VezVision</title>
+  <title>Usługi - VEZvision</title>
   <meta name="description" content="Strony WWW i automatyzacje dla firm.">
   <link rel="canonical" href="https://vezvision.com/pl/services">
   <link rel="alternate" hreflang="pl" href="https://vezvision.com/pl/services">
   <link rel="alternate" hreflang="en" href="https://vezvision.com/en/services">
   <link rel="alternate" hreflang="x-default" href="https://vezvision.com/en/services">
   <meta name="robots" content="index,follow">
-  <meta property="og:title" content="Usługi - VezVision">
+  <meta property="og:title" content="Usługi - VEZvision">
   <meta property="og:description" content="Strony WWW i automatyzacje dla firm.">
   <meta property="og:url" content="https://vezvision.com/pl/services">
-  <meta name="twitter:title" content="Usługi - VezVision">
+  <meta name="twitter:title" content="Usługi - VEZvision">
   <meta name="twitter:description" content="Strony WWW i automatyzacje dla firm.">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage"}</script>
 </head>
@@ -50,7 +50,7 @@ describe("SEO build validation", () => {
   it("rejects a bare SPA shell for a sitemap route", () => {
     const errors = validateSeoRouteHtml(
       "/pl/services",
-      '<!doctype html><html lang="pl"><head><title>VezVision</title></head><body><div id="root"></div></body></html>',
+      '<!doctype html><html lang="pl"><head><title>VEZvision</title></head><body><div id="root"></div></body></html>',
     );
 
     assert.ok(errors.some((error) => error.includes("unique title")));
@@ -65,19 +65,19 @@ describe("SEO build validation", () => {
       `<!doctype html>
       <html lang="pl">
       <head>
-        <title>VezVision</title>
-        <title>Usługi - VezVision</title>
-        <meta name="description" content="VezVision — modern AI & automation solutions for business.">
+        <title>VEZvision</title>
+        <title>Usługi - VEZvision</title>
+        <meta name="description" content="VEZvision — modern AI & automation solutions for business.">
         <meta name="description" content="Strony WWW i automatyzacje dla firm.">
         <link rel="canonical" href="https://vezvision.com/pl/services">
         <link rel="alternate" hreflang="pl" href="https://vezvision.com/pl/services">
         <link rel="alternate" hreflang="en" href="https://vezvision.com/en/services">
         <link rel="alternate" hreflang="x-default" href="https://vezvision.com/en/services">
         <meta name="robots" content="index,follow">
-        <meta property="og:title" content="Usługi - VezVision">
+        <meta property="og:title" content="Usługi - VEZvision">
         <meta property="og:description" content="Strony WWW i automatyzacje dla firm.">
         <meta property="og:url" content="https://vezvision.com/pl/services">
-        <meta name="twitter:title" content="Usługi - VezVision">
+        <meta name="twitter:title" content="Usługi - VEZvision">
         <meta name="twitter:description" content="Strony WWW i automatyzacje dla firm.">
         <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage"}</script>
       </head>

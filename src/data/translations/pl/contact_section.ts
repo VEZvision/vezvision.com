@@ -57,5 +57,5 @@ export const contact_sectionTranslations = {
   "contact.form.submit": "Wyślij wiadomość",
   "contact.form.success": "Wiadomość została wysłana!",
   "contact.form.consent":
-    "Wyrażam zgodę na przetwarzanie moich danych osobowych w celu obsługi zapytania. Administratorem danych jest VezVision. Szczegóły w",
+    "Wyrażam zgodę na przetwarzanie moich danych osobowych w celu obsługi zapytania. Administratorem danych jest VEZvision. Szczegóły w",
 } as const;

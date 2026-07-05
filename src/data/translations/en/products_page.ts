@@ -1,5 +1,5 @@
 export const products_pageTranslations = {
-    'products.page.title': 'Products | VezVision',
+    'products.page.title': 'Products | VEZvision',
     'products.page.meta.desc': 'Discover our innovative products and applications. We create solutions that change the way you work and live.',
     'products.page.hero.title': 'Our Products',
     'products.page.hero.subtitle': 'Browse our latest projects and tools.',

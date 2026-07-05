@@ -54,5 +54,5 @@ export const contact_sectionTranslations = {
   "contact.form.submit": "Send message",
   "contact.form.success": "Message has been sent!",
   "contact.form.consent":
-    "I consent to the processing of my personal data for the purpose of handling this inquiry. The controller is VezVision. Details are available in",
+    "I consent to the processing of my personal data for the purpose of handling this inquiry. The controller is VEZvision. Details are available in",
 } as const;

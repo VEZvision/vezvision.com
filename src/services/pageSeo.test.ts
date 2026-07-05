@@ -7,8 +7,8 @@ describe('normalizePageSeoEntries', () => {
     const pageSeo = normalizePageSeoEntries([
       {
         page_key: 'home',
-        title_pl: 'VezVision - Nowoczesne Strony i Aplikacje Internetowe',
-        title_en: 'VezVision - Modern Websites and Web Applications',
+        title_pl: 'VEZvision - Nowoczesne Strony i Aplikacje Internetowe',
+        title_en: 'VEZvision - Modern Websites and Web Applications',
         description_pl: 'PL description',
         description_en: 'EN description',
         og_title_pl: 'PL OG',
@@ -23,7 +23,7 @@ describe('normalizePageSeoEntries', () => {
       },
     ])
 
-    expect(pageSeo.home?.title_pl).toBe('VezVision - Nowoczesne Strony i Aplikacje Internetowe')
+    expect(pageSeo.home?.title_pl).toBe('VEZvision - Nowoczesne Strony i Aplikacje Internetowe')
     expect(pageSeo.home?.indexable).toBe(true)
     expect(pageSeo.home?.og_image_url).toBe('https://cdn.example.com/og.png')
   })
