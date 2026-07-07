@@ -141,7 +141,7 @@ export default function ProjectDetails() {
     seo?.siteDescription ||
     "";
   const ogImage = project.cover_path
-    ? getProjectImageUrl(project.cover_path)
+    ? getProjectImageUrl(project.cover_path, { width: 1200, quality: 80 })
     : safeImageUrl(
         seo?.siteUrl
           ? joinUrlPath(seo.siteUrl, "/favicon.svg")
@@ -233,7 +233,7 @@ export default function ProjectDetails() {
           >
             <div className={styles.coverImageWrapper}>
               <img
-                src={getProjectImageUrl(project.cover_path)}
+                src={getProjectImageUrl(project.cover_path, { width: 1200, quality: 80 })}
                 alt={t("title", "Project Cover")}
                 className={styles.coverImage}
                 width="1200"
@@ -310,12 +310,12 @@ export default function ProjectDetails() {
                       type="button"
                       key={img.id}
                       className={styles.galleryItem}
-                      onClick={() => openLightbox(getProjectImageUrl(img.path))}
+                      onClick={() => openLightbox(getProjectImageUrl(img.path, { width: 1600, quality: 85 }))}
                       aria-label={`${tl("portfolio.detail.gallery")} - ${projectTitle}`}
                     >
                       <div className={styles.galleryItemInner}>
                         <img
-                          src={getProjectImageUrl(img.path)}
+                          src={getProjectImageUrl(img.path, { width: 720, quality: 75 })}
                           alt={`${projectTitle} - ${tl("portfolio.detail.gallery")}`}
                           width="720"
                           height="405"

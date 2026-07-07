@@ -145,8 +145,13 @@ const BLOG_LIST_POST_SELECT = `
   vv_blog_post_categories(vv_blog_categories(id, slug, name_pl, name_en, color, created_at))
 `;
 
-const BLOG_DETAIL_POST_SELECT =
-  "*, vv_blog_post_categories(vv_blog_categories(*))";
+const BLOG_DETAIL_POST_SELECT = `
+  id, slug, status, published_at, featured_image, featured, created_at, updated_at,
+  views_count, reading_time, title_pl, title_en, excerpt_pl, excerpt_en,
+  content_pl, content_en, meta_title_pl, meta_title_en, meta_desc_pl, meta_desc_en,
+  tags_pl, tags_en,
+  vv_blog_post_categories(vv_blog_categories(id, slug, name_pl, name_en, color, created_at))
+`;
 
 export async function listPublishedBlogContent(
   signal?: AbortSignal,
@@ -174,7 +179,7 @@ export async function listPublishedBlogContent(
 
     let categoriesQuery = supabase
       .from("vv_blog_categories")
-      .select("*")
+      .select("id, slug, name_pl, name_en, color, created_at")
       .order("created_at", { ascending: true })
       .limit(100);
 

@@ -54,6 +54,11 @@ interface DBProject {
   }[];
 }
 
+interface ProjectImageTransform {
+  readonly width: number;
+  readonly quality?: number;
+}
+
 const mapProjectFromDB = (data: DBProject): PortfolioProject => {
   const translations: Record<"pl" | "en", ProjectTranslation> = {
     pl: {
@@ -127,9 +132,13 @@ const PORTFOLIO_LIST_SELECT = `
 `;
 
 const PORTFOLIO_DETAIL_SELECT = `
-  *,
+  id, slug, status, featured, order_index, demo_url, github_url, client_name, cover_image,
+  created_at, updated_at, title_pl, title_en, short_desc_pl, short_desc_en,
+  description_pl, description_en, challenge_pl, challenge_en, solution_pl, solution_en,
+  show_cover_image, show_demo_url, show_challenge, show_solution,
+  seo_title_pl, seo_title_en, seo_desc_pl, seo_desc_en,
   vv_project_category_assignments(vv_project_categories(slug)),
-  vv_project_images(*)
+  vv_project_images(id, path, type, order_index, alt_pl, alt_en, created_at)
 `;
 
 export async function listProjects(
@@ -233,13 +242,19 @@ export async function getProject(
   }
 }
 
-export function getProjectImageUrl(path: string): string {
+export function getProjectImageUrl(
+  path: string,
+  transform?: ProjectImageTransform,
+): string {
   if (!path) return "";
 
   let url = path;
   if (!path.startsWith("http://") && !path.startsWith("https://")) {
     const base = supabaseUrl?.replace(/\/$/, "") ?? "";
-    url = `${base}/storage/v1/object/public/vv-portfolio-images/${path.replace(/^\//, "")}`;
+    const cleanPath = path.replace(/^\//, "");
+    url = transform
+      ? `${base}/storage/v1/render/image/public/vv-portfolio-images/${cleanPath}?width=${transform.width}&quality=${transform.quality ?? 75}`
+      : `${base}/storage/v1/object/public/vv-portfolio-images/${cleanPath}`;
   }
 
   return safeImageUrl(url) ?? "";

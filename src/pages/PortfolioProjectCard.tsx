@@ -28,7 +28,7 @@ export default function PortfolioProjectCard({
         <div className={styles.cardImage}>
           {project.cover_path ? (
             <img
-              src={getProjectImageUrl(project.cover_path)}
+              src={getProjectImageUrl(project.cover_path, { width: 960, quality: 75 })}
               alt={title}
               width="960"
               height="540"
