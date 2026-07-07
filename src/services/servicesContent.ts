@@ -145,8 +145,11 @@ export async function listActiveServicesContent(
       .from("vv_services")
       .select(
         `
-        *,
-        vv_service_category_assignments(vv_service_categories(*))
+        id, slug, status, order_index, icon, price, duration,
+        title_pl, title_en, description_pl, description_en, features_pl, features_en,
+        short_desc_pl, short_desc_en, meta_title_pl, meta_title_en, meta_desc_pl, meta_desc_en,
+        created_at, updated_at,
+        vv_service_category_assignments(vv_service_categories(id, slug, name_pl, name_en, created_at))
       `,
       )
       .eq("status", "active")
@@ -160,7 +163,7 @@ export async function listActiveServicesContent(
 
     let categoriesQuery = supabase
       .from("vv_service_categories")
-      .select("*")
+      .select("id, slug, name_pl, name_en, created_at")
       .order("order_index", { ascending: true })
       .limit(100);
 
