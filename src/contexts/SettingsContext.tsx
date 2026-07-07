@@ -50,11 +50,20 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       ? { ...cachedSnapshot.settings, error: null, degraded: false }
       : undefined,
     staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
   });
 
   const snapshot = query.data ?? defaultSnapshot;
-  const { error, degraded, ...settings } = snapshot;
+  const error = snapshot.error;
+  const degraded = snapshot.degraded;
+  const settings = useMemo(() => {
+    const {
+      error: _error,
+      degraded: _degraded,
+      ...settingsSnapshot
+    } = snapshot;
+    return settingsSnapshot;
+  }, [snapshot]);
 
   const loading = canFetch && query.isLoading && !query.data;
 
