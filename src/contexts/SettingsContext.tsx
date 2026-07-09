@@ -53,7 +53,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     refetchOnWindowFocus: false,
   });
 
-  const snapshot = query.data ?? defaultSnapshot;
+  const queryData = query.data;
+  const snapshot = queryData ?? defaultSnapshot;
   const error = snapshot.error;
   const degraded = snapshot.degraded;
   const settings = useMemo(() => {
@@ -68,21 +69,22 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const loading = canFetch && query.isLoading && !query.data;
 
   useEffect(() => {
-    if (!query.data) return;
+    if (!queryData) return;
     const {
       error: _error,
       degraded: _degraded,
       ...settingsToCache
-    } = query.data;
+    } = queryData;
     writePublicSettingsCache(settingsToCache);
-    if (query.data.maintenance) {
-      writeMaintenanceFlagToCache(query.data.maintenance.enabled);
+    if (queryData.maintenance) {
+      writeMaintenanceFlagToCache(queryData.maintenance.enabled);
     }
-  }, [query]);
+  }, [queryData]);
 
+  const { refetch } = query;
   const refreshSettings = useCallback(async () => {
-    await query.refetch();
-  }, [query]);
+    await refetch();
+  }, [refetch]);
 
   const value = useMemo<SettingsContextType>(
     () => ({

@@ -2,14 +2,14 @@
  * Generates public/.htaccess and vercel.json from templates,
  * injecting the same CSP used by the Vite CSP nonce plugin.
  */
-import fs from 'node:fs'
-import path from 'node:path'
+import fs from "node:fs";
+import path from "node:path";
 
-import { buildContentSecurityPolicy } from './csp-policy.mjs'
+import { buildContentSecurityPolicy } from "./csp-policy.mjs";
 
-const root = path.resolve(import.meta.dirname, '..')
+const root = path.resolve(import.meta.dirname, "..");
 
-const csp = buildContentSecurityPolicy()
+const csp = buildContentSecurityPolicy();
 
 const htaccessTemplate = `<IfModule mod_headers.c>
   <FilesMatch "\\.br$">
@@ -125,52 +125,66 @@ const htaccessTemplate = `<IfModule mod_headers.c>
 <FilesMatch "\\.map$">
   Require all denied
 </FilesMatch>
-`
+`;
 
-fs.writeFileSync(path.join(root, 'public', '.htaccess'), htaccessTemplate, 'utf8')
-console.log('Generated public/.htaccess')
+fs.writeFileSync(
+  path.join(root, "public", ".htaccess"),
+  htaccessTemplate,
+  "utf8",
+);
+console.log("Generated public/.htaccess");
 
 const vercelConfig = {
   headers: [
     {
-      source: '/(.*)',
+      source: "/(.*)",
       headers: [
-        { key: 'X-Frame-Options', value: 'DENY' },
-        { key: 'X-Content-Type-Options', value: 'nosniff' },
-        { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-        { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
-        { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
-        { key: 'Cross-Origin-Resource-Policy', value: 'same-site' },
-        { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
-        { key: 'Content-Security-Policy', value: csp },
+        { key: "X-Frame-Options", value: "DENY" },
+        { key: "X-Content-Type-Options", value: "nosniff" },
+        { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        {
+          key: "Strict-Transport-Security",
+          value: "max-age=31536000; includeSubDomains; preload",
+        },
+        {
+          key: "Permissions-Policy",
+          value: "camera=(), microphone=(), geolocation=()",
+        },
+        { key: "Cross-Origin-Resource-Policy", value: "same-site" },
+        { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+        { key: "Content-Security-Policy", value: csp },
       ],
     },
     {
-      source: '/assets/(.*)',
+      source: "/assets/(.*)",
       headers: [
-        { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
       ],
     },
     {
-      source: '/(.*\\.(js|css|woff2|webp|webm|mp4|png|jpg|jpeg|gif|svg|ico|avif|br|gz))',
+      source:
+        "/(.*\\.(js|css|woff2|webp|webm|mp4|png|jpg|jpeg|gif|svg|ico|avif|br|gz))",
       headers: [
-        { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
       ],
     },
     {
-      source: '/(.*\\.(html|xml|txt))',
+      source: "/(.*\\.(html|xml|txt))",
       headers: [
-        { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+        { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
       ],
     },
     {
-      source: '/(.*\\.webmanifest)',
-      headers: [
-        { key: 'Cache-Control', value: 'public, max-age=3600' },
-      ],
+      source: "/(.*\\.webmanifest)",
+      headers: [{ key: "Cache-Control", value: "public, max-age=3600" }],
     },
   ],
-}
+  rewrites: [{ source: "/(.*)", destination: "/index.html" }],
+};
 
-fs.writeFileSync(path.join(root, 'vercel.json'), JSON.stringify(vercelConfig, null, 2) + '\n', 'utf8')
-console.log('Generated vercel.json')
+fs.writeFileSync(
+  path.join(root, "vercel.json"),
+  JSON.stringify(vercelConfig, null, 2) + "\n",
+  "utf8",
+);
+console.log("Generated vercel.json");

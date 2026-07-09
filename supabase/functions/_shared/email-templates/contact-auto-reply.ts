@@ -37,7 +37,7 @@ export function buildAutoReplyHtml(data: AutoReplyData): string {
     : "This message was sent automatically. Please do not reply to this address.";
 
   const safeSiteUrl = data.siteUrl || "https://vezvision.com";
-  const content = `${buildHeader(data.lang, logoUrl, "", data.siteUrl)}
+  const content = `${buildHeader(logoUrl, "", data.siteUrl)}
     <tr>
       <td style="padding:0 32px 24px 32px;">
         <p style="margin:0 0 16px;font-size:18px;color:#0f0f0f;font-weight:600;">${greeting}</p>

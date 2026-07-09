@@ -107,12 +107,14 @@ Deno.serve(async (req: Request) => {
     );
   }
 
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
   const authHeader = req.headers.get("Authorization") ?? "";
-  const expectedToken = `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""}`;
+  const expectedToken = serviceRoleKey ? `Bearer ${serviceRoleKey}` : "";
   const encoder = new TextEncoder();
   const authBytes = encoder.encode(authHeader);
   const expectedBytes = encoder.encode(expectedToken);
   const authOk =
+    expectedToken !== "" &&
     authBytes.length === expectedBytes.length &&
     timingSafeEqual(authBytes, expectedBytes);
   if (!authOk) {
@@ -126,16 +128,14 @@ Deno.serve(async (req: Request) => {
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
-  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
-  const fromEmail =
-    Deno.env.get("RESEND_FROM_EMAIL") || "onboarding@resend.dev";
+  const fromEmail = Deno.env.get("RESEND_FROM_EMAIL");
   const notifyEmail =
     Deno.env.get("CONTACT_NOTIFY_EMAIL") || "contact@vezvision.com";
   const storageBaseUrl = getStorageBaseUrl();
   const siteUrl = getSiteUrl();
 
-  if (!supabaseUrl || !serviceRoleKey || !resendApiKey) {
+  if (!supabaseUrl || !serviceRoleKey || !resendApiKey || !fromEmail) {
     return new Response(
       JSON.stringify({ success: false, error: "Missing env" }),
       {

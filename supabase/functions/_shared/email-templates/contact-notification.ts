@@ -34,7 +34,7 @@ export function buildContactNotificationHtml(
     ? `<tr><td style="padding:10px 16px;font-weight:600;color:#0f0f0f;width:120px;border-bottom:1px solid #e5e7eb;">${labels.phone}</td><td style="padding:10px 16px;color:#374151;border-bottom:1px solid #e5e7eb;">${phone}</td></tr>`
     : "";
 
-  const content = `${buildHeader(data.lang, logoUrl, badgeText, data.siteUrl)}
+  const content = `${buildHeader(logoUrl, badgeText, data.siteUrl)}
     <tr>
       <td style="padding:0 32px 20px 32px;">
         <h1 style="margin:0;font-size:22px;line-height:1.2;color:#0f0f0f;font-weight:700;letter-spacing:-0.02em;">${heading}</h1>

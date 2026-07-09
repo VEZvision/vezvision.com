@@ -5,7 +5,7 @@
     return;
   }
 
-  trustedTypesApi.createPolicy('default', {
+  trustedTypesApi.createPolicy("default", {
     createHTML: (value) => value,
     createScript: (value) => value,
     createScriptURL: (value) => value,

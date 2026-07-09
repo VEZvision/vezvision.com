@@ -13,23 +13,21 @@ interface DBService {
   id: string;
   slug: string;
   status: string;
-  featured: boolean;
+  featured?: boolean;
   order_index?: number;
-  icon?: string;
-  price?: number;
-  duration?: string;
+  icon?: string | null;
+  price?: number | null;
+  duration?: string | null;
   title_pl?: string;
-  title_en?: string;
-  description_pl?: string;
-  description_en?: string;
-  features_pl?: string[];
-  features_en?: string[];
-  short_desc_pl?: string;
-  short_desc_en?: string;
-  meta_title_pl?: string;
-  meta_title_en?: string;
-  meta_desc_pl?: string;
-  meta_desc_en?: string;
+  title_en?: string | null;
+  description_pl?: string | null;
+  description_en?: string | null;
+  short_desc_pl?: string | null;
+  short_desc_en?: string | null;
+  meta_title_pl?: string | null;
+  meta_title_en?: string | null;
+  meta_desc_pl?: string | null;
+  meta_desc_en?: string | null;
   created_at: string;
   updated_at: string;
   vv_service_category_assignments?: {
@@ -87,7 +85,7 @@ const mapServiceFromDB = (
       language: "pl",
       title: data.title_pl || "",
       description: data.description_pl || "",
-      features: data.features_pl || [],
+      features: [],
       excerpt: data.short_desc_pl || "",
       seo_title: data.meta_title_pl || null,
       seo_description: data.meta_desc_pl || null,
@@ -99,7 +97,7 @@ const mapServiceFromDB = (
       language: "en",
       title: data.title_en || "",
       description: data.description_en || "",
-      features: data.features_en || [],
+      features: [],
       excerpt: data.short_desc_en || "",
       seo_title: data.meta_title_en || null,
       seo_description: data.meta_desc_en || null,
@@ -123,7 +121,7 @@ const mapServiceFromDB = (
     duration: data.duration || "",
     status: data.status === "active" ? "active" : "inactive",
     is_featured: data.featured || false,
-    icon: data.icon,
+    icon: data.icon ?? undefined,
     order_index: data.order_index,
     created_at: data.created_at,
     updated_at: data.updated_at,
@@ -146,7 +144,7 @@ export async function listActiveServicesContent(
       .select(
         `
         id, slug, status, order_index, icon, price, duration,
-        title_pl, title_en, description_pl, description_en, features_pl, features_en,
+        title_pl, title_en, description_pl, description_en,
         short_desc_pl, short_desc_en, meta_title_pl, meta_title_en, meta_desc_pl, meta_desc_en,
         created_at, updated_at,
         vv_service_category_assignments(vv_service_categories(id, slug, name_pl, name_en, created_at))
@@ -175,10 +173,10 @@ export async function listActiveServicesContent(
 
     return {
       services: (servicesData || []).map((service) =>
-        mapServiceFromDB(service as unknown as DBService, language),
+        mapServiceFromDB(service, language),
       ),
       categories: (categoriesData || []).map((category) =>
-        mapCategoryFromDB(category as DBServiceCategory, language),
+        mapCategoryFromDB(category, language),
       ),
     };
   } catch (error) {

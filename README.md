@@ -46,6 +46,8 @@ Run the same checks used by CI:
 npm run check
 npm run lint
 npm run test:unit
+npm run check:edge
+npm run test:edge
 npm run build
 npm audit --audit-level=moderate
 npm run test:e2e
@@ -114,12 +116,13 @@ It runs install, typecheck, lint, unit tests, production build, npm audit, and C
 | `submit-contact`           | Contact form → DB + Resend                                |
 | `subscribe-newsletter`     | Newsletter signup via `safe_insert_newsletter_subscriber` |
 | `unsubscribe-newsletter`   | Token unsubscribe via `unsubscribe_by_token`              |
+| `retry-message-sends`      | Internal pg_cron retry worker for failed contact emails   |
 
 `send-newsletter` is an **admin-only** Edge Function (service role + Resend). It is not part of this public repo; deploy and rotate secrets from your internal ops tooling, not from the marketing site pipeline.
 
 Deploy from `supabase/functions/` (shared `_shared/cors.ts`, `_shared/clientIp.ts`, `_shared/turnstile.ts`). Use `import_map_path: deno.json` when deploying via Supabase API. Apply DB migrations before deploying when RPC signatures change.
 
-`verify_jwt` is `false` on public read/check endpoints (`check-maintenance-access`, `get-code-injection`, `increment-blog-view`, newsletter subscribe/unsubscribe) so anonymous SPA clients can call them with the publishable key. `submit-contact` keeps `verify_jwt: true` (anon JWT still works via `supabase.functions.invoke`).
+Deployed Edge Functions use `verify_jwt: true`. Anonymous SPA calls still work through `supabase.functions.invoke` because the client sends the publishable anon JWT. `retry-message-sends` is internal and also verifies the service-role bearer token in the function body.
 
 ### Optional Turnstile (contact + newsletter)
 

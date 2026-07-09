@@ -27,6 +27,11 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
       - name: Install dependencies
         run: npm ci
 
@@ -35,6 +40,12 @@ jobs:
 
       - name: Knip (dead code detection — advisory)
         run: npm run knip -- --no-exit-code
+
+      - name: Edge functions lint
+        run: npm run check:edge
+
+      - name: Edge functions tests
+        run: npm run test:edge
 
       - name: Typecheck, parity, and unit tests
         run: npm run check
@@ -81,7 +92,7 @@ jobs:
         run: npm run test:e2e -- --project=chromium --grep-invert "Route error boundary"
         env:
           CI: true
-          E2E_USE_PREBUILT_DIST: '1'
+          E2E_USE_PREBUILT_DIST: "1"
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
@@ -89,7 +100,7 @@ jobs:
         run: npm run test:e2e:prebuilt -- --project=firefox --grep-invert "Route error boundary"
         env:
           CI: true
-          E2E_USE_PREBUILT_DIST: '1'
+          E2E_USE_PREBUILT_DIST: "1"
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         continue-on-error: true
