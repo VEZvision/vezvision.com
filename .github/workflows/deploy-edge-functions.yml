@@ -30,6 +30,9 @@ jobs:
         with:
           deno-version: v2.x
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Edge functions lint
         run: npm run check:edge
 
