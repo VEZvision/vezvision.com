@@ -1,11 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
-import {
-  jsonResponse,
-  errorResponse,
-  successResponse,
-} from "../_shared/response.ts";
+import { errorResponse, successResponse } from "../_shared/response.ts";
 import { getClientIp } from "../_shared/clientIp.ts";
 import { buildEdgeRateLimitKey } from "../_shared/rateLimitKey.ts";
 import { verifyTurnstileToken } from "../_shared/turnstile.ts";

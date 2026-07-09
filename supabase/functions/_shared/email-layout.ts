@@ -13,13 +13,13 @@ export function buildEmailLayout(data: EmailLayoutData): string {
 <body style="margin:0;padding:24px;background:#f3f4f6;font-family:Inter,system-ui,-apple-system,sans-serif;color:#0f0f0f;-webkit-font-smoothing:antialiased;">
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:600px;margin:0 auto;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;">
 ${data.contentHtml}
-${data.footerHtml ?? defaultFooter(data.lang, data.logoUrl, data.siteUrl)}
+${data.footerHtml ?? defaultFooter(data.lang, data.siteUrl)}
   </table>
 </body>
 </html>`;
 }
 
-function defaultFooter(lang: string, logoUrl: string, siteUrl: string): string {
+function defaultFooter(lang: string, siteUrl: string): string {
   const copyright =
     lang === "pl"
       ? "Wiadomość wysłana z formularza kontaktowego na"
@@ -35,7 +35,6 @@ function defaultFooter(lang: string, logoUrl: string, siteUrl: string): string {
 }
 
 export function buildHeader(
-  lang: string,
   logoUrl: string,
   badgeText: string,
   siteUrl: string,
