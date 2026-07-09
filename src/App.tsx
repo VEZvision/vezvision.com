@@ -89,7 +89,7 @@ const Layout = memo(() => {
 
   return (
     <PublicChrome>
-      <main id="main-content" style={{ minHeight: "100vh" }} role="main">
+      <main id="main-content" style={{ minHeight: "100vh" }}>
         <Suspense fallback={<AppBootShell />}>
           <Outlet />
         </Suspense>
