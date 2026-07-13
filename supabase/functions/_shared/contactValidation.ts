@@ -1,5 +1,5 @@
 /** Edge bundle — logic mirrored in shared/contactValidation.ts (Zod). */
-import { z } from "npm:zod@3.25.76";
+import { z } from "npm:zod@4.4.3";
 
 export const CONTACT_EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const CONTACT_PHONE_PATTERN = /^\+?[0-9()\s-]{5,30}$/;
@@ -40,7 +40,10 @@ export function isContactPhoneProvided(value: unknown): boolean {
   return true;
 }
 
-export function normalizeContactPhone(value: unknown): { phone: string | null; invalid: boolean } {
+export function normalizeContactPhone(value: unknown): {
+  phone: string | null;
+  invalid: boolean;
+} {
   if (!isContactPhoneProvided(value)) {
     return { phone: null, invalid: false };
   }
