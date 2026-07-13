@@ -278,16 +278,9 @@ export function CookiePreferences({ className = "" }: CookiePreferencesProps) {
                         <div className="flex items-center gap-2">
                           <ToggleSwitch
                             id={`toggle-${category.id}`}
-                            checked={
-                              localPreferences[
-                                category.id as keyof CookiePreferencesType
-                              ]
-                            }
+                            checked={localPreferences[category.id]}
                             onChange={(checked) =>
-                              handlePreferenceChange(
-                                category.id as keyof CookiePreferencesType,
-                                checked,
-                              )
+                              handlePreferenceChange(category.id, checked)
                             }
                             disabled={isNecessary}
                             aria-describedby={`desc-${category.id}`}

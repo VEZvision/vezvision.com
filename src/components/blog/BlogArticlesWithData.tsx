@@ -98,7 +98,7 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
   };
 
   const convertPostToArticle = (post: BlogPostWithDetails): Article => {
-    const translation = getPostTranslation(post, language as "pl" | "en");
+    const translation = getPostTranslation(post, language);
     const primaryCategory =
       post.categories.length > 0 ? post.categories[0] : null;
 
@@ -111,8 +111,7 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
         translation?.excerpt ||
         translation?.content?.substring(0, 150) + "..." ||
         "Brak opisu",
-      imageUrl:
-        safeImageUrl(post.featured_image) || "/icon-dark.svg",
+      imageUrl: safeImageUrl(post.featured_image) || "/icon-dark.svg",
       href: toLocalizedPath(`blog/${post.slug}`),
     };
   };
@@ -253,14 +252,9 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
                   : "Ideas, tips and updates on IT, AI and marketing",
               url: joinUrlPath(siteBaseUrl, toLocalizedPath("blog")),
               blogPost: posts
-                .filter((post) =>
-                  hasBlogPostTranslation(post, language as "pl" | "en"),
-                )
+                .filter((post) => hasBlogPostTranslation(post, language))
                 .map((post) => {
-                  const translation = getPostTranslation(
-                    post,
-                    language as "pl" | "en",
-                  );
+                  const translation = getPostTranslation(post, language);
                   const postPath = toLocalizedPath(`blog/${post.slug}`);
                   return {
                     "@type": "BlogPosting",
