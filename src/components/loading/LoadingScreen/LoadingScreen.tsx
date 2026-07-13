@@ -1,5 +1,5 @@
 import styles from "./LoadingScreen.module.css";
-import logoNavbar from "@/assets/logo-navbar.svg";
+import logoNavbar from "@brand/wordmark-horizontal-dark.svg";
 import type { LoadingScreenProps } from "../types/loading.types";
 import { useLanguageContext } from "@/hooks/useLanguage";
 

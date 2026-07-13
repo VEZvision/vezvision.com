@@ -59,6 +59,11 @@ RLS: `is_published = true`.
 | `subscribe-newsletter` | `safe_insert_newsletter_subscriber` |
 | `unsubscribe-newsletter` | `unsubscribe_by_token` |
 | `check-maintenance-access` | reads `maintenance_mode` |
+| `get-code-injection` | reads `vv_site_settings` (`code_injection` key) |
+| `increment-blog-view` | `increment_blog_view` RPC (IP-deduped) |
+| `retry-message-sends` | re-sends queued contact/newsletter messages |
+
+Shared modules (`_shared/`): `webhookSign.ts`, `rateLimitKey.ts`, `contactValidation.ts`, `turnstile.ts`.
 
 ## Regenerate types
 

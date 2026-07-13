@@ -92,7 +92,7 @@
   margin: 0;
 }
 
-/* --- Card 1: Technologia — wykres → VezVision --- */
+/* --- Card 1: Technologia — wykres → VEZvision --- */
 .techBridge {
   display: flex;
   align-items: center;
@@ -413,7 +413,7 @@
   justify-content: center;
 }
 
-/* Large central rounded square with VezVision logo */
+/* Large central rounded square with VEZvision logo */
 .centralLogoPlate {
   position: absolute;
   top: 20px;

@@ -112,7 +112,7 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
         translation?.content?.substring(0, 150) + "..." ||
         "Brak opisu",
       imageUrl:
-        safeImageUrl(post.featured_image) || "/Logo_vezvision_optimized.svg",
+        safeImageUrl(post.featured_image) || "/icon-dark.svg",
       href: toLocalizedPath(`blog/${post.slug}`),
     };
   };
@@ -277,7 +277,7 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
                     url: joinUrlPath(siteBaseUrl, postPath),
                     image:
                       safeImageUrl(post.featured_image) ||
-                      joinUrlPath(siteBaseUrl, "/Logo_vezvision_optimized.svg"),
+                      joinUrlPath(siteBaseUrl, "/icon-dark.svg"),
                     ...(post.published_at
                       ? { datePublished: post.published_at }
                       : {}),

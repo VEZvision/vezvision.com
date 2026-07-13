@@ -38,7 +38,7 @@
       "purpose": "any"
     },
     {
-      "src": "/Logo_vezvision_optimized.svg",
+      "src": "/icon-dark.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "maskable"

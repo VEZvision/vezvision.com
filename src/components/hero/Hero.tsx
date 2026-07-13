@@ -1,7 +1,7 @@
 import { Fragment, memo, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import logoNavbar from "../../assets/logo-navbar.svg";
+import logoNavbar from "@brand/wordmark-horizontal-dark.svg";
 
 import { buildHeroSocialLinks } from "@/components/common/heroSocialLinks";
 import { useLanguageContext } from "../../hooks/useLanguage";
