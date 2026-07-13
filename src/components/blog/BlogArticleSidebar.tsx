@@ -34,10 +34,7 @@ export default function BlogArticleSidebar({
           </h3>
           <div className="space-y-4">
             {recentPosts.map((post) => {
-              const translation = getPostTranslation(
-                post,
-                language as "pl" | "en",
-              );
+              const translation = getPostTranslation(post, language);
               return (
                 <Link
                   key={post.id}

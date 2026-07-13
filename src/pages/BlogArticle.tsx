@@ -127,7 +127,7 @@ function BlogArticle() {
     );
   }
 
-  const translation = getBlogPostTranslation(post, language as "pl" | "en");
+  const translation = getBlogPostTranslation(post, language);
   const title = translation?.title || t("blog.list.empty");
   const content = translation?.content || "";
   const excerpt = translation?.excerpt || "";

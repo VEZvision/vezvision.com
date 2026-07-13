@@ -36,11 +36,7 @@ export function ResponsiveImage({
           src={src}
           srcSet={srcSet}
           sizes={srcSet ? sizes : undefined}
-          loading={
-            (lazy
-              ? "lazy"
-              : undefined) as ImgHTMLAttributes<HTMLImageElement>["loading"]
-          }
+          loading={lazy ? "lazy" : undefined}
           decoding="async"
           className={className}
           {...imgProps}
@@ -55,11 +51,7 @@ export function ResponsiveImage({
       src={src}
       srcSet={srcSet}
       sizes={srcSet ? sizes : undefined}
-      loading={
-        (lazy
-          ? "lazy"
-          : undefined) as ImgHTMLAttributes<HTMLImageElement>["loading"]
-      }
+      loading={lazy ? "lazy" : undefined}
       decoding="async"
       className={className}
       {...imgProps}
