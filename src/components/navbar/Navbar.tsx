@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, memo, useRef } from "react";
 import { Menu, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logoNavbar from "@/assets/logo-navbar.svg";
+import logoNavbar from "@brand/wordmark-horizontal-dark.svg";
 import { useLanguageContext } from "@/hooks/useLanguage";
 import { useSettings } from "@/hooks/useSettings";
 import { isSafeExternalHref, safePublicHref } from "@/utils/safeHref";

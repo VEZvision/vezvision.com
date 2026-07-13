@@ -5,7 +5,7 @@ import { useLocalizedPath } from "@/hooks/useLocalizedPath";
 import { usePrefersReducedData } from "@/hooks/usePrefersReducedData";
 import { useBackgroundVideoSection } from "@/hooks/useBackgroundVideoSection";
 import SectionBadge from "@/components/ui/SectionBadge";
-import logoNavbar from "@/assets/logo-navbar.svg";
+import logoNavbar from "@brand/wordmark-horizontal-dark.svg";
 import { safeExternalHref, safePublicHref } from "@/utils/safeHref";
 import { scrollToElement } from "@/scroll";
 import styles from "./VideoHeroSection.module.css";

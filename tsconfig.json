@@ -23,7 +23,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@assets/*": ["./src/assets/*"],
-      "@shared/*": ["./shared/*"]
+      "@shared/*": ["./shared/*"],
+      "@brand/*": ["./src/assets/brand/*"]
     }
   },
   "include": ["src", "shared"]

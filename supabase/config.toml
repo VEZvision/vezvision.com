@@ -1,0 +1,83 @@
+# Supabase CLI configuration for the VEZvision project.
+# Live project ref: pcxcqbpygyidkusetghk
+#
+# Usage:
+#   supabase link --project-ref pcxcqbpygyidkusetghk
+#   supabase migration list --linked
+#   supabase db pull --linked
+#
+# The remote project is the source of truth for runtime configuration
+# (RLS policies, RPCs, auth providers, storage buckets, edge function envs).
+# This file makes the existing migrations/ directory work with supabase CLI.
+
+project_id = "pcxcqbpygyidkusetghk"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "app_private", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_project_name = "vezvision-shadow"
+
+[db.pooler]
+enabled = false
+pool_mode = "transaction"
+default_pool_size = 20
+max_client_conn = 100
+
+[auth]
+enabled = true
+site_url = "https://vezvision.com"
+additional_redirect_urls = ["https://vezvision.com/auth/callback", "http://localhost:5174/auth/callback"]
+jwt_expiry = 3600
+refresh_token_rotation_enabled = true
+refresh_token_reuse_interval = 10
+enable_signup = false
+enable_anonymous_sign_ins = false
+
+[auth.email]
+enable_signup = false
+double_confirm_changes = true
+enable_confirmations = true
+
+[auth.external.github]
+enabled = false
+
+[auth.external.google]
+enabled = false
+
+[storage]
+enabled = true
+file_size_limit = "25MiB"
+
+[edge_runtime]
+enabled = true
+inspector_port = 8083
+
+[functions.check-maintenance-access]
+verify_jwt = false
+
+[functions.get-code-injection]
+verify_jwt = false
+
+[functions.increment-blog-view]
+verify_jwt = false
+
+[functions.subscribe-newsletter]
+verify_jwt = false
+
+[functions.unsubscribe-newsletter]
+verify_jwt = false
+
+[functions.submit-contact]
+verify_jwt = true
+
+[functions.retry-message-sends]
+verify_jwt = true
+
+# send-newsletter is admin-only and intentionally NOT shipped in this repo.
+# Deploy and rotate its secrets from internal ops tooling.

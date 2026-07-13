@@ -52,6 +52,13 @@ interface DBProject {
     alt_en?: string;
     created_at: string;
   }[];
+  vv_project_technologies?: {
+    id: string;
+    name: string;
+    color: string;
+    icon?: string;
+    order_index: number;
+  }[];
 }
 
 interface ProjectImageTransform {
@@ -117,7 +124,13 @@ const mapProjectFromDB = (data: DBProject): PortfolioProject => {
       alt_en: img.alt_en,
       created_at: img.created_at,
     })),
-    technologies: [],
+    technologies: (data.vv_project_technologies || []).map((tech) => ({
+      id: tech.id,
+      name: tech.name,
+      color: tech.color,
+      icon: tech.icon,
+      order: tech.order_index,
+    })),
   };
 };
 
@@ -128,7 +141,8 @@ const PORTFOLIO_LIST_SELECT = `
   show_cover_image, show_demo_url, show_challenge, show_solution,
   seo_title_pl, seo_title_en, seo_desc_pl, seo_desc_en,
   vv_project_category_assignments(vv_project_categories(slug)),
-  vv_project_images(id, path, type, order_index, alt_pl, alt_en, created_at)
+  vv_project_images(id, path, type, order_index, alt_pl, alt_en, created_at),
+  vv_project_technologies(id, name, color, icon, order_index)
 `;
 
 const PORTFOLIO_DETAIL_SELECT = `
@@ -138,7 +152,8 @@ const PORTFOLIO_DETAIL_SELECT = `
   show_cover_image, show_demo_url, show_challenge, show_solution,
   seo_title_pl, seo_title_en, seo_desc_pl, seo_desc_en,
   vv_project_category_assignments(vv_project_categories(slug)),
-  vv_project_images(id, path, type, order_index, alt_pl, alt_en, created_at)
+  vv_project_images(id, path, type, order_index, alt_pl, alt_en, created_at),
+  vv_project_technologies(id, name, color, icon, order_index)
 `;
 
 export async function listProjects(

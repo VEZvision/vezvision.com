@@ -20,7 +20,7 @@ function getTracePropagationTargets(): (string | RegExp)[] {
   return targets;
 }
 
-export function hasAnalyticsConsentFromStorage(): boolean {
+function hasAnalyticsConsentFromStorage(): boolean {
   try {
     const raw = localStorage.getItem(COOKIE_CONSENT_KEY);
     if (!raw) return false;

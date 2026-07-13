@@ -8,7 +8,7 @@ Niniejsza Polityka Prywatności określa zasady przetwarzania i ochrony danych o
 ## 2. Administrator Danych
 Administratorem danych osobowych zawartych w serwisie jest **POLIFORM SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ** z siedzibą w Bielsku-Białej, przy Złote Łany 11, 43-300 Bielsko-Biała, KRS: 0000831630, NIP: 5472217672, REGON: 385670222 (dalej "Administrator").
 
-Możesz skontaktować się z Administratorem pisząc na adres e-mail: **privacy@vezvision.com** lub listownie na adres siedziby.
+Możesz skontaktować się z Administratorem pisząc na adres e-mail: **contact@vezvision.com** lub listownie na adres siedziby.
 
 ## 3. Bezpieczeństwo Danych
 W trosce o bezpieczeństwo powierzonych nam danych opracowaliśmy wewnętrzne procedury i zalecenia, które mają zapobiec udostępnieniu danych osobom nieupoważnionym. Kontrolujemy ich wykonywanie i stale sprawdzamy ich zgodność z Rozporządzeniem Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. (RODO) oraz polską ustawą o świadczeniu usług drogą elektroniczną.
@@ -78,7 +78,7 @@ This Privacy Policy sets out the rules for the processing and protection of pers
 ## 2. Data Controller
 The data controller responsible for personal data contained in the website is **POLIFORM SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ** with its registered office in Bielsko-Biała, at Złote Łany 11, 43-300 Bielsko-Biała, KRS: 0000831630, NIP: 5472217672, REGON: 385670222 (hereinafter the "Data Controller").
 
-You can contact the Data Controller by writing to the e-mail address: **privacy@vezvision.com** or by post to the registered office address.
+You can contact the Data Controller by writing to the e-mail address: **contact@vezvision.com** or by post to the registered office address.
 
 ## 3. Data Security
 Out of concern for the security of the data entrusted to us, we have developed internal procedures and recommendations to prevent data from being made available to unauthorized persons. We control their implementation and constantly check their compliance with Regulation (EU) 2016/679 of the European Parliament and of the Council of 27 April 2016 (GDPR) and the Polish Act on Providing Electronic Services.

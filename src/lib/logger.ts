@@ -38,15 +38,3 @@ export function logError(context: string, error?: unknown): void {
   console.error(`[ERROR] ${formatMessage(context, error)}`, error);
   void captureWithSentry(context, error);
 }
-
-export function logWarn(context: string, message?: unknown): void {
-  if (isDev) {
-    console.warn(`[WARN] ${formatMessage(context, message)}`);
-  }
-}
-
-export function logInfo(context: string, message?: unknown): void {
-  if (isDev) {
-    console.info(`[INFO] ${formatMessage(context, message)}`);
-  }
-}
