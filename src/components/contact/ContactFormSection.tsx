@@ -271,13 +271,13 @@ function ContactFormSection({ t }: Props) {
               )}
             </div>
 
-            <div className={`${styles.formField} !mb-6`}>
+            <div className={`${styles.formField} mb-6!`}>
               <label className="flex items-start gap-3 cursor-pointer group">
                 <input
                   id="contact-consent"
                   type="checkbox"
                   {...register("consent")}
-                  className="mt-1 w-4 h-4 text-black border-gray-300 rounded focus:ring-black cursor-pointer"
+                  className="mt-1 w-4 h-4 text-black border-gray-300 rounded-sm focus:ring-black cursor-pointer"
                   aria-invalid={Boolean(errors.consent)}
                   aria-describedby={
                     errors.consent ? "contact-consent-error" : undefined

@@ -132,7 +132,7 @@ export function PrivacyCenter({ className = "" }: PrivacyCenterProps) {
   return (
     <div className={`fixed inset-0 z-50 ${className}`}>
       <div
-        className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300 ${
           isAnimating ? "opacity-100" : "opacity-0"
         }`}
         onClick={actions.hidePrivacyCenterModal}
@@ -167,7 +167,7 @@ export function PrivacyCenter({ className = "" }: PrivacyCenterProps) {
             <button
               type="button"
               onClick={actions.hidePrivacyCenterModal}
-              className="p-2 text-gray-600 hover:text-black focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg transition-colors duration-200"
+              className="p-2 text-gray-600 hover:text-black focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg transition-colors duration-200"
               aria-label={t("privacy.center.close")}
             >
               <X className="w-6 h-6" aria-hidden="true" />
@@ -201,7 +201,7 @@ export function PrivacyCenter({ className = "" }: PrivacyCenterProps) {
                     >
                       <Icon className="w-5 h-5" aria-hidden="true" />
                       <span className="font-medium">{tab.label}</span>
-                      <kbd className="ml-auto px-1.5 py-0.5 text-xs font-mono bg-gray-200 border border-gray-300 rounded">
+                      <kbd className="ml-auto px-1.5 py-0.5 text-xs font-mono bg-gray-200 border border-gray-300 rounded-sm">
                         {index + 1}
                       </kbd>
                     </button>
@@ -216,13 +216,13 @@ export function PrivacyCenter({ className = "" }: PrivacyCenterProps) {
                 <div className="space-y-1 text-xs text-gray-600">
                   <div className="flex items-center justify-between">
                     <span>{t("privacy.center.shortcuts.close")}</span>
-                    <kbd className="px-1.5 py-0.5 font-mono bg-gray-200 border border-gray-300 rounded">
+                    <kbd className="px-1.5 py-0.5 font-mono bg-gray-200 border border-gray-300 rounded-sm">
                       Esc
                     </kbd>
                   </div>
                   <div className="flex items-center justify-between">
                     <span>{t("privacy.center.shortcuts.tabs")}</span>
-                    <kbd className="px-1.5 py-0.5 font-mono bg-gray-200 border border-gray-300 rounded">
+                    <kbd className="px-1.5 py-0.5 font-mono bg-gray-200 border border-gray-300 rounded-sm">
                       Ctrl+1-4
                     </kbd>
                   </div>

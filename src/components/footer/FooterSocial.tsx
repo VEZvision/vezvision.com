@@ -17,7 +17,7 @@ export function FooterSocial({ links }: FooterSocialProps) {
         <a
           key={label}
           href={href || "#"}
-          className={`inline-flex items-center justify-center w-10 h-10 rounded-full border border-black/[0.08] bg-white transition-colors hover:bg-black/[0.04] ${!href ? "opacity-50 pointer-events-none" : ""}`}
+          className={`inline-flex items-center justify-center w-10 h-10 rounded-full border border-black/8 bg-white transition-colors hover:bg-black/4 ${!href ? "opacity-50 pointer-events-none" : ""}`}
           aria-label={label}
           target="_blank"
           rel={rel || "noopener noreferrer"}
