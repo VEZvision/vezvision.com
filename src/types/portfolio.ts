@@ -32,7 +32,7 @@ export interface ProjectTechnology {
   id: string;
   name: string;
   color: string;
-  icon?: string;
+  icon?: string | undefined;
   order: number;
 }
 

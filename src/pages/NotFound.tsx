@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import styles from "./NotFound.module.scss";
-import logoNavbar from "@/assets/logo-navbar.svg";
+import logoNavbar from "@brand/wordmark-horizontal-dark.svg";
 import arrowRight from "@/assets/arrow-right.svg";
 import { useLanguageContext } from "@/hooks/useLanguage";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";

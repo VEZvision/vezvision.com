@@ -1,4 +1,4 @@
-import logoNavbar from "@/assets/logo-navbar.svg";
+import logoNavbar from "@brand/wordmark-horizontal-dark.svg";
 import styles from "@/components/loading/LoadingScreen/LoadingScreen.module.css";
 
 /** Branded loading shell used before language/settings/routes are ready. */

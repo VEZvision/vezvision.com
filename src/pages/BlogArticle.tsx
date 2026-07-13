@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect } from "react";
 import DynamicPageSeo from "@/components/seo/DynamicPageSeo";
 import { useParams, Link } from "react-router-dom";
 import "../styles/GridBackground.css";
-import logo from "@/assets/blog/logo.svg";
+import logo from "@brand/icon-dark.svg";
 import {
   getBlogPostTranslation,
   useBlogPostDetail,

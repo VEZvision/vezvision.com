@@ -4,7 +4,7 @@ import { resolve } from 'node:path'
 import { readFile } from 'node:fs/promises'
 
 async function main() {
-  const svgPath = resolve(process.cwd(), 'public', 'Logo_vezvision_optimized.svg')
+  const svgPath = resolve(process.cwd(), 'public', 'icon-dark.svg')
   const svgBuffer = await readFile(svgPath)
 
   const sizes = [192, 512]
