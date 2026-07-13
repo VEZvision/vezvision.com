@@ -4,20 +4,8 @@ import SectionHeader from "@/components/ui/SectionHeader";
 
 // Import icons
 import iconDifferenceTag from "@/assets/comparison/difference-tag-icon.svg";
-import iconCheckVez from "@/assets/comparison/check-vez-1.svg";
-import iconCheckVez2 from "@/assets/comparison/check-vez-2.svg";
-import iconCheckVez3 from "@/assets/comparison/check-vez-3.svg";
-import iconCheckVez4 from "@/assets/comparison/check-vez-4.svg";
-import iconCheckVez5 from "@/assets/comparison/check-vez-5.svg";
-import iconCheckVez6 from "@/assets/comparison/check-vez-6.svg";
-import iconCheckVez7 from "@/assets/comparison/check-vez-7.svg";
-
-import iconCrossOther from "@/assets/comparison/cross-other-1.svg";
-import iconCrossOther2 from "@/assets/comparison/cross-other-2.svg";
-import iconCrossOther3 from "@/assets/comparison/cross-other-3.svg";
-import iconCrossOther4 from "@/assets/comparison/cross-other-4.svg";
-import iconCrossOther5 from "@/assets/comparison/cross-other-5.svg";
-import iconCrossOther6 from "@/assets/comparison/cross-other-6.svg";
+import iconCheckVez from "@/assets/comparison/check-vez.svg";
+import iconCrossOther from "@/assets/comparison/cross-other.svg";
 import {
   SectionReveal,
   StaggerReveal,
@@ -90,7 +78,7 @@ function AboutComparison() {
               </div>
               <div className={styles.benefitItem}>
                 <img
-                  src={iconCheckVez2}
+                  src={iconCheckVez}
                   alt={t("comparison.alt.check")}
                   width="15"
                   height="15"
@@ -104,7 +92,7 @@ function AboutComparison() {
               </div>
               <div className={styles.benefitItem}>
                 <img
-                  src={iconCheckVez3}
+                  src={iconCheckVez}
                   alt={t("comparison.alt.check")}
                   width="15"
                   height="15"
@@ -118,7 +106,7 @@ function AboutComparison() {
               </div>
               <div className={styles.benefitItem}>
                 <img
-                  src={iconCheckVez4}
+                  src={iconCheckVez}
                   alt={t("comparison.alt.check")}
                   width="15"
                   height="15"
@@ -132,7 +120,7 @@ function AboutComparison() {
               </div>
               <div className={styles.benefitItem}>
                 <img
-                  src={iconCheckVez5}
+                  src={iconCheckVez}
                   alt={t("comparison.alt.check")}
                   width="15"
                   height="15"
@@ -146,7 +134,7 @@ function AboutComparison() {
               </div>
               <div className={styles.benefitItem}>
                 <img
-                  src={iconCheckVez6}
+                  src={iconCheckVez}
                   alt={t("comparison.alt.check")}
                   width="15"
                   height="15"
@@ -160,7 +148,7 @@ function AboutComparison() {
               </div>
               <div className={styles.benefitItem}>
                 <img
-                  src={iconCheckVez7}
+                  src={iconCheckVez}
                   alt={t("comparison.alt.check")}
                   width="15"
                   height="15"
@@ -208,7 +196,7 @@ function AboutComparison() {
               </div>
               <div className={styles.benefitItem}>
                 <img
-                  src={iconCrossOther2}
+                  src={iconCrossOther}
                   alt={t("comparison.alt.cross")}
                   width="15"
                   height="15"
@@ -222,7 +210,7 @@ function AboutComparison() {
               </div>
               <div className={styles.benefitItem}>
                 <img
-                  src={iconCrossOther3}
+                  src={iconCrossOther}
                   alt={t("comparison.alt.cross")}
                   width="15"
                   height="15"
@@ -236,7 +224,7 @@ function AboutComparison() {
               </div>
               <div className={styles.benefitItem}>
                 <img
-                  src={iconCrossOther4}
+                  src={iconCrossOther}
                   alt={t("comparison.alt.cross")}
                   width="15"
                   height="15"
@@ -250,7 +238,7 @@ function AboutComparison() {
               </div>
               <div className={styles.benefitItem}>
                 <img
-                  src={iconCrossOther5}
+                  src={iconCrossOther}
                   alt={t("comparison.alt.cross")}
                   width="15"
                   height="15"
@@ -264,7 +252,7 @@ function AboutComparison() {
               </div>
               <div className={styles.benefitItem}>
                 <img
-                  src={iconCrossOther6}
+                  src={iconCrossOther}
                   alt={t("comparison.alt.cross")}
                   width="15"
                   height="15"

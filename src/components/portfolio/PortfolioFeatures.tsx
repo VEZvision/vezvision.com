@@ -24,7 +24,7 @@ import {
   StaggerItem,
   StaggerReveal,
 } from "@/components/ui/SectionReveal";
-import logoNavbar from "@/assets/logo-navbar.svg";
+import logoNavbar from "@brand/wordmark-horizontal-dark.svg";
 
 const CODE_LINES = [
   {

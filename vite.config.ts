@@ -24,6 +24,7 @@ export default defineConfig({
     dedupe: ["react", "react-dom"],
     alias: {
       "@shared": path.resolve(rootDir, "shared"),
+      "@brand": path.resolve(rootDir, "src/assets/brand"),
     },
   },
   optimizeDeps: {
