@@ -24,7 +24,7 @@
       "@/*": ["./src/*"],
       "@assets/*": ["./src/assets/*"],
       "@shared/*": ["./shared/*"],
-      "@brand/*": ["../../../../../01-Brand/02-Sub-Brands/VEZvision/Logo/SVG/*"]
+      "@brand/*": ["./src/assets/brand/*"]
     }
   },
   "include": ["src", "shared"]
