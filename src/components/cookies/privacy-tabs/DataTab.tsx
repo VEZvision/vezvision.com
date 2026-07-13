@@ -42,7 +42,7 @@ export function DataTab({
                 <button
                   onClick={onExport}
                   disabled={isExporting}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-700 bg-blue-100 border border-blue-300 rounded-lg hover:bg-blue-200 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                 >
                   <Download className="w-4 h-4" aria-hidden="true" />
                   {isExporting
@@ -68,7 +68,7 @@ export function DataTab({
                 </p>
                 <button
                   onClick={onDelete}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-700 bg-red-100 border border-red-300 rounded-lg hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-700 bg-red-100 border border-red-300 rounded-lg hover:bg-red-200 focus:outline-hidden focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200"
                 >
                   <Trash2 className="w-4 h-4" aria-hidden="true" />
                   {t("privacy.data.delete.button")}

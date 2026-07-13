@@ -57,7 +57,7 @@ export const CookieBanner = memo(({ className = "" }: CookieBannerProps) => {
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-[9999] transition-opacity duration-300 ease-out contain-layout contain-paint ${
+      className={`fixed bottom-0 left-0 right-0 z-9999 transition-opacity duration-300 ease-out contain-layout contain-paint ${
         isShown ? "opacity-100" : "opacity-0"
       } ${isHidden ? "pointer-events-none" : ""} ${className}`}
       role="region"
@@ -71,7 +71,7 @@ export const CookieBanner = memo(({ className = "" }: CookieBannerProps) => {
             {/* Main content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 mt-1">
+                <div className="shrink-0 mt-1">
                   <Shield className="w-6 h-6 text-black" aria-hidden="true" />
                 </div>
 
@@ -109,11 +109,11 @@ export const CookieBanner = memo(({ className = "" }: CookieBannerProps) => {
             </div>
 
             {/* Action buttons */}
-            <div className="flex flex-col sm:flex-row items-stretch gap-2 lg:flex-shrink-0 lg:ml-6">
+            <div className="flex flex-col sm:flex-row items-stretch gap-2 lg:shrink-0 lg:ml-6">
               {/* Settings button */}
               <button
                 onClick={handleShowPreferences}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-black bg-white border border-black rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 transition-colors duration-200"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-black bg-white border border-black rounded-lg hover:bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 transition-colors duration-200"
                 type="button"
               >
                 <Settings className="w-4 h-4" aria-hidden="true" />
@@ -126,7 +126,7 @@ export const CookieBanner = memo(({ className = "" }: CookieBannerProps) => {
               {/* Reject optional button */}
               <button
                 onClick={handleRejectOptional}
-                className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-black bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 transition-colors duration-200"
+                className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-black bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 transition-colors duration-200"
                 aria-label={t("cookie.banner.necessary")}
                 type="button"
               >
@@ -136,7 +136,7 @@ export const CookieBanner = memo(({ className = "" }: CookieBannerProps) => {
               {/* Accept all button */}
               <button
                 onClick={handleAcceptAll}
-                className="inline-flex items-center justify-center px-6 py-2.5 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 transition-colors duration-200"
+                className="inline-flex items-center justify-center px-6 py-2.5 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-900 focus:outline-hidden focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 transition-colors duration-200"
                 aria-label={t("cookie.banner.accept")}
                 type="button"
               >
@@ -149,7 +149,7 @@ export const CookieBanner = memo(({ className = "" }: CookieBannerProps) => {
           <div className="hidden lg:flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
             <div className="text-xs text-gray-600">
               <span className="inline-flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 text-xs font-mono text-gray-800 bg-white border border-gray-300 rounded">
+                <kbd className="px-1.5 py-0.5 text-xs font-mono text-gray-800 bg-white border border-gray-300 rounded-sm">
                   Esc
                 </kbd>
                 <span>{t("cookie.banner.shortcuts.necessary")}</span>
@@ -158,11 +158,11 @@ export const CookieBanner = memo(({ className = "" }: CookieBannerProps) => {
                 •
               </span>
               <span className="inline-flex items-center gap-1">
-                <kbd className="px-1.5 py-0.5 text-xs font-mono text-gray-800 bg-white border border-gray-300 rounded">
+                <kbd className="px-1.5 py-0.5 text-xs font-mono text-gray-800 bg-white border border-gray-300 rounded-sm">
                   Ctrl
                 </kbd>
                 <span aria-hidden="true">+</span>
-                <kbd className="px-1.5 py-0.5 text-xs font-mono text-gray-800 bg-white border border-gray-300 rounded">
+                <kbd className="px-1.5 py-0.5 text-xs font-mono text-gray-800 bg-white border border-gray-300 rounded-sm">
                   Enter
                 </kbd>
                 <span>{t("cookie.banner.shortcuts.accept")}</span>
@@ -171,7 +171,7 @@ export const CookieBanner = memo(({ className = "" }: CookieBannerProps) => {
 
             <button
               onClick={handleRejectOptional}
-              className="p-1 text-gray-600 hover:text-black focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 rounded transition-colors duration-200"
+              className="p-1 text-gray-600 hover:text-black focus:outline-hidden focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 rounded-sm transition-colors duration-200"
               aria-label={t("cookie.banner.close")}
               type="button"
             >

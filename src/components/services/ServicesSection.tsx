@@ -75,7 +75,7 @@ function ServicesSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative z-[1] py-12 md:py-24 lg:py-32 px-4 w-full flex flex-col items-center"
+      className="relative z-1 py-12 md:py-24 lg:py-32 px-4 w-full flex flex-col items-center"
     >
       {services.length > 0 && (
         <Helmet>
@@ -94,7 +94,7 @@ function ServicesSection() {
 
           <h2
             id="services-heading"
-            className="font-['Inter'] text-4xl md:text-5xl font-bold leading-tight -tracking-[0.02em] text-black"
+            className="font-['Inter'] text-4xl md:text-5xl font-bold leading-tight tracking-[-0.02em] text-black"
           >
             {t("services.section.title")}
           </h2>
@@ -126,10 +126,10 @@ function ServicesSection() {
         {/* CTA Section */}
         <SectionReveal
           delay={0.15}
-          className="w-full max-w-4xl bg-gradient-to-br from-gray-50 to-gray-100 rounded-3xl p-12 text-center shadow-[inset_0_3px_1px_rgba(255,255,255,1),_0_2px_4px_rgba(0,0,0,0.05)] border border-gray-100"
+          className="w-full max-w-4xl bg-linear-to-br from-gray-50 to-gray-100 rounded-3xl p-12 text-center shadow-[inset_0_3px_1px_rgba(255,255,255,1),0_2px_4px_rgba(0,0,0,0.05)] border border-gray-100"
         >
           <div className="flex flex-col items-center gap-6 max-w-2xl mx-auto">
-            <h3 className="font-['Inter'] text-2xl font-semibold text-black -tracking-[0.01em]">
+            <h3 className="font-['Inter'] text-2xl font-semibold text-black tracking-[-0.01em]">
               {t("services.section.cta.title")}
             </h3>
             <p className="font-['Inter'] text-base text-gray-600">
@@ -139,7 +139,7 @@ function ServicesSection() {
               <button
                 type="button"
                 onClick={() => navigate(toLocalizedPath("contact"))}
-                className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-800 transition-colors shadow-sm"
+                className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-800 transition-colors shadow-xs"
               >
                 {t("services.section.cta.primary")}
                 <svg

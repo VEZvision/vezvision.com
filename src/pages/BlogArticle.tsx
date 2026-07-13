@@ -218,7 +218,7 @@ function BlogArticle() {
         <article>
           <Link
             to={toLocalizedPath("blog")}
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 bg-white border border-gray-200 hover:border-gray-300 rounded-lg px-4 py-2 transition-all shadow-sm mb-8 font-medium text-sm"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 bg-white border border-gray-200 hover:border-gray-300 rounded-lg px-4 py-2 transition-all shadow-xs mb-8 font-medium text-sm"
           >
             <ArrowLeft size={16} />
             {t("blog.article.back")}
@@ -281,15 +281,15 @@ function BlogArticle() {
                 e.currentTarget.src = logo;
               }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent" />
           </figure>
 
-          <div className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl prose-img:shadow-md">
+          <div className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-blue-600 prose-a:no-underline prose-a:hover:underline prose-img:rounded-xl prose-img:shadow-md">
             <div
               dangerouslySetInnerHTML={{ __html: sanitizeCmsHtml(content) }}
             />
 
-            <div className="mt-12 p-8 rounded-2xl bg-gradient-to-br from-indigo-50 via-white to-blue-50 border border-blue-100 shadow-sm relative overflow-hidden">
+            <div className="mt-12 p-8 rounded-2xl bg-linear-to-br from-indigo-50 via-white to-blue-50 border border-blue-100 shadow-xs relative overflow-hidden">
               <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">

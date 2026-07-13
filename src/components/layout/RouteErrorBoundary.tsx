@@ -49,7 +49,7 @@ function RouteErrorBoundary() {
             {import.meta.env.DEV && (
               <>
                 <br />
-                <span className="text-xs mt-2 block opacity-70 font-mono bg-gray-50 py-1 px-2 rounded inline-block">
+                <span className="text-xs mt-2 block opacity-70 font-mono bg-gray-50 py-1 px-2 rounded-sm inline-block">
                   {errorMessage}
                 </span>
               </>
@@ -60,7 +60,7 @@ function RouteErrorBoundary() {
             <button
               type="button"
               onClick={() => navigate(toLocalizedPath())}
-              className="inline-flex items-center justify-center px-6 py-3 border border-gray-200 text-base font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+              className="inline-flex items-center justify-center px-6 py-3 border border-gray-200 text-base font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
             >
               <Home className="w-5 h-5 mr-2" />
               {t("routeError.home")}
@@ -69,7 +69,7 @@ function RouteErrorBoundary() {
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-white bg-gray-900 hover:bg-black transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
+              className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-white bg-gray-900 hover:bg-black transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
             >
               <RefreshCw className="w-5 h-5 mr-2" />
               {t("routeError.retry")}
