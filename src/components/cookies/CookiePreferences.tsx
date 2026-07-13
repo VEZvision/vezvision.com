@@ -34,7 +34,7 @@ function ToggleSwitch({
       aria-describedby={ariaDescribedBy}
       disabled={disabled}
       onClick={() => !disabled && onChange(!checked)}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 ${
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-hidden focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 ${
         disabled
           ? "bg-gray-200 cursor-not-allowed"
           : checked
@@ -161,18 +161,18 @@ export function CookiePreferences({ className = "" }: CookiePreferencesProps) {
   if (!isVisible) return null;
 
   return (
-    <div className={`fixed inset-0 z-[10001] ${className}`}>
+    <div className={`fixed inset-0 z-10001 ${className}`}>
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300 ${
           isAnimating ? "opacity-100" : "opacity-0"
-        } z-[10000]`}
+        } z-10000`}
         onClick={actions.hidePreferencesModal}
         aria-hidden="true"
       />
 
       {/* Modal */}
-      <div className="fixed inset-0 flex items-center justify-center p-4 z-[10002]">
+      <div className="fixed inset-0 flex items-center justify-center p-4 z-10002">
         <div
           className={`relative w-full max-w-4xl max-h-[95vh] bg-white rounded-xl shadow-2xl transition-all duration-300 ease-out flex flex-col ${
             isAnimating ? "scale-100 opacity-100" : "scale-95 opacity-0"
@@ -183,7 +183,7 @@ export function CookiePreferences({ className = "" }: CookiePreferencesProps) {
           aria-modal="true"
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200 flex-shrink-0">
+          <div className="flex items-center justify-between p-6 border-b border-gray-200 shrink-0">
             <div>
               <h2
                 id="preferences-title"
@@ -200,7 +200,7 @@ export function CookiePreferences({ className = "" }: CookiePreferencesProps) {
             </div>
             <button
               onClick={actions.hidePreferencesModal}
-              className="p-2 text-gray-600 hover:text-black focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded-lg transition-colors duration-200"
+              className="p-2 text-gray-600 hover:text-black focus:outline-hidden focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded-lg transition-colors duration-200"
               aria-label={t("cookie.preferences.close")}
             >
               <X className="w-6 h-6" aria-hidden="true" />
@@ -216,7 +216,7 @@ export function CookiePreferences({ className = "" }: CookiePreferencesProps) {
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
               <div className="flex items-start gap-3">
                 <Info
-                  className="w-5 h-5 text-black mt-0.5 flex-shrink-0"
+                  className="w-5 h-5 text-black mt-0.5 shrink-0"
                   aria-hidden="true"
                 />
                 <div className="text-sm text-gray-800">
@@ -292,7 +292,7 @@ export function CookiePreferences({ className = "" }: CookiePreferencesProps) {
                                 isExpanded ? null : category.id,
                               )
                             }
-                            className="p-1 text-gray-600 hover:text-black focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded transition-colors duration-200"
+                            className="p-1 text-gray-600 hover:text-black focus:outline-hidden focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded-sm transition-colors duration-200"
                             aria-label={`${isExpanded ? t("cookie.preferences.collapse") : t("cookie.preferences.expand")} ${category.name}`}
                             aria-expanded={isExpanded}
                           >
@@ -323,27 +323,27 @@ export function CookiePreferences({ className = "" }: CookiePreferencesProps) {
           </div>
 
           {/* Footer */}
-          <div className="p-4 bg-gray-50 border-t border-gray-200 flex-shrink-0">
+          <div className="p-4 bg-gray-50 border-t border-gray-200 shrink-0">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="text-xs text-gray-500 text-center sm:text-left">
                 {t("cookie.preferences.footer.info")}
               </div>
-              <div className="flex items-center gap-3 flex-shrink-0">
+              <div className="flex items-center gap-3 shrink-0">
                 <button
                   onClick={handleRejectOptional}
-                  className="px-4 py-2 text-sm font-medium text-black bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 whitespace-nowrap"
+                  className="px-4 py-2 text-sm font-medium text-black bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 whitespace-nowrap"
                 >
                   {t("cookie.banner.necessary")}
                 </button>
                 <button
                   onClick={handleAcceptAll}
-                  className="px-4 py-2 text-sm font-medium text-black bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 whitespace-nowrap"
+                  className="px-4 py-2 text-sm font-medium text-black bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 whitespace-nowrap"
                 >
                   {t("cookie.banner.accept")}
                 </button>
                 <button
                   onClick={handleSavePreferences}
-                  className="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-colors duration-200 whitespace-nowrap"
+                  className="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-black transition-colors duration-200 whitespace-nowrap"
                 >
                   {t("cookie.preferences.save")}
                 </button>

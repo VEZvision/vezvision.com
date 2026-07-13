@@ -2,7 +2,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import tsconfigPaths from "vite-tsconfig-paths";
+import tailwindcss from "@tailwindcss/vite";
 import { cspNoncePlugin } from "./scripts/vite-plugin-csp-nonce.ts";
 import { imagetools } from "vite-imagetools";
 import { compression } from "vite-plugin-compression2";
@@ -21,6 +21,7 @@ export default defineConfig({
     port: 5174,
   },
   resolve: {
+    tsconfigPaths: true,
     dedupe: ["react", "react-dom"],
     alias: {
       "@shared": path.resolve(rootDir, "shared"),
@@ -86,12 +87,12 @@ export default defineConfig({
     },
   },
   plugins: [
+    tailwindcss(),
     react({
       babel: {
         plugins: [[reactCompiler, { target: "19" }]],
       },
     }),
-    tsconfigPaths(),
     cspNoncePlugin(),
     imagetools(),
     compression({

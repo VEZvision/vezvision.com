@@ -27,7 +27,7 @@ export default function BlogArticleSidebar({
   return (
     <aside className="relative lg:block">
       <div className="sticky top-32 space-y-8">
-        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xs">
           <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-gray-900">
             <Tag size={18} className="text-blue-500" />
             {t("blog.article.recent")}
@@ -41,7 +41,7 @@ export default function BlogArticleSidebar({
                   to={toLocalizedPath(`blog/${post.slug}`)}
                   className="group -mx-2 flex gap-3 rounded-lg p-2 text-left transition-colors hover:bg-gray-50"
                 >
-                  <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg shadow-sm">
+                  <div className="relative h-14 w-20 shrink-0 overflow-hidden rounded-lg shadow-xs">
                     <img
                       src={safeImageUrl(post.featured_image) || logo}
                       alt={translation?.title}
@@ -73,7 +73,7 @@ export default function BlogArticleSidebar({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xs">
           <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-gray-900">
             <Mail size={18} className="text-blue-500" />
             {t("newsletter.title")}

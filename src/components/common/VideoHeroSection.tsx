@@ -118,7 +118,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
         </video>
       ) : (
         <div
-          className="absolute inset-0 z-0 bg-gradient-to-br from-[#f3f4f6] via-white to-[#e5e7eb]"
+          className="absolute inset-0 z-0 bg-linear-to-br from-[#f3f4f6] via-white to-[#e5e7eb]"
           aria-hidden="true"
         />
       )}

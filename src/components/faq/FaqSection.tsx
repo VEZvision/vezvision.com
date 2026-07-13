@@ -97,11 +97,11 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
               return (
                 <div
                   key={faq.id}
-                  className="border border-gray-200 rounded-2xl bg-white overflow-hidden transition-shadow hover:shadow-sm"
+                  className="border border-gray-200 rounded-2xl bg-white overflow-hidden transition-shadow hover:shadow-xs"
                 >
                   <button
                     onClick={() => toggleItem(faq.id)}
-                    className="w-full flex items-center justify-between p-5 text-left bg-white cursor-pointer select-none focus:outline-none"
+                    className="w-full flex items-center justify-between p-5 text-left bg-white cursor-pointer select-none focus:outline-hidden"
                     aria-expanded={isOpen}
                   >
                     <span className="text-lg font-medium text-gray-900 pr-8">
@@ -159,7 +159,7 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
             <span className={styles.contactText}>
               {t("faq.contact.text")}
               {settingsLoading || (!contact && !error) ? (
-                <span className="inline-block w-32 h-4 bg-gray-200 rounded animate-pulse align-middle ml-1" />
+                <span className="inline-block w-32 h-4 bg-gray-200 rounded-sm animate-pulse align-middle ml-1" />
               ) : contactEmail ? (
                 <a
                   href={`mailto:${contactEmail}`}

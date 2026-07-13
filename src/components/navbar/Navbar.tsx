@@ -116,9 +116,9 @@ const Navbar = memo(() => {
       language,
     ) || localizedPath(language, "contact");
   const navTextClass = "text-black";
-  const navHoverClass = "hover:bg-black/[0.05]";
+  const navHoverClass = "hover:bg-black/5";
   const scrolledSurfaceClass =
-    "border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-xl";
+    "border border-black/6 shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-xl";
   const desktopGroupClass = isScrolled
     ? `bg-white ${scrolledSurfaceClass}`
     : "";
@@ -139,7 +139,7 @@ const Navbar = memo(() => {
         }}
       />
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 [transform:translateZ(0)] ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 transform-[translateZ(0)] ${
           isScrolled ? "pt-2" : ""
         }`}
       >
@@ -156,7 +156,7 @@ const Navbar = memo(() => {
               }`}
             >
               <div className="flex items-center">
-                <div className="flex-shrink-0 py-3">
+                <div className="shrink-0 py-3">
                   <Link
                     to={localizedPath(language)}
                     className="cursor-pointer hover:opacity-80 transition-opacity duration-200"
@@ -246,7 +246,7 @@ const Navbar = memo(() => {
 
               {/* Mobile menu button */}
               <div
-                className={`tablet-lg:hidden flex items-center transition-all duration-500 ${isScrolled ? "bg-white border border-black/[0.06] shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-xl" : ""}`}
+                className={`tablet-lg:hidden flex items-center transition-all duration-500 ${isScrolled ? "bg-white border border-black/6 shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-xl" : ""}`}
               >
                 <button
                   onClick={toggleMenu}
