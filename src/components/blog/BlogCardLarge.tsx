@@ -1,6 +1,6 @@
-import styles from './BlogCardLarge.module.scss';
-import placeholderImg from '@/assets/image-1.png';
-import { ResponsiveImage } from '@/components/ui/ResponsiveImage';
+import styles from "./BlogCardLarge.module.scss";
+import placeholderImg from "@/assets/image-1.png";
+import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
 
 interface BlogCardLargeProps {
   article: {
@@ -15,9 +15,9 @@ interface BlogCardLargeProps {
   className?: string;
 }
 
-function BlogCardLarge({ article, className = '' }: BlogCardLargeProps) {
-  const sampleDate = '12.10.2025';
-  const targetDate = (article && article.date) ? article.date : sampleDate;
+function BlogCardLarge({ article, className = "" }: BlogCardLargeProps) {
+  const sampleDate = "12.10.2025";
+  const targetDate = article && article.date ? article.date : sampleDate;
 
   return (
     <article className={`${styles.cardLarge} ${className}`}>
@@ -36,7 +36,7 @@ function BlogCardLarge({ article, className = '' }: BlogCardLargeProps) {
             <p>{article.description}</p>
           </div>
           <span className={styles.readMore}>
-            {article.readMoreText || 'Read more'}
+            {article.readMoreText || "Read more"}
           </span>
         </div>
         <div className={styles.imageContainer}>
@@ -47,7 +47,9 @@ function BlogCardLarge({ article, className = '' }: BlogCardLargeProps) {
             width={492}
             height={350}
             referrerPolicy="no-referrer"
-            onError={(e) => { (e.currentTarget as HTMLImageElement).src = placeholderImg; }}
+            onError={(e) => {
+              e.currentTarget.src = placeholderImg;
+            }}
           />
         </div>
       </a>

@@ -42,7 +42,7 @@ function ServicesSection() {
   }
 
   const servicesJsonLd = services.map((service) => {
-    const translation = getServiceTranslation(service, language as "pl" | "en");
+    const translation = getServiceTranslation(service, language);
     return {
       "@type": "Service",
       "@id": siteUrl
@@ -107,10 +107,7 @@ function ServicesSection() {
         {/* Services Grid */}
         <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl">
           {services.map((service) => {
-            const translation = getServiceTranslation(
-              service,
-              language as "pl" | "en",
-            );
+            const translation = getServiceTranslation(service, language);
             return (
               <StaggerItem key={service.id}>
                 <ServiceCard

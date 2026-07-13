@@ -10,11 +10,11 @@ async function importLocale(
 ): Promise<Record<string, string>> {
   if (language === "pl") {
     const mod = await import("./pl");
-    return mod.plTranslations as Record<string, string>;
+    return mod.plTranslations;
   }
 
   const mod = await import("./en");
-  return mod.enTranslations as Record<string, string>;
+  return mod.enTranslations;
 }
 
 export function detectInitialLanguage(): Language {
