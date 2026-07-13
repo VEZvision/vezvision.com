@@ -24,6 +24,10 @@ export default defineConfig({
     dedupe: ["react", "react-dom"],
     alias: {
       "@shared": path.resolve(rootDir, "shared"),
+      "@brand": path.resolve(
+        rootDir,
+        "../../../../../01-Brand/02-Sub-Brands/VEZvision/Logo/SVG",
+      ),
     },
   },
   optimizeDeps: {

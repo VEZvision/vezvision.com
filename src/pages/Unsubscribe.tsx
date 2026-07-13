@@ -3,7 +3,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import { unsubscribeByToken } from "@/services/newsletter";
 import { useLanguageContext } from "@/hooks/useLanguage";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
-import logoNavbar from "@/assets/logo-navbar.svg";
+import logoNavbar from "@brand/wordmark-horizontal-dark.svg";
 import PageSeo from "@/components/seo/PageSeo";
 
 const Unsubscribe = () => {
@@ -32,7 +32,7 @@ const Unsubscribe = () => {
 
     if (result.success) {
       setStatus("success");
-      setMessage(`${result.email} ${t("unsubscribe.success")}`);
+      setMessage(result.email ? `${result.email} ${t("unsubscribe.success")}` : t("unsubscribe.success"));
     } else {
       setStatus("error");
       setMessage(result.error || t("unsubscribe.error_generic"));

@@ -54,7 +54,7 @@
 
 - [x] Uruchomić Lighthouse na produkcji — **Lighthouse CI job dodany do `.github/workflows/ci.yml` + `.github/lighthouserc.json` z budget (LCP<3s, CLS<0.1, INP<200ms)**
 - [x] Dodać Lighthouse CI job w GitHub Actions (`treosh/lighthouse-ci-action`) na PR z budget
-- [ ] Self-hosting fontów: wbudować `@fontsource/satoshi` — **skip: @fontsource/satoshi nie istnieje na npm (Satoshi jest na Fontshare); fontshare z preconnect jest premium CDN; udokumentowane w docs/seo.md jako przyszła optymalizacja**
+- [ ] Self-hosting fontów: wbudować `@fontsource/satoshi` — **skip: @fontsource/satoshi nie istnieje na npm (Satoshi jest na Fontshare); fontshare z preconnect jest premium CDN; udokumentowane w `../seo.md` jako przyszła optymalizacja**
 - [ ] Rozważyć `valibot` zamiast `zod` — **skip: Zod działa, edge parity setup, 13.85 kB gzip akceptowalne**
 - [ ] Rozważyć dynamic import `frontendContactFormSchema` — **skip: lazy loading route już izoluje Contact chunk**
 - [ ] Rozważyć zastąpienie Realtime subscription w `SettingsContext` pollingiem — **skip: Realtime daje natychmiastową aktualizację (premium feature)**
@@ -101,8 +101,8 @@
 ## 10. Dokumentacja
 
 - [x] Zaktualizować `README.md`: stack to React 19 (nie 18) — **poprawiono**
-- [ ] Zaktualizować `docs/migrations.md` — **opcjonalne**
-- [x] Rozważyć `docs/seo.md` — **utworzone z pełną dokumentacją SEO strategii**
+- [ ] Zaktualizować `../migrations.md` — **opcjonalne**
+- [x] Rozważyć `../seo.md` — **utworzone z pełną dokumentacją SEO strategii**
 
 ## 11. Nice-to-haves (opcjonalne, jeśli mają znaczenie)
 

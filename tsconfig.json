@@ -23,7 +23,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@assets/*": ["./src/assets/*"],
-      "@shared/*": ["./shared/*"]
+      "@shared/*": ["./shared/*"],
+      "@brand/*": ["../../../../../01-Brand/02-Sub-Brands/VEZvision/Logo/SVG/*"]
     }
   },
   "include": ["src", "shared"]

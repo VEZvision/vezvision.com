@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Mail, Tag } from "lucide-react";
 
-import logo from "@/assets/blog/logo.svg";
+import logo from "@brand/icon-dark.svg";
 import { safeImageUrl } from "@/utils/safeHref";
 import { useLanguageContext } from "@/hooks/useLanguage";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
