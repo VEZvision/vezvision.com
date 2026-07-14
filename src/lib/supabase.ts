@@ -1,8 +1,10 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/types/database.types'
 
-export const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+/** PostgREST gateway URL. The client is used only as a REST/RPC transport. */
+export const apiUrl = import.meta.env.VITE_API_URL
+export const publicAssetsUrl = import.meta.env.VITE_PUBLIC_ASSETS_URL
+const apiAnonKey = import.meta.env.VITE_API_ANON_KEY
 
 let client: SupabaseClient<Database> | null = null
 let clientPromise: Promise<SupabaseClient<Database>> | null = null
@@ -12,12 +14,12 @@ export async function getSupabase(): Promise<SupabaseClient<Database>> {
 
   if (!clientPromise) {
     clientPromise = (async () => {
-      if (!supabaseUrl || !supabaseAnonKey) {
-        throw new Error('Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY environment variables')
+      if (!apiUrl || !apiAnonKey) {
+        throw new Error('Missing VITE_API_URL or VITE_API_ANON_KEY environment variables')
       }
 
       const { createClient } = await import('@supabase/supabase-js')
-      client = createClient<Database>(supabaseUrl, supabaseAnonKey)
+      client = createClient<Database>(apiUrl, apiAnonKey)
       return client
     })()
   }

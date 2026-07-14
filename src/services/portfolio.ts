@@ -1,4 +1,4 @@
-import { getSupabase, supabaseUrl } from "@/lib/supabase";
+import { getSupabase, publicAssetsUrl } from "@/lib/supabase";
 import { logError } from "@/lib/logger";
 import { safeImageUrl } from "@/utils/safeHref";
 import { isAbortLikeError } from "./utils";
@@ -262,14 +262,15 @@ export function getProjectImageUrl(
   transform?: ProjectImageTransform,
 ): string {
   if (!path) return "";
+  void transform;
 
   let url = path;
   if (!path.startsWith("http://") && !path.startsWith("https://")) {
-    const base = supabaseUrl?.replace(/\/$/, "") ?? "";
+    const base = publicAssetsUrl?.replace(/\/$/, "") ?? "";
     const cleanPath = path.replace(/^\//, "");
-    url = transform
-      ? `${base}/storage/v1/render/image/public/vv-portfolio-images/${cleanPath}?width=${transform.width}&quality=${transform.quality ?? 75}`
-      : `${base}/storage/v1/object/public/vv-portfolio-images/${cleanPath}`;
+    // Image transformations were Supabase Storage-specific. MinIO serves the original object;
+    // transformations belong in the CDN if they are needed again.
+    url = `${base}/vv-portfolio-images/${cleanPath}`;
   }
 
   return safeImageUrl(url) ?? "";

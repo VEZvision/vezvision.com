@@ -1,0 +1,7 @@
+{
+  "name": "vezvision-api",
+  "private": true,
+  "type": "module",
+  "scripts": { "start": "node server.mjs" },
+  "dependencies": { "pg": "^8.16.3" }
+}

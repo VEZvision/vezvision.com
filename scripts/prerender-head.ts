@@ -352,7 +352,7 @@ async function prerenderRoute({
 
 async function main() {
   const skipPrerender = process.env.SKIP_PRERENDER === "1";
-  const supabaseUrl = process.env.VITE_SUPABASE_URL?.trim() ?? "";
+  const supabaseUrl = process.env.VITE_API_URL?.trim() ?? "";
 
   if (SKIP_URLS.includes(supabaseUrl)) {
     if (skipPrerender) {
@@ -362,7 +362,7 @@ async function main() {
       process.exit(0);
     }
     console.error(
-      "Prerendering requires a real VITE_SUPABASE_URL; refusing to ship an unprerendered SEO build",
+      "Prerendering requires a real VITE_API_URL; refusing to ship an unprerendered SEO build",
     );
     process.exit(1);
   }

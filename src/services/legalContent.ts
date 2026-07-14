@@ -51,33 +51,9 @@ export async function getPublishedLegalContent(
 }
 
 export function subscribeToLegalContent(pageKey: string, onChange: () => void): () => void {
-  let disposed = false
-  let removeChannel: (() => void) | null = null
-
-  void getSupabase().then((supabase) => {
-    if (disposed) return
-
-    const channel = supabase
-      .channel(`legal-content-${pageKey}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'vv_legal_documents',
-          filter: `document_key=eq.${pageKey}`,
-        },
-        onChange,
-      )
-      .subscribe()
-
-    removeChannel = () => {
-      void supabase.removeChannel(channel)
-    }
-  })
-
-  return () => {
-    disposed = true
-    removeChannel?.()
-  }
+  // The self-hosted stack deliberately has no Realtime service. CMS content is refreshed
+  // through the normal query-cache invalidation path after a deployment/navigation.
+  void pageKey
+  void onChange
+  return () => undefined
 }
