@@ -28,9 +28,9 @@ async function allow(key, limit, windowMs) {
     `INSERT INTO public.rate_limit_buckets(bucket_key, window_started_at, request_count)
      VALUES ($1, now(), 1)
      ON CONFLICT (bucket_key) DO UPDATE SET
-       window_started_at = CASE WHEN public.rate_limit_buckets.window_started_at + ($3::text || ' milliseconds')::interval <= now() THEN now() ELSE public.rate_limit_buckets.window_started_at END,
-       request_count = CASE WHEN public.rate_limit_buckets.window_started_at + ($3::text || ' milliseconds')::interval <= now() THEN 1 ELSE public.rate_limit_buckets.request_count + 1 END
-     RETURNING request_count`, [key, limit, windowMs])
+       window_started_at = CASE WHEN public.rate_limit_buckets.window_started_at + ($2::text || ' milliseconds')::interval <= now() THEN now() ELSE public.rate_limit_buckets.window_started_at END,
+       request_count = CASE WHEN public.rate_limit_buckets.window_started_at + ($2::text || ' milliseconds')::interval <= now() THEN 1 ELSE public.rate_limit_buckets.request_count + 1 END
+     RETURNING request_count`, [key, windowMs])
   return row.request_count <= limit
 }
 async function submitContact(req, res) {
