@@ -1,4 +1,4 @@
-type ApiError = { message: string; status?: number; code?: string }
+type ApiError = Error & { status?: number; code?: string }
 
 export type ApiResult<T> = { data: T | null; error: ApiError | null; count?: number | null }
 
@@ -18,7 +18,17 @@ function messageFrom(response: Response, body: unknown): string {
   return `API request failed (${response.status})`
 }
 
-class RestQuery<T = any> implements PromiseLike<ApiResult<T>> {
+function apiError(message: string, status?: number): ApiError {
+  return status === undefined ? new Error(message) : Object.assign(new Error(message), { status })
+}
+
+function serializeValue(value: unknown): string {
+  return typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
+    ? String(value)
+    : JSON.stringify(value)
+}
+
+class RestQuery<T = unknown> implements PromiseLike<ApiResult<T>> {
   private readonly params = new URLSearchParams()
   private headers: Record<string, string> = { accept: 'application/json' }
   private signal?: AbortSignal
@@ -32,13 +42,13 @@ class RestQuery<T = any> implements PromiseLike<ApiResult<T>> {
     if (options?.head) this.headers.Prefer = [this.headers.Prefer, 'count=exact'].filter(Boolean).join(',')
     return this
   }
-  eq(column: string, value: unknown) { this.params.set(column, `eq.${String(value)}`); return this }
-  lte(column: string, value: unknown) { this.params.set(column, `lte.${String(value)}`); return this }
-  lt(column: string, value: unknown) { this.params.set(column, `lt.${String(value)}`); return this }
-  gte(column: string, value: unknown) { this.params.set(column, `gte.${String(value)}`); return this }
-  gt(column: string, value: unknown) { this.params.set(column, `gt.${String(value)}`); return this }
-  is(column: string, value: unknown) { this.params.set(column, `is.${value === null ? 'null' : String(value)}`); return this }
-  in(column: string, values: readonly unknown[]) { this.params.set(column, `in.(${values.map(String).join(',')})`); return this }
+  eq(column: string, value: unknown) { this.params.set(column, `eq.${serializeValue(value)}`); return this }
+  lte(column: string, value: unknown) { this.params.set(column, `lte.${serializeValue(value)}`); return this }
+  lt(column: string, value: unknown) { this.params.set(column, `lt.${serializeValue(value)}`); return this }
+  gte(column: string, value: unknown) { this.params.set(column, `gte.${serializeValue(value)}`); return this }
+  gt(column: string, value: unknown) { this.params.set(column, `gt.${serializeValue(value)}`); return this }
+  is(column: string, value: unknown) { this.params.set(column, `is.${value === null ? 'null' : serializeValue(value)}`); return this }
+  in(column: string, values: readonly unknown[]) { this.params.set(column, `in.(${values.map(serializeValue).join(',')})`); return this }
   or(expression: string) { this.params.set('or', `(${expression})`); return this }
   order(column: string, options?: { ascending?: boolean; nullsFirst?: boolean }) { this.params.set('order', `${column}.${options?.ascending === false ? 'desc' : 'asc'}`); return this }
   limit(value: number) { this.params.set('limit', String(value)); return this }
@@ -53,12 +63,12 @@ class RestQuery<T = any> implements PromiseLike<ApiResult<T>> {
       const response = await fetch(url, { headers: this.headers, ...(this.signal ? { signal: this.signal } : {}) })
       if (this.optionalSingle && response.status === 406) return { data: null, error: null }
       const text = await response.text()
-      const body = text ? JSON.parse(text) : null
-      if (!response.ok) return { data: null, error: { message: messageFrom(response, body), status: response.status } }
+      const body: unknown = text ? JSON.parse(text) : null
+      if (!response.ok) return { data: null, error: apiError(messageFrom(response, body), response.status) }
       const total = response.headers.get('content-range')?.split('/').at(-1)
       return { data: body as T, error: null, count: total && total !== '*' ? Number(total) : null }
     } catch (cause) {
-      return { data: null, error: { message: cause instanceof Error ? cause.message : 'Network error' } }
+      return { data: null, error: apiError(cause instanceof Error ? cause.message : 'Network error') }
     }
   }
 
@@ -69,7 +79,7 @@ class RestQuery<T = any> implements PromiseLike<ApiResult<T>> {
 
 export function getApiClient() {
   return {
-    from<T = any>(table: string) { return new RestQuery<T>(table) },
+    from<T = unknown>(table: string) { return new RestQuery<T>(table) },
     async invoke<T = unknown>(name: string, body?: unknown): Promise<{ data: T | null; error: ApiError | null }> {
       try {
         const response = await fetch(`${getApiBaseUrl()}/functions/v1/${name}`, {
@@ -77,9 +87,9 @@ export function getApiClient() {
         })
         const text = await response.text()
         const data = text ? JSON.parse(text) as T : null
-        return response.ok ? { data, error: null } : { data: null, error: { message: messageFrom(response, data), status: response.status } }
+        return response.ok ? { data, error: null } : { data: null, error: apiError(messageFrom(response, data), response.status) }
       } catch (cause) {
-        return { data: null, error: { message: cause instanceof Error ? cause.message : 'Network error' } }
+        return { data: null, error: apiError(cause instanceof Error ? cause.message : 'Network error') }
       }
     },
   }

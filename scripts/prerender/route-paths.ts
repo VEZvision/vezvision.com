@@ -26,7 +26,7 @@ export async function getDynamicPaths(): Promise<string[]> {
   const supabase = getScriptApi();
 
   let blogQuery = supabase
-    .from("vv_blog_posts")
+    .from<{ slug: string }[]>("vv_blog_posts")
     .select("slug")
     .eq("status", "published")
     .limit(100);
@@ -34,7 +34,7 @@ export async function getDynamicPaths(): Promise<string[]> {
 
   const [blogResult, projectResult] = await Promise.all([
     blogQuery,
-    supabase.from("vv_projects").select("slug").limit(100),
+    supabase.from<{ slug: string }[]>("vv_projects").select("slug").limit(100),
   ]);
 
   if (blogResult.error) {

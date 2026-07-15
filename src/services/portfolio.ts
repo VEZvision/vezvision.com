@@ -209,7 +209,7 @@ export async function listProjects(
 
     return {
       projects: ((data || []) as unknown[]).map((p) =>
-        mapProjectFromDB(p as unknown as DBProject),
+        mapProjectFromDB(p as DBProject),
       ),
       total: count || 0,
     };

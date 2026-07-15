@@ -25,7 +25,7 @@ const AVAILABILITY_FALLBACK: MaintenanceAccessSnapshot = {
 export async function fetchMaintenanceEnabledFromDb(): Promise<boolean | null> {
   const api = getApiClient()
   const { data, error } = await api
-    .from('vv_site_settings')
+    .from<{ value: { enabled?: boolean } }>('vv_site_settings')
     .select('value')
     .eq('key', 'maintenance_mode')
     .eq('is_public', true)
@@ -36,7 +36,7 @@ export async function fetchMaintenanceEnabledFromDb(): Promise<boolean | null> {
     return null
   }
 
-  const settings = data?.value as { enabled?: boolean } | null
+  const settings = data?.value ?? null
   return settings?.enabled === true
 }
 

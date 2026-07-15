@@ -14,7 +14,7 @@ class Query<T = unknown> implements PromiseLike<Result<T>> {
   async execute(): Promise<Result<T>> {
     try {
       const response = await fetch(`${getScriptApiBaseUrl()}/rest/v1/${this.table}?${this.params}`, { headers: { accept: this.accept } })
-      const body = await response.json().catch(() => null)
+      const body: unknown = await response.json().catch((): null => null)
       return response.ok ? { data: body as T, error: null } : { data: null, error: { message: `API request failed (${response.status})` } }
     } catch (error) {
       return { data: null, error: { message: error instanceof Error ? error.message : 'Network error' } }

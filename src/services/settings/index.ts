@@ -30,7 +30,7 @@ export async function getSettings(
 
   if (key === "ALL") {
     const { data, error } = await api
-      .from("vv_site_settings")
+      .from<SettingEntry[]>("vv_site_settings")
       .select("key, value, updated_at")
       .eq("is_public", true)
       .in("key", [...PUBLIC_SETTINGS_KEYS]);
@@ -39,11 +39,11 @@ export async function getSettings(
       throw new Error(`Failed to fetch public site settings: ${error.message}`);
     }
 
-    return { data: (data ?? []) as SettingEntry[] };
+    return { data: data ?? [] };
   }
 
   const { data, error } = await api
-    .from("vv_site_settings")
+    .from<{ value: unknown }>("vv_site_settings")
     .select("value")
     .eq("key", key)
     .eq("is_public", true)

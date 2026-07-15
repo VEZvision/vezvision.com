@@ -70,7 +70,7 @@ async function fetchServices() {
   try {
     const supabase = getScriptApi();
     const { data, error } = await supabase
-      .from("vv_services")
+      .from<ServiceRow[]>("vv_services")
       .select(
         "slug,title_pl,title_en,short_desc_pl,short_desc_en,description_pl,description_en",
       )
@@ -78,8 +78,8 @@ async function fetchServices() {
       .order("order_index", { ascending: true })
       .limit(20);
 
-    if (error) throw error;
-    return (data || []) as ServiceRow[];
+    if (error) throw new Error(error.message);
+    return data || [];
   } catch {
     return [];
   }
@@ -89,7 +89,7 @@ async function fetchProjects() {
   try {
     const supabase = getScriptApi();
     const { data, error } = await supabase
-      .from("vv_projects")
+      .from<ProjectRow[]>("vv_projects")
       .select(
         "slug,title_pl,title_en,short_desc_pl,short_desc_en,description_pl,description_en,client_name",
       )
@@ -97,8 +97,8 @@ async function fetchProjects() {
       .order("order_index", { ascending: true })
       .limit(20);
 
-    if (error) throw error;
-    return (data || []) as ProjectRow[];
+    if (error) throw new Error(error.message);
+    return data || [];
   } catch {
     return [];
   }
@@ -108,7 +108,7 @@ async function fetchBlogPosts() {
   try {
     const supabase = getScriptApi();
     const { data, error } = await supabase
-      .from("vv_blog_posts")
+      .from<BlogRow[]>("vv_blog_posts")
       .select(
         "slug,title_pl,title_en,excerpt_pl,excerpt_en,content_pl,content_en",
       )
@@ -116,8 +116,8 @@ async function fetchBlogPosts() {
       .order("published_at", { ascending: false })
       .limit(30);
 
-    if (error) throw error;
-    return (data || []) as BlogRow[];
+    if (error) throw new Error(error.message);
+    return data || [];
   } catch {
     return [];
   }
@@ -127,14 +127,14 @@ async function fetchFaqItems() {
   try {
     const supabase = getScriptApi();
     const { data, error } = await supabase
-      .from("vv_faq_items")
+      .from<FaqRow[]>("vv_faq_items")
       .select("id,question_pl,question_en,answer_pl,answer_en")
       .eq("is_active", true)
       .order("order_index", { ascending: true })
       .limit(30);
 
-    if (error) throw error;
-    return (data || []) as FaqRow[];
+    if (error) throw new Error(error.message);
+    return data || [];
   } catch {
     return [];
   }

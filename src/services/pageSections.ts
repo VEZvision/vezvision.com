@@ -110,7 +110,7 @@ export async function getPublicPageSections(): Promise<{
   error: string | null;
 }> {
   const { data, error } = await getApiClient()
-    .from("vv_page_sections")
+    .from<unknown[]>("vv_page_sections")
     .select(
       "page_key,section_key,order_index,enabled,content_pl,content_en,config,updated_at",
     )
