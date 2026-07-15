@@ -95,6 +95,9 @@ export const portfolioTranslations = {
   "portfolio.promises.results": "Focus on results",
   "portfolio.promises.partnership": "Partnership relations",
   "portfolio.filters.all": "All",
+  "portfolio.grid.loading": "Loading portfolio",
+  "portfolio.grid.loading_desc":
+    "We are fetching the latest projects from the database. If the list is empty, we will show the projects-in-progress state in a moment.",
   "portfolio.grid.error": "Loading error",
   "portfolio.grid.empty": "First projects will appear soon.",
   "portfolio.grid.empty_desc":

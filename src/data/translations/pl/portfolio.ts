@@ -102,6 +102,9 @@ export const portfolioTranslations = {
   "portfolio.filters.websites": "Strony Internetowe",
   "portfolio.filters.tools": "Narzędzia",
   "portfolio.filters.mobile-apps": "Aplikacje Mobile",
+  "portfolio.grid.loading": "Ładujemy portfolio",
+  "portfolio.grid.loading_desc":
+    "Pobieramy aktualne realizacje z bazy. Jeśli lista jest pusta, za chwilę pokażemy informację o projektach w przygotowaniu.",
   "portfolio.grid.error": "Błąd wczytywania",
   "portfolio.grid.empty": "Pierwsze realizacje pojawią się wkrótce.",
   "portfolio.grid.empty_desc":

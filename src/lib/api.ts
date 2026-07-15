@@ -3,6 +3,7 @@ type ApiError = Error & { status?: number; code?: string }
 export type ApiResult<T> = { data: T | null; error: ApiError | null; count?: number | null }
 
 const configuredUrl = import.meta.env.VITE_API_URL?.trim().replace(/\/$/, '')
+const requestTimeoutMs = 15_000
 
 /**
  * Public API transport for the self-hosted PostgREST gateway.
@@ -26,6 +27,26 @@ function serializeValue(value: unknown): string {
   return typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
     ? String(value)
     : JSON.stringify(value)
+}
+
+function createRequestSignal(signal?: AbortSignal): { signal: AbortSignal; cleanup: () => void } {
+  const controller = new AbortController()
+  let cleanedUp = false
+  const timeout = globalThis.setTimeout(() => controller.abort(new Error('API request timed out')), requestTimeoutMs)
+  const abort = () => controller.abort(signal?.reason)
+
+  if (signal?.aborted) abort()
+  else signal?.addEventListener('abort', abort, { once: true })
+
+  return {
+    signal: controller.signal,
+    cleanup: () => {
+      if (cleanedUp) return
+      cleanedUp = true
+      globalThis.clearTimeout(timeout)
+      signal?.removeEventListener('abort', abort)
+    },
+  }
 }
 
 class RestQuery<T = unknown> implements PromiseLike<ApiResult<T>> {
@@ -59,8 +80,9 @@ class RestQuery<T = unknown> implements PromiseLike<ApiResult<T>> {
 
   async execute(): Promise<ApiResult<T>> {
     const url = `${getApiBaseUrl()}/rest/v1/${this.table}?${this.params}`
+    const requestSignal = createRequestSignal(this.signal)
     try {
-      const response = await fetch(url, { headers: this.headers, ...(this.signal ? { signal: this.signal } : {}) })
+      const response = await fetch(url, { headers: this.headers, signal: requestSignal.signal })
       if (this.optionalSingle && response.status === 406) return { data: null, error: null }
       const text = await response.text()
       const body: unknown = text ? JSON.parse(text) : null
@@ -69,6 +91,8 @@ class RestQuery<T = unknown> implements PromiseLike<ApiResult<T>> {
       return { data: body as T, error: null, count: total && total !== '*' ? Number(total) : null }
     } catch (cause) {
       return { data: null, error: apiError(cause instanceof Error ? cause.message : 'Network error') }
+    } finally {
+      requestSignal.cleanup()
     }
   }
 
@@ -81,15 +105,18 @@ export function getApiClient() {
   return {
     from<T = unknown>(table: string) { return new RestQuery<T>(table) },
     async invoke<T = unknown>(name: string, body?: unknown): Promise<{ data: T | null; error: ApiError | null }> {
+      const requestSignal = createRequestSignal()
       try {
         const response = await fetch(`${getApiBaseUrl()}/functions/v1/${name}`, {
-          method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/json' }, body: JSON.stringify(body ?? {}),
+          method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/json' }, body: JSON.stringify(body ?? {}), signal: requestSignal.signal,
         })
         const text = await response.text()
         const data = text ? JSON.parse(text) as T : null
         return response.ok ? { data, error: null } : { data: null, error: apiError(messageFrom(response, data), response.status) }
       } catch (cause) {
         return { data: null, error: apiError(cause instanceof Error ? cause.message : 'Network error') }
+      } finally {
+        requestSignal.cleanup()
       }
     },
   }

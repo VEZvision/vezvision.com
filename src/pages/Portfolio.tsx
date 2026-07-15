@@ -84,22 +84,11 @@ const Portfolio = () => {
 
           <div>
             {loading ? (
-              Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className={styles.skeleton}>
-                  <div className={styles.skeletonImage} />
-                  <div className={styles.skeletonContent}>
-                    <div
-                      className={`${styles.skeletonLine} ${styles.skeletonLineShort}`}
-                    />
-                    <div
-                      className={`${styles.skeletonLine} ${styles.skeletonLineLong}`}
-                    />
-                    <div
-                      className={`${styles.skeletonLine} ${styles.skeletonLineMedium}`}
-                    />
-                  </div>
-                </div>
-              ))
+              <PortfolioEmptyState
+                compact
+                title={t("portfolio.grid.loading")}
+                description={t("portfolio.grid.loading_desc")}
+              />
             ) : error ? (
               <PortfolioEmptyState
                 compact
