@@ -175,6 +175,21 @@ GRANT SELECT ON public.vv_site_settings, public.vv_page_seo, public.vv_page_sect
   public.vv_service_categories, public.vv_services, public.vv_service_category_assignments,
   public.vv_faq_categories, public.vv_faq_items TO anon;
 
+DO $$
+DECLARE
+  api_role text;
+BEGIN
+  FOREACH api_role IN ARRAY ARRAY['vezvision_api', 'vezvision_lab_api'] LOOP
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = api_role) THEN
+      EXECUTE format('GRANT USAGE ON SCHEMA public TO %I', api_role);
+      EXECUTE format('GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA public TO %I', api_role);
+      EXECUTE format('GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO %I', api_role);
+      EXECUTE format('ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE ON TABLES TO %I', api_role);
+      EXECUTE format('ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO %I', api_role);
+    END IF;
+  END LOOP;
+END $$;
+
 ALTER TABLE public.vv_site_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vv_page_seo ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vv_page_sections ENABLE ROW LEVEL SECURITY;
