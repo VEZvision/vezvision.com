@@ -38,6 +38,7 @@ services:
     depends_on: [api, postgrest]
     expose: ["80"]
     labels:
+      - traefik.docker.network=coolify
       - traefik.http.services.http-0-zul2b0pjfl3js2ksst51val8-gateway.loadbalancer.server.port=80
       - traefik.http.services.https-0-zul2b0pjfl3js2ksst51val8-gateway.loadbalancer.server.port=80
     networks: [vezvision_internal, coolify]
