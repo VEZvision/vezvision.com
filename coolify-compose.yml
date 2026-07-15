@@ -29,11 +29,11 @@ services:
     tmpfs: [/tmp]
 
   gateway:
-    image: nginx:1.27-alpine
+    build:
+      context: .
+      dockerfile: backend/nginx.Dockerfile
     restart: unless-stopped
     depends_on: [api, postgrest]
-    volumes:
-      - ./deploy/hetzner/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     networks: [vezvision_internal, coolify]
     security_opt: [no-new-privileges:true]
     read_only: true
