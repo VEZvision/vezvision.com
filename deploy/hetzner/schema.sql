@@ -186,10 +186,17 @@ BEGIN
   FOREACH api_role IN ARRAY ARRAY['vezvision_api', 'vezvision_lab_api'] LOOP
     IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = api_role) THEN
       EXECUTE format('GRANT USAGE ON SCHEMA public TO %I', api_role);
-      EXECUTE format('GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA public TO %I', api_role);
-      EXECUTE format('GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO %I', api_role);
-      EXECUTE format('ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE ON TABLES TO %I', api_role);
-      EXECUTE format('ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO %I', api_role);
+      EXECUTE format('REVOKE SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON ALL TABLES IN SCHEMA public FROM %I', api_role);
+      EXECUTE format('REVOKE USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public FROM %I', api_role);
+      EXECUTE format('REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA public FROM %I', api_role);
+      EXECUTE format('ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE SELECT, INSERT, UPDATE ON TABLES FROM %I', api_role);
+      EXECUTE format('ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE USAGE, SELECT ON SEQUENCES FROM %I', api_role);
+      EXECUTE format('GRANT USAGE ON SCHEMA public TO %I', api_role);
+      EXECUTE format('GRANT SELECT ON public.vv_site_settings TO %I', api_role);
+      EXECUTE format('GRANT INSERT ON public.messages TO %I', api_role);
+      EXECUTE format('GRANT SELECT, INSERT, UPDATE ON public.rate_limit_buckets TO %I', api_role);
+      EXECUTE format('GRANT SELECT, INSERT, UPDATE ON public.vv_newsletter_subscribers TO %I', api_role);
+      EXECUTE format('GRANT EXECUTE ON FUNCTION public.vv_blog_increment_views(p_post_slug text, p_client_ip text) TO %I', api_role);
     END IF;
   END LOOP;
 END $$;

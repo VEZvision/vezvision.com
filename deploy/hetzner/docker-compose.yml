@@ -7,6 +7,8 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
       ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
       PORT: 3000
     networks: [vezvision_internal, coolify]
     security_opt: [no-new-privileges:true]
@@ -37,6 +39,12 @@ services:
     security_opt: [no-new-privileges:true]
     read_only: true
     tmpfs: [/var/cache/nginx, /var/run, /tmp]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/healthz >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
 
 networks:
   vezvision_internal:
