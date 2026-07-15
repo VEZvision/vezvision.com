@@ -37,7 +37,6 @@ services:
     security_opt: [no-new-privileges:true]
     read_only: true
     tmpfs: [/var/cache/nginx, /var/run, /tmp]
-    ports: ["127.0.0.1:8080:8080"]
 
 networks:
   vezvision_internal:
