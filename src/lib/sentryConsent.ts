@@ -9,12 +9,12 @@ let sentryInitialized = false;
 
 function getTracePropagationTargets(): (string | RegExp)[] {
   const targets: (string | RegExp)[] = ["localhost"];
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  if (typeof supabaseUrl === "string" && supabaseUrl.length > 0) {
+  const apiUrl = import.meta.env.VITE_API_URL;
+  if (typeof apiUrl === "string" && apiUrl.length > 0) {
     try {
-      targets.push(new URL(supabaseUrl).origin);
+      targets.push(new URL(apiUrl).origin);
     } catch {
-      /* invalid SUPABASE_URL — skip trace propagation target */
+      /* invalid API URL — skip trace propagation target */
     }
   }
   return targets;

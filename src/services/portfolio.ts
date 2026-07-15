@@ -1,4 +1,5 @@
-import { getSupabase, publicAssetsUrl } from "@/lib/supabase";
+import { getApiClient } from "@/lib/api";
+import { publicAssetsUrl } from "@/lib/assets";
 import { logError } from "@/lib/logger";
 import { safeImageUrl } from "@/utils/safeHref";
 import { isAbortLikeError } from "./utils";
@@ -161,8 +162,8 @@ export async function listProjects(
   signal?: AbortSignal,
 ): Promise<{ projects: PortfolioProject[]; total: number }> {
   try {
-    const supabase = await getSupabase();
-    let query = supabase
+    const api = getApiClient();
+    let query = api
       .from("vv_projects")
       .select(PORTFOLIO_LIST_SELECT, { count: "exact" })
       .limit(100);
@@ -207,7 +208,7 @@ export async function listProjects(
     if (error) throw error;
 
     return {
-      projects: (data || []).map((p) =>
+      projects: ((data || []) as unknown[]).map((p) =>
         mapProjectFromDB(p as unknown as DBProject),
       ),
       total: count || 0,
@@ -226,13 +227,13 @@ export async function getProject(
   signal?: AbortSignal,
 ): Promise<PortfolioProject | null> {
   try {
-    const supabase = await getSupabase();
+    const api = getApiClient();
     const isUuid =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
         idOrSlug,
       );
 
-    let query = supabase.from("vv_projects").select(PORTFOLIO_DETAIL_SELECT);
+    let query = api.from("vv_projects").select(PORTFOLIO_DETAIL_SELECT);
 
     if (signal) query = query.abortSignal(signal);
 

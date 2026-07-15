@@ -1,4 +1,4 @@
-import { getSupabase } from "@/lib/supabase";
+import { getApiClient } from "@/lib/api";
 import { logError } from "@/lib/logger";
 import { isAbortLikeError, isSupabaseNetworkLikeError } from "./utils";
 import type {
@@ -138,8 +138,8 @@ export async function listActiveServicesContent(
   categories: ServiceCategory[];
 }> {
   try {
-    const supabase = await getSupabase();
-    let servicesQuery = supabase
+    const api = getApiClient();
+    let servicesQuery = api
       .from("vv_services")
       .select(
         `
@@ -159,7 +159,7 @@ export async function listActiveServicesContent(
 
     if (servicesError) throw servicesError;
 
-    let categoriesQuery = supabase
+    let categoriesQuery = api
       .from("vv_service_categories")
       .select("id, slug, name_pl, name_en, created_at")
       .order("order_index", { ascending: true })
@@ -172,11 +172,11 @@ export async function listActiveServicesContent(
     if (categoriesError) throw categoriesError;
 
     return {
-      services: (servicesData || []).map((service) =>
-        mapServiceFromDB(service, language),
+      services: ((servicesData || []) as unknown[]).map((service) =>
+        mapServiceFromDB(service as DBService, language),
       ),
-      categories: (categoriesData || []).map((category) =>
-        mapCategoryFromDB(category, language),
+      categories: ((categoriesData || []) as unknown[]).map((category) =>
+        mapCategoryFromDB(category as DBServiceCategory, language),
       ),
     };
   } catch (error) {

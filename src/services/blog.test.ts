@@ -4,12 +4,8 @@ import { incrementBlogViewCount } from './blog';
 
 const invokeMock = vi.fn();
 
-vi.mock('@/lib/supabase', () => ({
-  getSupabase: vi.fn(() => Promise.resolve({
-    functions: {
-      invoke: invokeMock,
-    },
-  })),
+vi.mock('@/lib/api', () => ({
+  getApiClient: vi.fn(() => ({ invoke: invokeMock })),
 }));
 
 describe('incrementBlogViewCount', () => {
@@ -24,9 +20,7 @@ describe('incrementBlogViewCount', () => {
   it('calls increment-blog-view edge function with slug', async () => {
     await incrementBlogViewCount('my-post');
 
-    expect(invokeMock).toHaveBeenCalledWith('increment-blog-view', {
-      body: { slug: 'my-post' },
-    });
+    expect(invokeMock).toHaveBeenCalledWith('increment-blog-view', { slug: 'my-post' });
   });
 
   it('returns false when edge function fails', async () => {

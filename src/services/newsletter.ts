@@ -1,4 +1,4 @@
-import { getSupabase } from "@/lib/supabase";
+import { getApiClient } from "@/lib/api";
 import { logError } from "@/lib/logger";
 
 export async function subscribeToNewsletter(
@@ -8,17 +8,14 @@ export async function subscribeToNewsletter(
   turnstileToken?: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await getSupabase();
-    const response = await supabase.functions.invoke<{
+    const response = await getApiClient().invoke<{
       success?: boolean;
       error?: string;
     }>("subscribe-newsletter", {
-      body: {
-        email,
-        language,
-        source,
-        ...(turnstileToken ? { turnstile_token: turnstileToken } : {}),
-      },
+      email,
+      language,
+      source,
+      ...(turnstileToken ? { turnstile_token: turnstileToken } : {}),
     });
 
     if (response.error) throw response.error;
@@ -50,14 +47,11 @@ export async function unsubscribeByToken(
   email?: string | undefined;
 }> {
   try {
-    const supabase = await getSupabase();
-    const response = await supabase.functions.invoke<{
+    const response = await getApiClient().invoke<{
       success?: boolean;
       error?: string;
       email?: string;
-    }>("unsubscribe-newsletter", {
-      body: { token },
-    });
+    }>("unsubscribe-newsletter", { token });
 
     if (response.error) throw response.error;
 

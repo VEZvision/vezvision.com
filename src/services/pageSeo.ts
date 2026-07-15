@@ -1,4 +1,4 @@
-import { getSupabase } from "@/lib/supabase";
+import { getApiClient } from "@/lib/api";
 
 export interface PageSeoEntry {
   page_key: string;
@@ -57,8 +57,7 @@ export function normalizePageSeoEntries(entries: unknown[]): PageSeoMap {
 }
 
 export async function getAllPageSeo(): Promise<PageSeoMap> {
-  const supabase = await getSupabase();
-  const { data, error } = await supabase
+  const { data, error } = await getApiClient()
     .from("vv_page_seo")
     .select(
       "page_key,title_pl,title_en,description_pl,description_en,og_title_pl,og_title_en,og_description_pl,og_description_en,og_image_url,canonical_url,robots,indexable,structured_data_json",

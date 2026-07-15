@@ -9,11 +9,9 @@ import {
 const invokeMock = vi.fn()
 const fromMock = vi.fn()
 
-vi.mock('@/lib/supabase', () => ({
-  getSupabase: () => Promise.resolve({
-    functions: {
-      invoke: (...args: unknown[]) => invokeMock(...args) as Promise<{ data: unknown; error: unknown }>,
-    },
+vi.mock('@/lib/api', () => ({
+  getApiClient: () => ({
+    invoke: (...args: unknown[]) => invokeMock(...args) as Promise<{ data: unknown; error: unknown }>,
     from: (...args: unknown[]) => fromMock(...args) as {
       select: () => {
         eq: () => {

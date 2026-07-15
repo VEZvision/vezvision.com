@@ -1,4 +1,4 @@
-import { getSupabase } from "@/lib/supabase";
+import { getApiClient } from "@/lib/api";
 import { logError } from "@/lib/logger";
 import { isAbortLikeError } from "./utils";
 import { applyPublishedBlogVisibilityFilter } from "./blogFilters";
@@ -162,9 +162,9 @@ export async function listPublishedBlogContent(
   categories: BlogCategory[];
 }> {
   try {
-    const supabase = await getSupabase();
+    const api = getApiClient();
     let postsQuery = applyPublishedBlogVisibilityFilter(
-      supabase
+      api
         .from("vv_blog_posts")
         .select(BLOG_LIST_POST_SELECT)
         .eq("status", "published"),
@@ -177,7 +177,7 @@ export async function listPublishedBlogContent(
 
     if (postsError) throw postsError;
 
-    let categoriesQuery = supabase
+    let categoriesQuery = api
       .from("vv_blog_categories")
       .select("id, slug, name_pl, name_en, color, created_at")
       .order("created_at", { ascending: true })
@@ -190,10 +190,10 @@ export async function listPublishedBlogContent(
     if (categoriesError) throw categoriesError;
 
     return {
-      posts: (postsData || []).map((post) =>
+      posts: ((postsData || []) as unknown[]).map((post) =>
         mapPostFromDB(post as DBBlogPost, language),
       ),
-      categories: (rawCategories || []).map((category) =>
+      categories: ((rawCategories || []) as unknown[]).map((category) =>
         mapCategoryFromDB(category as DBBlogCategory, language),
       ),
     };
@@ -210,9 +210,9 @@ export async function getPublishedPostBySlug(
   language: BlogContentLanguage = "pl",
 ): Promise<BlogPostWithDetails | null> {
   try {
-    const supabase = await getSupabase();
+    const api = getApiClient();
     let postQuery = applyPublishedBlogVisibilityFilter(
-      supabase
+      api
         .from("vv_blog_posts")
         .select(BLOG_DETAIL_POST_SELECT)
         .eq("slug", slug)
@@ -238,13 +238,7 @@ export async function getPublishedPostBySlug(
 
 export async function incrementBlogViewCount(slug: string): Promise<boolean> {
   try {
-    const supabase = await getSupabase();
-    const response = await supabase.functions.invoke<{ success?: boolean }>(
-      "increment-blog-view",
-      {
-        body: { slug },
-      },
-    );
+    const response = await getApiClient().invoke<{ success?: boolean }>("increment-blog-view", { slug });
 
     return !response.error && response.data?.success === true;
   } catch {

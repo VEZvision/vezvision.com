@@ -1,5 +1,5 @@
 import { logError } from '@/lib/logger'
-import { getSupabase } from '@/lib/supabase'
+import { getApiClient } from '@/lib/api'
 export interface CodeInjectionSettings {
   head: string
   body: string
@@ -18,8 +18,7 @@ const EMPTY_CODE: CodeInjectionSettings = {
 
 export async function fetchCodeInjection(): Promise<CodeInjectionSettings> {
   try {
-    const supabase = await getSupabase()
-    const response = await supabase.functions.invoke<CodeInjectionResponse>('get-code-injection')
+    const response = await getApiClient().invoke<CodeInjectionResponse>('get-code-injection')
 
     if (response.error || response.data?.success === false) {
       if (response.error) logError('codeInjection.invoke', response.error)

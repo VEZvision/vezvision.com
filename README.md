@@ -21,13 +21,13 @@ Production Vite + React + TypeScript website for VEZvision. The app uses Supabas
 Create `.env` from `.env.example`:
 
 ```bash
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key-here
+VITE_API_URL=http://localhost:8080
+VITE_PUBLIC_ASSETS_URL=http://localhost:9000
 VITE_SENTRY_DSN=https://your-sentry-dsn
 VITE_GA_ID=G-XXXXXXXXXX
 ```
 
-Only `VITE_*` values are exposed to the browser. Supabase service-role keys, Resend keys, and webhook secrets belong only in Supabase Edge Function secrets.
+Only `VITE_*` values are exposed to the browser. The browser does not receive a database password, Supabase key or API token.
 
 ## Development
 
@@ -61,10 +61,10 @@ npx playwright install chromium
 
 E2E builds enable a hidden probe route (`/__e2e__/error`) via `E2E_BUILD=1` so Playwright can verify `RouteErrorBoundary` without shipping that route in normal production builds (`npm run build` without `E2E_BUILD`).
 
-Optional live Supabase smoke (real project URL + anon key):
+Optional live API smoke:
 
 ```bash
-E2E_LIVE_SUPABASE=1 VITE_SUPABASE_URL=... VITE_SUPABASE_ANON_KEY=... npm run test:e2e:live
+E2E_LIVE_API=1 VITE_API_URL=... npm run test:e2e:live
 ```
 
 ## Security model
@@ -108,28 +108,26 @@ It runs install, typecheck, lint, unit tests, production build, npm audit, and C
 
 ## Supabase Edge Functions (public site)
 
-| Function                   | Purpose                                                   |
-| -------------------------- | --------------------------------------------------------- |
-| `check-maintenance-access` | Maintenance gate + IP allowlist                           |
-| `get-code-injection`       | Private CMS head/body snippets (service role)             |
-| `increment-blog-view`      | Blog view counter with per-IP dedup (service role RPC)    |
-| `submit-contact`           | Contact form → DB + Resend                                |
-| `subscribe-newsletter`     | Newsletter signup via `safe_insert_newsletter_subscriber` |
-| `unsubscribe-newsletter`   | Token unsubscribe via `unsubscribe_by_token`              |
-| `retry-message-sends`      | Internal pg_cron retry worker for failed contact emails   |
+| Endpoint | Purpose |
+| --- | --- |
+| `POST /functions/v1/check-maintenance-access` | Maintenance state |
+| `POST /functions/v1/get-code-injection` | Public CMS snippets |
+| `POST /functions/v1/increment-blog-view` | View counter with IP deduplication |
+| `POST /functions/v1/submit-contact` | Contact form write |
+| `POST /functions/v1/subscribe-newsletter` | Newsletter subscription |
+| `POST /functions/v1/unsubscribe-newsletter` | Token unsubscribe |
 
-`send-newsletter` is an **admin-only** Edge Function (service role + Resend). It is not part of this public repo; deploy and rotate secrets from your internal ops tooling, not from the marketing site pipeline.
-
-Deploy from `supabase/functions/` (shared `_shared/cors.ts`, `_shared/clientIp.ts`, `_shared/turnstile.ts`). Use `import_map_path: deno.json` when deploying via Supabase API. Apply DB migrations before deploying when RPC signatures change.
-
-Deployed Edge Functions use `verify_jwt: true`. Anonymous SPA calls still work through `supabase.functions.invoke` because the client sends the publishable anon JWT. `retry-message-sends` is internal and also verifies the service-role bearer token in the function body.
+These endpoints are served by the self-hosted Node API in `backend/`; public reads
+are served by PostgREST. The browser only needs `VITE_API_URL` and never receives a
+database credential or API key.
 
 ### Optional Turnstile (contact + newsletter)
 
 | Env (client) | `VITE_TURNSTILE_SITE_KEY` |
 | Env (edge) | `TURNSTILE_SECRET_KEY` |
 
-When the site key is unset, widgets are hidden and edge functions skip verification. When set, both must be configured in Supabase Edge secrets and Hostido env at build time.
+When the site key is unset, widgets are hidden. When set, configure the secret in
+the self-hosted API environment.
 
 Before every production build, `npm run build` verifies CSP sources (`verify:security`) and `dist/` artifacts (`verify-production-build.mjs`).
 

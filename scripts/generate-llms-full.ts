@@ -1,6 +1,6 @@
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { getScriptSupabase } from "./lib/supabase";
+import { getScriptApi } from "./lib/api";
 
 const SITE_URL = (process.env.VITE_SITE_URL || "https://vezvision.com").replace(
   /\/$/,
@@ -68,7 +68,7 @@ function truncate(text: string, max: number): string {
 
 async function fetchServices() {
   try {
-    const supabase = await getScriptSupabase();
+    const supabase = getScriptApi();
     const { data, error } = await supabase
       .from("vv_services")
       .select(
@@ -87,7 +87,7 @@ async function fetchServices() {
 
 async function fetchProjects() {
   try {
-    const supabase = await getScriptSupabase();
+    const supabase = getScriptApi();
     const { data, error } = await supabase
       .from("vv_projects")
       .select(
@@ -106,7 +106,7 @@ async function fetchProjects() {
 
 async function fetchBlogPosts() {
   try {
-    const supabase = await getScriptSupabase();
+    const supabase = getScriptApi();
     const { data, error } = await supabase
       .from("vv_blog_posts")
       .select(
@@ -125,7 +125,7 @@ async function fetchBlogPosts() {
 
 async function fetchFaqItems() {
   try {
-    const supabase = await getScriptSupabase();
+    const supabase = getScriptApi();
     const { data, error } = await supabase
       .from("vv_faq_items")
       .select("id,question_pl,question_en,answer_pl,answer_en")

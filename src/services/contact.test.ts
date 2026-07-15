@@ -4,11 +4,9 @@ import { ContactFormError, submitContactForm } from './contact'
 
 const invokeMock = vi.fn()
 
-vi.mock('@/lib/supabase', () => ({
-  getSupabase: () => Promise.resolve({
-    functions: {
-      invoke: (...args: unknown[]) => invokeMock(...args) as Promise<{ data: unknown; error: unknown }>,
-    },
+vi.mock('@/lib/api', () => ({
+  getApiClient: () => ({
+    invoke: (...args: unknown[]) => invokeMock(...args) as Promise<{ data: unknown; error: unknown }>,
   }),
 }))
 

@@ -17,7 +17,7 @@ const DIST_DIR = resolve(process.cwd(), "dist");
 const PREVIEW_PORT = 4173;
 const NAV_TIMEOUT = 20_000;
 const SEO_READY_TIMEOUT = 30_000;
-const SKIP_URLS = ["https://example.supabase.co", ""];
+const SKIP_URLS = ["https://api.example.test", ""];
 const PREVIEW_ORIGIN = `http://127.0.0.1:${PREVIEW_PORT}`;
 const SITE_ORIGIN = (
   process.env.VITE_SITE_URL || "https://vezvision.com"
@@ -69,7 +69,7 @@ const NON_CRITICAL_HOME_ASSET_PATTERNS = [
   /\/assets\/SectionBadge-[^"'<>\s]+\.js/,
   /\/assets\/SectionHeader-[^"'<>\s]+\.(?:css|js)/,
   /\/assets\/SectionReveal-[^"'<>\s]+\.js/,
-  /\/assets\/supabase-[^"'<>\s]+\.js/,
+  /\/assets\/vendor-api-[^"'<>\s]+\.js/,
   /\/assets\/contactValidation-[^"'<>\s]+\.js/,
   /\/assets\/index-[^"'<>\s]+\.js/,
   /\/assets\/newslette?r-[^"'<>\s]+\.js/,
@@ -157,7 +157,7 @@ function stripHomePreconnects(headHtml: string, routePath: string): string {
   }
 
   return headHtml.replace(
-    /<link\b[^>]*rel=["'](?:preconnect|dns-prefetch)["'][^>]*(?:supabase|googletagmanager|cloudflare)[^>]*>\s*/gi,
+    /<link\b[^>]*rel=["'](?:preconnect|dns-prefetch)["'][^>]*(?:googletagmanager|cloudflare)[^>]*>\s*/gi,
     "",
   );
 }
@@ -352,12 +352,12 @@ async function prerenderRoute({
 
 async function main() {
   const skipPrerender = process.env.SKIP_PRERENDER === "1";
-  const supabaseUrl = process.env.VITE_API_URL?.trim() ?? "";
+  const apiUrl = process.env.VITE_API_URL?.trim() ?? "";
 
-  if (SKIP_URLS.includes(supabaseUrl)) {
+  if (SKIP_URLS.includes(apiUrl)) {
     if (skipPrerender) {
       console.log(
-        "Skipping prerendering — SKIP_PRERENDER=1 (CI without real Supabase credentials)",
+        "Skipping prerendering — SKIP_PRERENDER=1 (CI without a reachable API)",
       );
       process.exit(0);
     }

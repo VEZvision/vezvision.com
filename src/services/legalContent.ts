@@ -1,4 +1,4 @@
-import { getSupabase } from '@/lib/supabase'
+import { getApiClient } from '@/lib/api'
 
 export interface LegalContentResult {
   content: string | null
@@ -30,8 +30,7 @@ export async function getPublishedLegalContent(
   pageKey: string,
   language: 'pl' | 'en'
 ): Promise<LegalContentResult> {
-  const supabase = await getSupabase()
-  const { data, error } = await supabase
+  const { data, error } = await getApiClient()
     .from('vv_legal_documents')
     .select('title_pl,title_en,content_pl,content_en,last_updated,version,is_published')
     .eq('document_key', pageKey)

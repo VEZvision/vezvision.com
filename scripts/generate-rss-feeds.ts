@@ -1,6 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import { getScriptSupabase } from "./lib/supabase";
+import { getScriptApi } from "./lib/api";
 import { applyPublishedBlogVisibilityFilter } from "@/services/blogFilters";
 import { SUPPORTED_LOCALES } from "@/routing/routes.config";
 
@@ -53,7 +53,7 @@ async function fetchPosts(): Promise<BlogPostForRSS[]> {
   // Graceful degradation: if Supabase is unreachable, return empty array.
   // The RSS feed will contain valid channel metadata with no items.
   try {
-    const supabase = await getScriptSupabase();
+    const supabase = getScriptApi();
     let query = supabase
       .from("vv_blog_posts")
       .select(

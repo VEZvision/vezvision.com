@@ -1,4 +1,4 @@
-import { getSupabase } from "@/lib/supabase";
+import { getApiClient } from "@/lib/api";
 import type { SettingEntry } from "./types";
 import { PUBLIC_SETTINGS_KEYS } from "./defaults";
 
@@ -26,10 +26,10 @@ export async function getSettings(key: string): Promise<unknown | null>;
 export async function getSettings(
   key: string,
 ): Promise<{ data: SettingEntry[] } | unknown | null> {
-  const supabase = await getSupabase();
+  const api = getApiClient();
 
   if (key === "ALL") {
-    const { data, error } = await supabase
+    const { data, error } = await api
       .from("vv_site_settings")
       .select("key, value, updated_at")
       .eq("is_public", true)
@@ -42,7 +42,7 @@ export async function getSettings(
     return { data: (data ?? []) as SettingEntry[] };
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await api
     .from("vv_site_settings")
     .select("value")
     .eq("key", key)

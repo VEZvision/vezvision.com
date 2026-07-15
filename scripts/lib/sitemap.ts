@@ -1,4 +1,4 @@
-import { getScriptSupabase } from "../lib/supabase";
+import { getScriptApi } from "../lib/api";
 import { APP_ROUTES, SUPPORTED_LOCALES } from "@/routing/routes.config";
 import { localizedPath } from "@/routing/locale";
 import { applyPublishedBlogVisibilityFilter } from "@/services/blogFilters";
@@ -77,7 +77,7 @@ function buildAlternates(
 }
 
 export async function generateSitemap(): Promise<string> {
-  // Graceful degradation: if Supabase is unreachable (no .env, network issue),
+  // Graceful degradation: if the API is unreachable (no .env, network issue),
   // generate a static-only sitemap (APP_ROUTES × SUPPORTED_LOCALES) without
   // dynamic blog/portfolio URLs. This ensures `npm run build` always produces
   // a valid sitemap.xml even without Supabase credentials.
@@ -98,7 +98,7 @@ export async function generateSitemap(): Promise<string> {
   let siteSettings: { value: unknown; updated_at: string } | null = null;
 
   try {
-    const supabase = await getScriptSupabase();
+    const supabase = getScriptApi();
     let blogQuery = supabase
       .from("vv_blog_posts")
       .select("slug,updated_at,featured_image,title_pl,title_en")
@@ -124,7 +124,7 @@ export async function generateSitemap(): Promise<string> {
     projects = projectsResult.data;
     siteSettings = settingsResult.data;
   } catch {
-    // Supabase unavailable — static-only sitemap (no blog/portfolio URLs)
+    // API unavailable — static-only sitemap (no blog/portfolio URLs)
   }
 
   const baseUrl = (

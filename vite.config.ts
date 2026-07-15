@@ -74,7 +74,6 @@ export default defineConfig({
               id.includes("unified")
             )
               return "vendor-markdown";
-            if (id.includes("@supabase")) return "vendor-supabase";
             if (id.includes("@tanstack/react-query")) return "vendor-query";
             if (id.includes("dompurify")) return "vendor-dompurify";
             if (id.includes("sonner")) return "vendor-sonner";

@@ -1,7 +1,7 @@
 import { APP_ROUTES, SUPPORTED_LOCALES } from "@/routing/routes.config";
 import { applyPublishedBlogVisibilityFilter } from "@/services/blogFilters";
 
-import { getScriptSupabase } from "../lib/supabase";
+import { getScriptApi } from "../lib/api";
 
 export function getStaticPaths(): string[] {
   const paths: string[] = [];
@@ -23,7 +23,7 @@ export function getStaticPaths(): string[] {
 
 export async function getDynamicPaths(): Promise<string[]> {
   const paths: string[] = [];
-  const supabase = await getScriptSupabase();
+  const supabase = getScriptApi();
 
   let blogQuery = supabase
     .from("vv_blog_posts")
