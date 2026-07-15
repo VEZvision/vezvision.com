@@ -354,13 +354,12 @@ async function main() {
   const skipPrerender = process.env.SKIP_PRERENDER === "1";
   const apiUrl = process.env.VITE_API_URL?.trim() ?? "";
 
+  if (skipPrerender) {
+    console.log("Skipping prerendering — SKIP_PRERENDER=1");
+    process.exit(0);
+  }
+
   if (SKIP_URLS.includes(apiUrl)) {
-    if (skipPrerender) {
-      console.log(
-        "Skipping prerendering — SKIP_PRERENDER=1 (CI without a reachable API)",
-      );
-      process.exit(0);
-    }
     console.error(
       "Prerendering requires a real VITE_API_URL; refusing to ship an unprerendered SEO build",
     );
