@@ -34,6 +34,7 @@ services:
       dockerfile: backend/nginx.Dockerfile
     restart: unless-stopped
     depends_on: [api, postgrest]
+    expose: ["8080"]
     networks: [vezvision_internal, coolify]
     security_opt: [no-new-privileges:true]
     read_only: true
