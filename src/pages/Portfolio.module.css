@@ -235,105 +235,92 @@
 
 /* Empty State */
 .empty {
-  position: relative;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 24px;
-  width: min(100%, 760px);
-  margin: 44px auto 0;
-  padding: 34px 36px;
-  text-align: center;
-  background:
-    linear-gradient(
-      135deg,
-      rgba(255, 255, 255, 0.98),
-      rgba(246, 247, 249, 0.96)
-    ),
-    #ffffff;
-  border: 1px solid rgba(16, 24, 40, 0.1);
-  border-radius: 24px;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 30px 44px;
+  width: min(100%, 920px);
+  margin: 52px auto 0;
+  padding: 30px 0 0;
+  border-top: 1px solid #d9dde4;
   grid-column: 1 / -1;
-  overflow: hidden;
-  box-shadow:
-    inset 0px 1px 0px rgba(255, 255, 255, 0.95),
-    0px 1px 1px -1px rgba(0, 0, 0, 0.1),
-    0px 8px 20px -12px rgba(16, 24, 40, 0.24),
-    0px 28px 60px -36px rgba(16, 24, 40, 0.32);
 }
 
-.empty::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 18% 0%, rgba(16, 24, 40, 0.08), transparent 34%),
-    linear-gradient(
-      90deg,
-      rgba(16, 24, 40, 0.16),
-      transparent 44%,
-      rgba(16, 24, 40, 0.08)
-    );
-  opacity: 0.55;
+.emptyMeta {
+  display: grid;
+  align-content: start;
+  gap: 8px;
 }
 
-.emptyIconWrap {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
+.emptyIndex,
+.emptyEyebrow,
+.emptyStatus {
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.emptyIndex {
+  color: #9aa1ad;
+}
+
+.emptyEyebrow {
+  color: #111827;
+}
+
+.emptyStatus {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  width: 62px;
-  height: 62px;
-  color: #ffffff;
-  background: #101828;
-  border-radius: 18px;
-  box-shadow:
-    inset 0px 1px 0px rgba(255, 255, 255, 0.18),
-    0px 14px 28px -18px rgba(16, 24, 40, 0.65);
+  gap: 7px;
+  margin-top: 8px;
+  color: #667085;
+  letter-spacing: 0.04em;
 }
 
-.emptyIcon {
-  width: 26px;
-  height: 26px;
+.emptyStatusDot {
+  width: 6px;
+  height: 6px;
+  background: #111827;
+  border-radius: 50%;
 }
 
 .emptyCopy {
-  position: relative;
-  z-index: 1;
   text-align: left;
 }
 
 .emptyTitle {
-  font-size: 19px;
-  font-weight: 600;
+  max-width: 620px;
+  margin: 0 0 12px;
   color: #101828;
-  margin: 0 0 8px 0;
-  line-height: 1.35;
-  letter-spacing: -0.2px;
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 520;
+  line-height: 1.16;
+  letter-spacing: -0.035em;
 }
 
 .emptyDesc {
-  max-width: 580px;
-  font-size: 15px;
-  color: #475467;
-  line-height: 1.65;
+  max-width: 620px;
   margin: 0;
+  color: #667085;
+  font-size: 15px;
+  line-height: 1.7;
 }
 
 .emptyCta {
+  grid-column: 1 / -1;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   gap: 14px;
-  margin-top: 20px;
+  padding: 22px 0;
+  border-top: 1px solid #eceef2;
+  border-bottom: 1px solid #d9dde4;
 }
 
 .emptyCtaText {
-  max-width: 420px;
   margin: 0;
-  color: #344054;
+  color: #475467;
   font-size: 14px;
   line-height: 1.55;
 }
@@ -341,24 +328,46 @@
 .emptyCtaLink {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-height: 42px;
-  padding: 0 18px;
-  color: #ffffff;
-  background: #101828;
-  border-radius: 999px;
+  gap: 8px;
+  color: #101828;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 650;
   text-decoration: none;
   transition:
-    transform 0.2s ease,
-    background-color 0.2s ease;
+    color 0.2s ease,
+    gap 0.2s ease;
+}
+
+.emptyCtaLink svg {
+  width: 17px;
+  height: 17px;
 }
 
 .emptyCtaLink:hover,
 .emptyCtaLink:focus-visible {
-  background: #1d2939;
-  transform: translateY(-1px);
+  color: #475467;
+  gap: 11px;
+}
+
+.emptyCompact {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  width: min(100%, 760px);
+  gap: 18px;
+  padding: 24px 0;
+  border-bottom: 1px solid #d9dde4;
+}
+
+.emptyCompact .emptyTitle {
+  margin-bottom: 6px;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+.emptyIcon {
+  width: 24px;
+  height: 24px;
+  color: #667085;
 }
 
 /* Load More */
@@ -468,21 +477,33 @@
 
   .empty {
     grid-template-columns: 1fr;
-    justify-items: center;
-    gap: 18px;
+    gap: 24px;
     margin-top: 36px;
-    padding: 32px 22px;
+    padding-top: 24px;
   }
 
-  .emptyCopy {
-    text-align: center;
+  .emptyMeta {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 8px 12px;
+  }
+
+  .emptyStatus {
+    grid-column: 1 / -1;
+    margin-top: 0;
   }
 
   .emptyCta {
-    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 20px 0;
   }
 
   .emptyDesc {
     font-size: 14px;
+  }
+
+  .emptyCompact {
+    grid-template-columns: auto minmax(0, 1fr);
   }
 }

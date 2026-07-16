@@ -99,12 +99,14 @@ export const portfolioTranslations = {
   "portfolio.grid.loading_desc":
     "We are fetching the latest projects from the database. If the list is empty, we will show the projects-in-progress state in a moment.",
   "portfolio.grid.error": "Loading error",
-  "portfolio.grid.empty": "First projects will appear soon.",
+  "portfolio.grid.empty_eyebrow": "Case studies",
+  "portfolio.grid.empty_status": "In preparation",
+  "portfolio.grid.empty": "We are preparing our first case studies",
   "portfolio.grid.empty_desc":
-    "We are currently preparing selected demo projects and case studies.",
+    "We are documenting projects that show the context, collaboration process and measurable outcome.",
   "portfolio.grid.empty_cta.title":
-    "Want to build a project that could become one of our first case studies?",
-  "portfolio.grid.empty_cta.button": "Let’s talk about your project",
+    "Have a project worth talking about?",
+  "portfolio.grid.empty_cta.button": "Discuss a project",
   "portfolio.filters.concepts": "Concepts",
   "portfolio.filters.prototypes": "Prototypes",
   "portfolio.filters.demos": "Demos",

@@ -1,6 +1,7 @@
 import crypto from 'node:crypto'
 import http from 'node:http'
 import { Pool } from 'pg'
+import { contactAutoReplyEmail, contactNotificationEmail, newsletterConfirmationEmail } from './email-templates.mjs'
 
 const databaseUrl = process.env.DATABASE_URL
 const allowedOrigins = String(process.env.ALLOWED_ORIGINS || process.env.ALLOWED_ORIGIN || '')
@@ -52,8 +53,7 @@ const body = async req => {
   catch { throw Object.assign(new Error('Invalid payload'), { status: 400 }) }
 }
 const ip = req => String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim().slice(0, 128)
-const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char])
-async function sendEmail({ from, to, subject, html, replyTo }) {
+async function sendEmail({ from, to, subject, html, text, replyTo }) {
   if (!resendApiKey || !from) return { sent: false, reason: 'not_configured' }
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -64,13 +64,13 @@ async function sendEmail({ from, to, subject, html, replyTo }) {
       to: [to],
       subject,
       html,
+      text,
       ...(replyTo ? { reply_to: replyTo } : {}),
     }),
   })
   if (!response.ok) throw new Error(`Resend HTTP ${response.status}: ${(await response.text()).slice(0, 300)}`)
   return { sent: true }
 }
-const emailLayout = (title, content) => `<!doctype html><html lang="pl"><body style="margin:0;background:#f5f5f7;font-family:Inter,Arial,sans-serif;color:#111827"><div style="max-width:640px;margin:32px auto;background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:32px"><div style="font-size:20px;font-weight:700;margin-bottom:24px">VEZvision</div><h1 style="font-size:24px;margin:0 0 18px">${title}</h1>${content}<p style="margin-top:28px;color:#6b7280;font-size:13px">Wiadomość wysłana automatycznie przez VEZvision.</p></div></body></html>`
 const rateKey = (scope, ...parts) => `${scope}:${crypto.createHash('sha256').update(parts.map(part => String(part)).join(':')).digest('hex')}`
 async function allow(key, limit, windowMs) {
   const { rows: [row] } = await pool.query(
@@ -134,19 +134,11 @@ async function submitContact(req, res) {
   const { rows: [row] } = await pool.query('INSERT INTO public.messages(full_name,email,subject,message,phone,language,client_ip) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id', [fullName, email, subject, message, String(input.phone || '').trim().slice(0, 40) || null, input.language === 'en' ? 'en' : 'pl', ip(req)])
   const phone = String(input.phone || '').trim().slice(0, 40)
   const lang = input.language === 'en' ? 'en' : 'pl'
-  const notification = emailLayout(
-    'Nowa wiadomość z formularza',
-    `<p><strong>Od:</strong> ${escapeHtml(fullName)} (${escapeHtml(email)})</p>${phone ? `<p><strong>Telefon:</strong> ${escapeHtml(phone)}</p>` : ''}<p><strong>Temat:</strong> ${escapeHtml(subject)}</p><div style="white-space:pre-wrap;padding:16px;background:#f9fafb;border-radius:12px">${escapeHtml(message)}</div>`,
-  )
-  const autoReply = emailLayout(
-    lang === 'en' ? 'Thank you for your message' : 'Dziękujemy za wiadomość',
-    lang === 'en'
-      ? `<p>Hello ${escapeHtml(fullName)},</p><p>We have received your message and will get back to you as soon as possible.</p>`
-      : `<p>Cześć ${escapeHtml(fullName)},</p><p>Otrzymaliśmy Twoją wiadomość i odpowiemy najszybciej, jak to możliwe.</p>`,
-  )
+  const notification = contactNotificationEmail({ fullName, email, phone, subject, message, siteUrl: publicSiteUrl })
+  const autoReply = contactAutoReplyEmail({ fullName, language: lang, siteUrl: publicSiteUrl })
   const emailResults = await Promise.allSettled([
-    sendEmail({ from: `VEZvision <${contactFromEmail}>`, to: contactNotifyEmail, subject: `[VEZvision] ${subject}`, html: notification, replyTo: email }),
-    sendEmail({ from: `VEZvision <${contactFromEmail}>`, to: email, subject: lang === 'en' ? 'We received your message — VEZvision' : 'Otrzymaliśmy Twoją wiadomość — VEZvision', html: autoReply, replyTo: contactNotifyEmail }),
+    sendEmail({ from: `VEZvision <${contactFromEmail}>`, to: contactNotifyEmail, ...notification, replyTo: email }),
+    sendEmail({ from: `VEZvision <${contactFromEmail}>`, to: email, ...autoReply, replyTo: contactNotifyEmail }),
   ])
   for (const result of emailResults) if (result.status === 'rejected') console.error('Contact email delivery failed', result.reason)
   json(res, 201, { success: true, id: row.id, email_sent: emailResults.every(result => result.status === 'fulfilled' && result.value.sent) })
@@ -163,14 +155,9 @@ async function subscribe(req, res) {
   const language = input.language === 'en' ? 'en' : 'pl'
   const { rows: [row] } = await pool.query(`INSERT INTO public.vv_newsletter_subscribers(email,source,tags,token,is_active,language,confirmation_requested_at) VALUES ($1,$2,ARRAY['newsletter'],$3,false,$4,now()) ON CONFLICT(email) DO UPDATE SET token=CASE WHEN public.vv_newsletter_subscribers.is_active THEN public.vv_newsletter_subscribers.token ELSE EXCLUDED.token END, confirmation_requested_at=CASE WHEN public.vv_newsletter_subscribers.is_active THEN public.vv_newsletter_subscribers.confirmation_requested_at ELSE now() END, updated_at=now(), source=EXCLUDED.source, language=EXCLUDED.language RETURNING id,is_active,token`, [email, source, token, language])
   const confirmationUrl = `${publicSiteUrl}/${language}/newsletter/confirm?token=${encodeURIComponent(row.token)}`
-  const confirmation = emailLayout(
-    language === 'en' ? 'Confirm your newsletter subscription' : 'Potwierdź zapis do newslettera',
-    language === 'en'
-      ? `<p>Confirm that you want to receive the VEZvision newsletter.</p><p><a href="${escapeHtml(confirmationUrl)}" style="display:inline-block;padding:12px 20px;background:#111827;color:#fff;text-decoration:none;border-radius:10px">Confirm subscription</a></p><p>If you did not request this, ignore this message.</p>`
-      : `<p>Potwierdź, że chcesz otrzymywać newsletter VEZvision.</p><p><a href="${escapeHtml(confirmationUrl)}" style="display:inline-block;padding:12px 20px;background:#111827;color:#fff;text-decoration:none;border-radius:10px">Potwierdź zapis</a></p><p>Jeśli to nie Ty, zignoruj tę wiadomość.</p>`,
-  )
+  const confirmation = newsletterConfirmationEmail({ language, confirmationUrl, siteUrl: publicSiteUrl })
   let emailSent = false
-  if (!row.is_active) try { emailSent = (await sendEmail({ from: `VEZvision Newsletter <${newsletterFromEmail}>`, to: email, subject: language === 'en' ? 'Confirm your VEZvision subscription' : 'Potwierdź zapis do VEZvision', html: confirmation, replyTo: newsletterReplyTo })).sent }
+  if (!row.is_active) try { emailSent = (await sendEmail({ from: `VEZvision Newsletter <${newsletterFromEmail}>`, to: email, ...confirmation, replyTo: newsletterReplyTo })).sent }
   catch (error) { console.error('Newsletter confirmation delivery failed', error) }
   json(res, 201, { success: true, id: row.id, confirmation_required: !row.is_active, email_sent: row.is_active || emailSent })
 }

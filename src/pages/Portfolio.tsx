@@ -102,6 +102,8 @@ const Portfolio = () => {
                 ctaTitle={t("portfolio.grid.empty_cta.title")}
                 ctaLabel={t("portfolio.grid.empty_cta.button")}
                 ctaHref={toLocalizedPath("contact")}
+                eyebrow={t("portfolio.grid.empty_eyebrow")}
+                status={t("portfolio.grid.empty_status")}
               />
             )}
           </div>

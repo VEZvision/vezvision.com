@@ -8,7 +8,7 @@
     "sync:security-headers": "node --env-file-if-exists=.env scripts/sync-security-headers.mjs",
     "verify:security": "node --env-file-if-exists=.env scripts/verify-security-headers.mjs",
     "test:csp": "node --env-file-if-exists=.env --test scripts/csp-policy.test.mjs",
-    "test:scripts": "node --env-file-if-exists=.env --test scripts/csp-policy.test.mjs && npx tsx --test scripts/seo-build-validation.test.ts",
+    "test:scripts": "node --env-file-if-exists=.env --test scripts/csp-policy.test.mjs backend/email-templates.node-test.mjs && npx tsx --test scripts/seo-build-validation.test.ts",
     "build": "npm run sync:security-headers && npm run verify:security && npm run typecheck && vitest --run src/data/translations/parity.test.ts && npm run generate-sitemap && npm run generate-robots-txt && npm run generate-rss-feeds && npm run generate-llms-full && node --env-file-if-exists=.env ./node_modules/vite/bin/vite.js build && npx tsx --env-file-if-exists=.env scripts/prerender-head.ts && node scripts/copy-spa-index-to-locale-dirs.mjs && npx tsx --env-file-if-exists=.env scripts/verify-production-build.ts",
     "lint": "eslint .",
     "knip": "knip",

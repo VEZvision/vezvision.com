@@ -1,7 +1,7 @@
 export const new_translations_for_services_pageTranslations = {
   "services.hero.badge": "USŁUGI IT DLA FIRM",
-  "services.hero.title.line1": "Technologia, która ",
-  "services.hero.title.line2": "napędza Twój ",
+  "services.hero.title.line1": "Technologia, która",
+  "services.hero.title.line2": "napędza Twój",
   "services.hero.title.emphasis": "biznes",
   "services.hero.description":
     "Wybierz usługę, która realnie wspiera rozwój Twojej firmy.",

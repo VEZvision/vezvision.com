@@ -106,12 +106,14 @@ export const portfolioTranslations = {
   "portfolio.grid.loading_desc":
     "Pobieramy aktualne realizacje z bazy. Jeśli lista jest pusta, za chwilę pokażemy informację o projektach w przygotowaniu.",
   "portfolio.grid.error": "Błąd wczytywania",
-  "portfolio.grid.empty": "Pierwsze realizacje pojawią się wkrótce.",
+  "portfolio.grid.empty_eyebrow": "Case studies",
+  "portfolio.grid.empty_status": "W przygotowaniu",
+  "portfolio.grid.empty": "Pracujemy nad pierwszymi case studies",
   "portfolio.grid.empty_desc":
-    "Aktualnie przygotowujemy wybrane projekty demonstracyjne i case studies.",
+    "Dokumentujemy projekty, które pokażą kontekst, przebieg współpracy i mierzalny efekt wdrożenia.",
   "portfolio.grid.empty_cta.title":
-    "Chcesz stworzyć projekt, który może stać się jedną z naszych pierwszych realizacji?",
-  "portfolio.grid.empty_cta.button": "Porozmawiajmy o projekcie",
+    "Masz projekt, o którym warto opowiedzieć?",
+  "portfolio.grid.empty_cta.button": "Omówmy współpracę",
   "portfolio.detail.not_found": "Projekt nie znaleziony",
   "portfolio.detail.not_found_desc":
     "Projekt, którego szukasz, nie istnieje lub został przeniesiony.",
