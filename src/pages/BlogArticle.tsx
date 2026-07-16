@@ -21,6 +21,7 @@ import { stripHtmlForJsonLd } from "@/utils/stripHtmlForJsonLd";
 
 import { ArrowLeft, Clock, Calendar } from "lucide-react";
 import { ResponsiveImage } from "@/components/ui/ResponsiveImage";
+import { SectionLoader } from "@/components/loading";
 
 const BlogArticleSidebar = lazy(
   () => import("@/components/blog/BlogArticleSidebar"),
@@ -57,15 +58,8 @@ function BlogArticle() {
 
   if (isLoading) {
     return (
-      <div
-        className="min-h-[60vh] pt-32 flex justify-center items-center"
-        aria-busy="true"
-      >
-        <div
-          className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"
-          role="status"
-          aria-label={t("common.loading")}
-        />
+      <div className="min-h-[60vh] pt-24" aria-busy="true">
+        <SectionLoader label={t("common.loading")} />
       </div>
     );
   }

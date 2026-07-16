@@ -15,6 +15,7 @@ import {
 import { safeJsonLd } from "@/utils/safeJsonLd";
 import { joinUrlPath, safeAbsoluteHttpUrl } from "@/utils/safeHref";
 import { useSettings } from "@/hooks/useSettings";
+import { SectionLoader } from "@/components/loading";
 
 function ServicesSection() {
   const { t, language } = useLanguageContext();
@@ -26,11 +27,7 @@ function ServicesSection() {
   const siteUrl = safeAbsoluteHttpUrl(seo?.siteUrl);
 
   if (loading) {
-    return (
-      <div className="py-24 text-center">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <SectionLoader label={t("common.loading")} />;
   }
 
   if (error) {

@@ -1,7 +1,8 @@
-import { Suspense, type ComponentType } from 'react';
+import { Suspense, type ComponentType } from "react";
 
-import type { SectionRegistryEntry } from './types';
-import { ViewportSectionGate } from './ViewportSectionGate';
+import type { SectionRegistryEntry } from "./types";
+import { SectionLoader } from "@/components/loading";
+import { ViewportSectionGate } from "./ViewportSectionGate";
 
 export type ResolvedSection = SectionRegistryEntry & {
   key: string;
@@ -23,7 +24,7 @@ export function PageSections({ sections }: PageSectionsProps) {
 
         return (
           <ViewportSectionGate key={key} minHeight={minHeight}>
-            <Suspense fallback={null}>
+            <Suspense fallback={<SectionLoader compact />}>
               <Resolved {...(props ?? {})} />
             </Suspense>
           </ViewportSectionGate>

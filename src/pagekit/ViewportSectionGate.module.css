@@ -1,0 +1,34 @@
+.placeholder {
+  position: relative;
+  display: grid;
+  width: 100%;
+  place-items: center;
+  overflow: hidden;
+}
+
+.skeleton {
+  width: min(82%, 62rem);
+  height: clamp(8rem, 18vw, 13rem);
+  border: 1px solid rgba(15, 23, 42, 0.055);
+  border-radius: 1.75rem;
+  background:
+    linear-gradient(rgba(15, 23, 42, 0.055) 0 0) 7% 24% / 21% 0.65rem no-repeat,
+    linear-gradient(rgba(15, 23, 42, 0.05) 0 0) 7% 42% / 62% 0.9rem no-repeat,
+    linear-gradient(rgba(15, 23, 42, 0.045) 0 0) 7% 59% / 84% 0.6rem no-repeat,
+    rgba(255, 255, 255, 0.48);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  opacity: 0.78;
+  animation: breathe 1.8s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  50% {
+    opacity: 0.48;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
