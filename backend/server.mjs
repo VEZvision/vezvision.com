@@ -8,8 +8,12 @@ const allowedOrigins = String(process.env.ALLOWED_ORIGINS || process.env.ALLOWED
   .map(origin => origin.trim())
   .filter(Boolean)
 const turnstileSecret = process.env.TURNSTILE_SECRET_KEY?.trim()
+const resendApiKey = process.env.RESEND_API_KEY?.trim()
+const resendFromEmail = process.env.RESEND_FROM_EMAIL?.trim()
+const contactNotifyEmail = process.env.CONTACT_NOTIFY_EMAIL?.trim() || 'contact@vezvision.com'
 if (!databaseUrl || allowedOrigins.length === 0) throw new Error('DATABASE_URL and ALLOWED_ORIGIN/ALLOWED_ORIGINS are required')
 if (!turnstileSecret) console.warn('TURNSTILE_SECRET_KEY is not set; contact and newsletter captcha verification is disabled')
+if (!resendApiKey || !resendFromEmail) console.warn('RESEND_API_KEY or RESEND_FROM_EMAIL is not set; transactional emails are disabled')
 const pool = new Pool({ connectionString: databaseUrl, max: 10, ssl: false })
 
 const json = (res, status, body) => {
@@ -38,6 +42,24 @@ const body = async req => {
   catch { throw Object.assign(new Error('Invalid JSON payload'), { status: 400 }) }
 }
 const ip = req => String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim().slice(0, 128)
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char])
+async function sendEmail({ to, subject, html, replyTo }) {
+  if (!resendApiKey || !resendFromEmail) return { sent: false, reason: 'not_configured' }
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { authorization: `Bearer ${resendApiKey}`, 'content-type': 'application/json' },
+    body: JSON.stringify({
+      from: `VEZvision <${resendFromEmail}>`,
+      to: [to],
+      subject,
+      html,
+      ...(replyTo ? { reply_to: replyTo } : {}),
+    }),
+  })
+  if (!response.ok) throw new Error(`Resend HTTP ${response.status}: ${(await response.text()).slice(0, 300)}`)
+  return { sent: true }
+}
+const emailLayout = (title, content) => `<!doctype html><html lang="pl"><body style="margin:0;background:#f5f5f7;font-family:Inter,Arial,sans-serif;color:#111827"><div style="max-width:640px;margin:32px auto;background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:32px"><div style="font-size:20px;font-weight:700;margin-bottom:24px">VEZvision</div><h1 style="font-size:24px;margin:0 0 18px">${title}</h1>${content}<p style="margin-top:28px;color:#6b7280;font-size:13px">Wiadomość wysłana automatycznie przez VEZvision.</p></div></body></html>`
 const rateKey = (scope, ...parts) => `${scope}:${crypto.createHash('sha256').update(parts.map(part => String(part)).join(':')).digest('hex')}`
 async function allow(key, limit, windowMs) {
   const { rows: [row] } = await pool.query(
@@ -86,7 +108,24 @@ async function submitContact(req, res) {
   const captcha = await verifyTurnstile(req, input)
   if (!captcha.ok) return json(res, captcha.status, { error: captcha.error, field: 'form' })
   const { rows: [row] } = await pool.query('INSERT INTO public.messages(full_name,email,subject,message,phone,language,client_ip) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id', [fullName, email, subject, message, String(input.phone || '').trim().slice(0, 40) || null, input.language === 'en' ? 'en' : 'pl', ip(req)])
-  json(res, 201, { success: true, id: row.id })
+  const phone = String(input.phone || '').trim().slice(0, 40)
+  const lang = input.language === 'en' ? 'en' : 'pl'
+  const notification = emailLayout(
+    'Nowa wiadomość z formularza',
+    `<p><strong>Od:</strong> ${escapeHtml(fullName)} (${escapeHtml(email)})</p>${phone ? `<p><strong>Telefon:</strong> ${escapeHtml(phone)}</p>` : ''}<p><strong>Temat:</strong> ${escapeHtml(subject)}</p><div style="white-space:pre-wrap;padding:16px;background:#f9fafb;border-radius:12px">${escapeHtml(message)}</div>`,
+  )
+  const autoReply = emailLayout(
+    lang === 'en' ? 'Thank you for your message' : 'Dziękujemy za wiadomość',
+    lang === 'en'
+      ? `<p>Hello ${escapeHtml(fullName)},</p><p>We have received your message and will get back to you as soon as possible.</p>`
+      : `<p>Cześć ${escapeHtml(fullName)},</p><p>Otrzymaliśmy Twoją wiadomość i odpowiemy najszybciej, jak to możliwe.</p>`,
+  )
+  const emailResults = await Promise.allSettled([
+    sendEmail({ to: contactNotifyEmail, subject: `[VEZvision] ${subject}`, html: notification, replyTo: email }),
+    sendEmail({ to: email, subject: lang === 'en' ? 'We received your message — VEZvision' : 'Otrzymaliśmy Twoją wiadomość — VEZvision', html: autoReply }),
+  ])
+  for (const result of emailResults) if (result.status === 'rejected') console.error('Contact email delivery failed', result.reason)
+  json(res, 201, { success: true, id: row.id, email_sent: emailResults.every(result => result.status === 'fulfilled' && result.value.sent) })
 }
 async function subscribe(req, res) {
   const input = await body(req); const email = String(input.email || '').trim().toLowerCase()
@@ -98,7 +137,16 @@ async function subscribe(req, res) {
   const source = String(input.source || 'newsletter').trim().slice(0, 80).replace(/[^\w .:/-]/g, '') || 'newsletter'
   const language = input.language === 'en' ? 'en' : 'pl'
   const { rows: [row] } = await pool.query(`INSERT INTO public.vv_newsletter_subscribers(email,source,tags,token,is_active,language) VALUES ($1,$2,ARRAY['newsletter'],$3,true,$4) ON CONFLICT(email) DO UPDATE SET is_active=true,unsubscribed_at=NULL,updated_at=now(),source=EXCLUDED.source,language=EXCLUDED.language RETURNING id`, [email, source, token, language])
-  json(res, 201, { success: true, id: row.id })
+  const confirmation = emailLayout(
+    language === 'en' ? 'Welcome to the VEZvision newsletter' : 'Witaj w newsletterze VEZvision',
+    language === 'en'
+      ? '<p>Your address has been added to our newsletter. We will only send useful updates about digital products and technology.</p>'
+      : '<p>Twój adres został dodany do newslettera. Będziemy wysyłać wyłącznie wartościowe informacje o produktach cyfrowych i technologii.</p>',
+  )
+  let emailSent = false
+  try { emailSent = (await sendEmail({ to: email, subject: language === 'en' ? 'Welcome to VEZvision' : 'Witaj w VEZvision', html: confirmation })).sent }
+  catch (error) { console.error('Newsletter confirmation delivery failed', error) }
+  json(res, 201, { success: true, id: row.id, email_sent: emailSent })
 }
 async function unsubscribe(req, res) {
   const { token } = await body(req)

@@ -10,8 +10,14 @@ services:
       ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-}
+      CONTACT_NOTIFY_EMAIL: ${CONTACT_NOTIFY_EMAIL:-contact@vezvision.com}
       PORT: 3000
-    networks: [vezvision_internal, coolify]
+    networks:
+      vezvision_internal:
+        aliases: [vezvision-api]
+      coolify: {}
     security_opt: [no-new-privileges:true]
     read_only: true
     tmpfs: [/tmp]
@@ -25,7 +31,10 @@ services:
       PGRST_DB_ANON_ROLE: anon
       PGRST_SERVER_HOST: 0.0.0.0
       PGRST_SERVER_PORT: 3001
-    networks: [vezvision_internal, coolify]
+    networks:
+      vezvision_internal:
+        aliases: [vezvision-postgrest]
+      coolify: {}
     security_opt: [no-new-privileges:true]
     read_only: true
     tmpfs: [/tmp]
