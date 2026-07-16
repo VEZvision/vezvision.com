@@ -40,9 +40,9 @@
   transform: translate(-50%, -50%);
   object-fit: cover;
   z-index: 0;
-  filter: grayscale(1) contrast(1.08) brightness(1.12);
+  filter: grayscale(1) contrast(0.9) brightness(1.24);
   mix-blend-mode: luminosity;
-  opacity: 0.42;
+  opacity: 0.36;
 }
 
 .videoOverlay {
@@ -50,17 +50,16 @@
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    rgba(250, 249, 246, 0.76) 0%,
-    rgba(248, 247, 243, 0.58) 46%,
-    rgba(248, 247, 243, 0.8) 100%
-  );
+  backdrop-filter: blur(1.5px) saturate(0.82);
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.22), transparent 54%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.66) 42%, rgba(250, 249, 246, 0.94) 100%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.52), transparent 30%, transparent 70%, rgba(255, 255, 255, 0.52));
 }
 
 @media (pointer: coarse) {
   .videoOverlay {
-    background: rgba(248, 247, 243, 0.66);
+    background: rgba(255, 255, 255, 0.74);
   }
 }
 
