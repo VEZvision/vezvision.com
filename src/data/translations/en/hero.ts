@@ -1,9 +1,8 @@
 export const heroTranslations = {
   "hero.badge": "For companies that want clearer digital work",
-  "hero.subtitle":
-    "We build websites and applications that help your company work better",
+  "hero.subtitle": "Technology, design and delivery in one team",
   "hero.description":
-    "We design, launch and develop digital products for companies that value quality, speed and clear collaboration.",
+    "We build web, mobile and AI solutions, automate processes, and help companies develop and maintain their technology.",
   "hero.social.label": "Follow",
   "hero.social.aria": "Social media",
   "hero.cta.consult": "Book a free consultation",
