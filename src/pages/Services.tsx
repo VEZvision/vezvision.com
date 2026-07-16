@@ -35,6 +35,7 @@ function ServicesHero() {
       title={
         <>
           <span className="block">{t("services.hero.title.line1")}</span>
+          {" "}
           <span className="block">
             {t("services.hero.title.line2")}{" "}
             <span className="font-sans">

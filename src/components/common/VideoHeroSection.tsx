@@ -205,7 +205,10 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
         </div>
 
         {socialLinks && socialLinks.length > 0 && (
-          <div className={styles.socialRail} aria-label="Social media">
+          <div
+            className={styles.socialRail}
+            aria-label={t("hero.social.aria")}
+          >
             <span className={styles.socialLabel}>{t("hero.social.label")}</span>
             <div className={styles.socialLinks}>
               {socialLinks.map((item) => {

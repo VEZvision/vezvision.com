@@ -5,6 +5,7 @@ export const heroTranslations = {
   "hero.description":
     "We design, launch and develop digital products for companies that value quality, speed and clear collaboration.",
   "hero.social.label": "Follow",
+  "hero.social.aria": "Social media",
   "hero.cta.consult": "Book a free consultation",
   "hero.cta.services": "See our services",
 } as const;
