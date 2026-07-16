@@ -8,7 +8,7 @@
   overflow: hidden;
   padding: clamp(116px, 14vh, 148px) clamp(20px, 5vw, 72px)
     clamp(64px, 9vh, 96px);
-  background: #f8f7f3;
+  background: #faf9f6;
 }
 
 .homeHero {
@@ -25,7 +25,7 @@
 .media {
   z-index: -2;
   overflow: hidden;
-  background: #f8f7f3;
+  background: #faf9f6;
   isolation: isolate;
 }
 
@@ -39,23 +39,23 @@
   min-height: 100%;
   object-fit: cover;
   transform: translate3d(-50%, -50%, 0) scale(1.045);
-  filter: grayscale(1) contrast(1.08) brightness(1.1);
+  filter: grayscale(1) contrast(0.96) brightness(1.18);
   mix-blend-mode: luminosity;
-  opacity: 0.52;
+  opacity: 0.4;
   backface-visibility: hidden;
 }
 
 .fallbackBg {
   background:
     radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.94), transparent 50%),
-    #f2f1ed;
+    #f6f4ef;
 }
 
 .videoOverlay {
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgba(250, 249, 246, 0.76) 0%, rgba(248, 247, 243, 0.46) 42%, rgba(248, 247, 243, 0.88) 100%),
-    linear-gradient(90deg, rgba(248, 247, 243, 0.28), transparent 28%, transparent 72%, rgba(248, 247, 243, 0.28));
+    linear-gradient(180deg, rgba(252, 251, 248, 0.84) 0%, rgba(250, 249, 246, 0.62) 42%, rgba(250, 249, 246, 0.92) 100%),
+    linear-gradient(90deg, rgba(250, 249, 246, 0.4), transparent 30%, transparent 70%, rgba(250, 249, 246, 0.4));
 }
 
 .frame {
@@ -99,11 +99,11 @@
   gap: 8px;
   padding: 7px 12px;
   border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.64);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
   color: #344054;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1;
   letter-spacing: 0.055em;
   text-transform: uppercase;
@@ -129,9 +129,9 @@
   color: #0c1424;
   font-family: "Satoshi", Arial, sans-serif;
   font-size: clamp(48px, 7.2vw, 88px);
-  font-weight: 500;
-  line-height: 0.99;
-  letter-spacing: -0.055em;
+  font-weight: 400;
+  line-height: 1.01;
+  letter-spacing: -0.047em;
   text-wrap: balance;
   animation: heroEnter 0.75s 0.08s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -169,11 +169,11 @@
   min-height: 48px;
   align-items: center;
   justify-content: center;
-  border-radius: 999px;
+  border-radius: 11px;
   padding: 0 20px;
   font-family: "Satoshi", Arial, sans-serif;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1;
   cursor: pointer;
   transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease;
@@ -184,7 +184,7 @@
   border: 1px solid #0c1424;
   background: #0c1424;
   color: #fff;
-  box-shadow: 0 10px 26px rgba(12, 20, 36, 0.16);
+  box-shadow: 0 8px 20px rgba(12, 20, 36, 0.12);
 }
 
 .primaryButton svg {
@@ -233,7 +233,7 @@
 .socialLabel {
   color: #667085;
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -281,7 +281,7 @@
 
 @media (pointer: coarse) {
   .videoOverlay {
-    background: rgba(248, 247, 243, 0.62);
+    background: rgba(250, 249, 246, 0.72);
   }
 }
 
@@ -307,7 +307,7 @@
   .homeHero .title {
     font-size: clamp(42px, 13vw, 60px);
     line-height: 1.02;
-    letter-spacing: -0.05em;
+    letter-spacing: -0.043em;
   }
 
   .subtitle {
