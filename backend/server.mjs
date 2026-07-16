@@ -8,6 +8,7 @@ const allowedOrigins = String(process.env.ALLOWED_ORIGINS || process.env.ALLOWED
   .map(origin => origin.trim())
   .filter(Boolean)
 const turnstileSecret = process.env.TURNSTILE_SECRET_KEY?.trim()
+const turnstileTestMode = process.env.TURNSTILE_TEST_MODE === 'true'
 const turnstileExpectedHostnames = String(process.env.TURNSTILE_EXPECTED_HOSTNAMES || '')
   .split(',').map(value => value.trim().toLowerCase()).filter(Boolean)
 const resendApiKey = process.env.RESEND_API_KEY?.trim()
@@ -19,6 +20,7 @@ const contactNotifyEmail = process.env.CONTACT_NOTIFY_EMAIL?.trim() || 'contact@
 const publicSiteUrl = (process.env.PUBLIC_SITE_URL?.trim() || allowedOrigins[0] || '').replace(/\/$/, '')
 if (!databaseUrl || allowedOrigins.length === 0) throw new Error('DATABASE_URL and ALLOWED_ORIGIN/ALLOWED_ORIGINS are required')
 if (!turnstileSecret) console.warn('TURNSTILE_SECRET_KEY is not set; contact and newsletter captcha verification is disabled')
+if (turnstileTestMode) console.warn('TURNSTILE_TEST_MODE is enabled; use only in development')
 if (!resendApiKey || !contactFromEmail || !newsletterFromEmail) console.warn('Resend API key or sender addresses are not fully configured; some emails are disabled')
 const pool = new Pool({ connectionString: databaseUrl, max: 10, ssl: false })
 
@@ -96,9 +98,9 @@ async function verifyTurnstile(req, input, expectedAction) {
       signal: controller.signal,
     })
     const result = await response.json()
-    const hostnameValid = turnstileExpectedHostnames.length === 0
+    const hostnameValid = turnstileTestMode || turnstileExpectedHostnames.length === 0
       || turnstileExpectedHostnames.includes(String(result?.hostname || '').toLowerCase())
-    const actionValid = !expectedAction || result?.action === expectedAction
+    const actionValid = turnstileTestMode || !expectedAction || result?.action === expectedAction
     return result?.success === true && hostnameValid && actionValid
       ? { ok: true }
       : { ok: false, status: 400, error: 'Captcha verification failed' }
