@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useCallback, useState, type FormEvent } from "react";
 import { Palette, GraduationCap, Briefcase, Cpu } from "lucide-react";
 import { toast } from "sonner";
 
@@ -10,11 +10,17 @@ import {
 } from "@/components/ui/SectionReveal";
 import { useLanguageContext } from "@/hooks/useLanguage";
 import { subscribeToNewsletter } from "@/services/newsletter";
+import TurnstileField from "@/components/security/TurnstileField";
+import { isTurnstileEnabled } from "@/lib/turnstile";
 
 export default function ProductsCatalogSection() {
   const { t, language } = useLanguageContext();
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const handleTurnstileToken = useCallback((token: string) => setTurnstileToken(token), []);
 
   const handleNewsletterSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -23,14 +29,21 @@ export default function ProductsCatalogSection() {
       toast.error(t("products.newsletter.error.email"));
       return;
     }
+    if (isTurnstileEnabled() && !turnstileToken) {
+      toast.error(t("newsletter.error.captcha"));
+      return;
+    }
 
     setIsSubmitting(true);
-    const result = await subscribeToNewsletter(email, language, "products");
+    const result = await subscribeToNewsletter(email, language, "products", turnstileToken, privacyAccepted);
     setIsSubmitting(false);
 
     if (result.success) {
       toast.success(t("products.newsletter.success"));
       setEmail("");
+      setPrivacyAccepted(false);
+      setTurnstileToken("");
+      setTurnstileResetKey((key) => key + 1);
       return;
     }
 
@@ -125,6 +138,11 @@ export default function ProductsCatalogSection() {
                         ? t("products.newsletter.button.subscribing")
                         : t("products.notify.button")}
                     </button>
+                    <TurnstileField action="newsletter" onTokenChange={handleTurnstileToken} resetKey={turnstileResetKey} loadErrorMessage={t("newsletter.error.captcha")} />
+                    <label className="flex items-start gap-2 text-left text-xs text-gray-600">
+                      <input type="checkbox" checked={privacyAccepted} onChange={(event) => setPrivacyAccepted(event.target.checked)} required />
+                      <span>{t("newsletter.consent")}</span>
+                    </label>
                   </form>
                 </div>
               </div>

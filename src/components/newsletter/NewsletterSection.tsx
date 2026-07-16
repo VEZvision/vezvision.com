@@ -15,6 +15,7 @@ function NewsletterSection() {
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const emailFieldId = useId();
   const { t, language } = useLanguageContext();
   const handleTurnstileToken = useCallback((token: string) => {
@@ -47,6 +48,7 @@ function NewsletterSection() {
         language,
         "home",
         turnstileToken,
+        privacyAccepted,
       );
 
       if (result.success) {
@@ -54,6 +56,7 @@ function NewsletterSection() {
         setEmail("");
         setTurnstileToken("");
         setTurnstileResetKey((key) => key + 1);
+        setPrivacyAccepted(false);
       } else {
         const errorMessage = result.error || "";
         if (
@@ -103,11 +106,16 @@ function NewsletterSection() {
               {loading ? t("newsletter.submitting") : t("newsletter.submit")}
             </button>
             <TurnstileField
+              action="newsletter"
               onTokenChange={handleTurnstileToken}
               resetKey={turnstileResetKey}
               className="mt-4 flex justify-center"
               loadErrorMessage={t("newsletter.error.captcha")}
             />
+            <label className="mt-4 flex items-start gap-2 text-left text-sm">
+              <input type="checkbox" checked={privacyAccepted} onChange={(event) => setPrivacyAccepted(event.target.checked)} required />
+              <span>{t("newsletter.consent")}</span>
+            </label>
           </form>
 
           <p className={styles.disclaimer}>{t("newsletter.disclaimer")}</p>

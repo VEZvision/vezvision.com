@@ -8,12 +8,15 @@ const allowedOrigins = String(process.env.ALLOWED_ORIGINS || process.env.ALLOWED
   .map(origin => origin.trim())
   .filter(Boolean)
 const turnstileSecret = process.env.TURNSTILE_SECRET_KEY?.trim()
+const turnstileExpectedHostnames = String(process.env.TURNSTILE_EXPECTED_HOSTNAMES || '')
+  .split(',').map(value => value.trim().toLowerCase()).filter(Boolean)
 const resendApiKey = process.env.RESEND_API_KEY?.trim()
 const legacyFromEmail = process.env.RESEND_FROM_EMAIL?.trim()
 const contactFromEmail = process.env.CONTACT_FROM_EMAIL?.trim() || legacyFromEmail
 const newsletterFromEmail = process.env.NEWSLETTER_FROM_EMAIL?.trim() || legacyFromEmail
 const newsletterReplyTo = process.env.NEWSLETTER_REPLY_TO?.trim() || 'contact@vezvision.com'
 const contactNotifyEmail = process.env.CONTACT_NOTIFY_EMAIL?.trim() || 'contact@vezvision.com'
+const publicSiteUrl = (process.env.PUBLIC_SITE_URL?.trim() || allowedOrigins[0] || '').replace(/\/$/, '')
 if (!databaseUrl || allowedOrigins.length === 0) throw new Error('DATABASE_URL and ALLOWED_ORIGIN/ALLOWED_ORIGINS are required')
 if (!turnstileSecret) console.warn('TURNSTILE_SECRET_KEY is not set; contact and newsletter captcha verification is disabled')
 if (!resendApiKey || !contactFromEmail || !newsletterFromEmail) console.warn('Resend API key or sender addresses are not fully configured; some emails are disabled')
@@ -41,8 +44,10 @@ const body = async req => {
     if (raw.length > 32_768) throw Object.assign(new Error('Payload too large'), { status: 413 })
   }
   if (!raw) return {}
+  const contentType = String(req.headers['content-type'] || '').toLowerCase()
+  if (contentType.includes('application/x-www-form-urlencoded')) return Object.fromEntries(new URLSearchParams(raw))
   try { return JSON.parse(raw) }
-  catch { throw Object.assign(new Error('Invalid JSON payload'), { status: 400 }) }
+  catch { throw Object.assign(new Error('Invalid payload'), { status: 400 }) }
 }
 const ip = req => String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim().slice(0, 128)
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char])
@@ -75,7 +80,7 @@ async function allow(key, limit, windowMs) {
      RETURNING request_count`, [key, windowMs])
   return row.request_count <= limit
 }
-async function verifyTurnstile(req, input) {
+async function verifyTurnstile(req, input, expectedAction) {
   if (!turnstileSecret) return { ok: true }
   const token = String(input.turnstile_token || input.turnstileToken || '').trim()
   if (!token) return { ok: false, status: 400, error: 'Captcha verification is required' }
@@ -91,7 +96,10 @@ async function verifyTurnstile(req, input) {
       signal: controller.signal,
     })
     const result = await response.json()
-    return result?.success === true
+    const hostnameValid = turnstileExpectedHostnames.length === 0
+      || turnstileExpectedHostnames.includes(String(result?.hostname || '').toLowerCase())
+    const actionValid = !expectedAction || result?.action === expectedAction
+    return result?.success === true && hostnameValid && actionValid
       ? { ok: true }
       : { ok: false, status: 400, error: 'Captcha verification failed' }
   } catch (error) {
@@ -109,7 +117,7 @@ async function submitContact(req, res) {
   const message = String(input.message || '').trim()
   if (!await allow(rateKey('contact', ip(req), email), 3, 300000)) return json(res, 429, { error: 'Too many requests' })
   if (fullName.length < 2 || fullName.length > 120 || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || subject.length < 2 || subject.length > 160 || message.length < 10 || message.length > 5000) return json(res, 400, { error: 'Invalid input' })
-  const captcha = await verifyTurnstile(req, input)
+  const captcha = await verifyTurnstile(req, input, 'contact')
   if (!captcha.ok) return json(res, captcha.status, { error: captcha.error, field: 'form' })
   const { rows: [row] } = await pool.query('INSERT INTO public.messages(full_name,email,subject,message,phone,language,client_ip) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id', [fullName, email, subject, message, String(input.phone || '').trim().slice(0, 40) || null, input.language === 'en' ? 'en' : 'pl', ip(req)])
   const phone = String(input.phone || '').trim().slice(0, 40)
@@ -135,29 +143,40 @@ async function subscribe(req, res) {
   const input = await body(req); const email = String(input.email || '').trim().toLowerCase()
   if (!await allow(rateKey('newsletter', ip(req), email), 5, 300000)) return json(res, 429, { error: 'Too many requests' })
   if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json(res, 400, { error: 'Invalid email' })
-  const captcha = await verifyTurnstile(req, input)
+  if (input.privacy_accepted !== true) return json(res, 400, { error: 'Privacy consent is required' })
+  const captcha = await verifyTurnstile(req, input, 'newsletter')
   if (!captcha.ok) return json(res, captcha.status, { error: captcha.error })
   const token = crypto.randomBytes(32).toString('hex')
   const source = String(input.source || 'newsletter').trim().slice(0, 80).replace(/[^\w .:/-]/g, '') || 'newsletter'
   const language = input.language === 'en' ? 'en' : 'pl'
-  const { rows: [row] } = await pool.query(`INSERT INTO public.vv_newsletter_subscribers(email,source,tags,token,is_active,language) VALUES ($1,$2,ARRAY['newsletter'],$3,true,$4) ON CONFLICT(email) DO UPDATE SET is_active=true,unsubscribed_at=NULL,updated_at=now(),source=EXCLUDED.source,language=EXCLUDED.language RETURNING id`, [email, source, token, language])
+  const { rows: [row] } = await pool.query(`INSERT INTO public.vv_newsletter_subscribers(email,source,tags,token,is_active,language,confirmation_requested_at) VALUES ($1,$2,ARRAY['newsletter'],$3,false,$4,now()) ON CONFLICT(email) DO UPDATE SET token=CASE WHEN public.vv_newsletter_subscribers.is_active THEN public.vv_newsletter_subscribers.token ELSE EXCLUDED.token END, confirmation_requested_at=CASE WHEN public.vv_newsletter_subscribers.is_active THEN public.vv_newsletter_subscribers.confirmation_requested_at ELSE now() END, updated_at=now(), source=EXCLUDED.source, language=EXCLUDED.language RETURNING id,is_active,token`, [email, source, token, language])
+  const confirmationUrl = `${publicSiteUrl}/${language}/newsletter/confirm?token=${encodeURIComponent(row.token)}`
   const confirmation = emailLayout(
-    language === 'en' ? 'Welcome to the VEZvision newsletter' : 'Witaj w newsletterze VEZvision',
+    language === 'en' ? 'Confirm your newsletter subscription' : 'Potwierdź zapis do newslettera',
     language === 'en'
-      ? '<p>Your address has been added to our newsletter. We will only send useful updates about digital products and technology.</p>'
-      : '<p>Twój adres został dodany do newslettera. Będziemy wysyłać wyłącznie wartościowe informacje o produktach cyfrowych i technologii.</p>',
+      ? `<p>Confirm that you want to receive the VEZvision newsletter.</p><p><a href="${escapeHtml(confirmationUrl)}" style="display:inline-block;padding:12px 20px;background:#111827;color:#fff;text-decoration:none;border-radius:10px">Confirm subscription</a></p><p>If you did not request this, ignore this message.</p>`
+      : `<p>Potwierdź, że chcesz otrzymywać newsletter VEZvision.</p><p><a href="${escapeHtml(confirmationUrl)}" style="display:inline-block;padding:12px 20px;background:#111827;color:#fff;text-decoration:none;border-radius:10px">Potwierdź zapis</a></p><p>Jeśli to nie Ty, zignoruj tę wiadomość.</p>`,
   )
   let emailSent = false
-  try { emailSent = (await sendEmail({ from: `VEZvision Newsletter <${newsletterFromEmail}>`, to: email, subject: language === 'en' ? 'Welcome to VEZvision' : 'Witaj w VEZvision', html: confirmation, replyTo: newsletterReplyTo })).sent }
+  if (!row.is_active) try { emailSent = (await sendEmail({ from: `VEZvision Newsletter <${newsletterFromEmail}>`, to: email, subject: language === 'en' ? 'Confirm your VEZvision subscription' : 'Potwierdź zapis do VEZvision', html: confirmation, replyTo: newsletterReplyTo })).sent }
   catch (error) { console.error('Newsletter confirmation delivery failed', error) }
-  json(res, 201, { success: true, id: row.id, email_sent: emailSent })
+  json(res, 201, { success: true, id: row.id, confirmation_required: !row.is_active, email_sent: row.is_active || emailSent })
+}
+async function confirmNewsletter(req, res) {
+  const input = await body(req)
+  const token = String(input.token || '').trim()
+  if (!/^[a-f0-9]{64}$/i.test(token)) return json(res, 400, { success: false, error: 'Invalid token' })
+  const { rows: [row] } = await pool.query(`UPDATE public.vv_newsletter_subscribers SET is_active=true, confirmed_at=COALESCE(confirmed_at,now()), consent_ip=COALESCE(consent_ip,$2::inet), consent_user_agent=COALESCE(consent_user_agent,$3), unsubscribed_at=NULL, updated_at=now() WHERE token=$1 AND (is_active=true OR confirmation_requested_at >= now() - interval '48 hours') RETURNING id`, [token, ip(req), String(req.headers['user-agent'] || '').slice(0, 500) || null])
+  if (!row) return json(res, 404, { success: false, error: 'Confirmation not found' })
+  json(res, 200, { success: true })
 }
 async function unsubscribe(req, res) {
-  const { token } = await body(req)
+  const input = await body(req)
+  const token = String(input.token || new URL(req.url, 'http://localhost').searchParams.get('token') || '')
   if (typeof token !== 'string' || !/^[a-f0-9]{64}$/i.test(token)) return json(res, 400, { success: false, error: 'Invalid token' })
-  const { rows: [row] } = await pool.query(`UPDATE public.vv_newsletter_subscribers SET is_active=false, unsubscribed_at=now(), updated_at=now() WHERE token=$1 AND is_active=true RETURNING email`, [token])
+  const { rows: [row] } = await pool.query(`UPDATE public.vv_newsletter_subscribers SET is_active=false, unsubscribed_at=COALESCE(unsubscribed_at,now()), updated_at=now() WHERE token=$1 RETURNING id`, [token])
   if (!row) return json(res, 404, { success: false, error: 'Subscription not found' })
-  json(res, 200, { success: true, email: row.email })
+  json(res, 200, { success: true })
 }
 async function incrementBlogView(req, res) {
   const { slug } = await body(req)
@@ -177,7 +196,7 @@ async function codeInjection(req, res) {
   const values = Object.fromEntries(rows.map(row => [row.key, row.value]))
   json(res, 200, { success: true, head: typeof values.code_injection_head?.content === 'string' ? values.code_injection_head.content : '', body: typeof values.code_injection_body?.content === 'string' ? values.code_injection_body.content : '' })
 }
-const handlers = { 'submit-contact': submitContact, 'subscribe-newsletter': subscribe, 'unsubscribe-newsletter': unsubscribe, 'increment-blog-view': incrementBlogView, 'check-maintenance-access': maintenance, 'get-code-injection': codeInjection }
+const handlers = { 'submit-contact': submitContact, 'subscribe-newsletter': subscribe, 'confirm-newsletter': confirmNewsletter, 'unsubscribe-newsletter': unsubscribe, 'increment-blog-view': incrementBlogView, 'check-maintenance-access': maintenance, 'get-code-injection': codeInjection }
 http.createServer(async (req, res) => {
   cors(req, res)
   if (req.method === 'OPTIONS') return res.end()

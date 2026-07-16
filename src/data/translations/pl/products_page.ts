@@ -8,7 +8,7 @@ export const products_pageTranslations = {
     'products.newsletter.placeholder': 'Twój adres email',
     'products.newsletter.button.subscribing': 'Zapisywanie...',
     'products.newsletter.button.subscribe': 'Zapisz się',
-    'products.newsletter.success': 'Adres zapisany.',
+    'products.newsletter.success': 'Sprawdź skrzynkę i potwierdź zapis.',
     'products.newsletter.error.email': 'Wprowadź poprawny adres email',
     'products.newsletter.error.generic': 'Nie udało się zapisać adresu',
 } as const

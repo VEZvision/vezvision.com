@@ -13,6 +13,7 @@ declare global {
           'expired-callback'?: () => void;
           'error-callback'?: () => void;
           theme?: 'light' | 'dark' | 'auto';
+          action?: string;
         },
       ) => string;
       reset: (widgetId?: string) => void;
@@ -58,6 +59,7 @@ interface TurnstileFieldProps {
   className?: string;
   resetKey?: number;
   loadErrorMessage?: string;
+  action: 'contact' | 'newsletter';
 }
 
 export default function TurnstileField({
@@ -65,6 +67,7 @@ export default function TurnstileField({
   className,
   resetKey = 0,
   loadErrorMessage,
+  action,
 }: TurnstileFieldProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
@@ -102,6 +105,7 @@ export default function TurnstileField({
     widgetIdRef.current = window.turnstile.render(containerRef.current, {
       sitekey: getTurnstileSiteKey(),
       theme: 'auto',
+      action,
       callback: (token) => onTokenChange(token),
       'expired-callback': () => onTokenChange(''),
       'error-callback': () => onTokenChange(''),
@@ -113,7 +117,7 @@ export default function TurnstileField({
         widgetIdRef.current = null;
       }
     };
-  }, [ready, onTokenChange]);
+  }, [action, ready, onTokenChange]);
 
   useEffect(() => {
     if (!ready || !window.turnstile || !widgetIdRef.current) return;

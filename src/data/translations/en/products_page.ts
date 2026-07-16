@@ -8,7 +8,7 @@ export const products_pageTranslations = {
     'products.newsletter.placeholder': 'Your email address',
     'products.newsletter.button.subscribing': 'Subscribing...',
     'products.newsletter.button.subscribe': 'Subscribe',
-    'products.newsletter.success': 'You are on the list.',
+    'products.newsletter.success': 'Check your inbox and confirm the subscription.',
     'products.newsletter.error.email': 'Please enter a valid email address',
     'products.newsletter.error.generic': 'We could not save this email',
 } as const
