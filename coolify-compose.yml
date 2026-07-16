@@ -11,8 +11,10 @@ services:
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
-      RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-}
+      CONTACT_FROM_EMAIL: ${CONTACT_FROM_EMAIL:-contact@vezvision.com}
       CONTACT_NOTIFY_EMAIL: ${CONTACT_NOTIFY_EMAIL:-contact@vezvision.com}
+      NEWSLETTER_FROM_EMAIL: ${NEWSLETTER_FROM_EMAIL:-newsletter@vezvision.com}
+      NEWSLETTER_REPLY_TO: ${NEWSLETTER_REPLY_TO:-contact@vezvision.com}
       PORT: 3000
     networks:
       vezvision_internal:

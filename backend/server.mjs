@@ -9,11 +9,14 @@ const allowedOrigins = String(process.env.ALLOWED_ORIGINS || process.env.ALLOWED
   .filter(Boolean)
 const turnstileSecret = process.env.TURNSTILE_SECRET_KEY?.trim()
 const resendApiKey = process.env.RESEND_API_KEY?.trim()
-const resendFromEmail = process.env.RESEND_FROM_EMAIL?.trim()
+const legacyFromEmail = process.env.RESEND_FROM_EMAIL?.trim()
+const contactFromEmail = process.env.CONTACT_FROM_EMAIL?.trim() || legacyFromEmail
+const newsletterFromEmail = process.env.NEWSLETTER_FROM_EMAIL?.trim() || legacyFromEmail
+const newsletterReplyTo = process.env.NEWSLETTER_REPLY_TO?.trim() || 'contact@vezvision.com'
 const contactNotifyEmail = process.env.CONTACT_NOTIFY_EMAIL?.trim() || 'contact@vezvision.com'
 if (!databaseUrl || allowedOrigins.length === 0) throw new Error('DATABASE_URL and ALLOWED_ORIGIN/ALLOWED_ORIGINS are required')
 if (!turnstileSecret) console.warn('TURNSTILE_SECRET_KEY is not set; contact and newsletter captcha verification is disabled')
-if (!resendApiKey || !resendFromEmail) console.warn('RESEND_API_KEY or RESEND_FROM_EMAIL is not set; transactional emails are disabled')
+if (!resendApiKey || !contactFromEmail || !newsletterFromEmail) console.warn('Resend API key or sender addresses are not fully configured; some emails are disabled')
 const pool = new Pool({ connectionString: databaseUrl, max: 10, ssl: false })
 
 const json = (res, status, body) => {
@@ -43,13 +46,14 @@ const body = async req => {
 }
 const ip = req => String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim().slice(0, 128)
 const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char])
-async function sendEmail({ to, subject, html, replyTo }) {
-  if (!resendApiKey || !resendFromEmail) return { sent: false, reason: 'not_configured' }
+async function sendEmail({ from, to, subject, html, replyTo }) {
+  if (!resendApiKey || !from) return { sent: false, reason: 'not_configured' }
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { authorization: `Bearer ${resendApiKey}`, 'content-type': 'application/json' },
+    signal: AbortSignal.timeout(10_000),
     body: JSON.stringify({
-      from: `VEZvision <${resendFromEmail}>`,
+      from,
       to: [to],
       subject,
       html,
@@ -121,8 +125,8 @@ async function submitContact(req, res) {
       : `<p>Cześć ${escapeHtml(fullName)},</p><p>Otrzymaliśmy Twoją wiadomość i odpowiemy najszybciej, jak to możliwe.</p>`,
   )
   const emailResults = await Promise.allSettled([
-    sendEmail({ to: contactNotifyEmail, subject: `[VEZvision] ${subject}`, html: notification, replyTo: email }),
-    sendEmail({ to: email, subject: lang === 'en' ? 'We received your message — VEZvision' : 'Otrzymaliśmy Twoją wiadomość — VEZvision', html: autoReply }),
+    sendEmail({ from: `VEZvision <${contactFromEmail}>`, to: contactNotifyEmail, subject: `[VEZvision] ${subject}`, html: notification, replyTo: email }),
+    sendEmail({ from: `VEZvision <${contactFromEmail}>`, to: email, subject: lang === 'en' ? 'We received your message — VEZvision' : 'Otrzymaliśmy Twoją wiadomość — VEZvision', html: autoReply, replyTo: contactNotifyEmail }),
   ])
   for (const result of emailResults) if (result.status === 'rejected') console.error('Contact email delivery failed', result.reason)
   json(res, 201, { success: true, id: row.id, email_sent: emailResults.every(result => result.status === 'fulfilled' && result.value.sent) })
@@ -144,7 +148,7 @@ async function subscribe(req, res) {
       : '<p>Twój adres został dodany do newslettera. Będziemy wysyłać wyłącznie wartościowe informacje o produktach cyfrowych i technologii.</p>',
   )
   let emailSent = false
-  try { emailSent = (await sendEmail({ to: email, subject: language === 'en' ? 'Welcome to VEZvision' : 'Witaj w VEZvision', html: confirmation })).sent }
+  try { emailSent = (await sendEmail({ from: `VEZvision Newsletter <${newsletterFromEmail}>`, to: email, subject: language === 'en' ? 'Welcome to VEZvision' : 'Witaj w VEZvision', html: confirmation, replyTo: newsletterReplyTo })).sent }
   catch (error) { console.error('Newsletter confirmation delivery failed', error) }
   json(res, 201, { success: true, id: row.id, email_sent: emailSent })
 }
