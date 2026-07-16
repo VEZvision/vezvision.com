@@ -19,7 +19,7 @@ import twitterIcon from "@/assets/footer/twitter-icon.svg";
 import instagramIcon from "@/assets/footer/instagram-icon.svg";
 import linkedinIcon from "@/assets/footer/linkedin-icon.svg";
 import arrowIcon from "@/assets/arrow-icon.svg";
-import logoNavbar from "@brand/wordmark-horizontal-light.svg";
+import logoNavbar from "@brand/wordmark-horizontal-dark.svg";
 import styles from "./Footer.module.css";
 
 function isExternal(href: string) {
