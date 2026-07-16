@@ -82,6 +82,16 @@ async function allow(key, limit, windowMs) {
      RETURNING request_count`, [key, windowMs])
   return row.request_count <= limit
 }
+async function cleanupRateLimits() {
+  try {
+    const { rows: [row] } = await pool.query(
+      `SELECT public.cleanup_rate_limit_buckets(interval '7 days') AS deleted_count`,
+    )
+    if (Number(row?.deleted_count) > 0) console.info(`Cleaned ${row.deleted_count} expired rate-limit buckets`)
+  } catch (error) {
+    console.error('Rate-limit retention cleanup failed', error)
+  }
+}
 async function verifyTurnstile(req, input, expectedAction) {
   if (!turnstileSecret) return { ok: true }
   const token = String(input.turnstile_token || input.turnstileToken || '').trim()
@@ -199,11 +209,17 @@ async function codeInjection(req, res) {
   json(res, 200, { success: true, head: typeof values.code_injection_head?.content === 'string' ? values.code_injection_head.content : '', body: typeof values.code_injection_body?.content === 'string' ? values.code_injection_body.content : '' })
 }
 const handlers = { 'submit-contact': submitContact, 'subscribe-newsletter': subscribe, 'confirm-newsletter': confirmNewsletter, 'unsubscribe-newsletter': unsubscribe, 'increment-blog-view': incrementBlogView, 'check-maintenance-access': maintenance, 'get-code-injection': codeInjection }
-http.createServer(async (req, res) => {
+const server = http.createServer(async (req, res) => {
   cors(req, res)
   if (req.method === 'OPTIONS') return res.end()
   if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' })
   const name = new URL(req.url, 'http://localhost').pathname.split('/').pop()
   try { const handler = handlers[name]; if (!handler) return json(res, 404, { error: 'Not found' }); await handler(req, res) }
   catch (error) { console.error(error); json(res, error.status || 500, { error: error.status ? error.message : 'Internal server error' }) }
-}).listen(Number(process.env.PORT || 3000), '0.0.0.0')
+})
+
+server.listen(Number(process.env.PORT || 3000), '0.0.0.0', () => {
+  cleanupRateLimits()
+  const cleanupTimer = setInterval(cleanupRateLimits, 6 * 60 * 60 * 1000)
+  cleanupTimer.unref()
+})

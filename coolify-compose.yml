@@ -50,19 +50,19 @@ services:
       dockerfile: backend/nginx.Dockerfile
     restart: unless-stopped
     depends_on: [api, postgrest]
-    expose: ["80"]
+    expose: ["8080"]
     labels:
       - traefik.docker.network=coolify
       - traefik.http.routers.http-0-zul2b0pjfl3js2ksst51val8-gateway.service=http-0-zul2b0pjfl3js2ksst51val8-gateway
       - traefik.http.routers.https-0-zul2b0pjfl3js2ksst51val8-gateway.service=https-0-zul2b0pjfl3js2ksst51val8-gateway
-      - traefik.http.services.http-0-zul2b0pjfl3js2ksst51val8-gateway.loadbalancer.server.port=80
-      - traefik.http.services.https-0-zul2b0pjfl3js2ksst51val8-gateway.loadbalancer.server.port=80
+      - traefik.http.services.http-0-zul2b0pjfl3js2ksst51val8-gateway.loadbalancer.server.port=8080
+      - traefik.http.services.https-0-zul2b0pjfl3js2ksst51val8-gateway.loadbalancer.server.port=8080
     networks: [vezvision_internal, coolify]
     security_opt: [no-new-privileges:true]
     read_only: true
     tmpfs: [/var/cache/nginx, /var/run, /tmp]
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/healthz >/dev/null || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/healthz >/dev/null || exit 1"]
       interval: 10s
       timeout: 3s
       retries: 5

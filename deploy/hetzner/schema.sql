@@ -140,6 +140,24 @@ CREATE TABLE IF NOT EXISTS public.messages (
 CREATE TABLE IF NOT EXISTS public.rate_limit_buckets (
   bucket_key text PRIMARY KEY, window_started_at timestamptz NOT NULL DEFAULT now(), request_count integer NOT NULL DEFAULT 0
 );
+CREATE INDEX IF NOT EXISTS rate_limit_buckets_window_started_at_idx
+  ON public.rate_limit_buckets(window_started_at);
+
+CREATE OR REPLACE FUNCTION public.cleanup_rate_limit_buckets(
+  p_older_than interval DEFAULT interval '7 days'
+) RETURNS bigint
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+DECLARE deleted_count bigint;
+BEGIN
+  DELETE FROM public.rate_limit_buckets
+  WHERE window_started_at < now() - p_older_than;
+  GET DIAGNOSTICS deleted_count = ROW_COUNT;
+  RETURN deleted_count;
+END $$;
+REVOKE ALL ON FUNCTION public.cleanup_rate_limit_buckets(interval) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION public.vv_set_updated_at() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN NEW.updated_at = now(); RETURN NEW; END $$;
@@ -197,6 +215,7 @@ BEGIN
       EXECUTE format('GRANT SELECT, INSERT, UPDATE ON public.rate_limit_buckets TO %I', api_role);
       EXECUTE format('GRANT SELECT, INSERT, UPDATE ON public.vv_newsletter_subscribers TO %I', api_role);
       EXECUTE format('GRANT EXECUTE ON FUNCTION public.vv_blog_increment_views(p_post_slug text, p_client_ip text) TO %I', api_role);
+      EXECUTE format('GRANT EXECUTE ON FUNCTION public.cleanup_rate_limit_buckets(interval) TO %I', api_role);
     END IF;
   END LOOP;
 END $$;
