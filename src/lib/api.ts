@@ -75,8 +75,8 @@ class RestQuery<T = unknown> implements PromiseLike<ApiResult<T>> {
   limit(value: number) { this.params.set('limit', String(value)); return this }
   range(from: number, to: number) { this.params.set('offset', String(from)); this.params.set('limit', String(Math.max(0, to - from + 1))); return this }
   abortSignal(signal: AbortSignal) { this.signal = signal; return this }
-  single() { this.headers.Accept = 'application/vnd.pgrst.object+json'; return this }
-  maybeSingle() { this.optionalSingle = true; this.headers.Accept = 'application/vnd.pgrst.object+json'; return this }
+  single() { this.headers.accept = 'application/vnd.pgrst.object+json'; return this }
+  maybeSingle() { this.optionalSingle = true; this.headers.accept = 'application/vnd.pgrst.object+json'; return this }
 
   async execute(): Promise<ApiResult<T>> {
     const url = `${getApiBaseUrl()}/rest/v1/${this.table}?${this.params}`
