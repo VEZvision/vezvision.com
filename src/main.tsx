@@ -9,6 +9,7 @@ import { initSentryIfConsented } from "./lib/sentryConsent";
 import { initWebVitalsReporting } from "./lib/webVitals";
 import { queryClient } from "./lib/queryClient";
 import { unregisterLegacyServiceWorkers } from "./utils/serviceWorkerCleanup";
+import { installChunkRecovery } from "./utils/chunkRecovery";
 import {
   detectInitialLanguage,
   ensureLocaleLoaded,
@@ -18,6 +19,8 @@ import "./index.css";
 import "./styles/reveal.css";
 import "./styles/scroll-performance.css";
 import "./styles/animations.css";
+
+installChunkRecovery();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

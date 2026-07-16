@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { logError } from '@/lib/logger';
+import { tryRecoverFromStaleChunk } from '@/utils/chunkRecovery';
 
 interface AppErrorBoundaryProps {
   children: ReactNode;
@@ -21,6 +22,7 @@ export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorB
     if (info.componentStack) {
       logError('AppErrorBoundary.componentStack', new Error(info.componentStack));
     }
+    tryRecoverFromStaleChunk(error);
   }
 
   render() {
