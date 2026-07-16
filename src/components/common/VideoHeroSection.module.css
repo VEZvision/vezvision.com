@@ -39,9 +39,9 @@
   min-height: 100%;
   object-fit: cover;
   transform: translate3d(-50%, -50%, 0) scale(1.045);
-  filter: grayscale(1) contrast(0.96) brightness(1.18);
+  filter: grayscale(1) contrast(0.9) brightness(1.24);
   mix-blend-mode: luminosity;
-  opacity: 0.4;
+  opacity: 0.36;
   backface-visibility: hidden;
 }
 
@@ -53,9 +53,11 @@
 
 .videoOverlay {
   pointer-events: none;
+  backdrop-filter: blur(1.5px) saturate(0.82);
   background:
-    linear-gradient(180deg, rgba(252, 251, 248, 0.84) 0%, rgba(250, 249, 246, 0.62) 42%, rgba(250, 249, 246, 0.92) 100%),
-    linear-gradient(90deg, rgba(250, 249, 246, 0.4), transparent 30%, transparent 70%, rgba(250, 249, 246, 0.4));
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.22), transparent 54%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.66) 42%, rgba(250, 249, 246, 0.94) 100%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.52), transparent 30%, transparent 70%, rgba(255, 255, 255, 0.52));
 }
 
 .frame {
