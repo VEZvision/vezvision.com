@@ -26,8 +26,6 @@ function BlogHero() {
       badge={t("blog.hero.badge")}
       icon={<BookOpen className="w-3.5 h-3.5" />}
       socialLinks={buildHeroSocialLinks(social)}
-      className="relative flex min-h-[85vh] w-full items-center justify-center overflow-hidden bg-white px-4 pt-[120px] pb-[80px]"
-      contentClassName="max-w-[1024px]"
       ariaLabelledBy="blog-hero-title"
     />
   );

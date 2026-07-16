@@ -1,17 +1,18 @@
 import type { FC, ReactNode } from "react";
-import { Fragment, useRef } from "react";
+import { useRef } from "react";
+import { ArrowUpRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
+import { useLanguageContext } from "@/hooks/useLanguage";
 import { usePrefersReducedData } from "@/hooks/usePrefersReducedData";
 import { useBackgroundVideoSection } from "@/hooks/useBackgroundVideoSection";
-import SectionBadge from "@/components/ui/SectionBadge";
 import logoNavbar from "@brand/wordmark-horizontal-dark.svg";
 import { safeExternalHref, safePublicHref } from "@/utils/safeHref";
 import { scrollToElement } from "@/scroll";
 import styles from "./VideoHeroSection.module.css";
 
-const PAGE_HERO_VIDEO_MP4 = "/footer-bg.mp4";
-const PAGE_HERO_VIDEO_WEBM = "/footer-bg.webm";
+const DEFAULT_VIDEO_MP4 = "/footer-bg.mp4";
+const DEFAULT_VIDEO_WEBM = "/footer-bg.webm";
 
 export interface SocialLink {
   href: string | undefined;
@@ -21,16 +22,23 @@ export interface SocialLink {
 
 interface VideoHeroSectionProps {
   title: ReactNode;
-  subtitle: string;
+  subtitle?: string;
   buttonText: string;
   buttonHref?: string;
   onButtonClick?: () => void;
+  secondaryButtonText?: string;
+  secondaryButtonHref?: string;
+  onSecondaryButtonClick?: () => void;
   socialLinks?: SocialLink[];
   badge?: string;
   icon?: ReactNode;
   className?: string;
   contentClassName?: string;
   ariaLabelledBy?: string;
+  variant?: "page" | "home";
+  videoMp4Src?: string;
+  videoWebmSrc?: string;
+  brandPriority?: boolean;
 }
 
 const VideoHeroSection: FC<VideoHeroSectionProps> = ({
@@ -39,15 +47,23 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
   buttonText,
   buttonHref,
   onButtonClick,
+  secondaryButtonText,
+  secondaryButtonHref,
+  onSecondaryButtonClick,
   socialLinks,
   badge,
   icon,
   className,
   contentClassName,
   ariaLabelledBy,
+  variant = "page",
+  videoMp4Src = DEFAULT_VIDEO_MP4,
+  videoWebmSrc = DEFAULT_VIDEO_WEBM,
+  brandPriority = false,
 }) => {
   const navigate = useNavigate();
   const { toLocalizedPath } = useLocalizedPath();
+  const { t } = useLanguageContext();
   const prefersReducedData = usePrefersReducedData();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -59,154 +75,157 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
     videoRef,
     initiallyVisible: true,
     threshold: 0.2,
-    reloadKey: PAGE_HERO_VIDEO_MP4,
+    reloadKey: videoMp4Src,
   });
 
-  const handleButtonClick = () => {
-    if (onButtonClick) {
-      onButtonClick();
+  const runAction = (href?: string, onClick?: () => void) => {
+    if (onClick) {
+      onClick();
       return;
     }
 
-    const safeButtonHref = safePublicHref(buttonHref);
-    if (safeButtonHref) {
-      if (safeButtonHref.startsWith("#")) {
-        const target = document.getElementById(safeButtonHref.slice(1));
-        if (target) {
-          scrollToElement(target, { offset: -96, behavior: "smooth" });
-          return;
-        }
-      }
+    const safeHref = safePublicHref(href);
+    if (!safeHref) return;
 
-      if (safeButtonHref.startsWith("/")) {
-        void navigate(toLocalizedPath(safeButtonHref.replace(/^\//, "")));
-      } else if (safeButtonHref.startsWith("#")) {
-        void navigate(safeButtonHref);
-      } else if (typeof window !== "undefined") {
-        window.location.assign(safeButtonHref);
+    if (safeHref.startsWith("#")) {
+      const target = document.getElementById(safeHref.slice(1));
+      if (target) {
+        scrollToElement(target, { offset: -96, behavior: "smooth" });
+        return;
       }
     }
+
+    if (safeHref.startsWith("/")) {
+      const normalizedPath = safeHref
+        .replace(/^\/(?:pl|en)(?=\/|$)/, "")
+        .replace(/^\//, "");
+      void navigate(toLocalizedPath(normalizedPath));
+    } else if (safeHref.startsWith("#")) {
+      void navigate(safeHref);
+    } else {
+      window.location.assign(safeHref);
+    }
   };
+
+  const sectionClasses = [
+    styles.hero,
+    variant === "home" ? styles.homeHero : "",
+    className ?? "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+  const contentClasses = [styles.content, contentClassName ?? ""]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <section
       ref={sectionRef}
-      className={
-        className ??
-        "relative flex min-h-[72vh] w-full items-center justify-center overflow-hidden bg-white px-4 pt-[112px] pb-[56px] md:min-h-[76vh] md:pt-[120px] md:pb-[68px]"
-      }
+      className={sectionClasses}
       aria-labelledby={ariaLabelledBy}
+      data-hero-variant={variant}
     >
-      {showVideo ? (
-        <video
-          ref={videoRef}
-          className={styles.videoBg}
-          width="1920"
-          height="1080"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"
-          aria-hidden="true"
-          tabIndex={-1}
-          disableRemotePlayback
-          x-webkit-airplay="deny"
-        >
-          <source src={PAGE_HERO_VIDEO_MP4} type="video/mp4" />
-          <source src={PAGE_HERO_VIDEO_WEBM} type="video/webm" />
-        </video>
-      ) : (
-        <div
-          className="absolute inset-0 z-0 bg-linear-to-br from-[#f3f4f6] via-white to-[#e5e7eb]"
-          aria-hidden="true"
-        />
-      )}
+      <div className={styles.media} aria-hidden="true">
+        {showVideo ? (
+          <video
+            ref={videoRef}
+            className={styles.videoBg}
+            width="1920"
+            height="1080"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            tabIndex={-1}
+            disableRemotePlayback
+            x-webkit-airplay="deny"
+          >
+            <source src={videoMp4Src} type="video/mp4" />
+            <source src={videoWebmSrc} type="video/webm" />
+          </video>
+        ) : (
+          <div className={styles.fallbackBg} />
+        )}
+        <div className={styles.videoOverlay} />
+      </div>
 
-      <div className={styles.videoOverlay} aria-hidden="true" />
+      <div className={styles.frame} aria-hidden="true" />
 
-      <div
-        className={`relative z-20 mx-auto text-center ${
-          contentClassName ?? "max-w-[980px]"
-        }`}
-      >
-        <div className="flex flex-col items-center">
-          <div className="mb-6 flex justify-center">
-            <div className="flex items-center justify-center">
-              <img
-                src={logoNavbar}
-                alt="VEZvision"
-                width="838"
-                height="153"
-                className="h-[48px] sm:h-[64px] w-auto object-contain"
-              />
-            </div>
-          </div>
+      <div className={contentClasses}>
+        <div className={styles.brandRow}>
+          <img
+            src={logoNavbar}
+            alt="VEZvision"
+            width="838"
+            height="153"
+            className={styles.logo}
+            fetchPriority={brandPriority ? "high" : "auto"}
+          />
 
           {badge && (
-            <div className="flex justify-center mb-6">
-              <div className="inline-flex items-center justify-center gap-[10px] bg-[#f3f4f6] border border-[#e5e7eb] rounded-full px-[12px] py-[8px]">
-                <SectionBadge text={badge} icon={icon} />
-              </div>
-            </div>
-          )}
-
-          <h1
-            className="mb-5 font-sans text-[clamp(38px,6.5vw,80px)] font-normal leading-[1.05] tracking-[-1.6px] text-black"
-            aria-label={typeof title === "string" ? title : undefined}
-          >
-            {title}
-          </h1>
-
-          <p className="text-[16px] leading-[26px] tracking-[-0.32px] text-[#0f0f0f] mb-6 max-w-[936px] mx-auto">
-            {subtitle}
-          </p>
-
-          <div className="flex justify-center">
-            <button
-              type="button"
-              onClick={handleButtonClick}
-              className="inline-flex items-center rounded-lg bg-[#04070d] text-white font-semibold text-[16px] px-5 py-3 transition-transform hover:-translate-y-0.5"
-            >
-              {buttonText}
-            </button>
-          </div>
-
-          {socialLinks && socialLinks.length > 0 && (
-            <div className="flex items-center justify-center gap-6 mt-6">
-              {socialLinks.map((item, index) => (
-                <Fragment key={item.label}>
-                  {safeExternalHref(item.href) ? (
-                    <a
-                      href={safeExternalHref(item.href)}
-                      className="opacity-80 hover:opacity-100 transition-opacity duration-300"
-                      aria-label={item.label}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <span className="w-6 h-6 inline-flex items-center justify-center">
-                        {item.icon}
-                      </span>
-                    </a>
-                  ) : (
-                    <span
-                      className="w-6 h-6 inline-flex items-center justify-center opacity-50"
-                      aria-hidden={item.label ? undefined : "true"}
-                    >
-                      {item.icon}
-                    </span>
-                  )}
-                  {index < socialLinks.length - 1 && (
-                    <div
-                      className="w-0.5 h-6 bg-[#0a0a0a]"
-                      aria-hidden="true"
-                    />
-                  )}
-                </Fragment>
-              ))}
+            <div className={styles.badge}>
+              {icon && <span className={styles.badgeIcon}>{icon}</span>}
+              <span>{badge}</span>
             </div>
           )}
         </div>
+
+        <h1
+          id={ariaLabelledBy}
+          className={styles.title}
+          aria-label={typeof title === "string" ? title : undefined}
+        >
+          {title}
+        </h1>
+
+        {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+
+        <div className={styles.actions}>
+          <button
+            type="button"
+            onClick={() => runAction(buttonHref, onButtonClick)}
+            className={styles.primaryButton}
+          >
+            <span>{buttonText}</span>
+            <ArrowUpRight aria-hidden="true" />
+          </button>
+
+          {secondaryButtonText && (
+            <button
+              type="button"
+              onClick={() =>
+                runAction(secondaryButtonHref, onSecondaryButtonClick)
+              }
+              className={styles.secondaryButton}
+            >
+              {secondaryButtonText}
+            </button>
+          )}
+        </div>
+
+        {socialLinks && socialLinks.length > 0 && (
+          <div className={styles.socialRail} aria-label="Social media">
+            <span className={styles.socialLabel}>{t("hero.social.label")}</span>
+            <div className={styles.socialLinks}>
+              {socialLinks.map((item) => {
+                const href = safeExternalHref(item.href);
+                return href ? (
+                  <a
+                    key={item.label}
+                    href={href}
+                    className={styles.socialLink}
+                    aria-label={item.label}
+                    target="_blank"
+                    rel="me noopener noreferrer"
+                  >
+                    {item.icon}
+                  </a>
+                ) : null;
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

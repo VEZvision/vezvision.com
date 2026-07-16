@@ -21,8 +21,7 @@ function ProductsHero() {
       buttonText={t("blog.hero.cta.text")}
       onButtonClick={handleContactClick}
       socialLinks={buildHeroSocialLinks(social)}
-      className="relative flex min-h-[85vh] w-full items-center justify-center overflow-hidden bg-white px-4 pt-[120px] pb-[80px]"
-      contentClassName="max-w-[1024px]"
+      ariaLabelledBy="products-hero-title"
     />
   );
 }
