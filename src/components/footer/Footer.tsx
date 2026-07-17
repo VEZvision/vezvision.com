@@ -27,6 +27,14 @@ function isExternal(href: string) {
   return isSafeExternalHref(href);
 }
 
+function normalizeFooterCopy(value: string): string {
+  return value
+    .replace(/\s+[—–]\s+/g, ". ")
+    .replace(/[—–]/g, "-")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
 export default function Footer() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const footerRef = useRef<HTMLElement>(null);
@@ -154,10 +162,14 @@ export default function Footer() {
     .filter((item): item is NonNullable<typeof item> => Boolean(item?.href));
 
   const footerSubtitle = footer
-    ? getLocalizedLabel(language, footer.subtitlePl, footer.subtitleEn)
+    ? normalizeFooterCopy(
+        getLocalizedLabel(language, footer.subtitlePl, footer.subtitleEn),
+      )
     : t("footer.subtitle");
   const footerTagline = footer
-    ? getLocalizedLabel(language, footer.taglinePl, footer.taglineEn)
+    ? normalizeFooterCopy(
+        getLocalizedLabel(language, footer.taglinePl, footer.taglineEn),
+      )
     : t("footer.tagline");
   const footerCtaLabel = footer
     ? getLocalizedLabel(language, footer.ctaLabelPl, footer.ctaLabelEn)
@@ -169,8 +181,8 @@ export default function Footer() {
   const brandName = identity?.siteName || "VEZvision";
   const footerStatement =
     language === "en"
-      ? "Digital systems that make business easier to run."
-      : "Systemy cyfrowe, które porządkują rozwój firmy.";
+      ? "Digital clarity for growing teams."
+      : "Porządkujemy cyfrowy rozwój.";
   const footerEyebrow =
     language === "en"
       ? "Strategy · design · technology"

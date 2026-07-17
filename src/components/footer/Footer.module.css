@@ -35,8 +35,8 @@
   min-height: 100%;
   transform: translate(-50%, -50%);
   object-fit: cover;
-  opacity: 0.36;
-  filter: grayscale(0.22) contrast(0.92) brightness(1.08) saturate(0.78);
+  opacity: 0.56;
+  filter: grayscale(0.08) contrast(1.08) brightness(0.98) saturate(0.9);
 }
 
 .videoOverlay {
@@ -47,20 +47,20 @@
   background:
     radial-gradient(
       circle at 12% 24%,
-      rgba(255, 255, 255, 0.92),
-      rgba(255, 255, 255, 0.36) 30%,
+      rgba(255, 255, 255, 0.72),
+      rgba(255, 255, 255, 0.2) 30%,
       transparent 56%
     ),
     radial-gradient(
       circle at 88% 30%,
-      rgba(255, 255, 255, 0.72),
+      rgba(255, 255, 255, 0.4),
       transparent 52%
     ),
     linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.96) 0%,
-      rgba(248, 250, 252, 0.74) 48%,
-      rgba(255, 255, 255, 0.94) 100%
+      rgba(255, 255, 255, 0.86) 0%,
+      rgba(248, 250, 252, 0.48) 48%,
+      rgba(255, 255, 255, 0.82) 100%
     );
 }
 
@@ -284,7 +284,7 @@
 
 @media (pointer: coarse) {
   .footerVideo {
-    opacity: 0.26;
+    opacity: 0.42;
   }
 }
 

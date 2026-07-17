@@ -5,7 +5,7 @@ export const founder_noteTranslations = {
   "founder.line2.a": " is to ",
   "founder.line2.b": "invent",
   "founder.line2.c": ' it."',
-  "founder.line3.a": " — ",
+  "founder.line3.a": " ",
   "founder.line3.b": "Alan Kay",
   "founder.line3.c": "",
   "founder.blog.line1.a": '"',

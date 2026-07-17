@@ -30,7 +30,7 @@ export const contact_sectionTranslations = {
   "contact.form.title.line1": "Skontaktuj się",
   "contact.form.title.line2.italic": "z nami",
   "contact.form.subtitle":
-    "Masz pytania lub chcesz omówić projekt? Napisz do nas — pomożemy wybrać najlepszy kierunek.",
+    "Masz pytania lub chcesz omówić projekt? Napisz do nas. Pomożemy wybrać najlepszy kierunek.",
   "contact.form.email.prompt.line1":
     "Masz pytania lub potrzebujesz szczegółów?",
   "contact.form.email.prompt.line2": "Napisz!",
