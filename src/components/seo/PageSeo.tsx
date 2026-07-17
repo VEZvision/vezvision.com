@@ -28,6 +28,7 @@ function getRobots(indexable: boolean, robots: string, fallback: string) {
  */
 const NOINDEX_ROBOTS: Record<string, string> = {
   "not-found": "noindex,follow",
+  "newsletter-confirm": "noindex,nofollow",
   unsubscribe: "noindex,nofollow",
 };
 

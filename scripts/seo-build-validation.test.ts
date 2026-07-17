@@ -47,6 +47,24 @@ describe("SEO build validation", () => {
     assert.deepEqual(validateSeoRouteHtml("/pl/services", completeHtml), []);
   });
 
+  it("allows localized dynamic content without a second-language hreflang", () => {
+    const dynamicHtml = completeHtml
+      .replaceAll("/pl/services", "/pl/blog/polski-wpis")
+      .replace(
+        '<link rel="alternate" hreflang="en" href="https://vezvision.com/en/services">\n  ',
+        "",
+      )
+      .replace(
+        "https://vezvision.com/en/services",
+        "https://vezvision.com/pl/blog/polski-wpis",
+      );
+
+    assert.deepEqual(
+      validateSeoRouteHtml("/pl/blog/polski-wpis", dynamicHtml),
+      [],
+    );
+  });
+
   it("rejects a bare SPA shell for a sitemap route", () => {
     const errors = validateSeoRouteHtml(
       "/pl/services",

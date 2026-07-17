@@ -10,6 +10,24 @@ export const COOKIE_DEFINITIONS: CookieDefinition[] = [
     domain: typeof window !== "undefined" ? window.location.hostname : "",
     isFirstParty: true,
   },
+  {
+    name: "cf_clearance",
+    category: "necessary",
+    purpose: "Security verification for protected forms and bot mitigation",
+    provider: "Cloudflare",
+    expiry: "Session / short-term",
+    domain: typeof window !== "undefined" ? window.location.hostname : "",
+    isFirstParty: false,
+  },
+  {
+    name: "__cf_bm",
+    category: "necessary",
+    purpose: "Bot management and abuse prevention",
+    provider: "Cloudflare",
+    expiry: "Approx. 30 minutes",
+    domain: typeof window !== "undefined" ? window.location.hostname : "",
+    isFirstParty: false,
+  },
 ];
 
 export const COOKIE_CATEGORIES: CookieCategoryConfig[] = [
@@ -23,6 +41,8 @@ export const COOKIE_CATEGORIES: CookieCategoryConfig[] = [
       "Art. 6(1)(b) GDPR — performance of contract / Art. 6(1)(f) GDPR — legitimate interest (consent compliance)",
     cookies: [
       "vezvision_cookie_consent",
+      "cf_clearance",
+      "__cf_bm",
     ],
   },
   {

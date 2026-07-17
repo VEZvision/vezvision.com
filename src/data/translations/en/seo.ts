@@ -23,6 +23,9 @@ export const seoTranslations = {
   "seo.newsletter.title": "Newsletter - VEZvision",
   "seo.newsletter.description":
     "Subscribe to VEZvision updates about AI, automation, websites, and practical digital business growth.",
+  "seo.newsletter-confirm.title": "Newsletter Confirmation - VEZvision",
+  "seo.newsletter-confirm.description":
+    "Confirm your VEZvision newsletter subscription and receive selected updates about technology, automation, and digital business growth.",
   "seo.privacy-policy.title": "Privacy Policy - VEZvision",
   "seo.privacy-policy.description":
     "Read how VEZvision protects personal data, handles privacy rights, and processes website contact information.",

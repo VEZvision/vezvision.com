@@ -156,13 +156,8 @@ export default function Footer() {
             <div className={styles.videoOverlay} />
           </div>
           <div className={styles.contentWrapper}>
-            <div className={styles.socialsSection}>
-              <FooterSocial links={socialLinks} />
-            </div>
-
             <div className={styles.mainContent}>
               <div className={styles.textContent}>
-                <p className={styles.subtitle}>{footerSubtitle}</p>
                 <div className={styles.logoSection}>
                   <div className={styles.logoContainer}>
                     <img
@@ -174,6 +169,7 @@ export default function Footer() {
                       decoding="async"
                     />
                   </div>
+                  <p className={styles.subtitle}>{footerSubtitle}</p>
                   <p className={styles.tagline}>{footerTagline}</p>
                 </div>
               </div>
@@ -214,17 +210,23 @@ export default function Footer() {
               </div>
             </div>
 
-            <div className={styles.footerNav}>
-              <FooterNavLegal
-                navLinks={navLinks}
-                legalLinks={legalLinks}
-                language={language}
-                onPrivacySettings={actions.showPrivacyCenterModal}
-                brandName={brandName}
-                isExternal={isExternal}
-                linkClass={styles.navLink}
-                legalLinkClass={styles.legalLink}
-              />
+            <div className={styles.footerMeta}>
+              <div className={styles.socialsSection}>
+                <FooterSocial links={socialLinks} />
+              </div>
+
+              <div className={styles.footerNav}>
+                <FooterNavLegal
+                  navLinks={navLinks}
+                  legalLinks={legalLinks}
+                  language={language}
+                  onPrivacySettings={actions.showPrivacyCenterModal}
+                  brandName={brandName}
+                  isExternal={isExternal}
+                  linkClass={styles.navLink}
+                  legalLinkClass={styles.legalLink}
+                />
+              </div>
             </div>
           </div>
         </div>

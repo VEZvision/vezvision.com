@@ -27,7 +27,7 @@ const { t } = useLanguageContext();
 
 const title = (
   <>
-    {t('why.header.title.line1')} <span className="font-sans font-semibold">{t('why.header.title.line2.italic')}</span>
+    {t('why.header.title.line1')} <span className="font-sans font-normal">{t('why.header.title.line2.italic')}</span>
   </>
 );
 

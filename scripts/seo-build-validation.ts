@@ -30,6 +30,21 @@ function getRouteLocale(routePath: string): string | undefined {
   return normalizeRoutePath(routePath).split("/").filter(Boolean)[0];
 }
 
+function isDynamicContentRoute(routePath: string): boolean {
+  return /^\/(?:pl|en)\/(?:blog|portfolio)\/[^/]+$/.test(
+    normalizeRoutePath(routePath),
+  );
+}
+
+function getRequiredHrefLangs(routePath: string): readonly string[] {
+  const locale = getRouteLocale(routePath);
+  if (isDynamicContentRoute(routePath) && isSupportedLocaleValue(locale)) {
+    return [locale, "x-default"];
+  }
+
+  return REQUIRED_HREFLANGS;
+}
+
 function readUrl(value: string): URL | null {
   try {
     return new URL(value);
@@ -230,7 +245,7 @@ export function validateSeoRouteHtml(
     errors.push("missing Twitter description");
   }
 
-  for (const hreflang of REQUIRED_HREFLANGS) {
+  for (const hreflang of getRequiredHrefLangs(routePath)) {
     if (!hasHrefLang(html, hreflang)) {
       errors.push(`missing hreflang ${hreflang}`);
     }

@@ -88,31 +88,33 @@ function NewsletterSection() {
           <p className={styles.description}>{t("newsletter.description")}</p>
 
           <form className={styles.form} onSubmit={handleSubmit}>
-            <label htmlFor={emailFieldId} className="sr-only">
-              {t("newsletter.placeholder")}
-            </label>
-            <input
-              id={emailFieldId}
-              type="email"
-              name="email"
-              autoComplete="email"
-              placeholder={t("newsletter.placeholder")}
-              className={styles.input}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={loading}
-            />
-            <button type="submit" className={styles.button} disabled={loading}>
-              {loading ? t("newsletter.submitting") : t("newsletter.submit")}
-            </button>
+            <div className={styles.inputRow}>
+              <label htmlFor={emailFieldId} className="sr-only">
+                {t("newsletter.placeholder")}
+              </label>
+              <input
+                id={emailFieldId}
+                type="email"
+                name="email"
+                autoComplete="email"
+                placeholder={t("newsletter.placeholder")}
+                className={styles.input}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+              />
+              <button type="submit" className={styles.button} disabled={loading}>
+                {loading ? t("newsletter.submitting") : t("newsletter.submit")}
+              </button>
+            </div>
             <TurnstileField
               action="newsletter"
               onTokenChange={handleTurnstileToken}
               resetKey={turnstileResetKey}
-              className="mt-4 flex justify-center"
+              className={styles.turnstile}
               loadErrorMessage={t("newsletter.error.captcha")}
             />
-            <label className="mt-4 flex items-start gap-2 text-left text-sm">
+            <label className={styles.consent}>
               <input type="checkbox" checked={privacyAccepted} onChange={(event) => setPrivacyAccepted(event.target.checked)} required />
               <span>{t("newsletter.consent")}</span>
             </label>

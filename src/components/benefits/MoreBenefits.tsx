@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLanguageContext } from "@/hooks/useLanguage";
 import BenefitItem from "./BenefitItem";
 import styles from "./MoreBenefits.module.css";
@@ -11,14 +11,17 @@ import fasterInnovationIcon from "../../assets/faster-innovation-icon.svg";
 
 const MARQUEE_SPEED_PX_PER_SEC = 20;
 const MIN_COPIES = 3;
+const MAX_COPIES = 12;
 
 const MoreBenefits: React.FC = () => {
   const { t } = useLanguageContext();
   const reducedMotion = useReducedMotion();
   const trackRef = useRef<HTMLDivElement>(null);
   const setRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const rafId = useRef<number>(0);
   const offsetRef = useRef(0);
+  const [copyCount, setCopyCount] = useState(MIN_COPIES);
 
   const benefits = useMemo(
     () => [
@@ -35,29 +38,39 @@ const MoreBenefits: React.FC = () => {
 
     const track = trackRef.current;
     const set = setRef.current;
-    const container = trackRef.current?.closest(
-      `.${styles.moreBenefitsContainer}`,
-    );
+    const container = containerRef.current;
     if (!track || !set || !container) return;
 
     let setWidth = 0;
+    let containerWidth = container.clientWidth;
     let isVisible = true;
 
-    const measure = (width: number) => {
-      const nextWidth = Math.ceil(width);
-      if (nextWidth <= 0) return;
-      setWidth = nextWidth;
+    const syncCopyCount = () => {
+      if (setWidth <= 0 || containerWidth <= 0) return;
+      const requiredCopies = Math.min(
+        MAX_COPIES,
+        Math.max(MIN_COPIES, Math.ceil(containerWidth / setWidth) + 2),
+      );
+      setCopyCount((current) =>
+        current === requiredCopies ? current : requiredCopies,
+      );
     };
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         if (entry.target === set) {
-          measure(entry.contentRect.width);
-          return;
+          setWidth = Math.ceil(entry.contentRect.width);
+          syncCopyCount();
+        }
+
+        if (entry.target === container) {
+          containerWidth = Math.ceil(entry.contentRect.width);
+          syncCopyCount();
         }
       }
     });
     resizeObserver.observe(set);
+    resizeObserver.observe(container);
 
     const visibilityObserver = new IntersectionObserver(
       ([entry]) => {
@@ -117,17 +130,15 @@ const MoreBenefits: React.FC = () => {
     );
   }
 
-  const initialCopyCount = MIN_COPIES;
-
   return (
-    <div className={styles.moreBenefitsContainer}>
+    <div ref={containerRef} className={styles.moreBenefitsContainer}>
       <div className={styles.slider}>
         <div
           ref={trackRef}
           className={styles.slideTrack}
           style={{ willChange: "transform" }}
         >
-          {Array.from({ length: initialCopyCount }, (_, copyIndex) => (
+          {Array.from({ length: copyCount }, (_, copyIndex) => (
             <div
               key={copyIndex}
               ref={copyIndex === 0 ? setRef : undefined}

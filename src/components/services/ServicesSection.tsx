@@ -91,12 +91,12 @@ function ServicesSection() {
 
           <h2
             id="services-heading"
-            className="font-['Inter'] text-4xl md:text-5xl font-bold leading-tight tracking-[-0.02em] text-black"
+            className="font-sans text-4xl md:text-5xl font-normal leading-tight tracking-normal text-black"
           >
             {t("services.section.title")}
           </h2>
 
-          <p className="font-['Inter'] text-lg text-gray-600 max-w-2xl leading-relaxed">
+          <p className="font-sans text-lg text-gray-600 max-w-2xl leading-relaxed">
             {t("services.section.subtitle")}
           </p>
         </SectionReveal>
@@ -112,7 +112,7 @@ function ServicesSection() {
                   description={
                     translation?.excerpt || translation?.description || ""
                   }
-                  className="hover:scale-[1.01] transition-transform duration-300"
+                  className="hover:scale-[1.005] transition-transform duration-300"
                   icon={service.icon}
                 />
               </StaggerItem>
@@ -123,20 +123,20 @@ function ServicesSection() {
         {/* CTA Section */}
         <SectionReveal
           delay={0.15}
-          className="w-full max-w-4xl bg-linear-to-br from-gray-50 to-gray-100 rounded-3xl p-12 text-center shadow-[inset_0_3px_1px_rgba(255,255,255,1),0_2px_4px_rgba(0,0,0,0.05)] border border-gray-100"
+          className="w-full max-w-4xl bg-white/65 rounded-[18px] p-8 md:p-12 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_12px_34px_rgba(16,24,40,0.06)] border border-slate-200/70"
         >
           <div className="flex flex-col items-center gap-6 max-w-2xl mx-auto">
-            <h3 className="font-['Inter'] text-2xl font-semibold text-black tracking-[-0.01em]">
+            <h3 className="font-sans text-2xl font-medium text-black tracking-normal">
               {t("services.section.cta.title")}
             </h3>
-            <p className="font-['Inter'] text-base text-gray-600">
+            <p className="font-sans text-base text-gray-600">
               {t("services.section.cta.desc")}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
               <button
                 type="button"
                 onClick={() => navigate(toLocalizedPath("contact"))}
-                className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-800 transition-colors shadow-xs"
+                className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-[12px] font-medium hover:bg-gray-800 transition-colors shadow-xs"
               >
                 {t("services.section.cta.primary")}
                 <svg
@@ -156,7 +156,7 @@ function ServicesSection() {
               <button
                 type="button"
                 onClick={() => navigate(toLocalizedPath("portfolio"))}
-                className="px-6 py-3 rounded-xl border-2 border-gray-200 font-medium hover:border-black hover:bg-white transition-all"
+                className="px-6 py-3 rounded-[12px] border border-gray-200 font-medium hover:border-black hover:bg-white transition-all"
               >
                 {t("services.section.cta.secondary")}
               </button>
