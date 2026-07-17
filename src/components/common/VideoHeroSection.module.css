@@ -38,14 +38,14 @@
   min-width: 100%;
   min-height: 100%;
   object-fit: cover;
-  transform: translate3d(-50%, -50%, 0) scale(1.045);
-  filter: contrast(0.92) brightness(1.04);
-  opacity: 0.48;
+  transform: translate3d(-50%, -50%, 0);
+  filter: contrast(1.04) brightness(1.01);
+  opacity: 0.58;
   backface-visibility: hidden;
 }
 
 .homeHero .videoBg {
-  opacity: 0.62;
+  opacity: 0.7;
 }
 
 .fallbackBg {
@@ -60,7 +60,6 @@
 
 .videoOverlay {
   pointer-events: none;
-  backdrop-filter: blur(0.75px);
   background:
     radial-gradient(
       circle at 50% 42%,

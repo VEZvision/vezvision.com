@@ -136,13 +136,13 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
             loop
             muted
             playsInline
-            preload="metadata"
+            preload="auto"
             tabIndex={-1}
             disableRemotePlayback
             x-webkit-airplay="deny"
           >
-            <source src={videoWebmSrc} type="video/webm" />
             <source src={videoMp4Src} type="video/mp4" />
+            <source src={videoWebmSrc} type="video/webm" />
           </video>
         ) : (
           <div className={styles.fallbackBg} />

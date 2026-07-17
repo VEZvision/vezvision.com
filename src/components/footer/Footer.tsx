@@ -149,8 +149,8 @@ export default function Footer() {
                 disableRemotePlayback
                 x-webkit-airplay="deny"
               >
-                <source src={videoWebmSrc} type="video/webm" />
                 <source src={videoSrc} type="video/mp4" />
+                <source src={videoWebmSrc} type="video/webm" />
               </video>
             )}
             <div className={styles.videoOverlay} />
