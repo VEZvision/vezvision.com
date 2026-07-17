@@ -12,7 +12,7 @@
 .home-page {
   position: relative;
   z-index: 1;
-  background-color: transparent;
+  background-color: #fdfdfc;
   overflow-x: clip;
 }
 
@@ -25,12 +25,26 @@
   z-index: 0;
   contain: paint;
   --grid-size: 150px;
-  --grid-color: rgba(128, 128, 128, 0.12);
-  background-color: #ffffff;
+  --grid-color: rgba(15, 23, 42, 0.055);
+  background-color: #fdfdfc;
   background-image:
+    radial-gradient(
+      circle at 12% 18%,
+      rgba(236, 240, 245, 0.72),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 88% 58%,
+      rgba(239, 242, 246, 0.66),
+      transparent 30%
+    ),
     linear-gradient(var(--grid-color) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-  background-size: var(--grid-size) var(--grid-size);
+  background-size:
+    100% 100%,
+    100% 100%,
+    var(--grid-size) var(--grid-size),
+    var(--grid-size) var(--grid-size);
   mask: none;
 }
 
@@ -43,11 +57,20 @@
   height: 100%;
   --highlight-color: rgba(128, 128, 128, 0.12);
   background-image:
-    linear-gradient(to bottom, transparent, var(--highlight-color), transparent),
+    linear-gradient(
+      to bottom,
+      transparent,
+      var(--highlight-color),
+      transparent
+    ),
     linear-gradient(to right, transparent, var(--highlight-color), transparent);
-  background-size: 100% 3px, 3px 100%;
+  background-size:
+    100% 3px,
+    3px 100%;
   background-repeat: no-repeat;
-  background-position: 0 35%, 35% 0;
+  background-position:
+    0 35%,
+    35% 0;
   opacity: 0.45;
 }
 

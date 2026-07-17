@@ -3,7 +3,7 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  background: #f8f7f3;
+  background: #ffffff;
 }
 
 .backgroundLayer {
@@ -15,7 +15,7 @@
   align-items: center;
   padding: 160px 60px 40px;
   padding-bottom: max(40px, env(safe-area-inset-bottom));
-  background: #f8f7f3;
+  background: #ffffff;
 }
 
 .videoBackdrop {
@@ -26,7 +26,7 @@
   height: 100%;
   overflow: hidden;
   isolation: isolate;
-  background: #f8f7f3;
+  background: #ffffff;
 }
 
 .footerVideo {
@@ -40,9 +40,8 @@
   transform: translate(-50%, -50%);
   object-fit: cover;
   z-index: 0;
-  filter: grayscale(1) contrast(0.9) brightness(1.24);
-  mix-blend-mode: luminosity;
-  opacity: 0.36;
+  filter: contrast(0.9) brightness(1.05);
+  opacity: 0.58;
 }
 
 .videoOverlay {
@@ -50,16 +49,31 @@
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  backdrop-filter: blur(1.5px) saturate(0.82);
+  backdrop-filter: blur(0.75px);
   background:
-    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.22), transparent 54%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.66) 42%, rgba(250, 249, 246, 0.94) 100%),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.52), transparent 30%, transparent 70%, rgba(255, 255, 255, 0.52));
+    radial-gradient(
+      circle at 50% 42%,
+      rgba(255, 255, 255, 0.04),
+      transparent 56%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.24) 0%,
+      rgba(255, 255, 255, 0) 44%,
+      rgba(255, 255, 255, 0.3) 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.08),
+      transparent 28%,
+      transparent 72%,
+      rgba(255, 255, 255, 0.08)
+    );
 }
 
 @media (pointer: coarse) {
   .videoOverlay {
-    background: rgba(255, 255, 255, 0.74);
+    background: rgba(255, 255, 255, 0.18);
   }
 }
 

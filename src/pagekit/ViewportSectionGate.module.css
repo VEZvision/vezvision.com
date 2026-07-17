@@ -4,26 +4,42 @@
   width: 100%;
   place-items: center;
   overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 18% 22%,
+      rgba(226, 231, 238, 0.72),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 82% 78%,
+      rgba(232, 236, 242, 0.64),
+      transparent 34%
+    ),
+    linear-gradient(180deg, #fdfdfc 0%, #f7f8f9 50%, #fdfdfc 100%);
 }
 
 .skeleton {
   width: min(82%, 62rem);
-  height: clamp(8rem, 18vw, 13rem);
-  border: 1px solid rgba(15, 23, 42, 0.055);
+  height: clamp(11rem, 22vw, 17rem);
+  border: 1px solid rgba(15, 23, 42, 0.075);
   border-radius: 1.75rem;
   background:
-    linear-gradient(rgba(15, 23, 42, 0.055) 0 0) 7% 24% / 21% 0.65rem no-repeat,
-    linear-gradient(rgba(15, 23, 42, 0.05) 0 0) 7% 42% / 62% 0.9rem no-repeat,
-    linear-gradient(rgba(15, 23, 42, 0.045) 0 0) 7% 59% / 84% 0.6rem no-repeat,
-    rgba(255, 255, 255, 0.48);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-  opacity: 0.78;
+    linear-gradient(rgba(15, 23, 42, 0.075) 0 0) 7% 21% / 20% 0.65rem no-repeat,
+    linear-gradient(rgba(15, 23, 42, 0.065) 0 0) 7% 38% / 58% 0.9rem no-repeat,
+    linear-gradient(rgba(15, 23, 42, 0.055) 0 0) 7% 54% / 80% 0.6rem no-repeat,
+    linear-gradient(rgba(15, 23, 42, 0.045) 0 0) 7% 69% / 68% 0.6rem no-repeat,
+    rgba(255, 255, 255, 0.74);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.96),
+    0 24px 70px rgba(15, 23, 42, 0.06);
+  opacity: 0.92;
   animation: breathe 1.8s ease-in-out infinite;
 }
 
 @keyframes breathe {
   50% {
-    opacity: 0.48;
+    opacity: 0.72;
+    transform: translateY(3px) scale(0.995);
   }
 }
 
