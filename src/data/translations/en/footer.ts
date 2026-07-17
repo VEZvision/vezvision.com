@@ -2,7 +2,7 @@ export const footerTranslations = {
   "footer.subtitle":
     "Websites, apps and processes that make work clearer and support company growth.",
   "footer.tagline": "Technology, design and delivery in one team.",
-  "footer.cta": "Start cooperation",
+  "footer.cta": "Discuss a project",
   "footer.legal.privacy": "Privacy Policy",
   "footer.legal.terms": "Terms of Service",
   "footer.legal.cookies": "Cookies",

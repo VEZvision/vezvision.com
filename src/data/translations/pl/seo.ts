@@ -22,7 +22,7 @@ export const seoTranslations = {
     "Sprawdź nasze produkty i narzędzia, które pomagają uporządkować pracę i rozwój firmy.",
   "seo.newsletter.title": "Newsletter - VEZvision",
   "seo.newsletter.description":
-    "Zapisz się po aktualności VEZvision o AI, automatyzacji, stronach internetowych i rozwoju cyfrowym firmy.",
+    "Zapisz się do newslettera VEZvision o AI, automatyzacji, stronach internetowych i praktycznym rozwoju cyfrowym firmy.",
   "seo.privacy-policy.title": "Polityka prywatności - VEZvision",
   "seo.privacy-policy.description":
     "Sprawdź, jak VEZvision chroni dane osobowe, obsługuje prawa prywatności i przetwarza informacje kontaktowe.",

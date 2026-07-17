@@ -1,8 +1,8 @@
 export const faqTranslations = {
   "faq.badge": "FAQ",
   "faq.loading": "Ładowanie FAQ...",
-  "faq.tag": "FAQS",
-  "faq.title": "Pytanie? Odpowiedz!",
+  "faq.tag": "FAQ",
+  "faq.title": "Pytania i odpowiedzi",
   "faq.title.line1": "Pytania",
   "faq.title.line2.italic": "i odpowiedzi",
   "faq.subtitle": "Znajdź szybkie odpowiedzi na najczęściej zadawane pytania.",
@@ -27,7 +27,7 @@ export const faqTranslations = {
   "faq.q7": "Jak wygląda proces współpracy?",
   "faq.a7":
     "Zaczynamy od krótkiej rozmowy, w której ustalamy cele i zakres. Potem przygotowujemy strategię, projekt wizualny i harmonogram. Kodujemy, testujemy i wdrażamy z regularnym kontaktem na każdym etapie.",
-  "faq.contact.text": "Masz jakieś pytanie? Napisz na\u00A0",
+  "faq.contact.text": "Masz pytanie? Napisz na\u00A0",
   "faq.contact.title": "Wyślij wiadomość",
   "faq.cta.aria": "Przejdź do sekcji kontakt na stronie głównej",
 } as const;

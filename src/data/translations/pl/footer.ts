@@ -2,10 +2,10 @@ export const footerTranslations = {
   "footer.subtitle":
     "Projektujemy strony, aplikacje i procesy, które porządkują pracę i wspierają rozwój firmy.",
   "footer.tagline": "Technologia, design i wdrożenie w jednym zespole.",
-  "footer.cta": "Zacznij współpracę",
+  "footer.cta": "Porozmawiajmy o projekcie",
   "footer.legal.privacy": "Polityka Prywatności",
   "footer.legal.terms": "Regulamin",
-  "footer.legal.cookies": "Cookies",
+  "footer.legal.cookies": "Pliki cookie",
   "newsletter.title": "Notatki o technologii",
   "newsletter.description":
     "Zapisz się, jeśli chcesz dostawać konkretne materiały o stronach, aplikacjach, AI i pracy z technologią. Bez spamu.",
@@ -95,7 +95,7 @@ export const footerTranslations = {
   "notfound.logoAlt": "Logo VEZvision",
   "notfound.title": "Strona nie została znaleziona",
   "notfound.description":
-    "Przepraszamy, ale strona której szukasz nie istnieje lub została przeniesiona.",
+    "Przepraszamy, ale strona, której szukasz, nie istnieje lub została przeniesiona.",
   "notfound.cta.home": "Wróć do strony głównej",
   "notfound.cta.contact": "Skontaktuj się z nami",
   "notfound.help.text": "Możesz również:",

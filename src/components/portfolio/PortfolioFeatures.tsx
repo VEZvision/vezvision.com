@@ -87,8 +87,8 @@ const PortfolioFeatures = () => {
             </h2>
             <p className={styles.sectionSubtitle}>
               {isPl
-                ? "To będzie uporządkowane miejsce na wybrane realizacje, projekty demonstracyjne i case studies — bez udawania dużego portfolio."
-                : "This will become a curated place for selected projects, demo work and case studies — without pretending to have a large portfolio."}
+                ? "To będzie uporządkowane miejsce na wybrane realizacje, projekty demonstracyjne i studia przypadku. Każdy materiał pokaże rzeczywisty kontekst pracy."
+                : "This will become a curated place for selected projects, demo work, and case studies. Each story will show the real context behind the work."}
             </p>
           </header>
         </SectionReveal>
@@ -200,7 +200,7 @@ const PortfolioFeatures = () => {
                 </h3>
                 <p className={styles.description}>
                   {isPl
-                    ? "Case studies pokażą, jak projektować ścieżkę zakupową, katalog, płatności i podstawy dalszego rozwoju sprzedaży."
+                    ? "Studia przypadku pokażą, jak projektujemy ścieżkę zakupową, katalog, płatności i podstawy dalszego rozwoju sprzedaży."
                     : "Case studies will show how we approach the buying journey, catalogue, payments and foundations for future sales growth."}
                 </p>
               </div>
@@ -220,9 +220,11 @@ const PortfolioFeatures = () => {
                   <div className={styles.searchBar}>
                     <Search size={16} style={{ color: "#98a2b3" }} />
                     <span className={styles.searchInput}>
-                      Research anything...
+                      {isPl ? "Wyszukaj w projekcie..." : "Search the project..."}
                     </span>
-                    <span className={styles.searchButton}>Research</span>
+                    <span className={styles.searchButton}>
+                      {isPl ? "Szukaj" : "Search"}
+                    </span>
                   </div>
                   <div className={styles.suggestions}>
                     {[

@@ -130,8 +130,8 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
           <video
             ref={videoRef}
             className={styles.videoBg}
-            width="1920"
-            height="1080"
+            width="3840"
+            height="2160"
             autoPlay
             loop
             muted
@@ -141,8 +141,8 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
             disableRemotePlayback
             x-webkit-airplay="deny"
           >
-            <source src={videoMp4Src} type="video/mp4" />
             <source src={videoWebmSrc} type="video/webm" />
+            <source src={videoMp4Src} type="video/mp4" />
           </video>
         ) : (
           <div className={styles.fallbackBg} />

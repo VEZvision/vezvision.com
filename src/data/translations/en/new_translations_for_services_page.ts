@@ -9,7 +9,7 @@ export const new_translations_for_services_pageTranslations = {
   "group23.header": "Why choose us",
   "group23.header.line1": "Why",
   "group23.header.line2.italic": "choose us",
-  "group23.subtitle": "Three principles behind every cooperation.",
+  "group23.subtitle": "Three principles behind every project.",
   "group23.modern.sub": "Practical process",
   "group23.modern.title.line1": "Modern",
   "group23.modern.title.line2": "approach",
@@ -42,13 +42,13 @@ export const new_translations_for_services_pageTranslations = {
   "workflow.step3.desc": "We design mockups and UX to fit the brand.",
   "workflow.step4.title": "Implementation",
   "workflow.step4.desc":
-    "We code the solution: transparently, quickly, without compromises.",
+    "We build the solution with clear code, strong performance, and the agreed scope in mind.",
   "workflow.step5.title": "Tests",
   "workflow.step5.desc":
-    "We check quality, security, and performance under load.",
+    "We verify quality, security, and performance in key user scenarios.",
   "workflow.step6.title": "Deployment & support",
   "workflow.step6.desc": "We launch and continuously optimize with your team.",
   "workflow.cta.note":
-    "Have a project on the horizon? We'd love to tell you how we'll lead it.",
+    "Planning a project? We will gladly explain how we can take it from brief to launch.",
   "workflow.cta.button": "Let's talk",
 } as const;

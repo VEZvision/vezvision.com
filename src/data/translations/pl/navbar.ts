@@ -1,6 +1,6 @@
 export const navbarTranslations = {
     'nav.home': 'Strona główna',
-    'nav.about': 'O Nas',
+    'nav.about': 'O nas',
     'nav.services': 'Usługi',
     'nav.portfolio': 'Portfolio',
     'nav.blog': 'Blog',

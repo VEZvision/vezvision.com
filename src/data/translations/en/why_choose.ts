@@ -9,10 +9,10 @@ export const why_chooseTranslations = {
   "why.card1.title": "Long-term cooperation",
   "why.card1.desc":
     "We stay after launch to improve, maintain, and develop the solution with you.",
-  "why.card2.title": "Fast deployments",
+  "why.card2.title": "Efficient delivery",
   "why.card2.desc":
-    "We work quickly from the first consultation to project launch.",
+    "We guide the project efficiently from the first consultation to launch.",
   "why.card3.title": "Technology that doesn't get in the way",
   "why.card3.desc":
-    "We design solutions that are simple, intuitive, and require no training.",
+    "We design simple, intuitive solutions and help your team get comfortable with them when needed.",
 } as const;

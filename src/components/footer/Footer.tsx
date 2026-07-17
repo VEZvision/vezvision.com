@@ -136,8 +136,8 @@ export default function Footer() {
             {showVideo && (
               <video
                 ref={videoRef}
-                width="1920"
-                height="1080"
+                width="3840"
+                height="2160"
                 muted
                 loop
                 playsInline
@@ -149,8 +149,8 @@ export default function Footer() {
                 disableRemotePlayback
                 x-webkit-airplay="deny"
               >
-                <source src={videoSrc} type="video/mp4" />
                 <source src={videoWebmSrc} type="video/webm" />
+                <source src={videoSrc} type="video/mp4" />
               </video>
             )}
             <div className={styles.videoOverlay} />

@@ -7,7 +7,7 @@ export const seoTranslations = {
     "Comprehensive development services: websites, web apps, e-commerce, process automation. See what we can do for you.",
   "seo.portfolio.title": "Portfolio - VEZvision",
   "seo.portfolio.description":
-    "See our work. Projects we are proud of - from landing pages to advanced web systems.",
+    "See selected projects, from landing pages to advanced web systems.",
   "seo.blog.title": "Blog - VEZvision",
   "seo.blog.description":
     "Articles about technology, marketing, and online business. We share knowledge and experience.",
