@@ -8,7 +8,7 @@ interface SectionBadgeProps {
 
 function SectionBadge({ text, icon, className = '' }: SectionBadgeProps) { return (
     <div
-        className={`inline-flex items-center rounded-full bg-[#f5f5f5] overflow-hidden ${className}`}
+        className={`inline-flex items-center rounded-[10px] bg-[#f5f5f5] overflow-hidden ${className}`}
         style={{
             boxShadow: `inset 0px 3px 1px 0px #ffffff, 
                 0px 1px 1px -1px rgba(0,0,0,0.1),
@@ -19,7 +19,7 @@ function SectionBadge({ text, icon, className = '' }: SectionBadgeProps) { retur
                 0px 30px 30px -3px rgba(0,0,0,0.05)`
         }}
     >
-        <div className="flex items-center justify-center border border-[#f5f5f5] rounded-full px-[11px] py-[5px] min-w-[92px] h-[32px] gap-2">
+        <div className="flex items-center justify-center border border-[#f5f5f5] rounded-[9px] px-[11px] py-[5px] min-w-[92px] h-[32px] gap-2">
             {icon ? (
                 <span className="text-black w-4 h-4 flex items-center justify-center">
                     {icon}
