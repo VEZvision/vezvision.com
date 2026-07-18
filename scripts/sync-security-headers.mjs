@@ -11,6 +11,26 @@ const root = path.resolve(import.meta.dirname, "..");
 
 const csp = buildContentSecurityPolicy();
 
+const nginxSourcePath = path.join(root, "frontend-nginx.conf");
+const nginxOutputPath = path.join(root, "generated", "frontend-nginx.conf");
+const nginxSource = fs.readFileSync(nginxSourcePath, "utf8");
+const nginxHeaderPattern = /add_header Content-Security-Policy "[^"]+" always;/;
+
+if (!nginxHeaderPattern.test(nginxSource)) {
+  throw new Error("frontend-nginx.conf is missing the CSP header template");
+}
+
+fs.mkdirSync(path.dirname(nginxOutputPath), { recursive: true });
+fs.writeFileSync(
+  nginxOutputPath,
+  nginxSource.replace(
+    nginxHeaderPattern,
+    `add_header Content-Security-Policy "${csp}" always;`,
+  ),
+  "utf8",
+);
+console.log("Generated generated/frontend-nginx.conf");
+
 const htaccessTemplate = `<IfModule mod_headers.c>
   <FilesMatch "\\.br$">
     Header set Content-Encoding br
