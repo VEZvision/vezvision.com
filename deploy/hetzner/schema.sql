@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS public.vv_site_settings (
   value jsonb NOT NULL DEFAULT '{}'::jsonb,
   is_public boolean NOT NULL DEFAULT false,
   description text,
-  updated_at timestamptz NOT NULL DEFAULT now()
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  created_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE TABLE IF NOT EXISTS public.vv_page_seo (
   page_key text PRIMARY KEY, title_pl text NOT NULL, title_en text NOT NULL,
@@ -50,7 +51,7 @@ CREATE TABLE IF NOT EXISTS public.vv_blog_posts (
   title_pl text NOT NULL, title_en text, excerpt_pl text, excerpt_en text,
   content_pl text NOT NULL DEFAULT '', content_en text, meta_title_pl text, meta_title_en text,
   meta_desc_pl text, meta_desc_en text, tags_pl text[] NOT NULL DEFAULT '{}', tags_en text[] NOT NULL DEFAULT '{}',
-  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), created_by uuid
 );
 CREATE TABLE IF NOT EXISTS public.vv_blog_post_categories (
   post_id uuid NOT NULL REFERENCES public.vv_blog_posts(id) ON DELETE CASCADE,
@@ -78,7 +79,7 @@ CREATE TABLE IF NOT EXISTS public.vv_projects (
   short_desc_pl text, short_desc_en text, description_pl text, description_en text,
   challenge_pl text, challenge_en text, solution_pl text, solution_en text, result_pl text, result_en text,
   seo_title_pl text, seo_title_en text, seo_desc_pl text, seo_desc_en text,
-  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), created_by uuid
 );
 CREATE TABLE IF NOT EXISTS public.vv_project_category_assignments (
   project_id uuid NOT NULL REFERENCES public.vv_projects(id) ON DELETE CASCADE,
@@ -107,7 +108,7 @@ CREATE TABLE IF NOT EXISTS public.vv_services (
   title_pl text NOT NULL, title_en text, short_desc_pl text, short_desc_en text, description_pl text, description_en text,
   features_pl text[] NOT NULL DEFAULT '{}', features_en text[] NOT NULL DEFAULT '{}',
   meta_title_pl text, meta_title_en text, meta_desc_pl text, meta_desc_en text,
-  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), created_by uuid
 );
 CREATE TABLE IF NOT EXISTS public.vv_service_category_assignments (
   service_id uuid NOT NULL REFERENCES public.vv_services(id) ON DELETE CASCADE,
@@ -130,8 +131,24 @@ CREATE TABLE IF NOT EXISTS public.vv_faq_items (
 CREATE TABLE IF NOT EXISTS public.vv_newsletter_subscribers (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), email text NOT NULL UNIQUE, source text, tags text[] NOT NULL DEFAULT '{}',
   token text NOT NULL UNIQUE, is_active boolean NOT NULL DEFAULT true, language text NOT NULL DEFAULT 'pl',
-  subscribed_at timestamptz NOT NULL DEFAULT now(), unsubscribed_at timestamptz, updated_at timestamptz NOT NULL DEFAULT now()
+  subscribed_at timestamptz NOT NULL DEFAULT now(), unsubscribed_at timestamptz, updated_at timestamptz NOT NULL DEFAULT now(),
+  first_name text, last_name text, created_at timestamptz NOT NULL DEFAULT now(),
+  confirmation_requested_at timestamptz, confirmed_at timestamptz, consent_ip inet, consent_user_agent text
 );
+
+-- Keep re-applying this standalone schema safe for installations created from an
+-- earlier revision. These columns are used by VEZcore and by double opt-in.
+ALTER TABLE public.vv_site_settings ADD COLUMN IF NOT EXISTS created_at timestamptz NOT NULL DEFAULT now();
+ALTER TABLE public.vv_blog_posts ADD COLUMN IF NOT EXISTS created_by uuid;
+ALTER TABLE public.vv_projects ADD COLUMN IF NOT EXISTS created_by uuid;
+ALTER TABLE public.vv_services ADD COLUMN IF NOT EXISTS created_by uuid;
+ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS first_name text;
+ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS last_name text;
+ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS created_at timestamptz NOT NULL DEFAULT now();
+ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS confirmation_requested_at timestamptz;
+ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS confirmed_at timestamptz;
+ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS consent_ip inet;
+ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS consent_user_agent text;
 CREATE TABLE IF NOT EXISTS public.messages (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), full_name text NOT NULL, email text NOT NULL, phone text,
   subject text NOT NULL, message text NOT NULL, language text NOT NULL DEFAULT 'pl', client_ip text,
@@ -173,6 +190,17 @@ BEGIN
   IF NOT FOUND THEN SELECT views_count INTO current_views FROM vv_blog_posts WHERE id = post_id_value; RETURN current_views; END IF;
   UPDATE vv_blog_posts SET views_count = views_count + 1 WHERE id = post_id_value RETURNING views_count INTO current_views; RETURN current_views;
 END $$;
+
+DROP TRIGGER IF EXISTS vv_blog_posts_updated_at ON public.vv_blog_posts;
+DROP TRIGGER IF EXISTS vv_blog_posts_published_at ON public.vv_blog_posts;
+DROP TRIGGER IF EXISTS vv_page_seo_updated_at ON public.vv_page_seo;
+DROP TRIGGER IF EXISTS vv_page_sections_updated_at ON public.vv_page_sections;
+DROP TRIGGER IF EXISTS vv_legal_documents_updated_at ON public.vv_legal_documents;
+DROP TRIGGER IF EXISTS vv_projects_updated_at ON public.vv_projects;
+DROP TRIGGER IF EXISTS vv_services_updated_at ON public.vv_services;
+DROP TRIGGER IF EXISTS vv_faq_items_updated_at ON public.vv_faq_items;
+DROP TRIGGER IF EXISTS vv_newsletter_subscribers_updated_at ON public.vv_newsletter_subscribers;
+DROP TRIGGER IF EXISTS messages_updated_at ON public.messages;
 
 CREATE TRIGGER vv_blog_posts_updated_at BEFORE UPDATE ON public.vv_blog_posts FOR EACH ROW EXECUTE FUNCTION public.vv_set_updated_at();
 CREATE TRIGGER vv_blog_posts_published_at BEFORE INSERT OR UPDATE ON public.vv_blog_posts FOR EACH ROW EXECUTE FUNCTION public.vv_set_published_at();
@@ -237,6 +265,24 @@ ALTER TABLE public.vv_services ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vv_service_category_assignments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vv_faq_categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vv_faq_items ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS public_settings_read ON public.vv_site_settings;
+DROP POLICY IF EXISTS page_seo_read ON public.vv_page_seo;
+DROP POLICY IF EXISTS page_sections_read ON public.vv_page_sections;
+DROP POLICY IF EXISTS legal_documents_read ON public.vv_legal_documents;
+DROP POLICY IF EXISTS blog_categories_read ON public.vv_blog_categories;
+DROP POLICY IF EXISTS blog_posts_read ON public.vv_blog_posts;
+DROP POLICY IF EXISTS blog_post_categories_read ON public.vv_blog_post_categories;
+DROP POLICY IF EXISTS project_categories_read ON public.vv_project_categories;
+DROP POLICY IF EXISTS projects_read ON public.vv_projects;
+DROP POLICY IF EXISTS project_assignments_read ON public.vv_project_category_assignments;
+DROP POLICY IF EXISTS project_technologies_read ON public.vv_project_technologies;
+DROP POLICY IF EXISTS project_images_read ON public.vv_project_images;
+DROP POLICY IF EXISTS service_categories_read ON public.vv_service_categories;
+DROP POLICY IF EXISTS services_read ON public.vv_services;
+DROP POLICY IF EXISTS service_assignments_read ON public.vv_service_category_assignments;
+DROP POLICY IF EXISTS faq_categories_read ON public.vv_faq_categories;
+DROP POLICY IF EXISTS faq_items_read ON public.vv_faq_items;
 
 CREATE POLICY public_settings_read ON public.vv_site_settings FOR SELECT TO anon USING (is_public);
 CREATE POLICY page_seo_read ON public.vv_page_seo FOR SELECT TO anon USING (is_public);
