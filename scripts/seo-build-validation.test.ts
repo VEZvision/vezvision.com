@@ -194,4 +194,19 @@ describe("SEO build validation", () => {
     assert.ok(!prerenderSource.includes('href="/hero-bg.mp4?v=65de2eb"'));
     assert.ok(!prerenderSource.includes('replace(/\\sposter="[^"]*"'));
   });
+
+  it("opts prerendered content out of Cloudflare email rewriting", () => {
+    const appShell = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
+
+    const start = appShell.indexOf("<!--email_off-->");
+    const root = appShell.indexOf('<div id="root"></div>');
+    const end = appShell.indexOf("<!--/email_off-->");
+
+    assert.ok(start >= 0, "Cloudflare email opt-out start marker is missing");
+    assert.ok(end > start, "Cloudflare email opt-out end marker is missing");
+    assert.ok(
+      root > start && root < end,
+      "The application root must stay inside the Cloudflare email opt-out block",
+    );
+  });
 });
