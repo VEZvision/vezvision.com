@@ -1,6 +1,7 @@
 import type { FC, ReactNode } from "react";
 import { useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
 import { useLanguageContext } from "@/hooks/useLanguage";
@@ -13,6 +14,7 @@ import styles from "./VideoHeroSection.module.css";
 
 const DEFAULT_VIDEO_MP4 = "/footer-bg.mp4?v=65de2eb";
 const DEFAULT_VIDEO_WEBM = "/footer-bg.webm";
+const DEFAULT_VIDEO_POSTER = "/footer-poster.avif";
 
 export interface SocialLink {
   href: string | undefined;
@@ -38,6 +40,7 @@ interface VideoHeroSectionProps {
   variant?: "page" | "home";
   videoMp4Src?: string;
   videoWebmSrc?: string;
+  videoPosterSrc?: string;
   brandPriority?: boolean;
 }
 
@@ -59,6 +62,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
   variant = "page",
   videoMp4Src = DEFAULT_VIDEO_MP4,
   videoWebmSrc = DEFAULT_VIDEO_WEBM,
+  videoPosterSrc = DEFAULT_VIDEO_POSTER,
   brandPriority = false,
 }) => {
   const navigate = useNavigate();
@@ -119,115 +123,133 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
     .join(" ");
 
   return (
-    <section
-      ref={sectionRef}
-      className={sectionClasses}
-      aria-labelledby={ariaLabelledBy}
-      data-hero-variant={variant}
-    >
-      <div className={styles.media} aria-hidden="true">
-        {showVideo ? (
-          <video
-            ref={videoRef}
-            className={styles.videoBg}
-            width="3840"
-            height="2160"
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
-            tabIndex={-1}
-            disableRemotePlayback
-            x-webkit-airplay="deny"
-          >
-            <source src={videoMp4Src} type="video/mp4" />
-            <source src={videoWebmSrc} type="video/webm" />
-          </video>
-        ) : (
-          <div className={styles.fallbackBg} />
-        )}
-        <div className={styles.videoOverlay} />
-      </div>
+    <>
+      <Helmet>
+        <link
+          rel="preload"
+          as="image"
+          href={videoPosterSrc}
+          type="image/avif"
+          fetchPriority="high"
+        />
+      </Helmet>
 
-      <div className={styles.frame} aria-hidden="true" />
-
-      <div className={contentClasses}>
-        <div className={styles.brandRow}>
-          <img
-            src={logoNavbar}
-            alt="VEZvision"
-            width="838"
-            height="153"
-            className={styles.logo}
-            fetchPriority={brandPriority ? "high" : "auto"}
-          />
-
-          {badge && (
-            <div className={styles.badge}>
-              {icon && <span className={styles.badgeIcon}>{icon}</span>}
-              <span>{badge}</span>
-            </div>
+      <section
+        ref={sectionRef}
+        className={sectionClasses}
+        aria-labelledby={ariaLabelledBy}
+        data-hero-variant={variant}
+      >
+        <div className={styles.media} aria-hidden="true">
+          {showVideo ? (
+            <video
+              ref={videoRef}
+              className={styles.videoBg}
+              width="3840"
+              height="2160"
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              poster={videoPosterSrc}
+              tabIndex={-1}
+              disableRemotePlayback
+              x-webkit-airplay="deny"
+            >
+              <source src={videoWebmSrc} type="video/webm" />
+              <source src={videoMp4Src} type="video/mp4" />
+            </video>
+          ) : (
+            <div className={styles.fallbackBg} />
           )}
+          <div className={styles.videoOverlay} />
         </div>
 
-        <h1
-          id={ariaLabelledBy}
-          className={styles.title}
-          aria-label={typeof title === "string" ? title : undefined}
-        >
-          {title}
-        </h1>
+        <div className={styles.frame} aria-hidden="true" />
 
-        {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+        <div className={contentClasses}>
+          <div className={styles.brandRow}>
+            <img
+              src={logoNavbar}
+              alt="VEZvision"
+              width="838"
+              height="153"
+              className={styles.logo}
+              fetchPriority={brandPriority ? "high" : "auto"}
+            />
 
-        <div className={styles.actions}>
-          <button
-            type="button"
-            onClick={() => runAction(buttonHref, onButtonClick)}
-            className={styles.primaryButton}
+            {badge && (
+              <div className={styles.badge}>
+                {icon && <span className={styles.badgeIcon}>{icon}</span>}
+                <span>{badge}</span>
+              </div>
+            )}
+          </div>
+
+          <h1
+            id={ariaLabelledBy}
+            className={styles.title}
+            aria-label={typeof title === "string" ? title : undefined}
           >
-            <span>{buttonText}</span>
-            <ArrowUpRight aria-hidden="true" />
-          </button>
+            {title}
+          </h1>
 
-          {secondaryButtonText && (
+          {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+
+          <div className={styles.actions}>
             <button
               type="button"
-              onClick={() =>
-                runAction(secondaryButtonHref, onSecondaryButtonClick)
-              }
-              className={styles.secondaryButton}
+              onClick={() => runAction(buttonHref, onButtonClick)}
+              className={styles.primaryButton}
             >
-              {secondaryButtonText}
+              <span>{buttonText}</span>
+              <ArrowUpRight aria-hidden="true" />
             </button>
+
+            {secondaryButtonText && (
+              <button
+                type="button"
+                onClick={() =>
+                  runAction(secondaryButtonHref, onSecondaryButtonClick)
+                }
+                className={styles.secondaryButton}
+              >
+                {secondaryButtonText}
+              </button>
+            )}
+          </div>
+
+          {socialLinks && socialLinks.length > 0 && (
+            <div
+              className={styles.socialRail}
+              aria-label={t("hero.social.aria")}
+            >
+              <span className={styles.socialLabel}>
+                {t("hero.social.label")}
+              </span>
+              <div className={styles.socialLinks}>
+                {socialLinks.map((item) => {
+                  const href = safeExternalHref(item.href);
+                  return href ? (
+                    <a
+                      key={item.label}
+                      href={href}
+                      className={styles.socialLink}
+                      aria-label={item.label}
+                      target="_blank"
+                      rel="me noopener noreferrer"
+                    >
+                      {item.icon}
+                    </a>
+                  ) : null;
+                })}
+              </div>
+            </div>
           )}
         </div>
-
-        {socialLinks && socialLinks.length > 0 && (
-          <div className={styles.socialRail} aria-label={t("hero.social.aria")}>
-            <span className={styles.socialLabel}>{t("hero.social.label")}</span>
-            <div className={styles.socialLinks}>
-              {socialLinks.map((item) => {
-                const href = safeExternalHref(item.href);
-                return href ? (
-                  <a
-                    key={item.label}
-                    href={href}
-                    className={styles.socialLink}
-                    aria-label={item.label}
-                    target="_blank"
-                    rel="me noopener noreferrer"
-                  >
-                    {item.icon}
-                  </a>
-                ) : null;
-              })}
-            </div>
-          </div>
-        )}
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
 

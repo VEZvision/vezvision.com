@@ -18,6 +18,7 @@ const Hero = memo(() => {
       variant="home"
       videoMp4Src="/hero-bg.mp4?v=65de2eb"
       videoWebmSrc="/hero-bg.webm"
+      videoPosterSrc="/hero-poster.avif"
       title={<span>{t("hero.subtitle")}</span>}
       subtitle={t("hero.description")}
       badge={t("hero.badge")}
