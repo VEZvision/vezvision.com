@@ -15,7 +15,9 @@ const turnstileExpectedHostnames = String(process.env.TURNSTILE_EXPECTED_HOSTNAM
   .split(',').map(value => value.trim().toLowerCase()).filter(Boolean)
 const resendApiKey = process.env.RESEND_API_KEY?.trim()
 const legacyFromEmail = process.env.RESEND_FROM_EMAIL?.trim()
-const contactFromEmail = process.env.CONTACT_FROM_EMAIL?.trim() || legacyFromEmail
+const legacyContactFromEmail = process.env.CONTACT_FROM_EMAIL?.trim() || legacyFromEmail
+const contactNotificationFromEmail = process.env.CONTACT_NOTIFICATION_FROM_EMAIL?.trim() || legacyContactFromEmail
+const contactReplyFromEmail = process.env.CONTACT_REPLY_FROM_EMAIL?.trim() || legacyContactFromEmail
 const newsletterFromEmail = process.env.NEWSLETTER_FROM_EMAIL?.trim() || legacyFromEmail
 const newsletterReplyTo = process.env.NEWSLETTER_REPLY_TO?.trim() || 'contact@vezvision.com'
 const contactNotifyEmail = process.env.CONTACT_NOTIFY_EMAIL?.trim() || 'contact@vezvision.com'
@@ -23,7 +25,7 @@ const publicSiteUrl = (process.env.PUBLIC_SITE_URL?.trim() || allowedOrigins[0] 
 if (!databaseUrl || allowedOrigins.length === 0) throw new Error('DATABASE_URL and ALLOWED_ORIGIN/ALLOWED_ORIGINS are required')
 if (!turnstileSecret) console.warn('TURNSTILE_SECRET_KEY is not set; contact and newsletter captcha verification is disabled')
 if (turnstileTestMode) console.warn('TURNSTILE_TEST_MODE is enabled; use only in development')
-if (!resendApiKey || !contactFromEmail || !newsletterFromEmail) console.warn('Resend API key or sender addresses are not fully configured; some emails are disabled')
+if (!resendApiKey || !contactNotificationFromEmail || !contactReplyFromEmail || !newsletterFromEmail) console.warn('Resend API key or sender addresses are not fully configured; some emails are disabled')
 const pool = new Pool({ connectionString: databaseUrl, max: 10, ssl: false })
 
 const json = (res, status, body) => {
@@ -123,8 +125,8 @@ async function submitContact(req, res) {
   const notification = contactNotificationEmail({ fullName, email, phone, subject, message, siteUrl: publicSiteUrl })
   const autoReply = contactAutoReplyEmail({ fullName, language: lang, siteUrl: publicSiteUrl })
   const emailResults = await Promise.allSettled([
-    sendEmail({ from: `VEZvision <${contactFromEmail}>`, to: contactNotifyEmail, ...notification, replyTo: email }),
-    sendEmail({ from: `VEZvision <${contactFromEmail}>`, to: email, ...autoReply, replyTo: contactNotifyEmail }),
+    sendEmail({ from: `VEZvision Formularz <${contactNotificationFromEmail}>`, to: contactNotifyEmail, ...notification, replyTo: email }),
+    sendEmail({ from: `VEZvision <${contactReplyFromEmail}>`, to: email, ...autoReply, replyTo: contactNotifyEmail }),
   ])
   for (const result of emailResults) if (result.status === 'rejected') console.error('Contact email delivery failed', result.reason)
   json(res, 201, { success: true, id: row.id, email_sent: emailResults.every(result => result.status === 'fulfilled' && result.value.sent) })
