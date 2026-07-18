@@ -21,13 +21,37 @@ const contactReplyFromEmail = process.env.CONTACT_REPLY_FROM_EMAIL?.trim() || le
 const newsletterFromEmail = process.env.NEWSLETTER_FROM_EMAIL?.trim() || legacyFromEmail
 const newsletterReplyTo = process.env.NEWSLETTER_REPLY_TO?.trim() || 'contact@vezvision.com'
 const contactNotifyEmail = process.env.CONTACT_NOTIFY_EMAIL?.trim() || 'contact@vezvision.com'
+const adminApiTokenSha256 = process.env.ADMIN_API_TOKEN_SHA256?.trim().toLowerCase()
+const adminPostgrestUrl = process.env.ADMIN_POSTGREST_URL?.trim().replace(/\/$/, '')
+const adminPostgrestApiKey = process.env.ADMIN_POSTGREST_API_KEY?.trim()
 const publicSiteUrl = (process.env.PUBLIC_SITE_URL?.trim() || allowedOrigins[0] || '').replace(/\/$/, '')
 const publicEmailSiteUrl = (process.env.PUBLIC_EMAIL_SITE_URL?.trim() || 'https://vezvision.com').replace(/\/$/, '')
 if (!databaseUrl || allowedOrigins.length === 0) throw new Error('DATABASE_URL and ALLOWED_ORIGIN/ALLOWED_ORIGINS are required')
 if (!turnstileSecret) console.warn('TURNSTILE_SECRET_KEY is not set; contact and newsletter captcha verification is disabled')
 if (turnstileTestMode) console.warn('TURNSTILE_TEST_MODE is enabled; use only in development')
 if (!resendApiKey || !contactNotificationFromEmail || !contactReplyFromEmail || !newsletterFromEmail) console.warn('Resend API key or sender addresses are not fully configured; some emails are disabled')
+if ([adminApiTokenSha256, adminPostgrestUrl, adminPostgrestApiKey].some(Boolean)
+  && ![adminApiTokenSha256, adminPostgrestUrl, adminPostgrestApiKey].every(Boolean)) {
+  throw new Error('ADMIN_API_TOKEN_SHA256, ADMIN_POSTGREST_URL and ADMIN_POSTGREST_API_KEY must be configured together')
+}
 const pool = new Pool({ connectionString: databaseUrl, max: 10, ssl: false })
+
+const adminTables = new Set([
+  'vv_blog_categories', 'vv_blog_post_categories', 'vv_blog_posts',
+  'vv_faq_categories', 'vv_faq_items', 'vv_legal_documents',
+  'vv_newsletter_subscribers', 'vv_page_sections', 'vv_page_seo',
+  'vv_project_categories', 'vv_project_category_assignments',
+  'vv_project_images', 'vv_project_technologies', 'vv_projects',
+  'vv_service_categories', 'vv_service_category_assignments',
+  'vv_services', 'vv_site_settings',
+])
+const adminMethods = new Set(['GET', 'HEAD', 'POST', 'PATCH', 'DELETE'])
+const forwardedRequestHeaders = new Set([
+  'accept', 'accept-profile', 'content-profile', 'content-type', 'prefer', 'range', 'range-unit',
+])
+const forwardedResponseHeaders = new Set([
+  'content-location', 'content-range', 'content-type', 'date', 'location', 'preference-applied', 'range-unit',
+])
 
 const json = (res, status, body) => {
   res.writeHead(status, {
@@ -55,6 +79,75 @@ const body = async req => {
   if (contentType.includes('application/x-www-form-urlencoded')) return Object.fromEntries(new URLSearchParams(raw))
   try { return JSON.parse(raw) }
   catch { throw Object.assign(new Error('Invalid payload'), { status: 400 }) }
+}
+
+function validAdminToken(req) {
+  if (!adminApiTokenSha256 || !/^[a-f0-9]{64}$/.test(adminApiTokenSha256)) return false
+  const authorization = String(req.headers.authorization || '')
+  const supplied = authorization.startsWith('Bearer ')
+    ? authorization.slice(7).trim()
+    : String(req.headers['x-internal-api-key'] || '').trim()
+  if (supplied.length < 32 || supplied.length > 512) return false
+  const suppliedHash = crypto.createHash('sha256').update(supplied).digest()
+  const expectedHash = Buffer.from(adminApiTokenSha256, 'hex')
+  return suppliedHash.length === expectedHash.length && crypto.timingSafeEqual(suppliedHash, expectedHash)
+}
+
+async function proxyAdminApi(req, res, url) {
+  if (!adminPostgrestUrl || !adminPostgrestApiKey) return json(res, 503, { error: 'Administration API is unavailable' })
+  if (!validAdminToken(req)) {
+    res.setHeader('www-authenticate', 'Bearer')
+    return json(res, 401, { error: 'Unauthorized' })
+  }
+  if (!adminMethods.has(req.method)) return json(res, 405, { error: 'Method not allowed' })
+
+  const resource = url.pathname.slice('/admin/v1/'.length).replace(/\/$/, '')
+  if (!adminTables.has(resource)) return json(res, 404, { error: 'Not found' })
+
+  const headers = { 'x-internal-api-key': adminPostgrestApiKey, 'x-client-info': 'vezvision-admin-gateway/1.0' }
+  for (const [name, value] of Object.entries(req.headers)) {
+    if (forwardedRequestHeaders.has(name) && typeof value === 'string') headers[name] = value
+  }
+
+  let requestBody
+  if (!['GET', 'HEAD'].includes(req.method)) {
+    const chunks = []
+    let size = 0
+    for await (const chunk of req) {
+      size += chunk.length
+      if (size > 2_097_152) return json(res, 413, { error: 'Payload too large' })
+      chunks.push(chunk)
+    }
+    requestBody = chunks.length ? Buffer.concat(chunks) : undefined
+  }
+
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 15_000)
+  try {
+    const upstream = await fetch(`${adminPostgrestUrl}/${resource}${url.search}`, {
+      method: req.method,
+      headers,
+      body: requestBody,
+      redirect: 'error',
+      signal: controller.signal,
+    })
+    const responseHeaders = {
+      'cache-control': 'no-store',
+      'x-content-type-options': 'nosniff',
+      'referrer-policy': 'no-referrer',
+    }
+    for (const [name, value] of upstream.headers) {
+      if (forwardedResponseHeaders.has(name)) responseHeaders[name] = value
+    }
+    res.writeHead(upstream.status, responseHeaders)
+    if (req.method === 'HEAD') return res.end()
+    res.end(Buffer.from(await upstream.arrayBuffer()))
+  } catch (error) {
+    console.error('Administration API proxy failed', error)
+    json(res, 502, { error: 'Administration API upstream unavailable' })
+  } finally {
+    clearTimeout(timeout)
+  }
 }
 const ip = req => String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim().slice(0, 128)
 async function sendEmail({ from, to, subject, html, text, replyTo }) {
@@ -186,10 +279,15 @@ async function codeInjection(req, res) {
 }
 const handlers = { 'submit-contact': submitContact, 'subscribe-newsletter': subscribe, 'confirm-newsletter': confirmNewsletter, 'unsubscribe-newsletter': unsubscribe, 'increment-blog-view': incrementBlogView, 'check-maintenance-access': maintenance, 'get-code-injection': codeInjection }
 const server = http.createServer(async (req, res) => {
+  const url = new URL(req.url, 'http://localhost')
+  if (url.pathname.startsWith('/admin/v1/')) {
+    try { return await proxyAdminApi(req, res, url) }
+    catch (error) { console.error(error); return json(res, 500, { error: 'Internal server error' }) }
+  }
   cors(req, res)
   if (req.method === 'OPTIONS') return res.end()
   if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' })
-  const name = new URL(req.url, 'http://localhost').pathname.split('/').pop()
+  const name = url.pathname.split('/').pop()
   try { const handler = handlers[name]; if (!handler) return json(res, 404, { error: 'Not found' }); await handler(req, res) }
   catch (error) { console.error(error); json(res, error.status || 500, { error: error.status ? error.message : 'Internal server error' }) }
 })
