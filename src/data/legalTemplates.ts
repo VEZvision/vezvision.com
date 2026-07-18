@@ -45,11 +45,12 @@ Dane osobowe pozostawione w serwisie nie zostaną sprzedane ani udostępnione os
 *   Dostawcy usług analitycznych i monitorowania błędów
 
 ### Podmioty przetwarzające dane w ramach Serwisu:
-*   **Supabase Inc.** — dostawca usług backendowych i uwierzytelniania, przetwarza dane niezbędne do działania Serwisu (tokeny autoryzacyjne, dane formularzy). Dane przetwarzane są w regionie UE (eu-west-2).
+*   **Dostawcy hostingu, bazy danych i infrastruktury technicznej** — przetwarzają dane niezbędne do działania Serwisu, obsługi formularzy oraz zapewnienia bezpieczeństwa.
+*   **Cloudflare, Inc.** — dostawca usług bezpieczeństwa i ochrony formularzy przed nadużyciami (Cloudflare Turnstile / mechanizmy antybotowe).
 *   **Sentry (Functional Software, Inc.)** — dostawca usług monitorowania błędów i wydajności, przetwarza dane analityczne wyłącznie za zgodą Użytkownika (pliki cookies kategorii analitycznej).
 
 ### Przekazywanie danych do państw trzecich:
-Supabase Inc. oraz Sentry (Functional Software, Inc.) to podmioty z siedzibą w Stanach Zjednoczonych. Przekazywanie danych do tych podmiotów odbywa się na podstawie standardowych klauzul umownych (Standard Contractual Clauses) zatwierdzonych przez Komisję Europejską. W przypadku Supabase, dane są faktycznie przetwarzane w regionie UE (eu-west-2), co minimalizuje ryzyko przekazania danych poza Europejski Obszar Gospodarczy.
+Cloudflare, Inc. oraz Sentry (Functional Software, Inc.) to podmioty z siedzibą w Stanach Zjednoczonych. Ewentualne przekazywanie danych do tych podmiotów odbywa się na podstawie odpowiednich mechanizmów prawnych, w szczególności standardowych klauzul umownych (Standard Contractual Clauses) zatwierdzonych przez Komisję Europejską.
 
 ## 7. Prawa Użytkownika
 Zgodnie z RODO, przysługują Ci następujące prawa:
@@ -115,11 +116,12 @@ Personal data left on the website will not be sold or made available to third pa
 *   Analytics and error monitoring service providers
 
 ### Data processors operating within the Website:
-*   **Supabase Inc.** — backend and authentication service provider, processes data necessary for the Website operation (authentication tokens, form data). Data is processed in the EU region (eu-west-2).
+*   **Hosting, database and technical infrastructure providers** — process data necessary for Website operation, form handling and security.
+*   **Cloudflare, Inc.** — security and form abuse prevention provider (Cloudflare Turnstile / anti-bot mechanisms).
 *   **Sentry (Functional Software, Inc.)** — error monitoring and performance tracking service provider, processes analytical data only with the User's consent (analytical category cookies).
 
 ### Transfers to third countries:
-Supabase Inc. and Sentry (Functional Software, Inc.) are entities based in the United States. The transfer of data to these entities is based on Standard Contractual Clauses approved by the European Commission. In the case of Supabase, data is actually processed in the EU region (eu-west-2), which minimizes the risk of data being transferred outside the European Economic Area.
+Cloudflare, Inc. and Sentry (Functional Software, Inc.) are entities based in the United States. Any transfer of data to these entities is based on appropriate legal mechanisms, in particular Standard Contractual Clauses approved by the European Commission.
 
 ## 7. User Rights
 In accordance with the GDPR, you have the following rights:
@@ -269,7 +271,7 @@ Cookies "sesyjne" są plikami tymczasowymi, które przechowywane są w urządzen
 "Stałe" pliki cookies przechowywane są w urządzeniu końcowym Użytkownika przez czas określony w parametrach plików cookies lub do czasu ich usunięcia przez Użytkownika.
 
 ### Kategorie plików cookies:
-1.  **Niezbędne** — umożliwiają korzystanie z usług dostępnych w ramach Serwisu, np. uwierzytelniające pliki cookies wykorzystywane do usług wymagających uwierzytelniania w ramach Serwisu. Są one niezbędne do działania strony i nie mogą być wyłączone.
+1.  **Niezbędne** — umożliwiają poprawne działanie Serwisu, zapamiętanie wyborów dotyczących prywatności oraz ochronę formularzy przed nadużyciami. Są one niezbędne do działania strony i nie mogą być wyłączone.
 2.  **Funkcjonalne** — umożliwiają "zapamiętanie" wybranych przez Użytkownika ustawień i personalizację interfejsu Użytkownika, np. w zakresie wybranego języka lub regionu.
 3.  **Analityczne** — umożliwiają zbieranie informacji o sposobie korzystania ze stron internetowych Serwisu, co pomaga nam ulepszać jego strukturę i zawartość. Używamy Sentry do monitorowania błędów i wydajności.
 4.  **Marketingowe** — używane do śledzenia użytkowników na stronach internetowych w celu wyświetlania reklam dopasowanych do ich zainteresowań (obecnie nie stosujemy ciasteczek marketingowych).
@@ -279,12 +281,11 @@ Cookies "sesyjne" są plikami tymczasowymi, które przechowywane są w urządzen
 | Nazwa ciasteczka | Kategoria | Cel | Dostawca | Czas ważności | Rodzaj |
 |---|---|---|---|---|---|
 | vezvision_cookie_consent | Niezbędne | Przechowuje preferencje dotyczące zgody na pliki cookies | VEZvision | 1 rok | First-party |
-| sb-access-token | Niezbędne | Token uwierzytelniający dla Supabase (autoryzacja) | Supabase | Sesyjne | First-party |
-| sb-refresh-token | Niezbędne | Token odświeżania dla Supabase (autoryzacja) | Supabase | Sesyjne | First-party |
-| Sentry scent / replay cookies | Analityczne | Monitorowanie błędów, wydajności i sesji replik dla celów diagnostycznych | Sentry (funkcionalność Sentry) | Sesyjne | Third-party |
+| cf_clearance / __cf_bm | Niezbędne | Weryfikacja bezpieczeństwa, ochrona formularzy i ograniczanie nadużyć | Cloudflare | Sesyjne / krótkoterminowe | Third-party |
+| Sentry / replay cookies | Analityczne | Monitorowanie błędów, wydajności i sesji replik dla celów diagnostycznych | Sentry (Functional Software, Inc.) | Sesyjne | Third-party |
 
 ## 4. Podstawa prawna przetwarzania
-- **Niezbędne cookies** — tokeny autoryzacyjne (sb-access-token, sb-refresh-token) przetwarzane są na podstawie art. 6 ust. 1 lit. b RODO (wykonanie umowy świadczenia usług drogą elektroniczną), a cookie zgody (vezvision_cookie_consent) na podstawie art. 6 ust. 1 lit. f RODO (prawnie uzasadniony interes polegający na zapewnieniu zgodności z przepisami dotyczącymi zgody na pliki cookies).
+- **Niezbędne cookies** — plik zgody (vezvision_cookie_consent) oraz techniczne pliki bezpieczeństwa są przetwarzane na podstawie art. 6 ust. 1 lit. f RODO (prawnie uzasadniony interes polegający na zapewnieniu zgodności z przepisami, bezpieczeństwa i poprawnego działania Serwisu).
 - **Funkcjonalne, analityczne i marketingowe cookies** — przetwarzanie wyłącznie na podstawie wyraźnej zgody Użytkownika (art. 6 ust. 1 lit. a RODO).
 
 Zgoda może być w każdym czasie wycofana poprzez zmianę ustawień w Centrum Prywatności dostępnym na stronie.
@@ -306,7 +307,7 @@ Ograniczenia stosowania plików cookies mogą wpłynąć na niektóre funkcjonal
 
 ## 7. Podmioty przetwarzające dane
 W ramach stosowania plików cookies dane mogą być udostępniane następującym podmiotom przetwarzającym:
-*   **Supabase Inc.** — dostawca usług backendowych i uwierzytelniania (sb-access-token, sb-refresh-token).
+*   **Cloudflare, Inc.** — dostawca usług bezpieczeństwa i ochrony formularzy przed nadużyciami.
 *   **Sentry (Functional Software, Inc.)** — dostawca usług monitorowania błędów i wydajności (sentry scent/replay cookies).
 
 ## 8. Zmiany w Polityce Plików Cookies
@@ -324,7 +325,7 @@ The VEZvision Service uses two basic types of cookies: "session" cookies and "pe
 "Persistent" cookies are stored on the User end device for the time specified in the cookie parameters or until they are deleted by the User.
 
 ### Categories of cookies:
-1.  **Essential** — enabling the use of services available within the Website, e.g. authentication cookies used for services requiring authentication within the Website. They are necessary for the Website to function and cannot be disabled.
+1.  **Essential** — enabling the Website to function correctly, remember privacy choices and protect forms from abuse. They are necessary for the Website to function and cannot be disabled.
 2.  **Functional** — enabling the "remembering" of settings selected by the User and personalization of the User interface, e.g. in terms of the selected language or region.
 3.  **Analytical** — enabling the collection of information on how the Website pages are used, which helps us improve its structure and content. We use Sentry for error monitoring and performance tracking.
 4.  **Marketing** — used to track users across websites in order to display interest-based advertisements (currently we do not use marketing cookies).
@@ -334,12 +335,11 @@ The VEZvision Service uses two basic types of cookies: "session" cookies and "pe
 | Cookie name | Category | Purpose | Provider | Expiry | Type |
 |---|---|---|---|---|---|
 | vezvision_cookie_consent | Essential | Stores your cookie consent preferences | VEZvision | 1 year | First-party |
-| sb-access-token | Essential | Authentication token for Supabase (authorisation) | Supabase | Session | First-party |
-| sb-refresh-token | Essential | Authentication refresh token for Supabase (authorisation) | Supabase | Session | First-party |
-| Sentry scent / replay cookies | Analytical | Error monitoring, performance tracking and session replay for diagnostic purposes | Sentry (Functional Software, Inc.) | Session | Third-party |
+| cf_clearance / __cf_bm | Essential | Security verification, form protection and abuse prevention | Cloudflare | Session / short-term | Third-party |
+| Sentry / replay cookies | Analytical | Error monitoring, performance tracking and session replay for diagnostic purposes | Sentry (Functional Software, Inc.) | Session | Third-party |
 
 ## 4. Legal basis for processing
-- **Essential cookies** — authentication tokens (sb-access-token, sb-refresh-token) are processed on the basis of Article 6(1)(b) GDPR (performance of a contract for electronic service provision), and the consent cookie (vezvision_cookie_consent) on the basis of Article 6(1)(f) GDPR (legitimate interest consisting of ensuring compliance with cookie consent regulations).
+- **Essential cookies** — the consent cookie (vezvision_cookie_consent) and technical security cookies are processed on the basis of Article 6(1)(f) GDPR (legitimate interest consisting of ensuring compliance, security and correct Website operation).
 - **Functional, analytical and marketing cookies** — processing based solely on the User's explicit consent (Article 6(1)(a) GDPR).
 
 Consent may be withdrawn at any time by changing settings in the Privacy Center available on the Website.
@@ -361,7 +361,7 @@ Restrictions on the use of cookies may affect some of the functionalities availa
 
 ## 7. Data processors
 In connection with the use of cookies, data may be shared with the following processors:
-*   **Supabase Inc.** — backend and authentication service provider (sb-access-token, sb-refresh-token).
+*   **Cloudflare, Inc.** — security and form abuse prevention provider.
 *   **Sentry (Functional Software, Inc.)** — error monitoring and performance tracking service provider (sentry scent/replay cookies).
 
 ## 8. Changes to the Cookie Policy

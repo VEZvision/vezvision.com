@@ -1,7 +1,7 @@
 export const new_translations_for_services_pageTranslations = {
   "services.hero.badge": "USŁUGI IT DLA FIRM",
-  "services.hero.title.line1": "Technologia, która ",
-  "services.hero.title.line2": "napędza Twój ",
+  "services.hero.title.line1": "Technologia, która",
+  "services.hero.title.line2": "napędza Twój",
   "services.hero.title.emphasis": "biznes",
   "services.hero.description":
     "Wybierz usługę, która realnie wspiera rozwój Twojej firmy.",
@@ -42,10 +42,10 @@ export const new_translations_for_services_pageTranslations = {
     "Projektujemy makiety i UX tak, aby pasowały do marki.",
   "workflow.step4.title": "Implementacja",
   "workflow.step4.desc":
-    "Kodujemy rozwiązanie: przejrzyście, szybko, bez kompromisów.",
+    "Budujemy rozwiązanie czytelnie, wydajnie i zgodnie z ustalonym zakresem.",
   "workflow.step5.title": "Testy",
   "workflow.step5.desc":
-    "Sprawdzamy jakość, bezpieczeństwo i wydajność pod obciążeniem.",
+    "Sprawdzamy jakość, bezpieczeństwo i wydajność w kluczowych scenariuszach.",
   "workflow.step6.title": "Wdrożenie & wsparcie",
   "workflow.step6.desc":
     "Uruchamiamy i stale optymalizujemy razem z Twoim zespołem.",

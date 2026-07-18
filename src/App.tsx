@@ -34,6 +34,7 @@ const PrivacyPolicy = lazy(() => import("@/pages/PrivacyPolicy"));
 const Terms = lazy(() => import("@/pages/Terms"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const Unsubscribe = lazy(() => import("@/pages/Unsubscribe"));
+const NewsletterConfirm = lazy(() => import("@/pages/NewsletterConfirm"));
 const CookiePreferences = lazy(() =>
   import("@/components/cookies/CookiePreferences").then((m) => ({
     default: m.CookiePreferences,
@@ -70,6 +71,7 @@ const routeElements: Record<string, ReactNode> = {
   blog: <Blog />,
   "blog/:slug": <BlogArticle />,
   newsletter: <Newsletter />,
+  "newsletter/confirm": <NewsletterConfirm />,
   products: <Products />,
   contact: <Contact />,
   "cookie-policy": <CookiePolicy />,

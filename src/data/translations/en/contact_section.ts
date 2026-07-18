@@ -12,7 +12,7 @@ export const contact_sectionTranslations = {
   "contact.tile.address.desc":
     "You are welcome to our office for a coffee and a talk about your project.",
   "contact.tile.address.action": "View on map",
-  "contact.tile.meeting.title": "Form / meeting",
+  "contact.tile.meeting.title": "Form or meeting",
   "contact.tile.meeting.desc":
     "Leave us some information or schedule a short conversation.",
   "contact.tile.meeting.action": "Go to contact",

@@ -1,27 +1,362 @@
+.hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  min-height: clamp(680px, 82svh, 860px);
+  width: 100%;
+  place-items: center;
+  overflow: hidden;
+  padding: clamp(116px, 14vh, 148px) clamp(20px, 5vw, 72px)
+    clamp(64px, 9vh, 96px);
+  background: #ffffff;
+}
+
+.homeHero {
+  min-height: 100svh;
+}
+
+.media,
+.fallbackBg,
+.videoOverlay {
+  position: absolute;
+  inset: 0;
+}
+
+.media {
+  z-index: -2;
+  overflow: hidden;
+  background: #ffffff;
+  isolation: isolate;
+}
+
 .videoBg {
   position: absolute;
   top: 50%;
   left: 50%;
   width: 100%;
   height: 100%;
+  min-width: 100%;
+  min-height: 100%;
   object-fit: cover;
-  z-index: 0;
-  transform: translate3d(-50%, -50%, 0) scale(1.06);
-  filter: grayscale(1);
-  opacity: 0.45;
+  transform: translate3d(-50%, -50%, 0);
+  filter: grayscale(1) contrast(0.88) brightness(1.14);
+  opacity: 0.42;
   backface-visibility: hidden;
 }
 
+.homeHero .videoBg {
+  filter: grayscale(1) contrast(0.9) brightness(1.12);
+  opacity: 0.48;
+}
+
+.fallbackBg {
+  background:
+    radial-gradient(
+      circle at 50% 42%,
+      rgba(255, 255, 255, 0.98),
+      transparent 52%
+    ),
+    #ffffff;
+}
+
 .videoOverlay {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
   pointer-events: none;
-  background: rgba(255, 255, 255, 0.8);
+  background:
+    radial-gradient(
+      circle at 50% 42%,
+      rgba(255, 255, 255, 0.4),
+      rgba(255, 255, 255, 0.14) 58%,
+      rgba(255, 255, 255, 0.28) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.38) 0%,
+      rgba(255, 255, 255, 0.12) 46%,
+      rgba(255, 255, 255, 0.4) 100%
+    );
+}
+
+.frame {
+  display: none;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  width: min(1080px, 100%);
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.brandRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-bottom: clamp(30px, 5vh, 48px);
+  animation: heroEnter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.logo {
+  width: auto;
+  height: clamp(27px, 3vw, 34px);
+  opacity: 0.92;
+}
+
+.badge {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #344054;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.badgeIcon {
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  align-items: center;
+  justify-content: center;
+  color: #101828;
+}
+
+.badgeIcon > * {
+  width: 14px;
+  height: 14px;
+}
+
+.title {
+  max-width: 1040px;
+  margin: 0;
+  color: #0c1424;
+  font-family: "Satoshi", Arial, sans-serif;
+  font-size: clamp(48px, 7.2vw, 88px);
+  font-weight: 400;
+  line-height: 1.01;
+  letter-spacing: -0.047em;
+  text-wrap: balance;
+  animation: heroEnter 0.75s 0.08s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.homeHero .title {
+  max-width: 930px;
+  font-size: clamp(46px, 6.5vw, 82px);
+}
+
+.subtitle {
+  max-width: 760px;
+  margin: clamp(24px, 3vh, 30px) auto 0;
+  color: #475467;
+  font-size: clamp(16px, 1.5vw, 19px);
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  animation: heroEnter 0.75s 0.15s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: clamp(30px, 4vh, 40px);
+  animation: heroEnter 0.75s 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.primaryButton,
+.secondaryButton {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  padding: 0 20px;
+  font-family: "Satoshi", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease;
+}
+
+.primaryButton {
+  gap: 9px;
+  border: 1px solid #0c1424;
+  background: #0c1424;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(12, 20, 36, 0.12);
+}
+
+.primaryButton svg {
+  width: 17px;
+  height: 17px;
+  transition: transform 180ms ease;
+}
+
+.secondaryButton {
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: rgba(255, 255, 255, 0.68);
+  color: #101828;
+}
+
+.primaryButton:hover,
+.secondaryButton:hover {
+  transform: translateY(-2px);
+}
+
+.primaryButton:hover svg {
+  transform: translate(2px, -2px);
+}
+
+.secondaryButton:hover {
+  border-color: rgba(15, 23, 42, 0.24);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible,
+.socialLink:focus-visible {
+  outline: 2px solid #0c1424;
+  outline-offset: 3px;
+}
+
+.socialRail {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: clamp(34px, 5vh, 50px);
+  padding-top: 18px;
+  border-top: 1px solid rgba(15, 23, 42, 0.12);
+  animation: heroEnter 0.75s 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.socialLabel {
+  color: #667085;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.socialLinks {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.socialLink {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(15, 23, 42, 0.11);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.56);
+  color: #101828;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease;
+}
+
+.socialLink:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.socialLink img,
+.socialLink svg {
+  width: 16px;
+  height: 16px;
+}
+
+@keyframes heroEnter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (pointer: coarse) {
   .videoOverlay {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.14);
+  }
+}
+
+@media (max-width: 720px) {
+  .hero,
+  .homeHero {
+    min-height: 720px;
+    padding: 108px 24px 64px;
+  }
+
+  .frame {
+    inset: 10px;
+    border-radius: 26px;
+  }
+
+  .brandRow {
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 32px;
+  }
+
+  .title,
+  .homeHero .title {
+    font-size: clamp(42px, 13vw, 60px);
+    line-height: 1.02;
+    letter-spacing: -0.043em;
+  }
+
+  .subtitle {
+    margin-top: 22px;
+    font-size: 16px;
+  }
+
+  .actions {
+    width: 100%;
+    margin-top: 30px;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    min-width: min(280px, 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brandRow,
+  .title,
+  .subtitle,
+  .actions,
+  .socialRail {
+    animation: none;
+  }
+
+  .primaryButton,
+  .secondaryButton,
+  .socialLink,
+  .primaryButton svg {
+    transition: none;
   }
 }

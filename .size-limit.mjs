@@ -13,7 +13,7 @@ export default [
   },
   {
     name: "Vendor Supabase",
-    path: "dist/assets/vendor-supabase-*.js",
+    path: "dist/assets/vendor-api-*.js",
     limit: "210 kB",
     gzip: true,
   },

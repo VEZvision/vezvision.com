@@ -23,6 +23,7 @@ import {
 } from "@/utils/safeHref";
 import { hasBlogPostTranslation } from "@/utils/blogTranslation";
 import { stripHtmlForJsonLd } from "@/utils/stripHtmlForJsonLd";
+import { SectionLoader } from "@/components/loading";
 
 interface Article {
   id: string;
@@ -123,14 +124,7 @@ const BlogArticlesWithData = ({ limit }: BlogArticlesWithDataProps) => {
         aria-labelledby="blog-articles-heading"
       >
         <div className={styles.container}>
-          <div className="text-center py-12">
-            <h2 className={styles.sectionTitle}>{t("blog.list.empty")}</h2>
-            <p className="text-gray-600 mt-4">{t("blog.list.empty_desc")}</p>
-            <div
-              className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400 mt-6"
-              aria-hidden="true"
-            />
-          </div>
+          <SectionLoader label={t("common.loading")} compact />
         </div>
       </section>
     );

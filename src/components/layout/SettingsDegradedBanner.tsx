@@ -12,7 +12,7 @@ export default function SettingsDegradedBanner() {
   return (
     <div
       role="status"
-      className="relative z-60 border-b border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm text-amber-950"
+      className="fixed inset-x-0 bottom-0 z-60 border-t border-amber-200 bg-amber-50 px-4 py-2 text-center text-sm text-amber-950 shadow-[0_-12px_36px_rgba(15,23,42,0.08)]"
     >
       <span>{t("common.settings.degraded")}</span>{" "}
       <button

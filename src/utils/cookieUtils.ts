@@ -9,7 +9,7 @@ import {
 } from "../data/cookieDefinitions";
 
 const CATEGORY_PATTERNS: Record<CookieCategory, RegExp[]> = {
-  necessary: [/^vezvision_/, /^sb-/],
+  necessary: [/^vezvision_/, /^cf_clearance$/, /^__cf_bm$/],
   functional: [],
   analytics: [/^sentry_/, /^_sentry/],
   marketing: [/_fbp$/, /^_ga/, /^_gid/, /^_gat/],

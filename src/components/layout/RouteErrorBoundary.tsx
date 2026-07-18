@@ -3,16 +3,22 @@ import {
   isRouteErrorResponse,
   useNavigate,
 } from "react-router-dom";
+import { useEffect } from "react";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";
 import PublicChrome from "@/components/layout/PublicChrome";
 import { useLanguageContext } from "@/hooks/useLanguage";
+import { tryRecoverFromStaleChunk } from "@/utils/chunkRecovery";
 
 function RouteErrorBoundary() {
   const error = useRouteError();
   const navigate = useNavigate();
   const { toLocalizedPath } = useLocalizedPath();
   const { t } = useLanguageContext();
+
+  useEffect(() => {
+    tryRecoverFromStaleChunk(error);
+  }, [error]);
 
   let errorMessage: string;
 

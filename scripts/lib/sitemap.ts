@@ -1,7 +1,9 @@
-import { getScriptSupabase } from "../lib/supabase";
+import { getScriptApi } from "../lib/api";
 import { APP_ROUTES, SUPPORTED_LOCALES } from "@/routing/routes.config";
 import { localizedPath } from "@/routing/locale";
 import { applyPublishedBlogVisibilityFilter } from "@/services/blogFilters";
+
+type Locale = (typeof SUPPORTED_LOCALES)[number];
 
 export interface SitemapAlternate {
   hreflang: string;
@@ -64,20 +66,50 @@ export function buildSitemapXml(routes: SitemapRoute[]): string {
 function buildAlternates(
   baseUrl: string,
   pathSuffix: string,
+  locales: readonly Locale[] = SUPPORTED_LOCALES,
 ): SitemapAlternate[] {
-  const alternates: SitemapAlternate[] = SUPPORTED_LOCALES.map((locale) => ({
+  const alternates: SitemapAlternate[] = locales.map((locale) => ({
     hreflang: locale,
     href: `${baseUrl}${localizedPath(locale, pathSuffix)}`,
   }));
+  const defaultLocale = locales.includes("en") ? "en" : locales[0];
+  if (!defaultLocale) return alternates;
+
   alternates.push({
     hreflang: "x-default",
-    href: `${baseUrl}${localizedPath("en", pathSuffix)}`,
+    href: `${baseUrl}${localizedPath(defaultLocale, pathSuffix)}`,
   });
   return alternates;
 }
 
+function hasText(value: string | null | undefined): boolean {
+  return Boolean(value?.trim());
+}
+
+function getBlogLocales(post: {
+  title_pl: string | null;
+  title_en: string | null;
+  content_pl: string | null;
+  content_en: string | null;
+}): Locale[] {
+  return SUPPORTED_LOCALES.filter((locale) =>
+    locale === "en"
+      ? hasText(post.title_en) || hasText(post.content_en)
+      : hasText(post.title_pl) || hasText(post.content_pl),
+  );
+}
+
+function getProjectLocales(project: {
+  title_pl: string | null;
+  title_en: string | null;
+}): Locale[] {
+  return SUPPORTED_LOCALES.filter((locale) =>
+    locale === "en" ? hasText(project.title_en) : hasText(project.title_pl),
+  );
+}
+
 export async function generateSitemap(): Promise<string> {
-  // Graceful degradation: if Supabase is unreachable (no .env, network issue),
+  // Graceful degradation: if the API is unreachable (no .env, network issue),
   // generate a static-only sitemap (APP_ROUTES × SUPPORTED_LOCALES) without
   // dynamic blog/portfolio URLs. This ensures `npm run build` always produces
   // a valid sitemap.xml even without Supabase credentials.
@@ -87,6 +119,8 @@ export async function generateSitemap(): Promise<string> {
     featured_image: string | null;
     title_pl: string | null;
     title_en: string | null;
+    content_pl: string | null;
+    content_en: string | null;
   }> | null = null;
   let projects: Array<{
     slug: string;
@@ -98,10 +132,12 @@ export async function generateSitemap(): Promise<string> {
   let siteSettings: { value: unknown; updated_at: string } | null = null;
 
   try {
-    const supabase = await getScriptSupabase();
+    const supabase = getScriptApi();
     let blogQuery = supabase
       .from("vv_blog_posts")
-      .select("slug,updated_at,featured_image,title_pl,title_en")
+      .select(
+        "slug,updated_at,featured_image,title_pl,title_en,content_pl,content_en",
+      )
       .eq("status", "published")
       .limit(100);
 
@@ -124,7 +160,7 @@ export async function generateSitemap(): Promise<string> {
     projects = projectsResult.data;
     siteSettings = settingsResult.data;
   } catch {
-    // Supabase unavailable — static-only sitemap (no blog/portfolio URLs)
+    // API unavailable — static-only sitemap (no blog/portfolio URLs)
   }
 
   const baseUrl = (
@@ -155,7 +191,8 @@ export async function generateSitemap(): Promise<string> {
 
   if (posts) {
     for (const post of posts) {
-      for (const locale of SUPPORTED_LOCALES) {
+      const locales = getBlogLocales(post);
+      for (const locale of locales) {
         const postTitle =
           (locale === "en" ? post.title_en || post.title_pl : post.title_pl) ||
           post.slug;
@@ -172,7 +209,7 @@ export async function generateSitemap(): Promise<string> {
                 title: postTitle,
               }
             : undefined,
-          alternates: buildAlternates(baseUrl, `blog/${post.slug}`),
+          alternates: buildAlternates(baseUrl, `blog/${post.slug}`, locales),
         });
       }
     }
@@ -180,7 +217,8 @@ export async function generateSitemap(): Promise<string> {
 
   if (projects) {
     for (const project of projects) {
-      for (const locale of SUPPORTED_LOCALES) {
+      const locales = getProjectLocales(project);
+      for (const locale of locales) {
         const projectTitle =
           (locale === "en"
             ? project.title_en || project.title_pl
@@ -198,7 +236,11 @@ export async function generateSitemap(): Promise<string> {
                 title: projectTitle,
               }
             : undefined,
-          alternates: buildAlternates(baseUrl, `portfolio/${project.slug}`),
+          alternates: buildAlternates(
+            baseUrl,
+            `portfolio/${project.slug}`,
+            locales,
+          ),
         });
       }
     }

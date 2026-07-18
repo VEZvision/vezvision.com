@@ -3,7 +3,7 @@ export const valuesTranslations = {
     'values.title': 'Wartości, które nas prowadzą',
     'values.title.line1': 'Wartości, które',
     'values.title.line2.italic': 'nas prowadzą',
-    'values.description': 'To, jak pracujemy, wynika z naszych wartości. Stawiamy na nowoczesność, uczciwość i realny wpływ. Budujemy rozwiązania, które wspierają biznesy i ułatwiają codzienną pracę.',
+    'values.description': 'Naszą pracę opieramy na jasnej komunikacji, odpowiedzialności i rozwiązaniach, które przynoszą użyteczny rezultat.',
     'values.item.innovation.title': 'Innowacja w praktyce',
     'values.item.innovation.description': 'Śledzimy nowe kierunki w technologii i przekładamy je na proste, użyteczne rozwiązania.',
     'values.item.trust.title': 'Uczciwość i zaufanie',

@@ -15,6 +15,8 @@ import {
 import { safeJsonLd } from "@/utils/safeJsonLd";
 import { joinUrlPath, safeAbsoluteHttpUrl } from "@/utils/safeHref";
 import { useSettings } from "@/hooks/useSettings";
+import { SectionLoader } from "@/components/loading";
+import styles from "./ServicesSection.module.css";
 
 function ServicesSection() {
   const { t, language } = useLanguageContext();
@@ -26,11 +28,7 @@ function ServicesSection() {
   const siteUrl = safeAbsoluteHttpUrl(seo?.siteUrl);
 
   if (loading) {
-    return (
-      <div className="py-24 text-center">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <SectionLoader label={t("common.loading")} />;
   }
 
   if (error) {
@@ -94,19 +92,19 @@ function ServicesSection() {
 
           <h2
             id="services-heading"
-            className="font-['Inter'] text-4xl md:text-5xl font-bold leading-tight tracking-[-0.02em] text-black"
+            className="font-sans text-4xl md:text-5xl font-normal leading-tight tracking-normal text-black"
           >
             {t("services.section.title")}
           </h2>
 
-          <p className="font-['Inter'] text-lg text-gray-600 max-w-2xl leading-relaxed">
+          <p className="font-sans text-lg text-gray-600 max-w-2xl leading-relaxed">
             {t("services.section.subtitle")}
           </p>
         </SectionReveal>
 
         {/* Services Grid */}
-        <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl">
-          {services.map((service) => {
+        <StaggerReveal className={styles.servicesGrid}>
+          {services.map((service, index) => {
             const translation = getServiceTranslation(service, language);
             return (
               <StaggerItem key={service.id}>
@@ -115,8 +113,8 @@ function ServicesSection() {
                   description={
                     translation?.excerpt || translation?.description || ""
                   }
-                  className="hover:scale-[1.01] transition-transform duration-300"
                   icon={service.icon}
+                  index={index}
                 />
               </StaggerItem>
             );
@@ -124,48 +122,47 @@ function ServicesSection() {
         </StaggerReveal>
 
         {/* CTA Section */}
-        <SectionReveal
-          delay={0.15}
-          className="w-full max-w-4xl bg-linear-to-br from-gray-50 to-gray-100 rounded-3xl p-12 text-center shadow-[inset_0_3px_1px_rgba(255,255,255,1),0_2px_4px_rgba(0,0,0,0.05)] border border-gray-100"
-        >
-          <div className="flex flex-col items-center gap-6 max-w-2xl mx-auto">
-            <h3 className="font-['Inter'] text-2xl font-semibold text-black tracking-[-0.01em]">
-              {t("services.section.cta.title")}
-            </h3>
-            <p className="font-['Inter'] text-base text-gray-600">
-              {t("services.section.cta.desc")}
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
-              <button
-                type="button"
-                onClick={() => navigate(toLocalizedPath("contact"))}
-                className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-xl font-medium hover:bg-gray-800 transition-colors shadow-xs"
-              >
-                {t("services.section.cta.primary")}
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="stroke-current stroke-2"
+        <div className={styles.ctaBand}>
+          <SectionReveal delay={0.15} className={styles.ctaCard}>
+            <div className="flex flex-col items-center gap-6 max-w-2xl mx-auto">
+              <h3 className="font-sans text-2xl font-medium text-black tracking-normal">
+                {t("services.section.cta.title")}
+              </h3>
+              <p className="font-sans text-base text-gray-600">
+                {t("services.section.cta.desc")}
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
+                <button
+                  type="button"
+                  onClick={() => navigate(toLocalizedPath("contact"))}
+                  className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-[12px] font-medium hover:bg-gray-800 transition-colors shadow-xs"
                 >
-                  <path
-                    d="M5 12h14M12 5l7 7-7 7"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate(toLocalizedPath("portfolio"))}
-                className="px-6 py-3 rounded-xl border-2 border-gray-200 font-medium hover:border-black hover:bg-white transition-all"
-              >
-                {t("services.section.cta.secondary")}
-              </button>
+                  {t("services.section.cta.primary")}
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="stroke-current stroke-2"
+                  >
+                    <path
+                      d="M5 12h14M12 5l7 7-7 7"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate(toLocalizedPath("portfolio"))}
+                  className="px-6 py-3 rounded-[12px] border border-gray-200 font-medium hover:border-black hover:bg-white transition-all"
+                >
+                  {t("services.section.cta.secondary")}
+                </button>
+              </div>
             </div>
-          </div>
-        </SectionReveal>
+          </SectionReveal>
+        </div>
       </div>
     </section>
   );

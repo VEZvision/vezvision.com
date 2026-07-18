@@ -15,8 +15,7 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     env:
-      VITE_SUPABASE_URL: https://example.supabase.co
-      VITE_SUPABASE_ANON_KEY: test-anon-key
+      VITE_API_URL: https://api.example.test
       SKIP_PRERENDER: "1"
     steps:
       - name: Checkout
@@ -28,25 +27,16 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci
+          npm ci --prefix backend --ignore-scripts
 
       - name: Lint
         run: npm run lint
 
       - name: Knip (dead code detection — advisory)
         run: npm run knip -- --no-exit-code
-
-      - name: Edge functions lint
-        run: npm run check:edge
-
-      - name: Edge functions tests
-        run: npm run test:edge
 
       - name: Typecheck, parity, and unit tests
         run: npm run check
@@ -67,6 +57,9 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     needs: quality
+    env:
+      VITE_API_URL: https://api.example.test
+      SKIP_PRERENDER: "1"
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -94,50 +87,18 @@ jobs:
         env:
           CI: true
           E2E_USE_PREBUILT_DIST: "1"
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
       - name: E2E smoke tests (Firefox)
         run: npm run test:e2e:prebuilt -- --project=firefox --grep-invert "Route error boundary"
         env:
           CI: true
           E2E_USE_PREBUILT_DIST: "1"
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         continue-on-error: true
 
       - name: E2E route error boundary (E2E build)
         run: npm run test:e2e -- tests/e2e/route-error.spec.ts --project=chromium
         env:
           CI: true
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-
-  deploy-edge:
-    runs-on: ubuntu-latest
-    needs: [quality, e2e]
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-    environment: production
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v3
-        with:
-          version: latest
-
-      - name: Deploy edge functions
-        run: |
-          supabase functions deploy submit-contact --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
-          supabase functions deploy subscribe-newsletter --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
-          supabase functions deploy unsubscribe-newsletter --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
-          supabase functions deploy check-maintenance-access --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
-          supabase functions deploy get-code-injection --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
-          supabase functions deploy increment-blog-view --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
-          supabase functions deploy retry-message-sends --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
   deploy-hostido:
     runs-on: ubuntu-latest
@@ -163,8 +124,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
           VITE_GA_ID: ${{ secrets.VITE_GA_ID }}
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
           VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
@@ -213,8 +173,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          VITE_SUPABASE_URL: https://example.supabase.co
-          VITE_SUPABASE_ANON_KEY: test-anon-key
+          VITE_API_URL: https://api.example.test
 
       - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@v12

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useCallback, useState, type FormEvent } from "react";
 import { Palette, GraduationCap, Briefcase, Cpu } from "lucide-react";
 import { toast } from "sonner";
 
@@ -10,11 +10,20 @@ import {
 } from "@/components/ui/SectionReveal";
 import { useLanguageContext } from "@/hooks/useLanguage";
 import { subscribeToNewsletter } from "@/services/newsletter";
+import TurnstileField from "@/components/security/TurnstileField";
+import { isTurnstileEnabled } from "@/lib/turnstile";
 
 export default function ProductsCatalogSection() {
   const { t, language } = useLanguageContext();
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const handleTurnstileToken = useCallback(
+    (token: string) => setTurnstileToken(token),
+    [],
+  );
 
   const handleNewsletterSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -23,14 +32,27 @@ export default function ProductsCatalogSection() {
       toast.error(t("products.newsletter.error.email"));
       return;
     }
+    if (isTurnstileEnabled() && !turnstileToken) {
+      toast.error(t("newsletter.error.captcha"));
+      return;
+    }
 
     setIsSubmitting(true);
-    const result = await subscribeToNewsletter(email, language, "products");
+    const result = await subscribeToNewsletter(
+      email,
+      language,
+      "products",
+      turnstileToken,
+      privacyAccepted,
+    );
     setIsSubmitting(false);
 
     if (result.success) {
       toast.success(t("products.newsletter.success"));
       setEmail("");
+      setPrivacyAccepted(false);
+      setTurnstileToken("");
+      setTurnstileResetKey((key) => key + 1);
       return;
     }
 
@@ -65,9 +87,9 @@ export default function ProductsCatalogSection() {
               { icon: Cpu, key: "products.category.technology" },
             ].map((category) => (
               <StaggerItem key={category.key}>
-                <div className="group rounded-2xl border border-gray-100 bg-white p-6 shadow-xs transition-shadow hover:shadow-md">
+                <div className="group rounded-[14px] border border-white/95 bg-white/78 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,1),0_14px_36px_rgba(16,24,40,0.08)] backdrop-blur-[30px] backdrop-saturate-150 transition-all hover:-translate-y-0.5 hover:border-slate-200 hover:bg-white/88 hover:shadow-md">
                   <div className="mb-4 flex justify-center">
-                    <div className="rounded-xl bg-gray-50 p-3 transition-colors group-hover:bg-black/5">
+                    <div className="rounded-[12px] border border-slate-200/80 bg-white/75 p-3 shadow-sm transition-colors group-hover:bg-white">
                       <category.icon
                         className="h-8 w-8 text-gray-900"
                         strokeWidth={1.5}
@@ -83,7 +105,7 @@ export default function ProductsCatalogSection() {
           </StaggerReveal>
 
           <SectionReveal delay={0.16}>
-            <div className="mx-auto max-w-4xl rounded-3xl border border-gray-100 bg-white p-8 shadow-xl md:p-12">
+            <div className="mx-auto max-w-4xl rounded-[18px] border border-white/95 bg-white/78 p-8 shadow-[inset_0_1px_0_rgba(255,255,255,1),0_16px_44px_rgba(16,24,40,0.08)] backdrop-blur-[30px] backdrop-saturate-150 md:p-12">
               <div className="grid items-center gap-6 md:grid-cols-2 md:gap-12">
                 <div className="text-left">
                   <h2 className="mb-4 text-2xl font-normal text-gray-900">
@@ -98,7 +120,7 @@ export default function ProductsCatalogSection() {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-gray-100 bg-gray-50 p-6">
+                <div className="rounded-[14px] border border-slate-200/80 bg-white/78 p-6 shadow-sm backdrop-blur-lg">
                   <h3 className="mb-2 font-semibold text-gray-900">
                     {t("products.notify.prompt")}
                   </h3>
@@ -125,6 +147,23 @@ export default function ProductsCatalogSection() {
                         ? t("products.newsletter.button.subscribing")
                         : t("products.notify.button")}
                     </button>
+                    <TurnstileField
+                      action="newsletter"
+                      onTokenChange={handleTurnstileToken}
+                      resetKey={turnstileResetKey}
+                      loadErrorMessage={t("newsletter.error.captcha")}
+                    />
+                    <label className="flex items-start gap-2 text-left text-xs text-gray-600">
+                      <input
+                        type="checkbox"
+                        checked={privacyAccepted}
+                        onChange={(event) =>
+                          setPrivacyAccepted(event.target.checked)
+                        }
+                        required
+                      />
+                      <span>{t("newsletter.consent")}</span>
+                    </label>
                   </form>
                 </div>
               </div>

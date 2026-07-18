@@ -1,4 +1,4 @@
-import { getSupabase } from "@/lib/supabase";
+import { getApiClient } from "@/lib/api";
 import { logError } from "@/lib/logger";
 
 export async function subscribeToNewsletter(
@@ -6,19 +6,18 @@ export async function subscribeToNewsletter(
   language: "pl" | "en" = "pl",
   source: string = "newsletter",
   turnstileToken?: string,
+  privacyAccepted: boolean = false,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await getSupabase();
-    const response = await supabase.functions.invoke<{
+    const response = await getApiClient().invoke<{
       success?: boolean;
       error?: string;
     }>("subscribe-newsletter", {
-      body: {
-        email,
-        language,
-        source,
-        ...(turnstileToken ? { turnstile_token: turnstileToken } : {}),
-      },
+      email,
+      language,
+      source,
+      privacy_accepted: privacyAccepted,
+      ...(turnstileToken ? { turnstile_token: turnstileToken } : {}),
     });
 
     if (response.error) throw response.error;
@@ -50,14 +49,11 @@ export async function unsubscribeByToken(
   email?: string | undefined;
 }> {
   try {
-    const supabase = await getSupabase();
-    const response = await supabase.functions.invoke<{
+    const response = await getApiClient().invoke<{
       success?: boolean;
       error?: string;
       email?: string;
-    }>("unsubscribe-newsletter", {
-      body: { token },
-    });
+    }>("unsubscribe-newsletter", { token });
 
     if (response.error) throw response.error;
 
@@ -73,5 +69,21 @@ export async function unsubscribeByToken(
       success: false,
       error: error instanceof Error ? error.message : "Unknown error",
     };
+  }
+}
+
+export async function confirmNewsletterByToken(token: string): Promise<{ success: boolean; error?: string }> {
+  try {
+    const response = await getApiClient().invoke<{ success?: boolean; error?: string }>(
+      "confirm-newsletter",
+      { token },
+    );
+    if (response.error) throw response.error;
+    return response.data?.success
+      ? { success: true }
+      : { success: false, error: response.data?.error || "Unknown error" };
+  } catch (error: unknown) {
+    logError("newsletter.confirm", error);
+    return { success: false, error: error instanceof Error ? error.message : "Unknown error" };
   }
 }

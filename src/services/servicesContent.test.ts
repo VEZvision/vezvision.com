@@ -4,8 +4,8 @@ import { listActiveServicesContent } from "./servicesContent";
 
 const fromMock = vi.fn();
 
-vi.mock("@/lib/supabase", () => ({
-  getSupabase: vi.fn(() => Promise.resolve({ from: fromMock })),
+vi.mock("@/lib/api", () => ({
+  getApiClient: vi.fn(() => ({ from: fromMock })),
 }));
 
 vi.mock("@/lib/logger", () => ({

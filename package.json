@@ -7,23 +7,19 @@
     "dev": "vite",
     "sync:security-headers": "node --env-file-if-exists=.env scripts/sync-security-headers.mjs",
     "verify:security": "node --env-file-if-exists=.env scripts/verify-security-headers.mjs",
-    "verify:edge-shared": "node scripts/verify-edge-shared-parity.mjs",
     "test:csp": "node --env-file-if-exists=.env --test scripts/csp-policy.test.mjs",
-    "test:scripts": "node --env-file-if-exists=.env --test scripts/csp-policy.test.mjs && npx tsx --test scripts/seo-build-validation.test.ts",
-    "build": "npm run sync:security-headers && npm run verify:security && npm run typecheck && vitest --run src/data/translations/parity.test.ts && npm run verify:edge-shared && npm run generate-sitemap && npm run generate-robots-txt && npm run generate-rss-feeds && npm run generate-llms-full && node --env-file-if-exists=.env ./node_modules/vite/bin/vite.js build && npx tsx --env-file-if-exists=.env scripts/prerender-head.ts && node scripts/copy-spa-index-to-locale-dirs.mjs && npx tsx --env-file-if-exists=.env scripts/verify-production-build.ts",
+    "test:scripts": "node --env-file-if-exists=.env --test scripts/csp-policy.test.mjs backend/admin-gateway.node-test.mjs backend/email-templates.node-test.mjs backend/resend-email.node-test.mjs && npx tsx --test scripts/seo-build-validation.test.ts",
+    "build": "npm run sync:security-headers && npm run verify:security && npm run typecheck && vitest --run src/data/translations/parity.test.ts && npm run generate-sitemap && npm run generate-robots-txt && npm run generate-rss-feeds && npm run generate-llms-full && node --env-file-if-exists=.env ./node_modules/vite/bin/vite.js build && npx tsx --env-file-if-exists=.env scripts/prerender-head.ts && node scripts/copy-spa-index-to-locale-dirs.mjs && npx tsx --env-file-if-exists=.env scripts/verify-production-build.ts",
     "lint": "eslint .",
     "knip": "knip",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
-    "check": "npm run typecheck && vitest --run src/data/translations/parity.test.ts && npm run test:unit && npm run verify:edge-shared && npm run test:scripts",
+    "check": "npm run typecheck && vitest --run src/data/translations/parity.test.ts && npm run test:unit && npm run test:scripts",
     "test": "vitest",
     "test:unit": "vitest --run",
     "test:unit:coverage": "vitest --run --coverage",
-    "test:edge": "deno test --no-lock --allow-env supabase/functions/_shared/",
-    "check:edge": "deno lint --config supabase/functions/deno.json supabase/functions/",
     "test:e2e": "E2E_BUILD=1 npm run build && E2E_USE_PREBUILT_DIST=1 playwright test",
     "test:e2e:prebuilt": "E2E_USE_PREBUILT_DIST=1 playwright test",
-    "test:e2e:live": "E2E_LIVE_SUPABASE=1 playwright test tests/e2e/live-supabase.spec.ts --project=chromium",
     "test:ui": "vitest --ui",
     "size": "size-limit",
     "size:check": "size-limit --json",
@@ -35,14 +31,11 @@
     "generate-pwa-icons": "node scripts/generate-pwa-icons.mjs",
     "prerender-head": "npx tsx --env-file-if-exists=.env scripts/prerender-head.ts",
     "split-translations": "node scripts/split-translations.mjs",
-    "gen:types": "npx supabase gen types typescript --project-id pcxcqbpygyidkusetghk > src/types/database.types.ts",
-    "gen:types:local": "supabase gen types typescript --local > src/types/database.types.ts",
     "prepare": "husky"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
     "@sentry/react": "^10.65.0",
-    "@supabase/supabase-js": "^2.110.2",
     "@tanstack/react-query": "^5.101.2",
     "dompurify": "^3.4.12",
     "lenis": "^1.3.25",
@@ -89,7 +82,6 @@
     "sass-embedded": "^1.93.1",
     "sharp": "^0.33.5",
     "size-limit": "^12.1.0",
-    "supabase": "^2.109.1",
     "tailwindcss": "^4.3.2",
     "tsx": "^4.23.0",
     "typescript": "~5.8.3",
@@ -101,6 +93,11 @@
   },
   "engines": {
     "node": ">=22"
+  },
+  "overrides": {
+    "deno-bin": {
+      "adm-zip": "0.6.0"
+    }
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --fix",

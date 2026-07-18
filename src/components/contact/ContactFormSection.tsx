@@ -306,6 +306,7 @@ function ContactFormSection({ t }: Props) {
             </div>
 
             <TurnstileField
+              action="contact"
               onTokenChange={handleTurnstileToken}
               resetKey={turnstileResetKey}
               className="mb-4"

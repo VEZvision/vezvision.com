@@ -122,6 +122,7 @@ export function StaggerItem({
   return (
     <div
       className={`vez-stagger-item${className ? ` ${className}` : ""}`}
+      data-reveal-direction={staggerIndex % 2 === 0 ? "left" : "right"}
       style={{ "--vez-stagger-i": staggerIndex } as CSSProperties}
     >
       {children}

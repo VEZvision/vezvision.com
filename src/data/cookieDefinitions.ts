@@ -11,22 +11,22 @@ export const COOKIE_DEFINITIONS: CookieDefinition[] = [
     isFirstParty: true,
   },
   {
-    name: "sb-access-token",
+    name: "cf_clearance",
     category: "necessary",
-    purpose: "Authentication token for Supabase",
-    provider: "Supabase",
-    expiry: "Session",
+    purpose: "Security verification for protected forms and bot mitigation",
+    provider: "Cloudflare",
+    expiry: "Session / short-term",
     domain: typeof window !== "undefined" ? window.location.hostname : "",
-    isFirstParty: true,
+    isFirstParty: false,
   },
   {
-    name: "sb-refresh-token",
+    name: "__cf_bm",
     category: "necessary",
-    purpose: "Authentication refresh token for Supabase",
-    provider: "Supabase",
-    expiry: "Session",
+    purpose: "Bot management and abuse prevention",
+    provider: "Cloudflare",
+    expiry: "Approx. 30 minutes",
     domain: typeof window !== "undefined" ? window.location.hostname : "",
-    isFirstParty: true,
+    isFirstParty: false,
   },
 ];
 
@@ -41,8 +41,8 @@ export const COOKIE_CATEGORIES: CookieCategoryConfig[] = [
       "Art. 6(1)(b) GDPR — performance of contract / Art. 6(1)(f) GDPR — legitimate interest (consent compliance)",
     cookies: [
       "vezvision_cookie_consent",
-      "sb-access-token",
-      "sb-refresh-token",
+      "cf_clearance",
+      "__cf_bm",
     ],
   },
   {

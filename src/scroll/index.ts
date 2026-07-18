@@ -7,6 +7,7 @@ export {
   destroyLenis,
   refreshLenis,
   scrollToTopInstant,
+  scrollToTopSmooth,
   scrollToElement,
 } from "@/scroll/lenisEngine";
 

@@ -1,4 +1,5 @@
-import { getSupabase, supabaseUrl } from "@/lib/supabase";
+import { getApiClient } from "@/lib/api";
+import { publicAssetsUrl } from "@/lib/assets";
 import { logError } from "@/lib/logger";
 import { safeImageUrl } from "@/utils/safeHref";
 import { isAbortLikeError } from "./utils";
@@ -161,8 +162,8 @@ export async function listProjects(
   signal?: AbortSignal,
 ): Promise<{ projects: PortfolioProject[]; total: number }> {
   try {
-    const supabase = await getSupabase();
-    let query = supabase
+    const api = getApiClient();
+    let query = api
       .from("vv_projects")
       .select(PORTFOLIO_LIST_SELECT, { count: "exact" })
       .limit(100);
@@ -207,8 +208,8 @@ export async function listProjects(
     if (error) throw error;
 
     return {
-      projects: (data || []).map((p) =>
-        mapProjectFromDB(p as unknown as DBProject),
+      projects: ((data || []) as unknown[]).map((p) =>
+        mapProjectFromDB(p as DBProject),
       ),
       total: count || 0,
     };
@@ -226,13 +227,13 @@ export async function getProject(
   signal?: AbortSignal,
 ): Promise<PortfolioProject | null> {
   try {
-    const supabase = await getSupabase();
+    const api = getApiClient();
     const isUuid =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
         idOrSlug,
       );
 
-    let query = supabase.from("vv_projects").select(PORTFOLIO_DETAIL_SELECT);
+    let query = api.from("vv_projects").select(PORTFOLIO_DETAIL_SELECT);
 
     if (signal) query = query.abortSignal(signal);
 
@@ -262,14 +263,15 @@ export function getProjectImageUrl(
   transform?: ProjectImageTransform,
 ): string {
   if (!path) return "";
+  void transform;
 
   let url = path;
   if (!path.startsWith("http://") && !path.startsWith("https://")) {
-    const base = supabaseUrl?.replace(/\/$/, "") ?? "";
+    const base = publicAssetsUrl?.replace(/\/$/, "") ?? "";
     const cleanPath = path.replace(/^\//, "");
-    url = transform
-      ? `${base}/storage/v1/render/image/public/vv-portfolio-images/${cleanPath}?width=${transform.width}&quality=${transform.quality ?? 75}`
-      : `${base}/storage/v1/object/public/vv-portfolio-images/${cleanPath}`;
+    // Image transformations were Supabase Storage-specific. MinIO serves the original object;
+    // transformations belong in the CDN if they are needed again.
+    url = `${base}/vv-portfolio-images/${cleanPath}`;
   }
 
   return safeImageUrl(url) ?? "";

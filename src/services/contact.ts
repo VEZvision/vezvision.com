@@ -1,4 +1,4 @@
-import { getSupabase } from "@/lib/supabase";
+import { getApiClient } from "@/lib/api";
 
 export interface ContactSubmissionPayload {
   full_name: string;
@@ -56,10 +56,7 @@ function mapContactField(field?: string): ContactFormField | undefined {
 export async function submitContactForm(
   payload: ContactSubmissionPayload,
 ): Promise<void> {
-  const supabase = await getSupabase();
-  const response = await supabase.functions.invoke("submit-contact", {
-    body: payload,
-  });
+  const response = await getApiClient().invoke("submit-contact", payload);
 
   if (response.error) {
     const err = response.error as { message?: string };

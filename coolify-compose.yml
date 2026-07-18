@@ -1,0 +1,80 @@
+# Coolify evaluates Compose paths from the repository root.
+services:
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+      TURNSTILE_EXPECTED_HOSTNAMES: ${TURNSTILE_EXPECTED_HOSTNAMES:-}
+      TURNSTILE_TEST_MODE: ${TURNSTILE_TEST_MODE:-false}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      CONTACT_FROM_EMAIL: ${CONTACT_FROM_EMAIL:-contact@vezvision.com}
+      CONTACT_NOTIFICATION_FROM_EMAIL: ${CONTACT_NOTIFICATION_FROM_EMAIL:-notifications@vezvision.com}
+      CONTACT_REPLY_FROM_EMAIL: ${CONTACT_REPLY_FROM_EMAIL:-contact@vezvision.com}
+      CONTACT_NOTIFY_EMAIL: ${CONTACT_NOTIFY_EMAIL:-contact@vezvision.com}
+      NEWSLETTER_FROM_EMAIL: ${NEWSLETTER_FROM_EMAIL:-newsletter@vezvision.com}
+      NEWSLETTER_REPLY_TO: ${NEWSLETTER_REPLY_TO:-contact@vezvision.com}
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-https://vezvision.vezlabs.dev}
+      PUBLIC_EMAIL_SITE_URL: ${PUBLIC_EMAIL_SITE_URL:-https://vezvision.com}
+      ADMIN_API_TOKEN_SHA256: ${ADMIN_API_TOKEN_SHA256:-}
+      ADMIN_POSTGREST_URL: ${ADMIN_POSTGREST_URL:-}
+      ADMIN_POSTGREST_API_KEY: ${ADMIN_POSTGREST_API_KEY:-}
+      PORT: 3000
+    networks:
+      vezvision_internal:
+        aliases: [vezvision-api]
+      coolify: {}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs: [/tmp]
+
+  postgrest:
+    image: postgrest/postgrest:v14.1
+    restart: unless-stopped
+    environment:
+      PGRST_DB_URI: ${DATABASE_URL}
+      PGRST_DB_SCHEMA: public
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_SERVER_HOST: 0.0.0.0
+      PGRST_SERVER_PORT: 3001
+    networks:
+      vezvision_internal:
+        aliases: [vezvision-postgrest]
+      coolify: {}
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs: [/tmp]
+
+  gateway:
+    build:
+      context: .
+      dockerfile: backend/nginx.Dockerfile
+    restart: unless-stopped
+    depends_on: [api, postgrest]
+    expose: ["8080"]
+    labels:
+      - traefik.docker.network=coolify
+    networks: [vezvision_internal, coolify]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    read_only: true
+    tmpfs: [/var/cache/nginx, /var/run, /tmp]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/healthz >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+networks:
+  vezvision_internal:
+    internal: true
+  coolify:
+    external: true

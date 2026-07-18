@@ -26,7 +26,7 @@ const Benefits: React.FC = () => {
             badgeIcon={<ThumbsUp className="w-3.5 h-3.5" />}
             title={
               <>
-                {t('benefits.title.line1')} <span className="font-playfair italic">{t('benefits.title.line2.italic')}</span>
+                {t('benefits.title.line1')} <span className="font-sans font-normal">{t('benefits.title.line2.italic')}</span>
               </>
             }
             subtitle={t('benefits.subtitle')}

@@ -42,7 +42,7 @@ function ContactSection() {
     {
       type: "phone" as const,
       title: t("contact.tile.phone.title"),
-      desc: contact?.phone || t("contact.tile.phone.desc"),
+      desc: t("contact.tile.phone.desc"),
       actionLabel: contact?.phone || t("contact.tile.phone.action"),
       href: contact?.phone ? `tel:${contact.phone.replace(/\s+/g, "")}` : "",
     },

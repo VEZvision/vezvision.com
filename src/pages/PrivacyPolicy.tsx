@@ -1,49 +1,60 @@
-import PageSeo from '@/components/seo/PageSeo';
-import { Breadcrumbs } from '@/components/seo/Breadcrumbs';
-import type { BreadcrumbItem } from '@/components/seo/Breadcrumbs';
-import LegalMarkdown from '@/components/legal/LegalMarkdown';
-import { useLanguageContext } from '@/hooks/useLanguage';
-import { useLegalContent } from '@/hooks/useLegalContent';
-import { Loader2 } from 'lucide-react';
-import { SectionReveal } from '@/components/ui/SectionReveal';
-import { useState, useEffect } from 'react';
-import type { LegalTemplates } from '@/data/legalTemplates';
+import PageSeo from "@/components/seo/PageSeo";
+import { Breadcrumbs } from "@/components/seo/Breadcrumbs";
+import type { BreadcrumbItem } from "@/components/seo/Breadcrumbs";
+import LegalMarkdown from "@/components/legal/LegalMarkdown";
+import { useLanguageContext } from "@/hooks/useLanguage";
+import { useLegalContent } from "@/hooks/useLegalContent";
+import { SectionLoader } from "@/components/loading";
+import { SectionReveal } from "@/components/ui/SectionReveal";
+import { useState, useEffect } from "react";
+import type { LegalTemplates } from "@/data/legalTemplates";
 
 const PrivacyPolicy = () => {
   const { language, t } = useLanguageContext();
-  const { content, title, loading, lastUpdated } = useLegalContent('privacy_policy', language);
+  const { content, title, loading, lastUpdated } = useLegalContent(
+    "privacy_policy",
+    language,
+  );
   const [templates, setTemplates] = useState<LegalTemplates | null>(null);
 
   useEffect(() => {
     if (!loading && !content) {
-      void import('@/data/legalTemplates').then(m => { setTemplates(m.LEGAL_TEMPLATES); });
+      void import("@/data/legalTemplates").then((m) => {
+        setTemplates(m.LEGAL_TEMPLATES);
+      });
     }
   }, [loading, content]);
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString(language === 'pl' ? 'pl-PL' : 'en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return date.toLocaleDateString(language === "pl" ? "pl-PL" : "en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Loader2 className="animate-spin text-gray-400" size={32} />
+      <div className="min-h-screen bg-gray-50 pt-20">
+        <SectionLoader label={t("common.loading")} />
       </div>
     );
   }
 
-  const fallbackContent = language === 'en' ? templates?.privacy_policy.en : templates?.privacy_policy.pl;
-  const fallbackTitle = language === 'en' ? 'Privacy Policy' : 'Polityka Prywatności';
-  const renderedContent = content || fallbackContent || '';
+  const fallbackContent =
+    language === "en"
+      ? templates?.privacy_policy.en
+      : templates?.privacy_policy.pl;
+  const fallbackTitle =
+    language === "en" ? "Privacy Policy" : "Polityka Prywatności";
+  const renderedContent = content || fallbackContent || "";
   const renderedTitle = title || fallbackTitle;
-  const effectiveDate = lastUpdated ? new Date(lastUpdated) : new Date('2026-03-31');
+  const effectiveDate = lastUpdated
+    ? new Date(lastUpdated)
+    : new Date("2026-03-31");
 
   const breadcrumbItems: BreadcrumbItem[] = [
-    { label: t('nav.home'), href: '/' },
+    { label: t("nav.home"), href: "/" },
     { label: renderedTitle },
   ];
 
@@ -59,7 +70,7 @@ const PrivacyPolicy = () => {
             </h1>
 
             <p className="mb-8 text-sm text-gray-600">
-              {t('legal.last_updated')}: {formatDate(effectiveDate)}
+              {t("legal.last_updated")}: {formatDate(effectiveDate)}
             </p>
 
             <div className="prose max-w-none">

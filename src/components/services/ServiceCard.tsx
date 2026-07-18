@@ -1,6 +1,17 @@
 import styles from "./ServiceCard.module.css";
 import type { LucideIcon } from "lucide-react";
-import { Zap, Globe, Smartphone, Database, ScanLine } from "lucide-react";
+import {
+  Zap,
+  Globe,
+  Smartphone,
+  Database,
+  ScanLine,
+  Code2,
+  Layers3,
+  Cloud,
+  Bot,
+  Megaphone,
+} from "lucide-react";
 import { safeImageUrl } from "@/utils/safeHref";
 
 interface ServiceCardProps {
@@ -8,6 +19,7 @@ interface ServiceCardProps {
   description: string;
   className?: string;
   icon?: string | undefined;
+  index?: number;
 }
 
 function isImageSource(value: string): boolean {
@@ -19,6 +31,13 @@ const iconMap: Record<string, LucideIcon> = {
   Smartphone,
   Database,
   ScanLine,
+  Code: Code2,
+  Code2,
+  Layers: Layers3,
+  Layers3,
+  Cloud,
+  Bot,
+  Megaphone,
 };
 
 function resolveLucideIcon(name: string): LucideIcon | null {
@@ -54,6 +73,7 @@ function ServiceCard({
   description,
   className,
   icon,
+  index = 0,
 }: ServiceCardProps) {
   const normalizedIcon = icon?.trim() ?? "";
   const LucideResolvedIcon = normalizedIcon
@@ -65,6 +85,9 @@ function ServiceCard({
   return (
     <article className={`${styles.card} ${className || ""}`}>
       <div className={styles.header}>
+        <span className={styles.index} aria-hidden="true">
+          {String(index + 1).padStart(2, "0")}
+        </span>
         <div className={styles.iconBox}>
           {LucideResolvedIcon ? (
             <LucideResolvedIcon />

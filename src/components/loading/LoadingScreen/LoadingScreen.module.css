@@ -1,88 +1,88 @@
 .container {
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100vw;
-  height: 100vh;
-  background: #ffffff;
+  height: 100dvh;
+  background:
+    radial-gradient(
+      circle at 50% 44%,
+      rgba(255, 255, 255, 0.98),
+      transparent 34%
+    ),
+    rgba(247, 247, 246, 0.94);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  animation: fadeIn 0.3s ease-out;
+  overflow: hidden;
+  backdrop-filter: blur(18px) saturate(110%);
+  -webkit-backdrop-filter: blur(18px) saturate(110%);
+  animation: fadeIn 0.38s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .container::after {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  --highlight-color: rgba(128, 128, 128, 0.08);
-  background-image:
-    linear-gradient(
-      to bottom,
-      transparent,
-      var(--highlight-color),
-      transparent
-    ),
-    linear-gradient(to right, transparent, var(--highlight-color), transparent);
-  background-size:
-    100% 3px,
-    3px 100%;
-  background-repeat: no-repeat;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.7) 50%,
+    transparent 62%
+  );
   pointer-events: none;
   z-index: -1;
+  transform: translateX(-100%);
+  animation: surfaceShimmer 2.2s ease-in-out infinite;
 }
 
 .logoContainer {
-  margin-bottom: 40px;
-  animation: logoFadeIn 0.8s ease-out;
+  margin-bottom: 2rem;
+  animation: logoFadeIn 0.65s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .logo {
-  width: 120px;
+  width: clamp(6.5rem, 12vw, 8rem);
   height: auto;
-  animation: logoPulse 2s ease-in-out infinite;
 }
 
 .spinnerContainer {
-  margin-bottom: 24px;
+  margin-bottom: 1.1rem;
 }
 
 .spinner {
   position: relative;
-  width: 48px;
-  height: 48px;
-  background: conic-gradient(#000000 0 25%, rgba(0, 0, 0, 0.1) 25% 100%);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  will-change: transform;
+  width: 4rem;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.1);
 }
 
 .spinner::after {
   content: "";
   position: absolute;
-  inset: 4px;
-  border-radius: inherit;
-  background: #ffffff;
+  inset: 0;
+  width: 45%;
+  border-radius: 999px;
+  background: #111827;
+  animation: loadingLine 1.25s cubic-bezier(0.65, 0, 0.35, 1) infinite;
 }
 
 .message {
-  color: #000000;
+  color: #667085;
   font-family: "Satoshi", sans-serif;
-  font-size: 16px;
+  font-size: 0.82rem;
   font-weight: 400;
-  margin-top: 16px;
-  animation: messageFadeIn 0.5s ease-out 0.5s both;
+  letter-spacing: 0.015em;
+  animation: messageFadeIn 0.5s ease-out 0.18s both;
 }
 
 .progressContainer {
   width: 200px;
-  height: 4px;
-  background: rgba(255, 107, 53, 0.2);
+  height: 2px;
+  background: rgba(15, 23, 42, 0.09);
   border-radius: 2px;
   margin-top: 24px;
   overflow: hidden;
@@ -91,7 +91,7 @@
 .progressBar {
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, #ff6b35 0%, #ff8a65 100%);
+  background: #111827;
   border-radius: 2px;
   transform-origin: left center;
   transition: transform 0.3s ease-out;
@@ -119,22 +119,22 @@
   }
 }
 
-@keyframes logoPulse {
-  0%,
-  100% {
-    transform: scale(1);
+@keyframes loadingLine {
+  0% {
+    transform: translateX(-115%);
   }
   50% {
-    transform: scale(1.05);
+    transform: translateX(72%);
+  }
+  100% {
+    transform: translateX(225%);
   }
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
+@keyframes surfaceShimmer {
+  55%,
   100% {
-    transform: rotate(360deg);
+    transform: translateX(100%);
   }
 }
 
@@ -150,11 +150,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .grid,
-  .logo,
-  .spinner,
-  .progressBar {
+  .container,
+  .container::after,
+  .logoContainer,
+  .spinner::after,
+  .message {
     animation: none !important;
+  }
+
+  .spinner::after {
+    transform: translateX(62%);
   }
 }
 
@@ -165,12 +170,7 @@
   }
 
   .spinner {
-    width: 48px;
-    height: 48px;
-  }
-
-  .logo {
-    width: 120px;
+    width: 4rem;
   }
 }
 
@@ -179,21 +179,8 @@
     padding: 20px;
   }
 
-  .spinner {
-    width: 40px;
-    height: 40px;
-  }
-
-  .spinner::after {
-    inset: 3px;
-  }
-
-  .logo {
-    width: 100px;
-  }
-
   .message {
-    font-size: 14px;
+    font-size: 0.8rem;
   }
 
   .progressContainer {
@@ -202,21 +189,8 @@
 }
 
 @media (max-width: 480px) {
-  .spinner {
-    width: 32px;
-    height: 32px;
-  }
-
-  .spinner::after {
-    inset: 3px;
-  }
-
-  .logo {
-    width: 80px;
-  }
-
   .message {
-    font-size: 12px;
+    font-size: 0.76rem;
   }
 
   .progressContainer {

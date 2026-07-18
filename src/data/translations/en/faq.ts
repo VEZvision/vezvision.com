@@ -15,19 +15,19 @@ export const faqTranslations = {
   "faq.q3": "Do I need technical infrastructure on my side?",
   "faq.a3":
     "No. We run the project end to end: analysis, design, development, testing, deployment. After launch we can take over maintenance and further development.",
-  "faq.q4": "Are my data safe?",
+  "faq.q4": "Is my data safe?",
   "faq.a4":
     "Yes. We use encryption, access control, and GDPR-compliant practices. Code and infrastructure meet industry standards.",
   "faq.q5": "How much does a project cost?",
   "faq.a5":
-    "Pricing depends on scope. A simple landing page starts at a few thousand zloty. Apps and automations are priced individually after a short call. We provide a clear upfront cost.",
+    "Pricing depends on scope. A simple business website can usually be launched sooner, while larger projects need an individual plan. We price apps and automations after a short call and provide a clear upfront cost.",
   "faq.q6": "Do you offer post-launch support?",
   "faq.a6":
     "Yes. After launch we offer technical care, updates, and feature development. We can also take over monitoring and maintenance of an existing website or app.",
   "faq.q7": "What is the collaboration process?",
   "faq.a7":
     "We start with a short call to define goals and scope. Then we prepare strategy, visual design, and timeline. We develop, test, and deploy with regular communication at every stage.",
-  "faq.contact.text": "Have any question? Write to\u00A0",
+  "faq.contact.text": "Have a question? Write to\u00A0",
   "faq.contact.title": "Send a message",
   "faq.cta.aria": "Go to the contact section on the homepage",
 } as const;

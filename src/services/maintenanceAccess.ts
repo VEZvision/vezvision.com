@@ -1,5 +1,5 @@
 import { logError } from '@/lib/logger'
-import { getSupabase } from '@/lib/supabase'
+import { getApiClient } from '@/lib/api'
 
 interface MaintenanceAccessResponse {
   success?: boolean
@@ -23,9 +23,9 @@ const AVAILABILITY_FALLBACK: MaintenanceAccessSnapshot = {
 }
 
 export async function fetchMaintenanceEnabledFromDb(): Promise<boolean | null> {
-  const supabase = await getSupabase()
-  const { data, error } = await supabase
-    .from('vv_site_settings')
+  const api = getApiClient()
+  const { data, error } = await api
+    .from<{ value: { enabled?: boolean } }>('vv_site_settings')
     .select('value')
     .eq('key', 'maintenance_mode')
     .eq('is_public', true)
@@ -36,15 +36,12 @@ export async function fetchMaintenanceEnabledFromDb(): Promise<boolean | null> {
     return null
   }
 
-  const settings = data?.value as { enabled?: boolean } | null
+  const settings = data?.value ?? null
   return settings?.enabled === true
 }
 
 export async function fetchMaintenanceAccess(): Promise<MaintenanceAccessSnapshot> {
-  const supabase = await getSupabase()
-  const response = await supabase.functions.invoke<MaintenanceAccessResponse>(
-    'check-maintenance-access',
-  )
+  const response = await getApiClient().invoke<MaintenanceAccessResponse>('check-maintenance-access')
 
   if (response.error) {
     logError('maintenanceAccess.invoke', response.error)

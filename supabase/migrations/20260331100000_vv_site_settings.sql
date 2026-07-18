@@ -29,7 +29,7 @@ VALUES
   (
     'site_identity',
     jsonb_build_object(
-      'siteName', 'VezVision',
+      'siteName', 'VEZvision',
       'logoUrl', '',
       'faviconUrl', '',
       'defaultOgImageUrl', ''
@@ -66,12 +66,12 @@ VALUES
   (
     'seo',
     jsonb_build_object(
-      'siteTitle', 'VezVision',
-      'siteDescription', 'VezVision - modern websites, web applications and digital solutions for growing businesses.',
+      'siteTitle', 'VEZvision',
+      'siteDescription', 'VEZvision creates modern websites, web applications and digital solutions for growing businesses.',
       'keywords', jsonb_build_array(),
       'siteUrl', 'https://vezvision.com',
       'robots', 'index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1',
-      'ogSiteName', 'VezVision'
+      'ogSiteName', 'VEZvision'
     ),
     true,
     'Global public SEO settings'

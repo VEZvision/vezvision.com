@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import styles from "./ViewportSectionGate.module.css";
 
 const DEFAULT_ROOT_MARGIN = "900px 0px";
 
@@ -70,11 +71,11 @@ export function ViewportSectionGate({
   return (
     <div
       ref={placeholderRef}
-      className={className}
+      className={`${className ?? ""} ${!isRevealed ? styles.placeholder : ""}`}
       style={isRevealed ? undefined : { minHeight, contain: "layout style" }}
       aria-hidden={isRevealed ? undefined : true}
     >
-      {isRevealed ? children : null}
+      {isRevealed ? children : <div className={styles.skeleton} />}
     </div>
   );
 }

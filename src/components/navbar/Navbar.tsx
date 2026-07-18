@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, memo, useRef } from "react";
+import type { MouseEvent as ReactMouseEvent } from "react";
 import { Menu, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logoNavbar from "@brand/wordmark-horizontal-dark.svg";
@@ -11,9 +12,17 @@ import {
   localizedPath,
 } from "@/routing/locale";
 import { getLocalizedLabel } from "@/utils/i18n";
+import { scrollToTopSmooth } from "@/scroll";
 
 function isExternalHref(href: string) {
   return isSafeExternalHref(href);
+}
+
+function getContentPath(pathname: string): string {
+  const pathWithoutLocale = pathname.replace(/^\/(pl|en)(?=\/|$)/, "") || "/";
+  return pathWithoutLocale === "/"
+    ? "/"
+    : pathWithoutLocale.replace(/\/+$/, "") || "/";
 }
 
 const FALLBACK_NAV_LINKS = [
@@ -56,6 +65,23 @@ const Navbar = memo(() => {
   const closeMenu = useCallback(() => {
     setIsMenuOpen(false);
   }, []);
+
+  const scrollToTopIfSameRoute = useCallback(
+    (event: ReactMouseEvent<HTMLElement>, href: string) => {
+      if (isExternalHref(href) || typeof window === "undefined") return;
+
+      const targetUrl = new URL(href, window.location.origin);
+      if (targetUrl.origin !== window.location.origin || targetUrl.hash) return;
+
+      const currentPath = getContentPath(location.pathname);
+      const targetPath = getContentPath(targetUrl.pathname);
+      if (currentPath !== targetPath) return;
+
+      event.preventDefault();
+      scrollToTopSmooth();
+    },
+    [location.pathname],
+  );
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -159,6 +185,9 @@ const Navbar = memo(() => {
                 <div className="shrink-0 py-3">
                   <Link
                     to={localizedPath(language)}
+                    onClick={(event) =>
+                      scrollToTopIfSameRoute(event, localizedPath(language))
+                    }
                     className="cursor-pointer hover:opacity-80 transition-opacity duration-200"
                   >
                     <img
@@ -196,6 +225,9 @@ const Navbar = memo(() => {
                       key={item.id}
                       to={item.href}
                       prefetch="intent"
+                      onClick={(event) =>
+                        scrollToTopIfSameRoute(event, item.href)
+                      }
                       className={`px-4 py-2 text-sm ${navTextClass} ${navHoverClass} rounded-md transition-colors`}
                     >
                       {getLocalizedLabel(language, item.labelPl, item.labelEn)}
@@ -237,6 +269,9 @@ const Navbar = memo(() => {
                 ) : (
                   <Link
                     to={contactButtonHref}
+                    onClick={(event) =>
+                      scrollToTopIfSameRoute(event, contactButtonHref)
+                    }
                     className="inline-flex items-center px-5 py-2 bg-black text-white text-sm font-medium rounded-lg shadow-lg hover:bg-gray-800 transition-colors"
                   >
                     {contactButtonLabel}
@@ -289,7 +324,10 @@ const Navbar = memo(() => {
                   <Link
                     key={item.id}
                     to={item.href}
-                    onClick={closeMenu}
+                    onClick={(event) => {
+                      scrollToTopIfSameRoute(event, item.href);
+                      closeMenu();
+                    }}
                     className="block px-3 py-2 text-base text-black hover:bg-white/50 rounded-md transition-colors"
                   >
                     {getLocalizedLabel(language, item.labelPl, item.labelEn)}
@@ -310,7 +348,10 @@ const Navbar = memo(() => {
                 ) : (
                   <Link
                     to={contactButtonHref}
-                    onClick={closeMenu}
+                    onClick={(event) => {
+                      scrollToTopIfSameRoute(event, contactButtonHref);
+                      closeMenu();
+                    }}
                     className="w-full text-left block px-3 py-2 bg-black text-white text-base font-medium rounded-lg shadow-lg hover:bg-gray-800 transition-colors"
                   >
                     {contactButtonLabel}

@@ -1,0 +1,10 @@
+[phases.setup]
+# Keep the Coolify build runtime compatible with the locked frontend toolchain.
+nixpkgsArchive = '51ad838b03a05b1de6f9f2a0fffecee64a9788ee'
+nixPkgs = ['nodejs_22']
+
+[phases.install]
+cmds = ['npm ci']
+
+[phases.build]
+cmds = ['npm run build']

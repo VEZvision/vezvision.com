@@ -198,7 +198,7 @@ body {
   overflow-x: clip;
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-  background-color: #ffffff;
+  background-color: #fdfdfc;
   overscroll-behavior-y: auto;
   padding-bottom: env(safe-area-inset-bottom);
 }

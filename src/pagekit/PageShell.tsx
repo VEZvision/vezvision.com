@@ -10,9 +10,19 @@ type PageShellProps = PageShellOptions & {
   children: ReactNode;
 };
 
-export function PageShell({ seoKey, className, style, breadcrumbItems, children }: PageShellProps) {
+export function PageShell({
+  seoKey,
+  className,
+  style,
+  breadcrumbItems,
+  children,
+}: PageShellProps) {
+  const shellClassName = ["relative overflow-x-clip", className]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <div className={className} style={style}>
+    <div className={shellClassName} style={style}>
       <PageSeo pageKey={seoKey} />
       {breadcrumbItems ? <Breadcrumbs items={breadcrumbItems} /> : null}
       <div className="grid-background" aria-hidden />

@@ -7,11 +7,15 @@
   align-items: flex-start;
   justify-content: space-between;
   border-radius: 20px;
-  box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 1px 1px -1px #00000014,
+  border: 1px solid rgba(16, 24, 40, 0.08);
+  box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.78), 0px 1px 1px -1px #00000014,
     0px 2px 2px -1px #00000014, 0px 4px 4px -2px #00000012,
     0px 7px 7px -3px #00000012, 0px 14px 14px -3px #0000000d,
     0px 30px 30px -4px #00000005;
-  background: var(--color-grey-96, #f5f5f5);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.34)),
+    rgba(253, 253, 252, 0.44);
+  backdrop-filter: blur(14px);
   padding: 24px 27px 24px 48px;
   width: 100%;
   max-width: 1059px;
@@ -32,7 +36,7 @@
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: inset 0px 3px 1px 0px #ffffff, 0px 2px 2px -1px #00000020,
+    box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.86), 0px 2px 2px -1px #00000020,
       0px 4px 4px -1px #00000020, 0px 8px 8px -2px #00000018,
       0px 14px 14px -3px #00000018, 0px 28px 28px -3px #00000010,
       0px 60px 60px -4px #00000008;

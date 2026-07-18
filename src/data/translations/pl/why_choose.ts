@@ -5,14 +5,14 @@ export const why_chooseTranslations = {
   "why.header.title.line1": "Dlaczego warto",
   "why.header.title.line2.italic": "wybrać nas",
   "why.header.subtitle":
-    "Wszystko, czego potrzebujesz, aby tworzyć, optymalizować i rozwijać",
+    "Przejrzysty proces, trafne decyzje i wsparcie po wdrożeniu.",
   "why.card1.title": "Partnerstwo na lata",
   "why.card1.desc":
     "Nie jesteśmy tylko wykonawcą. Pracujemy jak partner w rozwoju Twojego biznesu.",
-  "why.card2.title": "Szybkie wdrożenia",
+  "why.card2.title": "Sprawna realizacja",
   "why.card2.desc":
-    "Działamy sprawnie od pierwszej konsultacji do uruchomienia projektu.",
+    "Prowadzimy projekt sprawnie od pierwszej konsultacji do uruchomienia.",
   "why.card3.title": "Technologia, która nie przeszkadza",
   "why.card3.desc":
-    "Projektujemy rozwiązania, których obsługa jest prosta, intuicyjna i nie wymaga szkoleń.",
+    "Projektujemy rozwiązania proste i intuicyjne, a w razie potrzeby przygotowujemy zespół do ich obsługi.",
 } as const;

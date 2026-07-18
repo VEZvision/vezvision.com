@@ -15,7 +15,7 @@ export default defineConfig({
       "tests/e2e/**",
       "supabase/functions/**",
       "scripts/**",
-      "node_modules/**",
+      "**/node_modules/**",
       "dist/**",
     ],
     coverage: {

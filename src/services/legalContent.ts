@@ -1,4 +1,4 @@
-import { getSupabase } from '@/lib/supabase'
+import { getApiClient } from '@/lib/api'
 
 export interface LegalContentResult {
   content: string | null
@@ -30,8 +30,7 @@ export async function getPublishedLegalContent(
   pageKey: string,
   language: 'pl' | 'en'
 ): Promise<LegalContentResult> {
-  const supabase = await getSupabase()
-  const { data, error } = await supabase
+  const { data, error } = await getApiClient()
     .from('vv_legal_documents')
     .select('title_pl,title_en,content_pl,content_en,last_updated,version,is_published')
     .eq('document_key', pageKey)
@@ -51,33 +50,9 @@ export async function getPublishedLegalContent(
 }
 
 export function subscribeToLegalContent(pageKey: string, onChange: () => void): () => void {
-  let disposed = false
-  let removeChannel: (() => void) | null = null
-
-  void getSupabase().then((supabase) => {
-    if (disposed) return
-
-    const channel = supabase
-      .channel(`legal-content-${pageKey}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'vv_legal_documents',
-          filter: `document_key=eq.${pageKey}`,
-        },
-        onChange,
-      )
-      .subscribe()
-
-    removeChannel = () => {
-      void supabase.removeChannel(channel)
-    }
-  })
-
-  return () => {
-    disposed = true
-    removeChannel?.()
-  }
+  // The self-hosted stack deliberately has no Realtime service. CMS content is refreshed
+  // through the normal query-cache invalidation path after a deployment/navigation.
+  void pageKey
+  void onChange
+  return () => undefined
 }

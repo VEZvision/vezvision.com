@@ -13,6 +13,7 @@ export type RoutePageKey =
   | 'cookie-policy'
   | 'unsubscribe'
   | 'newsletter'
+  | 'newsletter-confirm'
   | 'not-found';
 
 export interface AppRouteDefinition {
@@ -34,6 +35,7 @@ export const APP_ROUTES: AppRouteDefinition[] = [
   { path: 'blog', pageKey: 'blog', sitemap: { changefreq: 'weekly', priority: 0.9 } },
   { path: 'blog/:slug', pageKey: null, dynamic: 'blog' },
   { path: 'newsletter', pageKey: 'newsletter', sitemap: { changefreq: 'monthly', priority: 0.5 } },
+  { path: 'newsletter/confirm', pageKey: 'newsletter-confirm' },
   { path: 'products', pageKey: 'products', sitemap: { changefreq: 'monthly', priority: 0.5 } },
   { path: 'contact', pageKey: 'contact', sitemap: { changefreq: 'monthly', priority: 0.7 } },
   { path: 'cookie-policy', pageKey: 'cookie-policy', sitemap: { changefreq: 'yearly', priority: 0.3 } },

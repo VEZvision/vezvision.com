@@ -15,6 +15,7 @@ function NewsletterSection() {
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const emailFieldId = useId();
   const { t, language } = useLanguageContext();
   const handleTurnstileToken = useCallback((token: string) => {
@@ -47,6 +48,7 @@ function NewsletterSection() {
         language,
         "home",
         turnstileToken,
+        privacyAccepted,
       );
 
       if (result.success) {
@@ -54,6 +56,7 @@ function NewsletterSection() {
         setEmail("");
         setTurnstileToken("");
         setTurnstileResetKey((key) => key + 1);
+        setPrivacyAccepted(false);
       } else {
         const errorMessage = result.error || "";
         if (
@@ -85,29 +88,36 @@ function NewsletterSection() {
           <p className={styles.description}>{t("newsletter.description")}</p>
 
           <form className={styles.form} onSubmit={handleSubmit}>
-            <label htmlFor={emailFieldId} className="sr-only">
-              {t("newsletter.placeholder")}
-            </label>
-            <input
-              id={emailFieldId}
-              type="email"
-              name="email"
-              autoComplete="email"
-              placeholder={t("newsletter.placeholder")}
-              className={styles.input}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={loading}
-            />
-            <button type="submit" className={styles.button} disabled={loading}>
-              {loading ? t("newsletter.submitting") : t("newsletter.submit")}
-            </button>
+            <div className={styles.inputRow}>
+              <label htmlFor={emailFieldId} className="sr-only">
+                {t("newsletter.placeholder")}
+              </label>
+              <input
+                id={emailFieldId}
+                type="email"
+                name="email"
+                autoComplete="email"
+                placeholder={t("newsletter.placeholder")}
+                className={styles.input}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
+              />
+              <button type="submit" className={styles.button} disabled={loading}>
+                {loading ? t("newsletter.submitting") : t("newsletter.submit")}
+              </button>
+            </div>
             <TurnstileField
+              action="newsletter"
               onTokenChange={handleTurnstileToken}
               resetKey={turnstileResetKey}
-              className="mt-4 flex justify-center"
+              className={styles.turnstile}
               loadErrorMessage={t("newsletter.error.captcha")}
             />
+            <label className={styles.consent}>
+              <input type="checkbox" checked={privacyAccepted} onChange={(event) => setPrivacyAccepted(event.target.checked)} required />
+              <span>{t("newsletter.consent")}</span>
+            </label>
           </form>
 
           <p className={styles.disclaimer}>{t("newsletter.disclaimer")}</p>

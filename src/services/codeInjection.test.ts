@@ -4,10 +4,8 @@ import { fetchCodeInjection } from './codeInjection'
 
 const invokeMock = vi.fn()
 
-vi.mock('@/lib/supabase', () => ({
-  getSupabase: vi.fn(() => Promise.resolve({
-    functions: { invoke: invokeMock },
-  })),
+vi.mock('@/lib/api', () => ({
+  getApiClient: vi.fn(() => ({ invoke: invokeMock })),
 }))
 
 describe('fetchCodeInjection', () => {

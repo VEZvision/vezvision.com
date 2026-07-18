@@ -7,6 +7,12 @@ export const SEO_READY_PREDICATE = `(() => {
     Boolean(
       document.querySelector('link[rel="alternate"][hreflang="' + value + '"]'),
     );
+  const hasLocalizedHreflang = () =>
+    Boolean(
+      document.querySelector(
+        'link[rel="alternate"][hreflang="pl"], link[rel="alternate"][hreflang="en"]',
+      ),
+    );
 
   return Boolean(
     document.title.trim() &&
@@ -19,8 +25,7 @@ export const SEO_READY_PREDICATE = `(() => {
       getMetaContent('meta[property="og:url"]') &&
       getMetaContent('meta[name="twitter:title"]') &&
       getMetaContent('meta[name="twitter:description"]') &&
-      hasHreflang("pl") &&
-      hasHreflang("en") &&
+      hasLocalizedHreflang() &&
       hasHreflang("x-default") &&
       document.querySelector('script[type="application/ld+json"]'),
   );

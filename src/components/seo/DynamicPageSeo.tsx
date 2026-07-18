@@ -92,6 +92,9 @@ export default function DynamicPageSeo({
       : siteUrl && pathSuffix
         ? [...SUPPORTED_LOCALES]
         : [];
+  const defaultHreflangLocale = hreflangLocales.includes("en")
+    ? "en"
+    : hreflangLocales[0];
 
   const ogLocaleAlternates = hreflangLocales
     .filter((locale) => locale !== language)
@@ -138,11 +141,11 @@ export default function DynamicPageSeo({
             />
           ))
         : null}
-      {siteUrl && pathSuffix && hreflangLocales.includes("en") ? (
+      {siteUrl && pathSuffix && defaultHreflangLocale ? (
         <link
           rel="alternate"
           hrefLang="x-default"
-          href={buildAlternateUrl(siteUrl, "en", pathSuffix)}
+          href={buildAlternateUrl(siteUrl, defaultHreflangLocale, pathSuffix)}
         />
       ) : null}
       <meta property="og:title" content={title} />
