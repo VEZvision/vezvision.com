@@ -20,12 +20,36 @@ API hostname.
 6. Point `VITE_API_URL` to the public gateway and `VITE_PUBLIC_ASSETS_URL` to the
    public MinIO/CDN endpoint. Both values are build-time public configuration.
 
+## Private VEZcore administration
+
+VEZcore must not use the public PostgREST role. Provision its dedicated roles with
+`provision-admin-postgrest.sql`, then run a separate PostgREST container that:
+
+- binds only to loopback or a private tunnel address;
+- uses `vezvision_admin_authenticator` in its database URI;
+- sets `PGRST_DB_ANON_ROLE=vezvision_admin_api`;
+- sets `PGRST_DB_PRE_REQUEST=public.check_vezvision_admin_api_key`;
+- receives the matching plaintext key from VEZcore as `X-Internal-API-Key`.
+
+The database stores only the SHA-256 digest of that key. Do not publish this
+PostgREST endpoint through Traefik, Cloudflare or a public DNS record.
+`install-private-admin.sh` applies the provisioning file and starts this private
+container with a read-only filesystem and a loopback-only port binding.
+When VEZcore runs on the lab Coolify host, `configure-private-tunnel.sh` creates a
+restricted, persistent SSH local-forward from the lab Docker gateway to that
+loopback endpoint. The dedicated SSH key can forward only to the admin port and
+cannot open a shell through the generated service.
+
 ## Required cutover checks
 
 - Import rows from the source only after a successful source backup and compare counts
   for every table in `schema.sql`.
 - Copy objects from Supabase Storage bucket `vv-portfolio-images` to the MinIO bucket
-  of the same name before publishing a website build.
+  prefix `vezvision-production/vv-portfolio-images/` before publishing a website
+  build. The frontend asset base URL must therefore end in `/vezvision-production`.
+- Apply `minio-vezvision-production-policy.json` to the scoped VEZcore storage user.
+  Anonymous reads use `minio-vezvision-public-read.json`; the `vv-files-private`
+  prefix intentionally remains private.
 - Verify anonymous reads return only published/active content; newsletter subscribers,
   contact messages, rate limits and view-dedup rows must return `403`.
 - Exercise contact, subscribe, unsubscribe, maintenance and blog-view endpoints from

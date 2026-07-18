@@ -1,0 +1,18 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": ["*"]
+      },
+      "Action": ["s3:GetObject"],
+      "Resource": [
+        "arn:aws:s3:::vezvision-production/vv-blog-images/*",
+        "arn:aws:s3:::vezvision-production/vv-portfolio-images/*",
+        "arn:aws:s3:::vezvision-production/vv-service-images/*",
+        "arn:aws:s3:::vezvision-production/vv-newsletter-images/*"
+      ]
+    }
+  ]
+}
