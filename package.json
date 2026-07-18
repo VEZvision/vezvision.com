@@ -102,6 +102,11 @@
   "engines": {
     "node": ">=22"
   },
+  "overrides": {
+    "deno-bin": {
+      "adm-zip": "0.6.0"
+    }
+  },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --fix",
     "*.{ts,tsx,css,md,json}": "prettier --write"
