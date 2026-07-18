@@ -20,12 +20,13 @@ test("contact page renders the contact form", async ({ page }) => {
 
 test("language toggle switches locale in the URL", async ({ page }) => {
   await page.goto("/pl/contact");
-  await page.waitForLoadState("networkidle");
+  await expect(page.getByRole("navigation").first()).toBeVisible();
   const desktopLang = page.getByTestId("language-toggle-desktop");
   const mobileMenuToggle = page.getByTestId("mobile-menu-toggle");
   if (await desktopLang.isVisible()) {
     await desktopLang.click();
   } else {
+    await expect(mobileMenuToggle).toBeVisible();
     await mobileMenuToggle.click();
     await page.getByTestId("language-toggle-mobile").click();
   }
