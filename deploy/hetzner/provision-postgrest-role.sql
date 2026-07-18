@@ -27,7 +27,7 @@ CREATE POLICY public_settings_vezvision_api_read
   ON public.vv_site_settings
   FOR SELECT TO vezvision_api
   USING (is_public);
-GRANT INSERT ON public.messages TO vezvision_api;
+GRANT INSERT, SELECT (id) ON public.messages TO vezvision_api;
 GRANT SELECT, INSERT, UPDATE ON public.rate_limit_buckets TO vezvision_api;
 GRANT SELECT, INSERT, UPDATE ON public.vv_newsletter_subscribers TO vezvision_api;
 GRANT EXECUTE ON FUNCTION public.vv_blog_increment_views(p_post_slug text, p_client_ip text) TO vezvision_api;

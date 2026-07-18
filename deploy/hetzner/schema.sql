@@ -239,7 +239,7 @@ BEGIN
       EXECUTE format('ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE USAGE, SELECT ON SEQUENCES FROM %I', api_role);
       EXECUTE format('GRANT USAGE ON SCHEMA public TO %I', api_role);
       EXECUTE format('GRANT SELECT ON public.vv_site_settings TO %I', api_role);
-      EXECUTE format('GRANT INSERT ON public.messages TO %I', api_role);
+      EXECUTE format('GRANT INSERT, SELECT (id) ON public.messages TO %I', api_role);
       EXECUTE format('GRANT SELECT, INSERT, UPDATE ON public.rate_limit_buckets TO %I', api_role);
       EXECUTE format('GRANT SELECT, INSERT, UPDATE ON public.vv_newsletter_subscribers TO %I', api_role);
       EXECUTE format('GRANT EXECUTE ON FUNCTION public.vv_blog_increment_views(p_post_slug text, p_client_ip text) TO %I', api_role);
@@ -265,6 +265,10 @@ ALTER TABLE public.vv_services ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vv_service_category_assignments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vv_faq_categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vv_faq_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.vv_newsletter_subscribers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.rate_limit_buckets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.vv_blog_post_views ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS public_settings_read ON public.vv_site_settings;
 DROP POLICY IF EXISTS page_seo_read ON public.vv_page_seo;
@@ -311,6 +315,34 @@ CREATE POLICY services_read ON public.vv_services FOR SELECT TO anon USING (stat
 CREATE POLICY service_assignments_read ON public.vv_service_category_assignments FOR SELECT TO anon USING (EXISTS (SELECT 1 FROM public.vv_services s WHERE s.id = service_id AND s.status = 'active'));
 CREATE POLICY faq_categories_read ON public.vv_faq_categories FOR SELECT TO anon USING (is_active);
 CREATE POLICY faq_items_read ON public.vv_faq_items FOR SELECT TO anon USING (is_active);
+
+-- The Node API is the only non-admin writer. Keep its RLS paths explicit and
+-- scoped to the operations used by backend/server.mjs.
+DO $$
+DECLARE api_role text;
+BEGIN
+  FOREACH api_role IN ARRAY ARRAY['vezvision_api', 'vezvision_lab_api'] LOOP
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = api_role) THEN
+      EXECUTE format('DROP POLICY IF EXISTS %I ON public.messages', 'messages_' || api_role || '_insert');
+      EXECUTE format('DROP POLICY IF EXISTS %I ON public.messages', 'messages_' || api_role || '_select_id');
+      EXECUTE format('DROP POLICY IF EXISTS %I ON public.vv_newsletter_subscribers', 'newsletter_' || api_role || '_select');
+      EXECUTE format('DROP POLICY IF EXISTS %I ON public.vv_newsletter_subscribers', 'newsletter_' || api_role || '_insert');
+      EXECUTE format('DROP POLICY IF EXISTS %I ON public.vv_newsletter_subscribers', 'newsletter_' || api_role || '_update');
+      EXECUTE format('DROP POLICY IF EXISTS %I ON public.rate_limit_buckets', 'rate_limit_' || api_role || '_select');
+      EXECUTE format('DROP POLICY IF EXISTS %I ON public.rate_limit_buckets', 'rate_limit_' || api_role || '_insert');
+      EXECUTE format('DROP POLICY IF EXISTS %I ON public.rate_limit_buckets', 'rate_limit_' || api_role || '_update');
+
+      EXECUTE format('CREATE POLICY %I ON public.messages FOR INSERT TO %I WITH CHECK (true)', 'messages_' || api_role || '_insert', api_role);
+      EXECUTE format('CREATE POLICY %I ON public.messages FOR SELECT TO %I USING (true)', 'messages_' || api_role || '_select_id', api_role);
+      EXECUTE format('CREATE POLICY %I ON public.vv_newsletter_subscribers FOR SELECT TO %I USING (true)', 'newsletter_' || api_role || '_select', api_role);
+      EXECUTE format('CREATE POLICY %I ON public.vv_newsletter_subscribers FOR INSERT TO %I WITH CHECK (true)', 'newsletter_' || api_role || '_insert', api_role);
+      EXECUTE format('CREATE POLICY %I ON public.vv_newsletter_subscribers FOR UPDATE TO %I USING (true) WITH CHECK (true)', 'newsletter_' || api_role || '_update', api_role);
+      EXECUTE format('CREATE POLICY %I ON public.rate_limit_buckets FOR SELECT TO %I USING (true)', 'rate_limit_' || api_role || '_select', api_role);
+      EXECUTE format('CREATE POLICY %I ON public.rate_limit_buckets FOR INSERT TO %I WITH CHECK (true)', 'rate_limit_' || api_role || '_insert', api_role);
+      EXECUTE format('CREATE POLICY %I ON public.rate_limit_buckets FOR UPDATE TO %I USING (true) WITH CHECK (true)', 'rate_limit_' || api_role || '_update', api_role);
+    END IF;
+  END LOOP;
+END $$;
 
 -- The Node API reads the public maintenance setting using the restricted
 -- authenticator role directly. Add only that RLS path when the role already
