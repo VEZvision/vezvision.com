@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-floating-promises -- node:test describe/it return promises by design */
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { resolve } from "node:path";
 
 import {
   extractSitemapRoutePaths,
@@ -121,5 +123,26 @@ describe("SEO build validation", () => {
       extractSitemapRoutePaths(sitemap, "https://vezvision.com"),
       ["/pl", "/en/blog/post"],
     );
+  });
+
+  it("keeps generated discovery and policy files in the strict Nginx allowlist", () => {
+    const nginxConfig = readFileSync(
+      resolve(process.cwd(), "frontend-nginx.conf"),
+      "utf8",
+    );
+
+    for (const requiredPath of [
+      "sitemap\\.xml",
+      "robots\\.txt",
+      "\\.well-known/security\\.txt",
+      "\\.well-known/llm-policies\\.json",
+      "(pl|en)/blog/feed\\.xml",
+      "manifest\\.webmanifest",
+    ]) {
+      assert.ok(
+        nginxConfig.includes(requiredPath),
+        `Nginx allowlist is missing ${requiredPath}`,
+      );
+    }
   });
 });
