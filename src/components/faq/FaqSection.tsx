@@ -95,16 +95,13 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
               const isOpen = openItem === faq.id;
 
               return (
-                <div
-                  key={faq.id}
-                  className="border border-gray-200 rounded-2xl bg-white overflow-hidden transition-shadow hover:shadow-xs"
-                >
+                <div key={faq.id} className={styles.faqCard}>
                   <button
                     onClick={() => toggleItem(faq.id)}
-                    className="w-full flex items-center justify-between p-5 text-left bg-white cursor-pointer select-none focus:outline-hidden"
+                    className={styles.faqButton}
                     aria-expanded={isOpen}
                   >
-                    <span className="text-lg font-medium text-gray-900 pr-8">
+                    <span className={styles.faqQuestion}>
                       {faq.question}
                     </span>
                     <ChevronDown
@@ -119,9 +116,9 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
 
                   {reducedMotion ? (
                     isOpen ? (
-                      <div className="px-5 pb-5 pt-0">
+                      <div className={styles.faqAnswerWrap}>
                         <div
-                          className="prose prose-sm max-w-none text-gray-600 prose-a:text-blue-600 border-t border-gray-100 pt-4"
+                          className={styles.faqAnswer}
                           dangerouslySetInnerHTML={{
                             __html: sanitizeCmsHtml(faq.answer),
                           }}
@@ -134,9 +131,9 @@ const FaqSection: FC<FaqSectionProps> = ({ showContactCta = true }) => {
                       aria-hidden={!isOpen}
                     >
                       <div className={styles.answerPanelInner}>
-                        <div className="px-5 pb-5 pt-0">
+                        <div className={styles.faqAnswerWrap}>
                           <div
-                            className="prose prose-sm max-w-none text-gray-600 prose-a:text-blue-600 border-t border-gray-100 pt-4"
+                            className={styles.faqAnswer}
                             dangerouslySetInnerHTML={{
                               __html: sanitizeCmsHtml(faq.answer),
                             }}

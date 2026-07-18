@@ -102,7 +102,7 @@ function ServicesSection() {
         </SectionReveal>
 
         {/* Services Grid */}
-        <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl">
+        <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 w-full max-w-6xl">
           {services.map((service) => {
             const translation = getServiceTranslation(service, language);
             return (
@@ -112,7 +112,6 @@ function ServicesSection() {
                   description={
                     translation?.excerpt || translation?.description || ""
                   }
-                  className="hover:scale-[1.005] transition-transform duration-300"
                   icon={service.icon}
                 />
               </StaggerItem>
@@ -123,7 +122,7 @@ function ServicesSection() {
         {/* CTA Section */}
         <SectionReveal
           delay={0.15}
-          className="w-full max-w-4xl bg-white/65 rounded-[18px] p-8 md:p-12 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_12px_34px_rgba(16,24,40,0.06)] border border-slate-200/70"
+          className="w-full max-w-4xl bg-white/45 rounded-[18px] p-8 md:p-12 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.82),0_12px_34px_rgba(16,24,40,0.045)] border border-slate-200/60 backdrop-blur-md"
         >
           <div className="flex flex-col items-center gap-6 max-w-2xl mx-auto">
             <h3 className="font-sans text-2xl font-medium text-black tracking-normal">

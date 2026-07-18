@@ -4,11 +4,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
+  background: transparent;
   padding: 120px 24px 160px;
   width: 100%;
   position: relative;
   overflow: hidden;
+  z-index: 1;
 }
 
 /* Decorative background element */
@@ -62,6 +63,89 @@
 
 .answerPanelInner {
   overflow: hidden;
+}
+
+.faqCard {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.3)),
+    rgba(255, 255, 255, 0.24);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 10px 30px rgba(15, 23, 42, 0.035);
+  backdrop-filter: blur(14px);
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.faqCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(15, 23, 42, 0.16);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 16px 40px rgba(15, 23, 42, 0.055);
+}
+
+.faqButton {
+  display: flex;
+  width: 100%;
+  cursor: pointer;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 22px 24px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  user-select: none;
+}
+
+.faqButton:focus-visible {
+  outline: 2px solid #0f172a;
+  outline-offset: -2px;
+}
+
+.faqQuestion {
+  padding-right: 24px;
+  color: #111827;
+  font-family: "Satoshi", sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+}
+
+.faqAnswerWrap {
+  padding: 0 24px 22px;
+}
+
+.faqAnswer {
+  border-top: 1px solid rgba(15, 23, 42, 0.09);
+  padding-top: 18px;
+  color: #475467;
+  font-family: "Satoshi", sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.faqAnswer :global(p) {
+  margin: 0 0 1em;
+}
+
+.faqAnswer :global(p:last-child) {
+  margin-bottom: 0;
+}
+
+.faqAnswer :global(a) {
+  color: #101828;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 .item {

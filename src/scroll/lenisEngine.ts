@@ -83,6 +83,16 @@ export function scrollToTopInstant(): void {
   }
 }
 
+export function scrollToTopSmooth(): void {
+  if (lenis) {
+    lenis.scrollTo(0, { force: true });
+    refreshLenis();
+  }
+  if (typeof window !== "undefined") {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+}
+
 export function scrollToElement(
   target: Element | string | null | undefined,
   options?: { offset?: number; behavior?: "smooth" | "instant" },

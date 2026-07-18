@@ -83,7 +83,7 @@ export default function About() {
       sections={ABOUT_SECTIONS}
       shell={{
         className: "min-h-screen",
-        style: { backgroundColor: "#f5f5f5", position: "relative", zIndex: 1 },
+        style: { backgroundColor: "#fdfdfc", position: "relative", zIndex: 1 },
       }}
     />
   );

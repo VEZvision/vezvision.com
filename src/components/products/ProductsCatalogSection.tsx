@@ -78,9 +78,9 @@ export default function ProductsCatalogSection() {
               { icon: Cpu, key: "products.category.technology" },
             ].map((category) => (
               <StaggerItem key={category.key}>
-                <div className="group rounded-[14px] border border-slate-200/80 bg-white/65 p-6 shadow-xs transition-shadow hover:shadow-md">
+                <div className="group rounded-[14px] border border-slate-200/70 bg-white/45 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.75),0_10px_28px_rgba(16,24,40,0.04)] backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-slate-300/80 hover:shadow-md">
                   <div className="mb-4 flex justify-center">
-                    <div className="rounded-[12px] bg-slate-100/80 p-3 transition-colors group-hover:bg-black/5">
+                    <div className="rounded-[12px] border border-slate-200/70 bg-white/35 p-3 transition-colors group-hover:bg-white/55">
                       <category.icon
                         className="h-8 w-8 text-gray-900"
                         strokeWidth={1.5}
@@ -96,7 +96,7 @@ export default function ProductsCatalogSection() {
           </StaggerReveal>
 
           <SectionReveal delay={0.16}>
-            <div className="mx-auto max-w-4xl rounded-[18px] border border-slate-200/80 bg-white/65 p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_12px_34px_rgba(16,24,40,0.06)] md:p-12">
+            <div className="mx-auto max-w-4xl rounded-[18px] border border-slate-200/70 bg-white/45 p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.82),0_12px_34px_rgba(16,24,40,0.045)] backdrop-blur-md md:p-12">
               <div className="grid items-center gap-6 md:grid-cols-2 md:gap-12">
                 <div className="text-left">
                   <h2 className="mb-4 text-2xl font-normal text-gray-900">
@@ -111,7 +111,7 @@ export default function ProductsCatalogSection() {
                   </div>
                 </div>
 
-                <div className="rounded-[14px] border border-slate-200/80 bg-slate-50/80 p-6">
+                <div className="rounded-[14px] border border-slate-200/70 bg-white/38 p-6">
                   <h3 className="mb-2 font-semibold text-gray-900">
                     {t("products.notify.prompt")}
                   </h3>

@@ -1,5 +1,7 @@
 .section {
-  background: #ffffff;
+  background: transparent;
+  position: relative;
+  z-index: 1;
 }
 
 .reveal {
