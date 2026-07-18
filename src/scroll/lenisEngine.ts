@@ -87,6 +87,7 @@ export function scrollToTopSmooth(): void {
   if (lenis) {
     lenis.scrollTo(0, { force: true });
     refreshLenis();
+    return;
   }
   if (typeof window !== "undefined") {
     window.scrollTo({ top: 0, behavior: "smooth" });

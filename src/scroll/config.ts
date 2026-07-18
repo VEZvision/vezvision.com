@@ -4,9 +4,9 @@ export type ScrollMode = "native" | "lenis";
 
 const LENIS_FLAG = import.meta.env.VITE_ENABLE_SMOOTH_SCROLL;
 
-/** Lenis is on by default on desktop; set VITE_ENABLE_SMOOTH_SCROLL=false for native scroll. */
+/** Native scrolling is the stable default; Lenis can be enabled explicitly per deployment. */
 export function isLenisRequested(): boolean {
-  return LENIS_FLAG !== "false";
+  return LENIS_FLAG === "true";
 }
 
 export function shouldUseNativeScroll(): boolean {
