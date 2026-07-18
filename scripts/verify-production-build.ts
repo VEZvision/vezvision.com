@@ -106,10 +106,17 @@ if (!indexHtml) {
   addRootIndexErrors(indexHtml);
 }
 
-if (!readTextFile(notFoundPath)) {
+const notFoundHtml = readTextFile(notFoundPath);
+if (!notFoundHtml) {
   errors.push(
     "dist/404.html is missing — production cannot return a true custom 404",
   );
+} else if (
+  !/<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(
+    notFoundHtml,
+  )
+) {
+  errors.push("dist/404.html must include noindex robots metadata");
 }
 
 const htaccess = readTextFile(htaccessPath);
