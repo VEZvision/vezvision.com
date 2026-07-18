@@ -5,12 +5,12 @@ import { contactAutoReplyEmail, contactNotificationEmail, newsletterConfirmation
 
 const siteUrl = 'https://vezvision.vezlabs.dev'
 
-test('contact replies are localized and include the text brand mark', () => {
+test('contact replies are localized and reference the embedded brand logo', () => {
   const polish = contactAutoReplyEmail({ fullName: 'Anna', language: 'pl', siteUrl })
   const english = contactAutoReplyEmail({ fullName: 'Alex', language: 'en', siteUrl })
 
-  assert.equal(polish.html.includes('email-logo.png'), false)
-  assert.match(polish.html, /VEZ<span/)
+  assert.match(polish.html, /src="cid:vezvision-logo"/)
+  assert.equal(polish.html.includes('/email-logo.png'), false)
   assert.match(polish.html, /Dzień dobry Anna/)
   assert.match(english.html, /Hello Alex/)
   assert.equal(polish.subject.includes('—'), false)

@@ -4,6 +4,7 @@ const escapeHtml = value => String(value ?? '').replace(
 )
 
 const cleanSiteUrl = siteUrl => String(siteUrl || '').replace(/\/$/, '')
+const emailLogoCid = 'vezvision-logo'
 
 function emailLayout({ language, preheader, eyebrow, title, content, siteUrl }) {
   const isEnglish = language === 'en'
@@ -31,16 +32,7 @@ function emailLayout({ language, preheader, eyebrow, title, content, siteUrl }) 
             <tr>
               <td style="padding:28px 32px 24px;border-bottom:1px solid #ededf0;background:#ffffff">
                 <a href="${escapeHtml(safeSiteUrl)}" style="display:inline-block;text-decoration:none;color:#09090b">
-                  <table role="presentation" cellpadding="0" cellspacing="0">
-                    <tr>
-                      <td valign="middle" style="width:34px;height:34px;background:#09090b;border-radius:11px;text-align:center">
-                        <span style="display:inline-block;width:17px;height:17px;border-left:3px solid #ffffff;border-bottom:3px solid #ffffff;transform:rotate(-45deg);margin-top:6px"></span>
-                      </td>
-                      <td valign="middle" style="padding-left:11px;color:#09090b;font-size:20px;line-height:1;font-weight:700;letter-spacing:0">
-                        VEZ<span style="font-weight:400;color:#3f3f46">vision</span>
-                      </td>
-                    </tr>
-                  </table>
+                  <img src="cid:${emailLogoCid}" width="164" height="30" alt="VEZvision" style="display:block;width:164px;height:30px;border:0;outline:none;text-decoration:none">
                 </a>
               </td>
             </tr>

@@ -2,6 +2,7 @@ import crypto from 'node:crypto'
 import http from 'node:http'
 import { Pool } from 'pg'
 import { contactAutoReplyEmail, contactNotificationEmail, newsletterConfirmationEmail } from './email-templates.mjs'
+import { sendEmail as sendResendEmail } from './resend-email.mjs'
 
 const databaseUrl = process.env.DATABASE_URL
 const allowedOrigins = String(process.env.ALLOWED_ORIGINS || process.env.ALLOWED_ORIGIN || '')
@@ -54,22 +55,7 @@ const body = async req => {
 }
 const ip = req => String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown').split(',')[0].trim().slice(0, 128)
 async function sendEmail({ from, to, subject, html, text, replyTo }) {
-  if (!resendApiKey || !from) return { sent: false, reason: 'not_configured' }
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { authorization: `Bearer ${resendApiKey}`, 'content-type': 'application/json' },
-    signal: AbortSignal.timeout(10_000),
-    body: JSON.stringify({
-      from,
-      to: [to],
-      subject,
-      html,
-      text,
-      ...(replyTo ? { reply_to: replyTo } : {}),
-    }),
-  })
-  if (!response.ok) throw new Error(`Resend HTTP ${response.status}: ${(await response.text()).slice(0, 300)}`)
-  return { sent: true }
+  return sendResendEmail({ apiKey: resendApiKey, from, to, subject, html, text, replyTo })
 }
 const rateKey = (scope, ...parts) => `${scope}:${crypto.createHash('sha256').update(parts.map(part => String(part)).join(':')).digest('hex')}`
 async function allow(key, limit, windowMs) {
