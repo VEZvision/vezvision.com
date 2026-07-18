@@ -16,7 +16,7 @@ const Hero = memo(() => {
   return (
     <VideoHeroSection
       variant="home"
-      videoMp4Src="/hero-bg.mp4"
+      videoMp4Src="/hero-bg.mp4?v=65de2eb"
       videoWebmSrc="/hero-bg.webm"
       title={<span>{t("hero.subtitle")}</span>}
       subtitle={t("hero.description")}

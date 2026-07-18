@@ -50,7 +50,9 @@ export default function Footer() {
 
   const pathWithoutLocale = location.pathname.replace(/^\/(en|pl)(?=\/|$)/, "");
   const isHome = pathWithoutLocale === "" || pathWithoutLocale === "/";
-  const videoSrc = isHome ? "/hero-bg.mp4" : "/footer-bg.mp4";
+  const videoSrc = isHome
+    ? "/hero-bg.mp4?v=65de2eb"
+    : "/footer-bg.mp4?v=65de2eb";
   const videoWebmSrc = isHome ? "/hero-bg.webm" : "/footer-bg.webm";
   const showVideo = !prefersReducedData;
 
@@ -94,11 +96,41 @@ export default function Footer() {
   ].filter((l): l is NonNullable<typeof l> => l !== null);
 
   const fallbackNavLinks = [
-    { id: "about", href: "/about", labelPl: "O nas", labelEn: "About", enabled: true },
-    { id: "services", href: "/services", labelPl: "Usługi", labelEn: "Services", enabled: true },
-    { id: "portfolio", href: "/portfolio", labelPl: "Portfolio", labelEn: "Portfolio", enabled: true },
-    { id: "blog", href: "/blog", labelPl: "Blog", labelEn: "Blog", enabled: true },
-    { id: "products", href: "/products", labelPl: "Produkty", labelEn: "Products", enabled: true },
+    {
+      id: "about",
+      href: "/about",
+      labelPl: "O nas",
+      labelEn: "About",
+      enabled: true,
+    },
+    {
+      id: "services",
+      href: "/services",
+      labelPl: "Usługi",
+      labelEn: "Services",
+      enabled: true,
+    },
+    {
+      id: "portfolio",
+      href: "/portfolio",
+      labelPl: "Portfolio",
+      labelEn: "Portfolio",
+      enabled: true,
+    },
+    {
+      id: "blog",
+      href: "/blog",
+      labelPl: "Blog",
+      labelEn: "Blog",
+      enabled: true,
+    },
+    {
+      id: "products",
+      href: "/products",
+      labelPl: "Produkty",
+      labelEn: "Products",
+      enabled: true,
+    },
   ];
   const fallbackLegalLinks = [
     {
@@ -124,12 +156,12 @@ export default function Footer() {
     },
   ];
 
-  const navSource =
-    navigation?.items?.some((item) => item.enabled) ? navigation.items : fallbackNavLinks;
-  const legalSource =
-    footer?.legalLinks?.some((item) => item.enabled)
-      ? footer.legalLinks
-      : fallbackLegalLinks;
+  const navSource = navigation?.items?.some((item) => item.enabled)
+    ? navigation.items
+    : fallbackNavLinks;
+  const legalSource = footer?.legalLinks?.some((item) => item.enabled)
+    ? footer.legalLinks
+    : fallbackLegalLinks;
 
   const navLinks = navSource
     .filter((item) => item.enabled)
@@ -340,7 +372,9 @@ export default function Footer() {
                 onClick={actions.showPrivacyCenterModal}
                 className={styles.legalLink}
               >
-                {language === "en" ? "Privacy settings" : "Ustawienia prywatności"}
+                {language === "en"
+                  ? "Privacy settings"
+                  : "Ustawienia prywatności"}
               </button>
             </div>
 

@@ -141,6 +141,10 @@ CREATE TABLE IF NOT EXISTS public.vv_newsletter_subscribers (
 ALTER TABLE public.vv_site_settings ADD COLUMN IF NOT EXISTS created_at timestamptz NOT NULL DEFAULT now();
 ALTER TABLE public.vv_blog_posts ADD COLUMN IF NOT EXISTS created_by uuid;
 ALTER TABLE public.vv_projects ADD COLUMN IF NOT EXISTS created_by uuid;
+ALTER TABLE public.vv_projects ADD COLUMN IF NOT EXISTS show_cover_image boolean NOT NULL DEFAULT true;
+ALTER TABLE public.vv_projects ADD COLUMN IF NOT EXISTS show_demo_url boolean NOT NULL DEFAULT true;
+ALTER TABLE public.vv_projects ADD COLUMN IF NOT EXISTS show_challenge boolean NOT NULL DEFAULT true;
+ALTER TABLE public.vv_projects ADD COLUMN IF NOT EXISTS show_solution boolean NOT NULL DEFAULT true;
 ALTER TABLE public.vv_services ADD COLUMN IF NOT EXISTS created_by uuid;
 ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS first_name text;
 ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS last_name text;

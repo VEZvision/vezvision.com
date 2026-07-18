@@ -178,7 +178,7 @@ function injectHeroVideoPreload(headHtml: string, routePath: string): string {
   }
 
   const tags = [
-    `<link rel="preload" href="/hero-bg.mp4" as="fetch" type="video/mp4" crossorigin>`,
+    `<link rel="preload" href="/hero-bg.mp4?v=65de2eb" as="fetch" type="video/mp4" crossorigin>`,
   ].join("\n    ");
 
   return headHtml.replace("</head>", `${tags}\n</head>`);
