@@ -30,7 +30,9 @@ function hasBlogLocale(post: BlogPathRow, locale: Locale): boolean {
 }
 
 function hasProjectLocale(project: ProjectPathRow, locale: Locale): boolean {
-  return locale === "en" ? hasText(project.title_en) : hasText(project.title_pl);
+  return locale === "en"
+    ? hasText(project.title_en)
+    : hasText(project.title_pl);
 }
 
 export function getStaticPaths(): string[] {
@@ -38,7 +40,7 @@ export function getStaticPaths(): string[] {
 
   for (const locale of SUPPORTED_LOCALES) {
     for (const route of APP_ROUTES) {
-      if (route.pageKey === "not-found" || route.pageKey === "unsubscribe") {
+      if (route.pageKey === "unsubscribe") {
         continue;
       }
       if (route.dynamic) continue;

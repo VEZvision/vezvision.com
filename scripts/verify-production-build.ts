@@ -16,6 +16,7 @@ const assetsDir = path.join(distDir, "assets");
 const sitemapPath = path.join(distDir, "sitemap.xml");
 const isE2EBuild = process.env.E2E_BUILD === "1";
 const isSentryBuild = Boolean(process.env.SENTRY_AUTH_TOKEN);
+const skipSeoRouteValidation = process.env.SKIP_PRERENDER === "1";
 const siteOrigin = (
   process.env.VITE_SITE_URL || "https://vezvision.com"
 ).replace(/\/+$/, "");
@@ -106,10 +107,18 @@ if (!indexHtml) {
   addRootIndexErrors(indexHtml);
 }
 
-if (!readTextFile(notFoundPath)) {
+const notFoundHtml = readTextFile(notFoundPath);
+if (!notFoundHtml) {
   errors.push(
     "dist/404.html is missing — production cannot return a true custom 404",
   );
+} else if (
+  !skipSeoRouteValidation &&
+  !/<meta[^>]+name=["']robots["'][^>]+content=["'][^"']*noindex/i.test(
+    notFoundHtml,
+  )
+) {
+  errors.push("dist/404.html must include noindex robots metadata");
 }
 
 const htaccess = readTextFile(htaccessPath);
@@ -120,8 +129,6 @@ if (!htaccess) {
 }
 
 addAssetErrors();
-
-const skipSeoRouteValidation = process.env.SKIP_PRERENDER === "1";
 
 if (skipSeoRouteValidation) {
   console.log("Skipping SEO route validation — SKIP_PRERENDER=1");

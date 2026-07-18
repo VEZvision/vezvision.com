@@ -145,4 +145,21 @@ describe("SEO build validation", () => {
       );
     }
   });
+
+  it("serves prerendered route documents and keeps prerendering enabled in production", () => {
+    const nginxConfig = readFileSync(
+      resolve(process.cwd(), "frontend-nginx.conf"),
+      "utf8",
+    );
+    const dockerfile = readFileSync(
+      resolve(process.cwd(), "frontend.Dockerfile"),
+      "utf8",
+    );
+
+    assert.ok(nginxConfig.includes("try_files /$1$2/index.html /index.html"));
+    assert.ok(nginxConfig.includes("error_page 404 /pl/404/index.html"));
+    assert.ok(nginxConfig.includes("error_page 404 /en/404/index.html"));
+    assert.ok(dockerfile.includes("playwright install --with-deps chromium"));
+    assert.ok(!dockerfile.includes("ENV SKIP_PRERENDER=1"));
+  });
 });

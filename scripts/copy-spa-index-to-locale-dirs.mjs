@@ -53,8 +53,13 @@ for (const locale of localeDirs) {
 }
 
 // Nginx serves this document with a genuine 404 status for unknown URLs.
-// The client router then renders the localized NotFound view for the original path.
-fs.copyFileSync(sourceIndex, path.join(distDir, '404.html'))
+// Prefer the Polish prerendered error page so crawlers receive noindex metadata
+// even when the original request does not identify a supported locale.
+const prerenderedNotFound = path.join(distDir, 'pl', '404', 'index.html')
+fs.copyFileSync(
+  fs.existsSync(prerenderedNotFound) ? prerenderedNotFound : sourceIndex,
+  path.join(distDir, '404.html'),
+)
 
 console.log(
   `[copy-spa-index] Copied ${copied} index.html file(s), skipped ${skipped} already-present; generated 404.html`,
