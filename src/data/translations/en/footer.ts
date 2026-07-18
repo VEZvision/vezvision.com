@@ -15,7 +15,8 @@ export const footerTranslations = {
   "newsletter.disclaimer":
     "By subscribing, you accept our Privacy Policy. You can unsubscribe at any time.",
   "newsletter.success": "Check your inbox and confirm the subscription.",
-  "newsletter.consent": "I agree to receive the newsletter and accept the Privacy Policy.",
+  "newsletter.consent":
+    "I agree to receive the newsletter and accept the Privacy Policy.",
   "newsletter.duplicate": "This email address is already subscribed.",
   "newsletter.error.empty": "Please enter an email address",
   "newsletter.error.invalid": "Please enter a valid email address",
@@ -79,11 +80,13 @@ export const footerTranslations = {
   "unsubscribe.success": "has been removed from the list.",
   "unsubscribe.error_result": "An error occurred while unsubscribing.",
   "newsletter.confirm.title": "Confirm newsletter subscription",
-  "newsletter.confirm.description": "Click the button to confirm that you want to receive the VEZvision newsletter.",
+  "newsletter.confirm.description":
+    "Click the button to confirm that you want to receive the VEZvision newsletter.",
   "newsletter.confirm.button": "Confirm subscription",
   "newsletter.confirm.loading": "Confirming…",
   "newsletter.confirm.success": "Your address has been confirmed. Thank you!",
-  "newsletter.confirm.error": "The confirmation link is invalid or has expired.",
+  "newsletter.confirm.error":
+    "The confirmation link is invalid or has expired.",
   "legal.back": "Back",
   "legal.last_updated": "Last updated",
   "routeError.title": "Something went wrong",
@@ -92,6 +95,7 @@ export const footerTranslations = {
   "routeError.home": "Home",
   "routeError.retry": "Try again",
   "notfound.logoAlt": "VEZvision Logo",
+  "notfound.eyebrow": "This path leads nowhere",
   "notfound.title": "Page not found",
   "notfound.description":
     "Sorry, the page you are looking for does not exist or has been moved.",

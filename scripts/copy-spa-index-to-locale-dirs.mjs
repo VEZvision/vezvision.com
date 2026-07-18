@@ -52,6 +52,10 @@ for (const locale of localeDirs) {
   walk(localeDir)
 }
 
+// Nginx serves this document with a genuine 404 status for unknown URLs.
+// The client router then renders the localized NotFound view for the original path.
+fs.copyFileSync(sourceIndex, path.join(distDir, '404.html'))
+
 console.log(
-  `[copy-spa-index] Copied ${copied} index.html file(s), skipped ${skipped} already-present`,
+  `[copy-spa-index] Copied ${copied} index.html file(s), skipped ${skipped} already-present; generated 404.html`,
 )

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Eye, Database, User, Shield } from "lucide-react";
+import { X, Eye, Database, User, Shield, LockKeyhole } from "lucide-react";
 import { useCookieConsent } from "../../hooks/useCookieConsent";
 import { COOKIE_DEFINITIONS } from "../../data/cookieDefinitions";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
@@ -8,6 +8,7 @@ import { useLanguageContext } from "@/hooks/useLanguage";
 import { useModalTransition } from "@/hooks/useModalTransition";
 import { toast } from "sonner";
 import { OverviewTab, CookiesTab, DataTab, RightsTab } from "./privacy-tabs";
+import styles from "./PrivacyCenter.module.css";
 
 interface PrivacyCenterProps {
   className?: string;
@@ -130,139 +131,111 @@ export function PrivacyCenter({ className = "" }: PrivacyCenterProps) {
   if (!isVisible) return null;
 
   return (
-    <div className={`fixed inset-0 z-50 ${className}`}>
+    <div className={`${styles.root} ${className}`}>
       <div
-        className={`fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300 ${
-          isAnimating ? "opacity-100" : "opacity-0"
+        className={`${styles.backdrop} ${
+          isAnimating ? styles.backdropVisible : styles.backdropHidden
         }`}
         onClick={actions.hidePrivacyCenterModal}
         aria-hidden="true"
       />
 
-      <div className="fixed inset-0 flex items-center justify-center p-4">
-        <div
-          className={`relative w-full max-w-6xl max-h-[90vh] bg-white rounded-xl shadow-2xl transition-all duration-300 ease-out ${
-            isAnimating ? "scale-100 opacity-100" : "scale-95 opacity-0"
-          }`}
-          role="dialog"
-          aria-labelledby="privacy-center-title"
-          aria-describedby="privacy-center-description"
-          aria-modal="true"
-        >
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
+      <div
+        className={`${styles.dialog} ${
+          isAnimating ? styles.dialogVisible : styles.dialogHidden
+        }`}
+        role="dialog"
+        aria-labelledby="privacy-center-title"
+        aria-describedby="privacy-center-description"
+        aria-modal="true"
+      >
+        <aside className={styles.rail}>
+          <div className={styles.brand}>
+            <span className={styles.brandMark}>
+              <LockKeyhole size={16} aria-hidden="true" />
+            </span>
+            <span>VEZvision Privacy</span>
+          </div>
+          <div
+            className={styles.tabs}
+            role="tablist"
+            aria-orientation="vertical"
+          >
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-controls={`panel-${tab.id}`}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`${styles.tab} ${isActive ? styles.tabActive : ""}`}
+                >
+                  <Icon size={17} aria-hidden="true" />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+          <p className={styles.railNote}>{t("privacy.center.rail.note")}</p>
+        </aside>
+
+        <section className={styles.main}>
+          <div className={styles.header}>
             <div>
-              <h2
-                id="privacy-center-title"
-                className="text-2xl font-bold text-gray-900"
-              >
+              <p className={styles.eyebrow}>{t("privacy.center.eyebrow")}</p>
+              <h2 id="privacy-center-title" className={styles.title}>
                 {t("privacy.center.title")}
               </h2>
-              <p
-                id="privacy-center-description"
-                className="mt-1 text-sm text-gray-600"
-              >
+              <p id="privacy-center-description" className={styles.description}>
                 {t("privacy.center.description")}
               </p>
             </div>
             <button
               type="button"
               onClick={actions.hidePrivacyCenterModal}
-              className="p-2 text-gray-600 hover:text-black focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-lg transition-colors duration-200"
+              className={styles.close}
               aria-label={t("privacy.center.close")}
             >
               <X className="w-6 h-6" aria-hidden="true" />
             </button>
           </div>
 
-          <div className="flex flex-1 overflow-hidden">
-            <div className="w-64 bg-gray-50 border-r border-gray-200 p-4">
-              <div
-                className="space-y-2"
-                role="tablist"
-                aria-orientation="vertical"
-              >
-                {tabs.map((tab, index) => {
-                  const Icon = tab.icon;
-                  const isActive = activeTab === tab.id;
+          <div className={styles.scroll}>
+            {activeTab === "overview" && (
+              <OverviewTab
+                t={t}
+                language={language}
+                state={state}
+                activeCookiesCount={getActiveCookies().length}
+                totalCookiesCount={COOKIE_DEFINITIONS.length}
+                onShowPreferences={actions.showPreferencesModal}
+              />
+            )}
 
-                  return (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      role="tab"
-                      aria-selected={isActive}
-                      aria-controls={`panel-${tab.id}`}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 text-left rounded-lg transition-colors duration-200 ${
-                        isActive
-                          ? "bg-blue-100 text-blue-700 border border-blue-200"
-                          : "text-gray-700 hover:bg-gray-100"
-                      }`}
-                    >
-                      <Icon className="w-5 h-5" aria-hidden="true" />
-                      <span className="font-medium">{tab.label}</span>
-                      <kbd className="ml-auto px-1.5 py-0.5 text-xs font-mono bg-gray-200 border border-gray-300 rounded-sm">
-                        {index + 1}
-                      </kbd>
-                    </button>
-                  );
-                })}
-              </div>
+            {activeTab === "cookies" && (
+              <CookiesTab t={t} preferences={state.preferences} />
+            )}
 
-              <div className="mt-6 pt-4 border-t border-gray-200">
-                <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-                  {t("privacy.center.shortcuts")}
-                </h3>
-                <div className="space-y-1 text-xs text-gray-600">
-                  <div className="flex items-center justify-between">
-                    <span>{t("privacy.center.shortcuts.close")}</span>
-                    <kbd className="px-1.5 py-0.5 font-mono bg-gray-200 border border-gray-300 rounded-sm">
-                      Esc
-                    </kbd>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>{t("privacy.center.shortcuts.tabs")}</span>
-                    <kbd className="px-1.5 py-0.5 font-mono bg-gray-200 border border-gray-300 rounded-sm">
-                      Ctrl+1-4
-                    </kbd>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {activeTab === "data" && (
+              <DataTab
+                t={t}
+                language={language}
+                state={state}
+                isExporting={isExporting}
+                onExport={handleExportData}
+                onDelete={handleDeleteAllData}
+              />
+            )}
 
-            <div className="flex-1 overflow-y-auto">
-              {activeTab === "overview" && (
-                <OverviewTab
-                  t={t}
-                  language={language}
-                  state={state}
-                  activeCookiesCount={getActiveCookies().length}
-                  totalCookiesCount={COOKIE_DEFINITIONS.length}
-                  onShowPreferences={actions.showPreferencesModal}
-                />
-              )}
-
-              {activeTab === "cookies" && (
-                <CookiesTab t={t} preferences={state.preferences} />
-              )}
-
-              {activeTab === "data" && (
-                <DataTab
-                  t={t}
-                  language={language}
-                  state={state}
-                  isExporting={isExporting}
-                  onExport={handleExportData}
-                  onDelete={handleDeleteAllData}
-                />
-              )}
-
-              {activeTab === "rights" && (
-                <RightsTab t={t} contactEmail={contactEmail} />
-              )}
-            </div>
+            {activeTab === "rights" && (
+              <RightsTab t={t} contactEmail={contactEmail} />
+            )}
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );

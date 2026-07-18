@@ -1,6 +1,6 @@
 export const LEGAL_TEMPLATES = {
-    privacy_policy: {
-pl: `# Polityka Prywatności VEZvision
+  privacy_policy: {
+    pl: `# Polityka Prywatności VEZvision
 
 ## 1. Postanowienia Ogólne
 Niniejsza Polityka Prywatności określa zasady przetwarzania i ochrony danych osobowych przekazanych przez Użytkowników w związku z korzystaniem z serwisu internetowego **VEZvision** dostępnego pod adresem vezvision.com (dalej "Serwis").
@@ -16,10 +16,10 @@ W trosce o bezpieczeństwo powierzonych nam danych opracowaliśmy wewnętrzne pr
 ## 4. Cel i Podstawa Prawna Przetwarzania Danych
 Dane Osobowe przetwarzane są wyłącznie na podstawie przesłanek określonych w art. 6 ust. 1 RODO, w zależności od celu przetwarzania:
 
-1.  **Formularz kontaktowy** — dane (imię, e-mail, treść wiadomości) przetwarzane są w celu obsługi zgłoszenia na podstawie art. 6 ust. 1 lit. b RODO (wykonanie umowy) oraz art. 6 ust. 1 lit. f RODO (prawnie uzasadniony interes polegający na odpowiedzi na zapytanie).
-2.  **Newsletter** — adres e-mail oraz opcjonalnie imię przetwarzane są wyłącznie na podstawie art. 6 ust. 1 lit. a RODO (wyraźna zgoda Użytkownika). Subskrypcję można w każdej chwili anulować.
-3.  **Pliki cookies** — szczegółowe informacje znajdują się w [Polityce Plików Cookies](/cookie-policy).
-4.  **Zapewnienie działania i bezpieczeństwa Serwisu** — przetwarzanie na podstawie art. 6 ust. 1 lit. f RODO (prawnie uzasadniony interes Administratora).
+1.  **Formularz kontaktowy** - imię i nazwisko, adres e-mail, temat i treść wiadomości, opcjonalny numer telefonu, wybrany język oraz techniczne dane o adresie IP przetwarzane są w celu obsługi zgłoszenia na podstawie art. 6 ust. 1 lit. b RODO (działania przed zawarciem umowy) oraz art. 6 ust. 1 lit. f RODO (odpowiedź na zapytanie i ochrona formularza przed nadużyciami).
+2.  **Newsletter** - adres e-mail, wybrany język, źródło zapisu, stan i daty potwierdzenia zgody, a podczas potwierdzania także adres IP i identyfikator przeglądarki, przetwarzane są na podstawie art. 6 ust. 1 lit. a RODO (zgoda) oraz art. 6 ust. 1 lit. f RODO (udokumentowanie zgody i bezpieczeństwo). Subskrypcję można w każdej chwili anulować.
+3.  **Pliki cookies** - szczegółowe informacje znajdują się w [Polityce Plików Cookies](/cookie-policy).
+4.  **Zapewnienie działania i bezpieczeństwa Serwisu** - przetwarzanie na podstawie art. 6 ust. 1 lit. f RODO (prawnie uzasadniony interes Administratora).
 
 Serwis realizuje funkcje pozyskiwania informacji o użytkownikach i ich zachowaniach w następujący sposób:
 1.  Poprzez dobrowolnie wprowadzone w formularzach informacje (np. formularz kontaktowy, zapis na newsletter).
@@ -30,10 +30,10 @@ Dane podane w formularzu są przetwarzane w celu wynikającym z funkcji konkretn
 ## 5. Okres Przechowywania Danych
 Dane osobowe przechowywane są przez okres niezbędny do realizacji celu przetwarzania:
 
-*   **Dane z formularza kontaktowego** — przechowywane przez okres niezbędny do obsługi zgłoszenia, nie dłużej niż 2 lata od ostatniego kontaktu, chyba że przepisy prawa wymagają dłuższego okresu.
-*   **Dane subskrybenta newslettera** — przechowywane do momentu cofnięcia zgody (wypisania się z newslettera).
-*   **Dane dotyczące zgody na pliki cookies** — przechowywane przez 1 rok od wyrażenia zgody lub do jej cofnięcia.
-*   **Dane sesyjne (tokeny autoryzacyjne)** — przechowywane przez czas trwania sesji.
+*   **Dane z formularza kontaktowego** - przechowywane przez okres niezbędny do obsługi zgłoszenia, nie dłużej niż 2 lata od ostatniego kontaktu, chyba że przepisy prawa wymagają dłuższego okresu.
+*   **Dane subskrybenta newslettera** - przechowywane do momentu cofnięcia zgody (wypisania się z newslettera); niepotwierdzone zapisy są usuwane po 30 dniach.
+*   **Dane dotyczące zgody na pliki cookies** - przechowywane przez 1 rok od wyrażenia zgody lub do jej cofnięcia.
+*   **Dane sesyjne (tokeny autoryzacyjne)** - przechowywane przez czas trwania sesji.
 
 Po upływie okresu przechowywania dane są niezwłocznie usuwane lub anonimizowane.
 
@@ -41,16 +41,18 @@ Po upływie okresu przechowywania dane są niezwłocznie usuwane lub anonimizowa
 Dane osobowe pozostawione w serwisie nie zostaną sprzedane ani udostępnione osobom trzecim, z wyjątkiem podmiotów niezbędnych do realizacji usług.
 
 ### Kategorie odbiorców danych:
-*   Dostawcy usług IT i infrastruktury chmurowej
-*   Dostawcy usług analitycznych i monitorowania błędów
+*   Dostawcy hostingu, baz danych i infrastruktury technicznej.
+*   Dostawcy poczty transakcyjnej i zabezpieczeń antybotowych.
+*   Dostawcy analityki i monitorowania błędów, wyłącznie jeśli dana usługa jest aktywna i wymagana zgoda została udzielona.
 
 ### Podmioty przetwarzające dane w ramach Serwisu:
-*   **Dostawcy hostingu, bazy danych i infrastruktury technicznej** — przetwarzają dane niezbędne do działania Serwisu, obsługi formularzy oraz zapewnienia bezpieczeństwa.
-*   **Cloudflare, Inc.** — dostawca usług bezpieczeństwa i ochrony formularzy przed nadużyciami (Cloudflare Turnstile / mechanizmy antybotowe).
-*   **Sentry (Functional Software, Inc.)** — dostawca usług monitorowania błędów i wydajności, przetwarza dane analityczne wyłącznie za zgodą Użytkownika (pliki cookies kategorii analitycznej).
+*   **Hetzner Online GmbH** - hosting aplikacji, bazy danych i plików w Europejskim Obszarze Gospodarczym.
+*   **Resend, Inc. oraz jego dostawcy infrastruktury pocztowej** - wysyłka wiadomości związanych z formularzem kontaktowym i newsletterem.
+*   **Cloudflare, Inc.** - dostawca usług bezpieczeństwa i ochrony formularzy przed nadużyciami (Cloudflare Turnstile / mechanizmy antybotowe).
+*   **Sentry (Functional Software, Inc.) i Google LLC** - odpowiednio monitoring błędów oraz analityka, wyłącznie jeśli usługa jest aktywna i Użytkownik udzielił zgody analitycznej.
 
 ### Przekazywanie danych do państw trzecich:
-Cloudflare, Inc. oraz Sentry (Functional Software, Inc.) to podmioty z siedzibą w Stanach Zjednoczonych. Ewentualne przekazywanie danych do tych podmiotów odbywa się na podstawie odpowiednich mechanizmów prawnych, w szczególności standardowych klauzul umownych (Standard Contractual Clauses) zatwierdzonych przez Komisję Europejską.
+Niektórzy dostawcy technologiczni mogą przetwarzać dane poza EOG. W takim przypadku transfer odbywa się na podstawie mechanizmu przewidzianego w RODO, takiego jak decyzja stwierdzająca odpowiedni stopień ochrony albo standardowe klauzule umowne zatwierdzone przez Komisję Europejską. Zakres przekazywanych danych ograniczamy do niezbędnego minimum.
 
 ## 7. Prawa Użytkownika
 Zgodnie z RODO, przysługują Ci następujące prawa:
@@ -60,7 +62,7 @@ Zgodnie z RODO, przysługują Ci następujące prawa:
 *   Prawo do ograniczenia przetwarzania danych.
 *   Prawo do wniesienia sprzeciwu wobec przetwarzania danych.
 *   Prawo do przenoszenia danych.
-*   Prawo do cofnięcia zgody w dowolnym momencie — bez wpływu na zgodność z prawem przetwarzania, którego dokonano na podstawie zgody przed jej cofnięciem.
+*   Prawo do cofnięcia zgody w dowolnym momencie - bez wpływu na zgodność z prawem przetwarzania, którego dokonano na podstawie zgody przed jej cofnięciem.
 *   Prawo do wniesienia skargi do organu nadzorczego (Prezesa Urzędu Ochrony Danych Osobowych, ul. Stawki 2, 00-193 Warszawa).
 
 ## 8. Zautomatyzowane Podejmowanie Decyzji i Profilowanie
@@ -71,7 +73,7 @@ Zastrzegamy sobie prawo do zmiany w polityce ochrony prywatności serwisu, na kt
 
 ## 10. Kontakt
 W razie wątpliwości co do któregokolwiek z zapisów niniejszej polityki prywatności jesteśmy do dyspozycji - nasze dane znaleźć można w zakładce lub stopce - KONTAKT.`,
-        en: `# Privacy Policy of VEZvision
+    en: `# Privacy Policy of VEZvision
 
 ## 1. General Provisions
 This Privacy Policy sets out the rules for the processing and protection of personal data provided by Users in connection with the use of the **VEZvision** website available at vezvision.com (hereinafter the "Website").
@@ -87,10 +89,10 @@ Out of concern for the security of the data entrusted to us, we have developed i
 ## 4. Purpose and Legal Basis of Data Processing
 Personal data is processed exclusively on the basis of the legal grounds set out in Article 6(1) GDPR, depending on the purpose of processing:
 
-1.  **Contact form** — data (name, e-mail, message content) is processed for the purpose of handling the inquiry on the basis of Article 6(1)(b) GDPR (performance of a contract) and Article 6(1)(f) GDPR (legitimate interest consisting of responding to the inquiry).
-2.  **Newsletter** — e-mail address and optionally the name is processed exclusively on the basis of Article 6(1)(a) GDPR (explicit consent of the User). The subscription can be cancelled at any time.
-3.  **Cookies** — detailed information can be found in the [Cookie Policy](/cookie-policy).
-4.  **Ensuring the operation and security of the Website** — processing on the basis of Article 6(1)(f) GDPR (legitimate interest of the Data Controller).
+1.  **Contact form** - full name, e-mail address, subject and message, optional phone number, selected language and technical IP address data are processed to handle the inquiry on the basis of Article 6(1)(b) GDPR (steps before entering into a contract) and Article 6(1)(f) GDPR (responding to inquiries and protecting the form from abuse).
+2.  **Newsletter** - e-mail address, selected language, signup source, consent status and timestamps and, during confirmation, the IP address and browser identifier are processed on the basis of Article 6(1)(a) GDPR (consent) and Article 6(1)(f) GDPR (documenting consent and security). The subscription can be cancelled at any time.
+3.  **Cookies** - detailed information can be found in the [Cookie Policy](/cookie-policy).
+4.  **Ensuring the operation and security of the Website** - processing on the basis of Article 6(1)(f) GDPR (legitimate interest of the Data Controller).
 
 The Website collects information about users and their behavior in the following way:
 1.  Through information voluntarily entered in forms (e.g. contact form, newsletter subscription).
@@ -101,10 +103,10 @@ Data provided in the form is processed for the purpose resulting from the functi
 ## 5. Data Retention Period
 Personal data is stored for the period necessary to achieve the purpose of processing:
 
-*   **Contact form data** — stored for the period necessary to handle the inquiry, no longer than 2 years from the last contact, unless applicable law requires a longer period.
-*   **Newsletter subscriber data** — stored until the consent is withdrawn (unsubscribing from the newsletter).
-*   **Cookie consent data** — stored for 1 year from the date of granting consent or until it is withdrawn.
-*   **Session data (authentication tokens)** — stored for the duration of the session.
+*   **Contact form data** - stored for the period necessary to handle the inquiry, no longer than 2 years from the last contact, unless applicable law requires a longer period.
+*   **Newsletter subscriber data** - stored until consent is withdrawn (unsubscribing); unconfirmed signups are deleted after 30 days.
+*   **Cookie consent data** - stored for 1 year from the date of granting consent or until it is withdrawn.
+*   **Session data (authentication tokens)** - stored for the duration of the session.
 
 After the retention period expires, data is immediately deleted or anonymized.
 
@@ -112,16 +114,18 @@ After the retention period expires, data is immediately deleted or anonymized.
 Personal data left on the website will not be sold or made available to third parties, with the exception of entities necessary to provide services.
 
 ### Categories of data recipients:
-*   IT service providers and cloud infrastructure providers
-*   Analytics and error monitoring service providers
+*   Hosting, database and technical infrastructure providers.
+*   Transactional e-mail and anti-bot security providers.
+*   Analytics and error monitoring providers, only when the service is active and the required consent has been given.
 
 ### Data processors operating within the Website:
-*   **Hosting, database and technical infrastructure providers** — process data necessary for Website operation, form handling and security.
-*   **Cloudflare, Inc.** — security and form abuse prevention provider (Cloudflare Turnstile / anti-bot mechanisms).
-*   **Sentry (Functional Software, Inc.)** — error monitoring and performance tracking service provider, processes analytical data only with the User's consent (analytical category cookies).
+*   **Hetzner Online GmbH** - application, database and file hosting within the European Economic Area.
+*   **Resend, Inc. and its e-mail infrastructure providers** - delivery of contact form and newsletter messages.
+*   **Cloudflare, Inc.** - security and form abuse prevention provider (Cloudflare Turnstile / anti-bot mechanisms).
+*   **Sentry (Functional Software, Inc.) and Google LLC** - error monitoring and analytics respectively, only when the service is active and the User has granted analytics consent.
 
 ### Transfers to third countries:
-Cloudflare, Inc. and Sentry (Functional Software, Inc.) are entities based in the United States. Any transfer of data to these entities is based on appropriate legal mechanisms, in particular Standard Contractual Clauses approved by the European Commission.
+Some technology providers may process data outside the EEA. In that case, the transfer relies on a mechanism permitted by the GDPR, such as an adequacy decision or Standard Contractual Clauses approved by the European Commission. We limit transferred data to what is necessary for the service.
 
 ## 7. User Rights
 In accordance with the GDPR, you have the following rights:
@@ -131,7 +135,7 @@ In accordance with the GDPR, you have the following rights:
 *   The right to restrict data processing.
 *   The right to object to data processing.
 *   The right to data portability.
-*   The right to withdraw consent at any time — without affecting the lawfulness of processing based on consent before its withdrawal.
+*   The right to withdraw consent at any time - without affecting the lawfulness of processing based on consent before its withdrawal.
 *   The right to lodge a complaint with the supervisory authority (President of the Personal Data Protection Office, ul. Stawki 2, 00-193 Warsaw, Poland).
 
 ## 8. Automated Decision-Making and Profiling
@@ -141,10 +145,10 @@ We do not use automated decision-making or profiling within the meaning of Artic
 We reserve the right to change the privacy policy of the website, which may be affected by the development of internet technology, possible changes in the law regarding personal data protection, and the development of our website. We will inform about any changes in a visible and understandable way.
 
 ## 10. Contact
-If you have any doubts regarding any of the provisions of this privacy policy, we are available - our details can be found in the CONTACT tab or footer.`
-    },
-    terms: {
-        pl: `# Regulamin Świadczenia Usług Drogą Elektroniczną
+If you have any doubts regarding any of the provisions of this privacy policy, we are available - our details can be found in the CONTACT tab or footer.`,
+  },
+  terms: {
+    pl: `# Regulamin Świadczenia Usług Drogą Elektroniczną
 
 ## §1. Postanowienia Ogólne
 1.  Niniejszy Regulamin określa zasady korzystania z serwisu internetowego **VEZvision**, dostępnego pod adresem vezvision.com.
@@ -187,8 +191,8 @@ If you have any doubts regarding any of the provisions of this privacy policy, w
 
 ## §8. Przetwarzanie Danych Osobowych
 1.  Usługodawca przetwarza dane osobowe Użytkowników zgodnie z Polityką Prywatności dostępną na stronie pod adresem [/privacy-policy](/privacy-policy).
-2.  W zakresie korzystania z Formularza Kontaktowego, Usługodawca przetwarza następujące dane: imię i nazwisko (opcjonalnie), adres e-mail oraz treść wiadomości — w celu obsługi zgłoszenia na podstawie art. 6 ust. 1 lit. b i lit. f RODO.
-3.  W zakresie subskrypcji Newslettera, Usługodawca przetwarza adres e-mail oraz opcjonalnie imię — wyłącznie na podstawie wyraźnej zgody Użytkownika (art. 6 ust. 1 lit. a RODO).
+2.  W zakresie korzystania z Formularza Kontaktowego Usługodawca przetwarza imię i nazwisko, adres e-mail, temat i treść wiadomości, opcjonalny numer telefonu oraz dane techniczne niezbędne do bezpieczeństwa formularza - w celu obsługi zgłoszenia na podstawie art. 6 ust. 1 lit. b i lit. f RODO.
+3.  W zakresie subskrypcji Newslettera Usługodawca przetwarza adres e-mail oraz dane niezbędne do udokumentowania zgody i bezpieczeństwa zapisu - na podstawie art. 6 ust. 1 lit. a i lit. f RODO.
 4.  Szczegółowe informacje dotyczące przetwarzania danych osobowych, w tym prawa Użytkownika, znajdują się w Polityce Prywatności.
 
 ## §9. Ograniczenie Odpowiedzialności
@@ -200,7 +204,7 @@ If you have any doubts regarding any of the provisions of this privacy policy, w
 1.  Umowy zawierane poprzez Serwis zawierane są w języku polskim (lub angielskim, zależnie od wyboru Użytkownika).
 2.  Usługodawca zastrzega sobie prawo do dokonywania zmian Regulaminu z ważnych przyczyn, to jest: zmiany przepisów prawa, zmiany sposobów płatności i dostaw - w zakresie, w jakim te zmiany wpływają na realizację postanowień niniejszego Regulaminu.
 3.  W sprawach nieuregulowanych w niniejszym Regulaminie mają zastosowanie powszechnie obowiązujące przepisy prawa polskiego.`,
-        en: `# Terms of Service
+    en: `# Terms of Service
 
 ## §1. General Provisions
 1.  These Terms of Service set out the rules for using the **VEZvision** website, available at vezvision.com.
@@ -243,8 +247,8 @@ If you have any doubts regarding any of the provisions of this privacy policy, w
 
 ## §8. Personal Data Processing
 1.  The Service Provider processes Users' personal data in accordance with the Privacy Policy available on the website at [/privacy-policy](/privacy-policy).
-2.  When using the Contact Form, the Service Provider processes the following data: name (optionally), e-mail address and message content - for the purpose of handling the inquiry on the basis of Article 6(1)(b) and (f) GDPR.
-3.  With regard to Newsletter subscription, the Service Provider processes the e-mail address and optionally the name - exclusively on the basis of the User's explicit consent (Article 6(1)(a) GDPR).
+2.  When using the Contact Form, the Service Provider processes the full name, e-mail address, subject and message, optional phone number and technical data necessary to secure the form, for the purpose of handling the inquiry under Article 6(1)(b) and (f) GDPR.
+3.  For Newsletter subscriptions, the Service Provider processes the e-mail address and data necessary to document consent and secure the signup under Article 6(1)(a) and (f) GDPR.
 4.  Detailed information regarding the processing of personal data, including User rights, can be found in the Privacy Policy.
 
 ## §9. Limitation of Liability
@@ -255,10 +259,10 @@ If you have any doubts regarding any of the provisions of this privacy policy, w
 ## §10. Final Provisions
 1.  Contracts concluded via the Website are concluded in Polish (or English, depending on the User choice).
 2.  The Service Provider reserves the right to make changes to these Terms of Service for important reasons, that is: changes in the law, changes in payment and delivery methods - to the extent that these changes affect the implementation of the provisions of these Terms of Service.
-3.  In matters not covered by these Terms of Service, generally applicable provisions of Polish law shall apply.`
-    },
-    cookie_policy: {
-        pl: `# Polityka Plików Cookies
+3.  In matters not covered by these Terms of Service, generally applicable provisions of Polish law shall apply.`,
+  },
+  cookie_policy: {
+    pl: `# Polityka Plików Cookies
 
 ## 1. Czym są pliki cookies?
 Pliki cookies (tzw. "ciasteczka") to małe pliki tekstowe wysyłane przez serwis internetowy, który odwiedzasz, i zapisywane na Twoim urządzeniu końcowym (komputerze, laptopie, smartfonie), z którego korzystasz podczas przeglądania stron internetowych.
@@ -271,10 +275,10 @@ Cookies "sesyjne" są plikami tymczasowymi, które przechowywane są w urządzen
 "Stałe" pliki cookies przechowywane są w urządzeniu końcowym Użytkownika przez czas określony w parametrach plików cookies lub do czasu ich usunięcia przez Użytkownika.
 
 ### Kategorie plików cookies:
-1.  **Niezbędne** — umożliwiają poprawne działanie Serwisu, zapamiętanie wyborów dotyczących prywatności oraz ochronę formularzy przed nadużyciami. Są one niezbędne do działania strony i nie mogą być wyłączone.
-2.  **Funkcjonalne** — umożliwiają "zapamiętanie" wybranych przez Użytkownika ustawień i personalizację interfejsu Użytkownika, np. w zakresie wybranego języka lub regionu.
-3.  **Analityczne** — umożliwiają zbieranie informacji o sposobie korzystania ze stron internetowych Serwisu, co pomaga nam ulepszać jego strukturę i zawartość. Używamy Sentry do monitorowania błędów i wydajności.
-4.  **Marketingowe** — używane do śledzenia użytkowników na stronach internetowych w celu wyświetlania reklam dopasowanych do ich zainteresowań (obecnie nie stosujemy ciasteczek marketingowych).
+1.  **Niezbędne** - umożliwiają poprawne działanie Serwisu, zapamiętanie wyborów dotyczących prywatności oraz ochronę formularzy przed nadużyciami. Są one niezbędne do działania strony i nie mogą być wyłączone.
+2.  **Funkcjonalne** - umożliwiają "zapamiętanie" wybranych przez Użytkownika ustawień i personalizację interfejsu Użytkownika, np. w zakresie wybranego języka lub regionu.
+3.  **Analityczne** - umożliwiają zbieranie informacji o sposobie korzystania z Serwisu. Sentry i Google Analytics mogą być uruchamiane dopiero po udzieleniu zgody analitycznej, jeśli dana usługa jest aktywna.
+4.  **Marketingowe** - używane do śledzenia użytkowników na stronach internetowych w celu wyświetlania reklam dopasowanych do ich zainteresowań (obecnie nie stosujemy ciasteczek marketingowych).
 
 ## 3. Szczegółowa tabela stosowanych plików cookies
 
@@ -282,11 +286,12 @@ Cookies "sesyjne" są plikami tymczasowymi, które przechowywane są w urządzen
 |---|---|---|---|---|---|
 | vezvision_cookie_consent | Niezbędne | Przechowuje preferencje dotyczące zgody na pliki cookies | VEZvision | 1 rok | First-party |
 | cf_clearance / __cf_bm | Niezbędne | Weryfikacja bezpieczeństwa, ochrona formularzy i ograniczanie nadużyć | Cloudflare | Sesyjne / krótkoterminowe | Third-party |
-| Sentry / replay cookies | Analityczne | Monitorowanie błędów, wydajności i sesji replik dla celów diagnostycznych | Sentry (Functional Software, Inc.) | Sesyjne | Third-party |
+| Sentry (identyfikatory sesji, jeśli usługa jest aktywna) | Analityczne | Monitorowanie błędów i wydajności po udzieleniu zgody | Sentry (Functional Software, Inc.) | Sesyjne | Third-party |
+| Google Analytics (np. _ga, jeśli usługa jest aktywna) | Analityczne | Pomiar korzystania z Serwisu po udzieleniu zgody | Google LLC | Do 2 lat | Third-party |
 
 ## 4. Podstawa prawna przetwarzania
-- **Niezbędne cookies** — plik zgody (vezvision_cookie_consent) oraz techniczne pliki bezpieczeństwa są przetwarzane na podstawie art. 6 ust. 1 lit. f RODO (prawnie uzasadniony interes polegający na zapewnieniu zgodności z przepisami, bezpieczeństwa i poprawnego działania Serwisu).
-- **Funkcjonalne, analityczne i marketingowe cookies** — przetwarzanie wyłącznie na podstawie wyraźnej zgody Użytkownika (art. 6 ust. 1 lit. a RODO).
+- **Niezbędne cookies** - plik zgody (vezvision_cookie_consent) oraz techniczne pliki bezpieczeństwa są przetwarzane na podstawie art. 6 ust. 1 lit. f RODO (prawnie uzasadniony interes polegający na zapewnieniu zgodności z przepisami, bezpieczeństwa i poprawnego działania Serwisu).
+- **Funkcjonalne, analityczne i marketingowe cookies** - przetwarzanie wyłącznie na podstawie wyraźnej zgody Użytkownika (art. 6 ust. 1 lit. a RODO).
 
 Zgoda może być w każdym czasie wycofana poprzez zmianę ustawień w Centrum Prywatności dostępnym na stronie.
 
@@ -295,24 +300,25 @@ Stosujemy pliki cookies w następujących celach:
 *   Zapewnienia poprawnego działania Serwisu (niezbędne).
 *   Dostosowania zawartości stron internetowych Serwisu do preferencji Użytkownika oraz optymalizacji korzystania ze stron internetowych (funkcjonalne).
 *   Tworzenia anonimowych statystyk i monitorowania błędów, które pomagają zrozumieć, w jaki sposób Użytkownicy Serwisu korzystają ze stron internetowych, co umożliwia ulepszanie ich struktury i zawartości (analityczne).
-*   Wyświetlania dopasowanych treści reklamowych (marketingowe — obecnie nieaktywne).
+*   Wyświetlania dopasowanych treści reklamowych (marketingowe - obecnie nieaktywne).
 
 ## 6. Zarządzanie plikami cookies
 Użytkownicy Serwisu mogą dokonać w każdym czasie zmiany ustawień dotyczących plików cookies:
 *   Poprzez **Centrum Prywatności** dostępne na każdej stronie Serwisu.
-*   Poprzez ustawienia przeglądarki internetowej — szczegółowe informacje o możliwości i sposobach obsługi plików cookies dostępne są w ustawieniach oprogramowania (przeglądarki internetowej).
+*   Poprzez ustawienia przeglądarki internetowej - szczegółowe informacje o możliwości i sposobach obsługi plików cookies dostępne są w ustawieniach oprogramowania (przeglądarki internetowej).
 *   Poprzez kliknięcie linku do **Polityki Plików Cookies** w stopce strony.
 
 Ograniczenia stosowania plików cookies mogą wpłynąć na niektóre funkcjonalności dostępne na stronach internetowych Serwisu.
 
 ## 7. Podmioty przetwarzające dane
 W ramach stosowania plików cookies dane mogą być udostępniane następującym podmiotom przetwarzającym:
-*   **Cloudflare, Inc.** — dostawca usług bezpieczeństwa i ochrony formularzy przed nadużyciami.
-*   **Sentry (Functional Software, Inc.)** — dostawca usług monitorowania błędów i wydajności (sentry scent/replay cookies).
+*   **Cloudflare, Inc.** - dostawca usług bezpieczeństwa i ochrony formularzy przed nadużyciami.
+*   **Sentry (Functional Software, Inc.)** - dostawca usług monitorowania błędów i wydajności, uruchamiany dopiero po zgodzie analitycznej.
+*   **Google LLC** - dostawca analityki internetowej, uruchamiany dopiero po zgodzie analitycznej.
 
 ## 8. Zmiany w Polityce Plików Cookies
 Zastrzegamy sobie prawo do zmiany w polityce plików cookies. O wszelkich zmianach będziemy informować w sposób widoczny i zrozumiały. Zmiana polityki spowoduje ponowne wyświetlenie bannera z wyborem opcji zgody.`,
-        en: `# Cookie Policy
+    en: `# Cookie Policy
 
 ## 1. What are cookies?
 Cookies are small text files sent by the website you visit and stored on your end device (computer, laptop, smartphone) that you use when browsing websites.
@@ -325,10 +331,10 @@ The VEZvision Service uses two basic types of cookies: "session" cookies and "pe
 "Persistent" cookies are stored on the User end device for the time specified in the cookie parameters or until they are deleted by the User.
 
 ### Categories of cookies:
-1.  **Essential** — enabling the Website to function correctly, remember privacy choices and protect forms from abuse. They are necessary for the Website to function and cannot be disabled.
-2.  **Functional** — enabling the "remembering" of settings selected by the User and personalization of the User interface, e.g. in terms of the selected language or region.
-3.  **Analytical** — enabling the collection of information on how the Website pages are used, which helps us improve its structure and content. We use Sentry for error monitoring and performance tracking.
-4.  **Marketing** — used to track users across websites in order to display interest-based advertisements (currently we do not use marketing cookies).
+1.  **Essential** - enabling the Website to function correctly, remember privacy choices and protect forms from abuse. They are necessary for the Website to function and cannot be disabled.
+2.  **Functional** - enabling the "remembering" of settings selected by the User and personalization of the User interface, e.g. in terms of the selected language or region.
+3.  **Analytical** - enabling the collection of information on how the Website is used. Sentry and Google Analytics may be enabled only after analytics consent, if the relevant service is active.
+4.  **Marketing** - used to track users across websites in order to display interest-based advertisements (currently we do not use marketing cookies).
 
 ## 3. Detailed table of cookies used
 
@@ -336,11 +342,12 @@ The VEZvision Service uses two basic types of cookies: "session" cookies and "pe
 |---|---|---|---|---|---|
 | vezvision_cookie_consent | Essential | Stores your cookie consent preferences | VEZvision | 1 year | First-party |
 | cf_clearance / __cf_bm | Essential | Security verification, form protection and abuse prevention | Cloudflare | Session / short-term | Third-party |
-| Sentry / replay cookies | Analytical | Error monitoring, performance tracking and session replay for diagnostic purposes | Sentry (Functional Software, Inc.) | Session | Third-party |
+| Sentry (session identifiers, when enabled) | Analytical | Error and performance monitoring after consent | Sentry (Functional Software, Inc.) | Session | Third-party |
+| Google Analytics (e.g. _ga, when enabled) | Analytical | Measuring Website usage after consent | Google LLC | Up to 2 years | Third-party |
 
 ## 4. Legal basis for processing
-- **Essential cookies** — the consent cookie (vezvision_cookie_consent) and technical security cookies are processed on the basis of Article 6(1)(f) GDPR (legitimate interest consisting of ensuring compliance, security and correct Website operation).
-- **Functional, analytical and marketing cookies** — processing based solely on the User's explicit consent (Article 6(1)(a) GDPR).
+- **Essential cookies** - the consent cookie (vezvision_cookie_consent) and technical security cookies are processed on the basis of Article 6(1)(f) GDPR (legitimate interest consisting of ensuring compliance, security and correct Website operation).
+- **Functional, analytical and marketing cookies** - processing based solely on the User's explicit consent (Article 6(1)(a) GDPR).
 
 Consent may be withdrawn at any time by changing settings in the Privacy Center available on the Website.
 
@@ -349,24 +356,25 @@ We use cookies for the following purposes:
 *   Ensuring the proper functioning of the Website (essential).
 *   Adjusting the content of the Website pages to the User preferences and optimizing the use of websites (functional).
 *   Creating anonymous statistics and monitoring errors that help to understand how Website Users use websites, which allows improving their structure and content (analytical).
-*   Displaying tailored advertising content (marketing — currently inactive).
+*   Displaying tailored advertising content (marketing - currently inactive).
 
 ## 6. Managing cookies
 Website Users can change cookie settings at any time:
 *   Through the **Privacy Center** available on every page of the Website.
-*   Through the web browser settings — detailed information on the possibility and methods of handling cookies is available in the software (web browser) settings.
+*   Through the web browser settings - detailed information on the possibility and methods of handling cookies is available in the software (web browser) settings.
 *   By clicking the **Cookie Policy** link in the website footer.
 
 Restrictions on the use of cookies may affect some of the functionalities available on the Website pages.
 
 ## 7. Data processors
 In connection with the use of cookies, data may be shared with the following processors:
-*   **Cloudflare, Inc.** — security and form abuse prevention provider.
-*   **Sentry (Functional Software, Inc.)** — error monitoring and performance tracking service provider (sentry scent/replay cookies).
+*   **Cloudflare, Inc.** - security and form abuse prevention provider.
+*   **Sentry (Functional Software, Inc.)** - error and performance monitoring provider, enabled only after analytics consent.
+*   **Google LLC** - web analytics provider, enabled only after analytics consent.
 
 ## 8. Changes to the Cookie Policy
-We reserve the right to change the cookie policy. We will inform about any changes in a visible and understandable way. A policy change will trigger a re-display of the consent banner with options to choose from.`
-    }
-};
+We reserve the right to change the cookie policy. We will inform about any changes in a visible and understandable way. A policy change will trigger a re-display of the consent banner with options to choose from.`,
+  },
+} as const;
 
 export type LegalTemplates = typeof LEGAL_TEMPLATES;
