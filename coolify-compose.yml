@@ -21,6 +21,9 @@ services:
       NEWSLETTER_REPLY_TO: ${NEWSLETTER_REPLY_TO:-contact@vezvision.com}
       PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-https://vezvision.vezlabs.dev}
       PUBLIC_EMAIL_SITE_URL: ${PUBLIC_EMAIL_SITE_URL:-https://vezvision.com}
+      ADMIN_API_TOKEN_SHA256: ${ADMIN_API_TOKEN_SHA256:-}
+      ADMIN_POSTGREST_URL: ${ADMIN_POSTGREST_URL:-}
+      ADMIN_POSTGREST_API_KEY: ${ADMIN_POSTGREST_API_KEY:-}
       PORT: 3000
     networks:
       vezvision_internal:

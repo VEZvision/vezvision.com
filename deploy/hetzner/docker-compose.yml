@@ -9,6 +9,9 @@ services:
       ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+      ADMIN_API_TOKEN_SHA256: ${ADMIN_API_TOKEN_SHA256:-}
+      ADMIN_POSTGREST_URL: ${ADMIN_POSTGREST_URL:-}
+      ADMIN_POSTGREST_API_KEY: ${ADMIN_POSTGREST_API_KEY:-}
       PORT: 3000
     networks: [vezvision_internal, coolify]
     security_opt: [no-new-privileges:true]

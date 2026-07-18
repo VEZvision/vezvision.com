@@ -2,6 +2,8 @@ import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
 import { buildContentSecurityPolicy } from './csp-policy.mjs'
 
+process.env.VITE_API_URL ||= 'https://api.vezvision.test'
+
 describe('buildContentSecurityPolicy', () => {
   it('excludes unsafe-inline from script-src', () => {
     const policy = buildContentSecurityPolicy()
