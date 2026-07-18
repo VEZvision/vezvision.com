@@ -137,13 +137,21 @@ describe("SEO build validation", () => {
       "\\.well-known/security\\.txt",
       "\\.well-known/llm-policies\\.json",
       "(pl|en)/blog/feed\\.xml",
-      "manifest\\.webmanifest",
     ]) {
       assert.ok(
         nginxConfig.includes(requiredPath),
         `Nginx allowlist is missing ${requiredPath}`,
       );
     }
+
+    assert.ok(
+      nginxConfig.includes("location = /manifest.webmanifest"),
+      "Nginx allowlist is missing the web app manifest",
+    );
+    assert.ok(
+      nginxConfig.includes("default_type application/manifest+json"),
+      "Nginx must serve the web app manifest with its registered media type",
+    );
   });
 
   it("serves prerendered route documents and keeps prerendering enabled in production", () => {
