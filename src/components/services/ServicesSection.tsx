@@ -16,6 +16,7 @@ import { safeJsonLd } from "@/utils/safeJsonLd";
 import { joinUrlPath, safeAbsoluteHttpUrl } from "@/utils/safeHref";
 import { useSettings } from "@/hooks/useSettings";
 import { SectionLoader } from "@/components/loading";
+import styles from "./ServicesSection.module.css";
 
 function ServicesSection() {
   const { t, language } = useLanguageContext();
@@ -102,13 +103,7 @@ function ServicesSection() {
         </SectionReveal>
 
         {/* Services Grid */}
-        <StaggerReveal
-          className={`grid w-full gap-5 ${
-            services.length === 1
-              ? "max-w-3xl grid-cols-1"
-              : "max-w-6xl grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
-          }`}
-        >
+        <StaggerReveal className={styles.servicesGrid}>
           {services.map((service, index) => {
             const translation = getServiceTranslation(service, language);
             return (
@@ -127,48 +122,47 @@ function ServicesSection() {
         </StaggerReveal>
 
         {/* CTA Section */}
-        <SectionReveal
-          delay={0.15}
-          className="w-full max-w-4xl bg-white rounded-[18px] p-8 md:p-12 text-center shadow-[inset_0_1px_0_rgba(255,255,255,1),0_14px_40px_rgba(16,24,40,0.06)] border border-slate-200/80"
-        >
-          <div className="flex flex-col items-center gap-6 max-w-2xl mx-auto">
-            <h3 className="font-sans text-2xl font-medium text-black tracking-normal">
-              {t("services.section.cta.title")}
-            </h3>
-            <p className="font-sans text-base text-gray-600">
-              {t("services.section.cta.desc")}
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
-              <button
-                type="button"
-                onClick={() => navigate(toLocalizedPath("contact"))}
-                className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-[12px] font-medium hover:bg-gray-800 transition-colors shadow-xs"
-              >
-                {t("services.section.cta.primary")}
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  className="stroke-current stroke-2"
+        <div className={styles.ctaBand}>
+          <SectionReveal delay={0.15} className={styles.ctaCard}>
+            <div className="flex flex-col items-center gap-6 max-w-2xl mx-auto">
+              <h3 className="font-sans text-2xl font-medium text-black tracking-normal">
+                {t("services.section.cta.title")}
+              </h3>
+              <p className="font-sans text-base text-gray-600">
+                {t("services.section.cta.desc")}
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
+                <button
+                  type="button"
+                  onClick={() => navigate(toLocalizedPath("contact"))}
+                  className="flex items-center gap-2 bg-black text-white px-6 py-3 rounded-[12px] font-medium hover:bg-gray-800 transition-colors shadow-xs"
                 >
-                  <path
-                    d="M5 12h14M12 5l7 7-7 7"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-              <button
-                type="button"
-                onClick={() => navigate(toLocalizedPath("portfolio"))}
-                className="px-6 py-3 rounded-[12px] border border-gray-200 font-medium hover:border-black hover:bg-white transition-all"
-              >
-                {t("services.section.cta.secondary")}
-              </button>
+                  {t("services.section.cta.primary")}
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    className="stroke-current stroke-2"
+                  >
+                    <path
+                      d="M5 12h14M12 5l7 7-7 7"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate(toLocalizedPath("portfolio"))}
+                  className="px-6 py-3 rounded-[12px] border border-gray-200 font-medium hover:border-black hover:bg-white transition-all"
+                >
+                  {t("services.section.cta.secondary")}
+                </button>
+              </div>
             </div>
-          </div>
-        </SectionReveal>
+          </SectionReveal>
+        </div>
       </div>
     </section>
   );

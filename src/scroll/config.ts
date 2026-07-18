@@ -4,9 +4,9 @@ export type ScrollMode = "native" | "lenis";
 
 const LENIS_FLAG = import.meta.env.VITE_ENABLE_SMOOTH_SCROLL;
 
-/** Native scrolling is the stable default; Lenis can be enabled explicitly per deployment. */
+/** Smooth scrolling stays enabled by default; deployments can opt out explicitly. */
 export function isLenisRequested(): boolean {
-  return LENIS_FLAG === "true";
+  return LENIS_FLAG !== "false";
 }
 
 export function shouldUseNativeScroll(): boolean {
@@ -19,26 +19,19 @@ export function shouldUseNativeScroll(): boolean {
   );
 }
 
-export const SCROLL_IDLE_MS = 150;
+export const SCROLL_IDLE_MS = 120;
 
 export function getLenisOptions(): LenisOptions {
-  const eventsTarget =
-    typeof document !== "undefined"
-      ? (document.querySelector<HTMLElement>("[data-lenis-events]") ??
-        undefined)
-      : undefined;
-
   return {
     autoRaf: true,
-    lerp: 0.08,
-    wheelMultiplier: 0.85,
+    lerp: 0.11,
+    wheelMultiplier: 1,
     touchMultiplier: 1,
     smoothWheel: true,
     syncTouch: false,
     autoResize: true,
     anchors: true,
     stopInertiaOnNavigate: true,
-    eventsTarget: eventsTarget ?? undefined,
     prevent: (node: Element) => node.hasAttribute("data-lenis-prevent"),
-  } as LenisOptions;
+  };
 }

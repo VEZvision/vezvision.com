@@ -87,7 +87,7 @@ export default function ProductsCatalogSection() {
               { icon: Cpu, key: "products.category.technology" },
             ].map((category) => (
               <StaggerItem key={category.key}>
-                <div className="group rounded-[14px] border border-white/90 bg-white/72 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,1),0_12px_32px_rgba(16,24,40,0.07)] backdrop-blur-xl backdrop-saturate-150 transition-all hover:-translate-y-0.5 hover:border-slate-200 hover:bg-white/82 hover:shadow-md">
+                <div className="group rounded-[14px] border border-white/95 bg-white/78 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,1),0_14px_36px_rgba(16,24,40,0.08)] backdrop-blur-[30px] backdrop-saturate-150 transition-all hover:-translate-y-0.5 hover:border-slate-200 hover:bg-white/88 hover:shadow-md">
                   <div className="mb-4 flex justify-center">
                     <div className="rounded-[12px] border border-slate-200/80 bg-white/75 p-3 shadow-sm transition-colors group-hover:bg-white">
                       <category.icon
@@ -105,7 +105,7 @@ export default function ProductsCatalogSection() {
           </StaggerReveal>
 
           <SectionReveal delay={0.16}>
-            <div className="mx-auto max-w-4xl rounded-[18px] border border-white/90 bg-white/72 p-8 shadow-[inset_0_1px_0_rgba(255,255,255,1),0_14px_40px_rgba(16,24,40,0.07)] backdrop-blur-xl backdrop-saturate-150 md:p-12">
+            <div className="mx-auto max-w-4xl rounded-[18px] border border-white/95 bg-white/78 p-8 shadow-[inset_0_1px_0_rgba(255,255,255,1),0_16px_44px_rgba(16,24,40,0.08)] backdrop-blur-[30px] backdrop-saturate-150 md:p-12">
               <div className="grid items-center gap-6 md:grid-cols-2 md:gap-12">
                 <div className="text-left">
                   <h2 className="mb-4 text-2xl font-normal text-gray-900">

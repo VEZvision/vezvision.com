@@ -4,12 +4,12 @@
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  gap: 42px;
+  gap: 28px;
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(16, 24, 40, 0.11);
   border-radius: 14px;
-  padding: 22px 24px 24px;
-  min-height: 226px;
+  padding: 20px 22px 22px;
+  min-height: 190px;
   overflow: hidden;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.96),
@@ -136,9 +136,9 @@
 
 @media (max-width: 768px) {
   .card {
-    gap: 34px;
+    gap: 26px;
     padding: 20px;
-    min-height: 208px;
+    min-height: 184px;
   }
 
   .title {
