@@ -1,74 +1,47 @@
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink } from "lucide-react";
+import styles from "../PrivacyCenter.module.css";
 
 interface RightsTabProps {
   t: (key: string) => string;
   contactEmail: string;
 }
+const rights = [
+  "access",
+  "rectification",
+  "erasure",
+  "portability",
+  "objection",
+] as const;
 
 export function RightsTab({ t, contactEmail }: RightsTabProps) {
   return (
-    <div id="panel-rights" role="tabpanel" className="p-6 space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('privacy.rights.title')}</h3>
-
-        <div className="space-y-4">
-          <div className="border border-gray-200 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2">{t('privacy.rights.access.title')}</h4>
-            <p className="text-sm text-gray-600 mb-3">
-              {t('privacy.rights.access.description')}
+    <div id="panel-rights" role="tabpanel" className={styles.panel}>
+      <h3 className={styles.sectionTitle}>{t("privacy.rights.title")}</h3>
+      <p className={styles.lead}>{t("privacy.rights.intro")}</p>
+      <div className={styles.rightsGrid}>
+        {rights.map((right) => (
+          <article key={right} className={styles.rightItem}>
+            <h4 className={styles.rightItemTitle}>
+              {t(`privacy.rights.${right}.title`)}
+            </h4>
+            <p className={styles.rightItemDescription}>
+              {t(`privacy.rights.${right}.description`)}
             </p>
-          </div>
-
-          <div className="border border-gray-200 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2">{t('privacy.rights.rectification.title')}</h4>
-            <p className="text-sm text-gray-600 mb-3">
-              {t('privacy.rights.rectification.description')}
-            </p>
-          </div>
-
-          <div className="border border-gray-200 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2">{t('privacy.rights.erasure.title')}</h4>
-            <p className="text-sm text-gray-600 mb-3">
-              {t('privacy.rights.erasure.description')}
-            </p>
-          </div>
-
-          <div className="border border-gray-200 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2">{t('privacy.rights.portability.title')}</h4>
-            <p className="text-sm text-gray-600 mb-3">
-              {t('privacy.rights.portability.description')}
-            </p>
-          </div>
-
-          <div className="border border-gray-200 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2">{t('privacy.rights.objection.title')}</h4>
-            <p className="text-sm text-gray-600 mb-3">
-              {t('privacy.rights.objection.description')}
-            </p>
-          </div>
-
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <ExternalLink className="w-5 h-5 text-blue-600 mt-0.5" aria-hidden="true" />
-              <div>
-                <h4 className="font-medium text-blue-900 mb-1">{t('privacy.rights.contact.title')}</h4>
-                <p className="text-sm text-blue-700 mb-3">
-                  {t('privacy.rights.contact.description')}
-                </p>
-                {contactEmail ? (
-                  <a
-                    href={`mailto:${contactEmail}`}
-                    className="inline-flex items-center gap-2 text-sm font-medium text-blue-700 hover:text-blue-800"
-                  >
-                    <span>{contactEmail}</span>
-                    <ExternalLink className="w-3 h-3" aria-hidden="true" />
-                  </a>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        </div>
+          </article>
+        ))}
       </div>
+      <section className={styles.contactBlock}>
+        <h4 className={styles.rowTitle}>{t("privacy.rights.contact.title")}</h4>
+        <p className={styles.rowDescription}>
+          {t("privacy.rights.contact.description")}
+        </p>
+        {contactEmail ? (
+          <a href={`mailto:${contactEmail}`} className={styles.textLink}>
+            {contactEmail}
+            <ExternalLink size={13} aria-hidden="true" />
+          </a>
+        ) : null}
+      </section>
     </div>
   );
 }

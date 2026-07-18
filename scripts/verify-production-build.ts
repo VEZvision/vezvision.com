@@ -11,6 +11,7 @@ import {
 const distDir = path.resolve("dist");
 const indexPath = path.join(distDir, "index.html");
 const htaccessPath = path.join(distDir, ".htaccess");
+const notFoundPath = path.join(distDir, "404.html");
 const assetsDir = path.join(distDir, "assets");
 const sitemapPath = path.join(distDir, "sitemap.xml");
 const isE2EBuild = process.env.E2E_BUILD === "1";
@@ -103,6 +104,12 @@ if (!indexHtml) {
   errors.push("dist/index.html is missing — run vite build first");
 } else {
   addRootIndexErrors(indexHtml);
+}
+
+if (!readTextFile(notFoundPath)) {
+  errors.push(
+    "dist/404.html is missing — production cannot return a true custom 404",
+  );
 }
 
 const htaccess = readTextFile(htaccessPath);

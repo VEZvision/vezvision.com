@@ -379,7 +379,20 @@ export default function Footer() {
             </div>
 
             <p className={styles.copyrightText}>
-              {brandName} © {new Date().getFullYear()}.
+              <span>
+                {brandName} © {new Date().getFullYear()}.
+              </span>{" "}
+              <span>
+                {language === "en" ? "A " : "Marka "}
+                <a
+                  href="https://vezhq.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  VEZ
+                </a>
+                {language === "en" ? " brand." : "."}
+              </span>
             </p>
           </div>
         </div>

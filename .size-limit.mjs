@@ -12,12 +12,6 @@ export default [
     gzip: true,
   },
   {
-    name: "Vendor Supabase",
-    path: "dist/assets/vendor-api-*.js",
-    limit: "210 kB",
-    gzip: true,
-  },
-  {
     name: "Vendor Markdown",
     path: "dist/assets/vendor-markdown-*.js",
     limit: "120 kB",

@@ -79,8 +79,8 @@ jobs:
           name: dist
           path: dist
 
-      - name: Install Playwright browser
-        run: npx playwright install --with-deps chromium
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox
 
       - name: E2E smoke tests (production build)
         run: npm run test:e2e -- --project=chromium --grep-invert "Route error boundary"
@@ -93,65 +93,11 @@ jobs:
         env:
           CI: true
           E2E_USE_PREBUILT_DIST: "1"
-        continue-on-error: true
 
       - name: E2E route error boundary (E2E build)
         run: npm run test:e2e -- tests/e2e/route-error.spec.ts --project=chromium
         env:
           CI: true
-
-  deploy-hostido:
-    runs-on: ubuntu-latest
-    needs: [quality, e2e]
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-    environment: production
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
-
-      - name: Build
-        run: npm run build
-        env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
-          VITE_GA_ID: ${{ secrets.VITE_GA_ID }}
-          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
-          VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
-
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.HOSTIDO_SSH_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -p ${{ secrets.HOSTIDO_PORT || 22 }} -H ${{ secrets.HOSTIDO_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Upload sourcemaps to Sentry
-        if: env.SENTRY_AUTH_TOKEN != ''
-        run: npx @sentry/cli sourcemaps inject dist/assets && npx @sentry/cli sourcemaps upload --org vezvision --project vezvision-website --auth-token ${{ secrets.SENTRY_AUTH_TOKEN }} dist/assets
-        continue-on-error: true
-
-      - name: Deploy to Hostido via rsync
-        run: |
-          rsync -avz --delete \
-            -e "ssh -i ~/.ssh/id_ed25519 -p ${{ secrets.HOSTIDO_PORT || 22 }} -o StrictHostKeyChecking=no -o ConnectTimeout=30" \
-            --exclude='.htaccess' \
-            dist/ ${{ secrets.HOSTIDO_USER }}@${{ secrets.HOSTIDO_HOST }}:${{ secrets.HOSTIDO_PATH }}/
-
-      - name: Upload .htaccess (protected from rsync --delete)
-        run: |
-          scp -i ~/.ssh/id_ed25519 -P ${{ secrets.HOSTIDO_PORT || 22 }} -o StrictHostKeyChecking=no -o ConnectTimeout=30 \
-            public/.htaccess ${{ secrets.HOSTIDO_USER }}@${{ secrets.HOSTIDO_HOST }}:${{ secrets.HOSTIDO_PATH }}/.htaccess
 
   lighthouse:
     runs-on: ubuntu-latest

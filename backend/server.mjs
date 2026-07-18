@@ -34,7 +34,18 @@ if ([adminApiTokenSha256, adminPostgrestUrl, adminPostgrestApiKey].some(Boolean)
   && ![adminApiTokenSha256, adminPostgrestUrl, adminPostgrestApiKey].every(Boolean)) {
   throw new Error('ADMIN_API_TOKEN_SHA256, ADMIN_POSTGREST_URL and ADMIN_POSTGREST_API_KEY must be configured together')
 }
-const pool = new Pool({ connectionString: databaseUrl, max: 10, ssl: false })
+const pool = new Pool({
+  connectionString: databaseUrl,
+  max: 10,
+  maxUses: 10_000,
+  idleTimeoutMillis: 30_000,
+  connectionTimeoutMillis: 5_000,
+  statement_timeout: 5_000,
+  query_timeout: 6_000,
+  application_name: 'vezvision-api',
+  ssl: false,
+})
+pool.on('error', error => console.error('Unexpected PostgreSQL pool error', error))
 
 const adminTables = new Set([
   'vv_blog_categories', 'vv_blog_post_categories', 'vv_blog_posts',
@@ -67,6 +78,10 @@ const cors = (req, res) => {
   res.setHeader('vary', 'Origin')
   res.setHeader('access-control-allow-methods', 'POST, OPTIONS')
   res.setHeader('access-control-allow-headers', 'content-type, accept')
+}
+const hasAllowedBrowserOrigin = req => {
+  const origin = String(req.headers.origin || '').trim()
+  return !origin || allowedOrigins.includes(origin)
 }
 const body = async req => {
   let raw = ''
@@ -170,8 +185,16 @@ async function cleanupRateLimits() {
       `SELECT public.cleanup_rate_limit_buckets(interval '7 days') AS deleted_count`,
     )
     if (Number(row?.deleted_count) > 0) console.info(`Cleaned ${row.deleted_count} expired rate-limit buckets`)
+    const { rows: [retention] } = await pool.query(
+      `SELECT * FROM public.cleanup_expired_private_data()`,
+    )
+    if (Number(retention?.expired_messages) > 0 || Number(retention?.expired_unconfirmed_subscribers) > 0) {
+      console.info(
+        `Applied data retention: ${retention.expired_messages} messages and ${retention.expired_unconfirmed_subscribers} unconfirmed subscribers removed`,
+      )
+    }
   } catch (error) {
-    console.error('Rate-limit retention cleanup failed', error)
+    console.error('Scheduled data retention cleanup failed', error)
   }
 }
 async function verifyTurnstile(req, input, expectedAction) {
@@ -206,8 +229,8 @@ async function verifyTurnstile(req, input, expectedAction) {
 async function submitContact(req, res) {
   const input = await body(req)
   const email = String(input.email || '').trim().toLowerCase()
-  const fullName = String(input.fullName || input.full_name || '').trim()
-  const subject = String(input.subject || '').trim()
+  const fullName = String(input.fullName || input.full_name || '').replace(/[\u0000-\u001f\u007f]+/g, ' ').trim()
+  const subject = String(input.subject || '').replace(/[\u0000-\u001f\u007f]+/g, ' ').trim()
   const message = String(input.message || '').trim()
   if (!await allow(rateKey('contact', ip(req), email), 3, 300000)) return json(res, 429, { error: 'Too many requests' })
   if (fullName.length < 2 || fullName.length > 120 || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || subject.length < 2 || subject.length > 160 || message.length < 10 || message.length > 5000) return json(res, 400, { error: 'Invalid input' })
@@ -280,17 +303,33 @@ async function codeInjection(req, res) {
 const handlers = { 'submit-contact': submitContact, 'subscribe-newsletter': subscribe, 'confirm-newsletter': confirmNewsletter, 'unsubscribe-newsletter': unsubscribe, 'increment-blog-view': incrementBlogView, 'check-maintenance-access': maintenance, 'get-code-injection': codeInjection }
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost')
+  if (url.pathname === '/healthz') {
+    if (req.method !== 'GET' && req.method !== 'HEAD') return json(res, 405, { error: 'Method not allowed' })
+    try {
+      await pool.query('SELECT 1')
+      return json(res, 200, { status: 'ok' })
+    } catch (error) {
+      console.error('Health check failed', error)
+      return json(res, 503, { status: 'unavailable' })
+    }
+  }
   if (url.pathname.startsWith('/admin/v1/')) {
     try { return await proxyAdminApi(req, res, url) }
     catch (error) { console.error(error); return json(res, 500, { error: 'Internal server error' }) }
   }
   cors(req, res)
   if (req.method === 'OPTIONS') return res.end()
+  if (!hasAllowedBrowserOrigin(req)) return json(res, 403, { error: 'Origin not allowed' })
   if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' })
   const name = url.pathname.split('/').pop()
-  try { const handler = handlers[name]; if (!handler) return json(res, 404, { error: 'Not found' }); await handler(req, res) }
+  try { const handler = Object.hasOwn(handlers, name) ? handlers[name] : null; if (!handler) return json(res, 404, { error: 'Not found' }); await handler(req, res) }
   catch (error) { console.error(error); json(res, error.status || 500, { error: error.status ? error.message : 'Internal server error' }) }
 })
+
+server.requestTimeout = 20_000
+server.headersTimeout = 10_000
+server.keepAliveTimeout = 5_000
+server.maxRequestsPerSocket = 1_000
 
 server.listen(Number(process.env.PORT || 3000), '0.0.0.0', () => {
   cleanupRateLimits()
