@@ -58,8 +58,11 @@ test('admin gateway authenticates and only proxies allowlisted CMS tables', asyn
   let stderr = ''
   child.stderr.on('data', chunk => { stderr += chunk })
   t.after(async () => {
-    child.kill('SIGTERM')
-    await new Promise(resolve => child.once('exit', resolve))
+    if (child.exitCode === null) {
+      const exited = new Promise(resolve => child.once('exit', resolve))
+      child.kill('SIGTERM')
+      await exited
+    }
     await new Promise(resolve => upstream.close(resolve))
   })
 
