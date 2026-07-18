@@ -20,6 +20,7 @@ services:
       NEWSLETTER_FROM_EMAIL: ${NEWSLETTER_FROM_EMAIL:-newsletter@vezvision.com}
       NEWSLETTER_REPLY_TO: ${NEWSLETTER_REPLY_TO:-contact@vezvision.com}
       PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-https://vezvision.vezlabs.dev}
+      PUBLIC_EMAIL_SITE_URL: ${PUBLIC_EMAIL_SITE_URL:-https://vezvision.com}
       PORT: 3000
     networks:
       vezvision_internal:

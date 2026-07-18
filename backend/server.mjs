@@ -22,6 +22,7 @@ const newsletterFromEmail = process.env.NEWSLETTER_FROM_EMAIL?.trim() || legacyF
 const newsletterReplyTo = process.env.NEWSLETTER_REPLY_TO?.trim() || 'contact@vezvision.com'
 const contactNotifyEmail = process.env.CONTACT_NOTIFY_EMAIL?.trim() || 'contact@vezvision.com'
 const publicSiteUrl = (process.env.PUBLIC_SITE_URL?.trim() || allowedOrigins[0] || '').replace(/\/$/, '')
+const publicEmailSiteUrl = (process.env.PUBLIC_EMAIL_SITE_URL?.trim() || 'https://vezvision.com').replace(/\/$/, '')
 if (!databaseUrl || allowedOrigins.length === 0) throw new Error('DATABASE_URL and ALLOWED_ORIGIN/ALLOWED_ORIGINS are required')
 if (!turnstileSecret) console.warn('TURNSTILE_SECRET_KEY is not set; contact and newsletter captcha verification is disabled')
 if (turnstileTestMode) console.warn('TURNSTILE_TEST_MODE is enabled; use only in development')
@@ -122,10 +123,10 @@ async function submitContact(req, res) {
   const { rows: [row] } = await pool.query('INSERT INTO public.messages(full_name,email,subject,message,phone,language,client_ip) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id', [fullName, email, subject, message, String(input.phone || '').trim().slice(0, 40) || null, input.language === 'en' ? 'en' : 'pl', ip(req)])
   const phone = String(input.phone || '').trim().slice(0, 40)
   const lang = input.language === 'en' ? 'en' : 'pl'
-  const notification = contactNotificationEmail({ fullName, email, phone, subject, message, siteUrl: publicSiteUrl })
-  const autoReply = contactAutoReplyEmail({ fullName, language: lang, siteUrl: publicSiteUrl })
+  const notification = contactNotificationEmail({ fullName, email, phone, subject, message, siteUrl: publicEmailSiteUrl })
+  const autoReply = contactAutoReplyEmail({ fullName, language: lang, siteUrl: publicEmailSiteUrl })
   const emailResults = await Promise.allSettled([
-    sendEmail({ from: `VEZvision Formularz <${contactNotificationFromEmail}>`, to: contactNotifyEmail, ...notification, replyTo: email }),
+    sendEmail({ from: `VEZvision Formularz <${contactNotificationFromEmail}>`, to: contactNotifyEmail, ...notification }),
     sendEmail({ from: `VEZvision <${contactReplyFromEmail}>`, to: email, ...autoReply, replyTo: contactNotifyEmail }),
   ])
   for (const result of emailResults) if (result.status === 'rejected') console.error('Contact email delivery failed', result.reason)
@@ -143,7 +144,7 @@ async function subscribe(req, res) {
   const language = input.language === 'en' ? 'en' : 'pl'
   const { rows: [row] } = await pool.query(`INSERT INTO public.vv_newsletter_subscribers(email,source,tags,token,is_active,language,confirmation_requested_at) VALUES ($1,$2,ARRAY['newsletter'],$3,false,$4,now()) ON CONFLICT(email) DO UPDATE SET token=CASE WHEN public.vv_newsletter_subscribers.is_active THEN public.vv_newsletter_subscribers.token ELSE EXCLUDED.token END, confirmation_requested_at=CASE WHEN public.vv_newsletter_subscribers.is_active THEN public.vv_newsletter_subscribers.confirmation_requested_at ELSE now() END, updated_at=now(), source=EXCLUDED.source, language=EXCLUDED.language RETURNING id,is_active,token`, [email, source, token, language])
   const confirmationUrl = `${publicSiteUrl}/${language}/newsletter/confirm?token=${encodeURIComponent(row.token)}`
-  const confirmation = newsletterConfirmationEmail({ language, confirmationUrl, siteUrl: publicSiteUrl })
+  const confirmation = newsletterConfirmationEmail({ language, confirmationUrl, siteUrl: publicEmailSiteUrl })
   let emailSent = false
   if (!row.is_active) try { emailSent = (await sendEmail({ from: `VEZvision Newsletter <${newsletterFromEmail}>`, to: email, ...confirmation, replyTo: newsletterReplyTo })).sent }
   catch (error) { console.error('Newsletter confirmation delivery failed', error) }
