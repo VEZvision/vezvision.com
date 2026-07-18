@@ -54,6 +54,7 @@ export default function Footer() {
     ? "/hero-bg.mp4?v=65de2eb"
     : "/footer-bg.mp4?v=65de2eb";
   const videoWebmSrc = isHome ? "/hero-bg.webm" : "/footer-bg.webm";
+  const videoPosterSrc = isHome ? "/hero-poster.avif" : "/footer-poster.avif";
   const showVideo = !prefersReducedData;
 
   useBackgroundVideoSection({
@@ -263,6 +264,7 @@ export default function Footer() {
               loop
               playsInline
               preload={isHome ? "none" : "metadata"}
+              poster={videoPosterSrc}
               aria-hidden="true"
               tabIndex={-1}
               data-lenis-prevent
@@ -270,8 +272,8 @@ export default function Footer() {
               disableRemotePlayback
               x-webkit-airplay="deny"
             >
-              <source src={videoSrc} type="video/mp4" />
               <source src={videoWebmSrc} type="video/webm" />
+              <source src={videoSrc} type="video/mp4" />
             </video>
           )}
           <div className={styles.videoOverlay} />

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-floating-promises -- node:test describe/it return promises by design */
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { resolve } from "node:path";
 
@@ -169,5 +169,29 @@ describe("SEO build validation", () => {
     assert.ok(nginxConfig.includes("error_page 404 /en/404/index.html"));
     assert.ok(dockerfile.includes("playwright install --with-deps chromium"));
     assert.ok(!dockerfile.includes("ENV SKIP_PRERENDER=1"));
+  });
+
+  it("prioritizes lightweight hero posters before background video", () => {
+    const heroSource = readFileSync(
+      resolve(process.cwd(), "src/components/common/VideoHeroSection.tsx"),
+      "utf8",
+    );
+    const prerenderSource = readFileSync(
+      resolve(process.cwd(), "scripts/prerender-head.ts"),
+      "utf8",
+    );
+
+    assert.ok(heroSource.includes('rel="preload"'));
+    assert.ok(heroSource.includes('fetchPriority="high"'));
+    assert.ok(heroSource.includes("poster={videoPosterSrc}"));
+    assert.ok(
+      heroSource.indexOf('type="video/webm"') <
+        heroSource.indexOf('type="video/mp4"'),
+      "The smaller WebM source must be preferred when supported",
+    );
+    assert.ok(existsSync(resolve(process.cwd(), "public/hero-poster.avif")));
+    assert.ok(existsSync(resolve(process.cwd(), "public/footer-poster.avif")));
+    assert.ok(!prerenderSource.includes('href="/hero-bg.mp4?v=65de2eb"'));
+    assert.ok(!prerenderSource.includes('replace(/\\sposter="[^"]*"'));
   });
 });
