@@ -284,6 +284,16 @@ DROP POLICY IF EXISTS service_assignments_read ON public.vv_service_category_ass
 DROP POLICY IF EXISTS faq_categories_read ON public.vv_faq_categories;
 DROP POLICY IF EXISTS faq_items_read ON public.vv_faq_items;
 
+DO $$
+DECLARE api_role text;
+BEGIN
+  FOREACH api_role IN ARRAY ARRAY['vezvision_api', 'vezvision_lab_api'] LOOP
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = api_role) THEN
+      EXECUTE format('DROP POLICY IF EXISTS public_settings_%I_read ON public.vv_site_settings', api_role);
+    END IF;
+  END LOOP;
+END $$;
+
 CREATE POLICY public_settings_read ON public.vv_site_settings FOR SELECT TO anon USING (is_public);
 CREATE POLICY page_seo_read ON public.vv_page_seo FOR SELECT TO anon USING (is_public);
 CREATE POLICY page_sections_read ON public.vv_page_sections FOR SELECT TO anon USING (is_public);
@@ -301,6 +311,23 @@ CREATE POLICY services_read ON public.vv_services FOR SELECT TO anon USING (stat
 CREATE POLICY service_assignments_read ON public.vv_service_category_assignments FOR SELECT TO anon USING (EXISTS (SELECT 1 FROM public.vv_services s WHERE s.id = service_id AND s.status = 'active'));
 CREATE POLICY faq_categories_read ON public.vv_faq_categories FOR SELECT TO anon USING (is_active);
 CREATE POLICY faq_items_read ON public.vv_faq_items FOR SELECT TO anon USING (is_active);
+
+-- The Node API reads the public maintenance setting using the restricted
+-- authenticator role directly. Add only that RLS path when the role already
+-- exists; fresh installations also create it in provision-postgrest-role.sql.
+DO $$
+DECLARE api_role text;
+BEGIN
+  FOREACH api_role IN ARRAY ARRAY['vezvision_api', 'vezvision_lab_api'] LOOP
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = api_role) THEN
+      EXECUTE format(
+        'CREATE POLICY public_settings_%I_read ON public.vv_site_settings FOR SELECT TO %I USING (is_public)',
+        api_role,
+        api_role
+      );
+    END IF;
+  END LOOP;
+END $$;
 
 REVOKE ALL ON public.messages, public.vv_newsletter_subscribers, public.rate_limit_buckets, public.vv_blog_post_views FROM PUBLIC, anon;
 REVOKE ALL ON FUNCTION public.vv_blog_increment_views(text, text) FROM PUBLIC, anon;
