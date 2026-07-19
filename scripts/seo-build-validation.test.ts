@@ -169,6 +169,10 @@ describe("SEO build validation", () => {
     assert.ok(nginxConfig.includes("error_page 404 /en/404/index.html"));
     assert.ok(dockerfile.includes("playwright install --with-deps chromium"));
     assert.ok(!dockerfile.includes("ENV SKIP_PRERENDER=1"));
+    assert.ok(
+      dockerfile.includes('test -n "$VITE_TURNSTILE_SITE_KEY"'),
+      "Production images must fail closed when the Turnstile site key is missing",
+    );
   });
 
   it("prioritizes lightweight hero posters before background video", () => {
