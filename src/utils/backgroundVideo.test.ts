@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   installBackgroundVideoRecovery,
@@ -47,5 +47,92 @@ describe("backgroundVideo", () => {
     cleanup();
     video.dispatchEvent(new Event("ended"));
     expect(onPlay).toHaveBeenCalledTimes(2);
+  });
+
+  describe("health check", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("restarts a paused video with data ready when the document is visible", () => {
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: "visible",
+      });
+      const video = document.createElement("video");
+      const onPlay = vi.fn();
+      Object.defineProperty(video, "paused", {
+        configurable: true,
+        value: true,
+      });
+      Object.defineProperty(video, "readyState", {
+        configurable: true,
+        value: HTMLMediaElement.HAVE_CURRENT_DATA,
+      });
+
+      installBackgroundVideoRecovery(video, onPlay);
+      vi.advanceTimersByTime(2000);
+
+      expect(onPlay).toHaveBeenCalled();
+    });
+
+    it("does not restart a paused video when the document is hidden", () => {
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: "hidden",
+      });
+      const video = document.createElement("video");
+      const onPlay = vi.fn();
+      Object.defineProperty(video, "paused", {
+        configurable: true,
+        value: true,
+      });
+      Object.defineProperty(video, "readyState", {
+        configurable: true,
+        value: HTMLMediaElement.HAVE_CURRENT_DATA,
+      });
+
+      installBackgroundVideoRecovery(video, onPlay);
+      vi.advanceTimersByTime(2000);
+
+      expect(onPlay).not.toHaveBeenCalled();
+    });
+
+    it("does not restart a video that is still playing", () => {
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: "visible",
+      });
+      const video = document.createElement("video");
+      const onPlay = vi.fn();
+      Object.defineProperty(video, "paused", {
+        configurable: true,
+        value: false,
+      });
+      Object.defineProperty(video, "readyState", {
+        configurable: true,
+        value: HTMLMediaElement.HAVE_CURRENT_DATA,
+      });
+
+      installBackgroundVideoRecovery(video, onPlay);
+      vi.advanceTimersByTime(2000);
+
+      expect(onPlay).not.toHaveBeenCalled();
+    });
+
+    it("stops the health check interval when cleaned up", () => {
+      const clearSpy = vi.spyOn(window, "clearInterval");
+      const video = document.createElement("video");
+      const onPlay = vi.fn();
+
+      const cleanup = installBackgroundVideoRecovery(video, onPlay);
+      cleanup();
+
+      expect(clearSpy).toHaveBeenCalled();
+    });
   });
 });
