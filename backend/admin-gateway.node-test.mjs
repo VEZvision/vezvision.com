@@ -72,6 +72,20 @@ test('admin gateway authenticates and only proxies allowlisted CMS tables', asyn
   const unauthorized = await fetch(`${base}/admin/v1/vv_blog_posts`)
   assert.equal(unauthorized.status, 401, stderr)
 
+  const rejectedOrigin = await fetch(`${base}/functions/v1/not-a-handler`, {
+    method: 'POST',
+    headers: { origin: 'https://attacker.example', 'content-type': 'application/json' },
+    body: '{}',
+  })
+  assert.equal(rejectedOrigin.status, 403, stderr)
+
+  const allowedOrigin = await fetch(`${base}/functions/v1/not-a-handler`, {
+    method: 'POST',
+    headers: { origin: 'https://vezvision.com', 'content-type': 'application/json' },
+    body: '{}',
+  })
+  assert.equal(allowedOrigin.status, 404, stderr)
+
   const forbiddenResource = await fetch(`${base}/admin/v1/vv_files`, {
     headers: { 'x-internal-api-key': token },
   })

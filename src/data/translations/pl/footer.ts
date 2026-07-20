@@ -15,7 +15,8 @@ export const footerTranslations = {
   "newsletter.disclaimer":
     "Zapisując się, akceptujesz naszą Politykę Prywatności. Możesz zrezygnować w każdej chwili.",
   "newsletter.success": "Sprawdź skrzynkę i potwierdź zapis.",
-  "newsletter.consent": "Zgadzam się na otrzymywanie newslettera i akceptuję Politykę Prywatności.",
+  "newsletter.consent":
+    "Zgadzam się na otrzymywanie newslettera i akceptuję Politykę Prywatności.",
   "newsletter.duplicate": "Ten adres e-mail jest już zapisany do newslettera.",
   "newsletter.error.empty": "Proszę podać adres e-mail",
   "newsletter.error.invalid": "Proszę podać poprawny adres e-mail",
@@ -80,11 +81,13 @@ export const footerTranslations = {
   "unsubscribe.success": "został wypisany z listy.",
   "unsubscribe.error_result": "Wystąpił błąd podczas wypisywania.",
   "newsletter.confirm.title": "Potwierdź zapis do newslettera",
-  "newsletter.confirm.description": "Kliknij przycisk, aby potwierdzić zgodę na otrzymywanie newslettera VEZvision.",
+  "newsletter.confirm.description":
+    "Kliknij przycisk, aby potwierdzić zgodę na otrzymywanie newslettera VEZvision.",
   "newsletter.confirm.button": "Potwierdź zapis",
   "newsletter.confirm.loading": "Potwierdzanie…",
   "newsletter.confirm.success": "Adres został potwierdzony. Dziękujemy!",
-  "newsletter.confirm.error": "Link potwierdzający jest nieprawidłowy lub wygasł.",
+  "newsletter.confirm.error":
+    "Link potwierdzający jest nieprawidłowy lub wygasł.",
   "legal.back": "Powrót",
   "legal.last_updated": "Ostatnia aktualizacja",
   "routeError.title": "Ups! Coś poszło nie tak",
@@ -93,6 +96,7 @@ export const footerTranslations = {
   "routeError.home": "Strona główna",
   "routeError.retry": "Spróbuj ponownie",
   "notfound.logoAlt": "Logo VEZvision",
+  "notfound.eyebrow": "Ta ścieżka prowadzi donikąd",
   "notfound.title": "Strona nie została znaleziona",
   "notfound.description":
     "Przepraszamy, ale strona, której szukasz, nie istnieje lub została przeniesiona.",

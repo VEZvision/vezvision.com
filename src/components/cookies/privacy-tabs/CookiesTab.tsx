@@ -1,5 +1,9 @@
-import { COOKIE_CATEGORIES, COOKIE_DEFINITIONS } from '../../../data/cookieDefinitions';
-import type { CookiePreferences } from '../../../types/cookies';
+import {
+  COOKIE_CATEGORIES,
+  COOKIE_DEFINITIONS,
+} from "@/data/cookieDefinitions";
+import type { CookiePreferences } from "@/types/cookies";
+import styles from "../PrivacyCenter.module.css";
 
 interface CookiesTabProps {
   t: (key: string) => string;
@@ -8,62 +12,63 @@ interface CookiesTabProps {
 
 export function CookiesTab({ t, preferences }: CookiesTabProps) {
   return (
-    <div id="panel-cookies" role="tabpanel" className="p-6 space-y-6">
+    <div id="panel-cookies" role="tabpanel" className={styles.panel}>
+      <h3 className={styles.sectionTitle}>
+        {t("privacy.cookies.details.title")}
+      </h3>
+      <p className={styles.lead}>{t("privacy.cookies.details.description")}</p>
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('privacy.cookies.details.title')}</h3>
-        <p className="text-sm text-gray-600 mb-6">
-          {t('privacy.cookies.details.description')}
-        </p>
-      </div>
-
-      <div className="space-y-6">
         {COOKIE_CATEGORIES.map((category) => {
           const isEnabled = preferences[category.id];
           const categoryCookies = COOKIE_DEFINITIONS.filter(
-            (cookie) => cookie.category === category.id
+            (cookie) => cookie.category === category.id,
           );
-
           return (
-            <div key={category.id} className="border border-gray-200 rounded-lg overflow-hidden">
-              <div className={`px-4 py-3 flex items-center justify-between ${isEnabled ? 'bg-green-50' : 'bg-gray-50'}`}>
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-medium text-gray-900">{category.name}</h4>
-                  <p className="text-sm text-gray-600 mt-0.5">{category.description}</p>
+            <section key={category.id} className={styles.detailCard}>
+              <div className={styles.detailHeader}>
+                <div>
+                  <h4 className={styles.detailTitle}>
+                    {t(`privacy.category.${category.id}`)}
+                  </h4>
+                  <p className={styles.detailDescription}>
+                    {t(`privacy.category.${category.id}.desc`)}
+                  </p>
                 </div>
-                <div className={`ml-3 px-3 py-1 rounded-full text-sm font-medium shrink-0 ${isEnabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                  {isEnabled ? t('privacy.overview.enabled') : t('privacy.overview.disabled')}
-                </div>
+                <span
+                  className={`${styles.status} ${isEnabled ? styles.statusOn : ""}`}
+                >
+                  {isEnabled
+                    ? t("privacy.overview.enabled")
+                    : t("privacy.overview.disabled")}
+                </span>
               </div>
-
               {categoryCookies.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                <div className={styles.tableScroll}>
+                  <table className={styles.cookieTable}>
                     <thead>
-                      <tr className="border-t border-gray-200 bg-gray-50/50">
-                        <th className="px-4 py-2 text-left font-medium text-gray-700">{t('privacy.cookies.table.name')}</th>
-                        <th className="px-4 py-2 text-left font-medium text-gray-700">{t('privacy.cookies.purpose')}</th>
-                        <th className="px-4 py-2 text-left font-medium text-gray-700">{t('privacy.cookies.provider')}</th>
-                        <th className="px-4 py-2 text-left font-medium text-gray-700">{t('privacy.cookies.validity')}</th>
+                      <tr>
+                        <th>{t("privacy.cookies.table.name")}</th>
+                        <th>{t("privacy.cookies.purpose")}</th>
+                        <th>{t("privacy.cookies.provider")}</th>
+                        <th>{t("privacy.cookies.validity")}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {categoryCookies.map((cookie) => (
-                        <tr key={cookie.name} className="border-t border-gray-100 hover:bg-gray-50/50">
-                          <td className="px-4 py-2 font-mono text-xs text-gray-900">{cookie.name}</td>
-                          <td className="px-4 py-2 text-gray-600">{cookie.purpose}</td>
-                          <td className="px-4 py-2 text-gray-600">{cookie.provider}</td>
-                          <td className="px-4 py-2 text-gray-600">{cookie.expiry}</td>
+                        <tr key={cookie.name}>
+                          <td className={styles.cookieName}>{cookie.name}</td>
+                          <td>{t(`privacy.cookie.${cookie.name}.purpose`)}</td>
+                          <td>{cookie.provider}</td>
+                          <td>{t(`privacy.cookie.${cookie.name}.expiry`)}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
               ) : (
-                <div className="px-4 py-3 border-t border-gray-200 text-sm text-gray-500 italic">
-                  {t('privacy.cookies.empty')}
-                </div>
+                <p className={styles.empty}>{t("privacy.cookies.empty")}</p>
               )}
-            </div>
+            </section>
           );
         })}
       </div>

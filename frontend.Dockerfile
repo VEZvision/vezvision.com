@@ -1,7 +1,8 @@
-FROM node:22-alpine AS build
+FROM node:22-bookworm-slim AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
+RUN npx playwright install --with-deps chromium
 COPY . .
 ARG VITE_API_URL
 ARG VITE_SITE_URL
@@ -17,7 +18,7 @@ ENV VITE_SENTRY_DSN=$VITE_SENTRY_DSN
 ENV VITE_GA_ID=$VITE_GA_ID
 ENV VITE_TURNSTILE_SITE_KEY=$VITE_TURNSTILE_SITE_KEY
 ENV VITE_ENABLE_SMOOTH_SCROLL=$VITE_ENABLE_SMOOTH_SCROLL
-ENV SKIP_PRERENDER=1
+RUN test -n "$VITE_TURNSTILE_SITE_KEY" || (echo "VITE_TURNSTILE_SITE_KEY is required for a production image" >&2; exit 1)
 RUN npm run build
 
 FROM nginxinc/nginx-unprivileged:1.30.3-alpine

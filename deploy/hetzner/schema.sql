@@ -180,6 +180,30 @@ BEGIN
 END $$;
 REVOKE ALL ON FUNCTION public.cleanup_rate_limit_buckets(interval) FROM PUBLIC;
 
+CREATE OR REPLACE FUNCTION public.cleanup_expired_private_data()
+RETURNS TABLE(expired_messages bigint, expired_unconfirmed_subscribers bigint)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+DECLARE
+  message_count bigint;
+  subscriber_count bigint;
+BEGIN
+  DELETE FROM public.messages
+  WHERE created_at < now() - interval '2 years';
+  GET DIAGNOSTICS message_count = ROW_COUNT;
+
+  DELETE FROM public.vv_newsletter_subscribers
+  WHERE is_active = false
+    AND confirmed_at IS NULL
+    AND confirmation_requested_at < now() - interval '30 days';
+  GET DIAGNOSTICS subscriber_count = ROW_COUNT;
+
+  RETURN QUERY SELECT message_count, subscriber_count;
+END $$;
+REVOKE ALL ON FUNCTION public.cleanup_expired_private_data() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION public.vv_set_updated_at() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN NEW.updated_at = now(); RETURN NEW; END $$;
 CREATE OR REPLACE FUNCTION public.vv_set_published_at() RETURNS trigger LANGUAGE plpgsql AS $$
@@ -248,6 +272,7 @@ BEGIN
       EXECUTE format('GRANT SELECT, INSERT, UPDATE ON public.vv_newsletter_subscribers TO %I', api_role);
       EXECUTE format('GRANT EXECUTE ON FUNCTION public.vv_blog_increment_views(p_post_slug text, p_client_ip text) TO %I', api_role);
       EXECUTE format('GRANT EXECUTE ON FUNCTION public.cleanup_rate_limit_buckets(interval) TO %I', api_role);
+      EXECUTE format('GRANT EXECUTE ON FUNCTION public.cleanup_expired_private_data() TO %I', api_role);
     END IF;
   END LOOP;
 END $$;

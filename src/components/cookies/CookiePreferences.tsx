@@ -174,7 +174,7 @@ export function CookiePreferences({ className = "" }: CookiePreferencesProps) {
       {/* Modal */}
       <div className="fixed inset-0 flex items-center justify-center p-4 z-10002">
         <div
-          className={`relative w-full max-w-4xl max-h-[95vh] bg-white rounded-xl shadow-2xl transition-all duration-300 ease-out flex flex-col ${
+          className={`relative w-full max-w-3xl max-h-[92vh] bg-white rounded-2xl border border-slate-200 shadow-2xl transition-all duration-300 ease-out flex flex-col ${
             isAnimating ? "scale-100 opacity-100" : "scale-95 opacity-0"
           }`}
           role="dialog"
@@ -187,7 +187,7 @@ export function CookiePreferences({ className = "" }: CookiePreferencesProps) {
             <div>
               <h2
                 id="preferences-title"
-                className="text-2xl font-bold text-black"
+                className="text-3xl font-normal tracking-[-0.04em] text-slate-950"
               >
                 {t("cookie.preferences.title")}
               </h2>
@@ -213,7 +213,7 @@ export function CookiePreferences({ className = "" }: CookiePreferencesProps) {
             style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}
           >
             {/* Informacja ogólna */}
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <div className="border-y border-gray-200 py-4">
               <div className="flex items-start gap-3">
                 <Info
                   className="w-5 h-5 text-black mt-0.5 shrink-0"
@@ -238,9 +238,9 @@ export function CookiePreferences({ className = "" }: CookiePreferencesProps) {
                 return (
                   <div
                     key={category.id}
-                    className="border border-gray-200 rounded-lg overflow-hidden"
+                    className="border-b border-gray-200 overflow-hidden"
                   >
-                    <div className="p-4 bg-gray-50">
+                    <div className="py-4 bg-white">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3 flex-1">
                           <div
@@ -252,7 +252,7 @@ export function CookiePreferences({ className = "" }: CookiePreferencesProps) {
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
                               <h3 className="font-semibold text-black">
-                                {category.name}
+                                {t(`privacy.category.${category.id}`)}
                               </h3>
                               {isNecessary && (
                                 <span className="px-2 py-1 text-xs font-medium text-black bg-gray-200 rounded-full border border-gray-300">
@@ -264,12 +264,14 @@ export function CookiePreferences({ className = "" }: CookiePreferencesProps) {
                               className="text-sm text-gray-600"
                               id={`desc-${category.id}`}
                             >
-                              {category.description}
+                              {t(`privacy.category.${category.id}.desc`)}
                             </p>
                             {category.legalBasis && (
                               <p className="text-xs text-gray-500 mt-1">
                                 {t("cookie.preferences.legalBasis")}:{" "}
-                                {category.legalBasis}
+                                {t(
+                                  `cookie.preferences.legalBasis.${category.id}`,
+                                )}
                               </p>
                             )}
                           </div>
@@ -293,7 +295,7 @@ export function CookiePreferences({ className = "" }: CookiePreferencesProps) {
                               )
                             }
                             className="p-1 text-gray-600 hover:text-black focus:outline-hidden focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 rounded-sm transition-colors duration-200"
-                            aria-label={`${isExpanded ? t("cookie.preferences.collapse") : t("cookie.preferences.expand")} ${category.name}`}
+                            aria-label={`${isExpanded ? t("cookie.preferences.collapse") : t("cookie.preferences.expand")} ${t(`privacy.category.${category.id}`)}`}
                             aria-expanded={isExpanded}
                           >
                             <Info className="w-4 h-4" aria-hidden="true" />

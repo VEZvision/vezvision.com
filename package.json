@@ -27,6 +27,7 @@
     "generate-robots-txt": "npx tsx --env-file-if-exists=.env scripts/generate-robots-txt.ts",
     "generate-rss-feeds": "npx tsx --env-file-if-exists=.env scripts/generate-rss-feeds.ts",
     "generate-llms-full": "npx tsx --env-file-if-exists=.env scripts/generate-llms-full.ts",
+    "generate-legal-sync-sql": "npx tsx scripts/generate-legal-sync-sql.ts",
     "generate-og-image": "node scripts/generate-og-image.mjs",
     "generate-pwa-icons": "node scripts/generate-pwa-icons.mjs",
     "prerender-head": "npx tsx --env-file-if-exists=.env scripts/prerender-head.ts",

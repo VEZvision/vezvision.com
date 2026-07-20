@@ -172,16 +172,17 @@ function injectBootSettingsScript(
   return headHtml.replace("</head>", `${scriptTag}\n</head>`);
 }
 
-function injectHeroVideoPreload(headHtml: string, routePath: string): string {
+function ensureHeroPosterPreload(headHtml: string, routePath: string): string {
   if (!HOME_ROUTE_PATHS.has(routePath)) {
     return headHtml;
   }
 
-  const tags = [
-    `<link rel="preload" href="/hero-bg.mp4?v=65de2eb" as="fetch" type="video/mp4" crossorigin>`,
-  ].join("\n    ");
+  if (headHtml.includes('href="/hero-poster.avif"')) {
+    return headHtml;
+  }
 
-  return headHtml.replace("</head>", `${tags}\n</head>`);
+  const tag = `<link rel="preload" href="/hero-poster.avif" as="image" type="image/avif" fetchpriority="high">`;
+  return headHtml.replace("</head>", `${tag}\n</head>`);
 }
 
 function sanitizePrerenderVideo(
@@ -189,7 +190,7 @@ function sanitizePrerenderVideo(
   rest: string,
   kind: "hero" | "footer",
 ): string {
-  let tag = openTag.replace(/\sposter="[^"]*"/gi, "");
+  let tag = openTag;
   tag = tag.replace(/\spreload="[^"]*"/gi, "");
   tag = tag.replace(/\sautoplay(="[^"]*")?/gi, "");
 
@@ -316,7 +317,7 @@ async function prerenderRoute({
   }
 
   const normalizedHead = injectBootSettingsScript(
-    injectHeroVideoPreload(
+    ensureHeroPosterPreload(
       await inlineHomeStylesheet(
         stripHomePreconnects(
           removeNonCriticalHomeAssetHints(

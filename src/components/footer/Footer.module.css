@@ -13,8 +13,11 @@
   overflow: hidden;
   padding: clamp(86px, 9vw, 132px) 32px 34px;
   padding-bottom: max(34px, env(safe-area-inset-bottom));
-  background:
-    linear-gradient(180deg, #ffffff 0%, rgba(248, 250, 252, 0.96) 100%);
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    rgba(248, 250, 252, 0.96) 100%
+  );
 }
 
 .videoBackdrop {
@@ -87,10 +90,9 @@
 
 .footerGrid {
   display: grid;
-  grid-template-columns: minmax(320px, 1.55fr) minmax(126px, 0.62fr) minmax(
-      170px,
-      0.8fr
-    ) minmax(170px, 0.8fr);
+  grid-template-columns:
+    minmax(320px, 1.55fr) minmax(126px, 0.62fr) minmax(170px, 0.8fr)
+    minmax(170px, 0.8fr);
   gap: clamp(28px, 4vw, 58px);
   align-items: start;
 }
@@ -280,6 +282,16 @@
   font-size: 13px;
   line-height: 1.5;
   color: rgba(15, 23, 42, 0.56);
+}
+
+.copyrightText a {
+  color: inherit;
+  font-weight: 500;
+  text-underline-offset: 3px;
+}
+
+.copyrightText a:hover {
+  color: #020617;
 }
 
 @media (pointer: coarse) {

@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-floating-promises -- node:test describe/it return promises by design */
 import assert from "node:assert/strict";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { resolve } from "node:path";
 
 import {
   extractSitemapRoutePaths,
@@ -120,6 +122,95 @@ describe("SEO build validation", () => {
     assert.deepEqual(
       extractSitemapRoutePaths(sitemap, "https://vezvision.com"),
       ["/pl", "/en/blog/post"],
+    );
+  });
+
+  it("keeps generated discovery and policy files in the strict Nginx allowlist", () => {
+    const nginxConfig = readFileSync(
+      resolve(process.cwd(), "frontend-nginx.conf"),
+      "utf8",
+    );
+
+    for (const requiredPath of [
+      "sitemap\\.xml",
+      "robots\\.txt",
+      "\\.well-known/security\\.txt",
+      "\\.well-known/llm-policies\\.json",
+      "(pl|en)/blog/feed\\.xml",
+    ]) {
+      assert.ok(
+        nginxConfig.includes(requiredPath),
+        `Nginx allowlist is missing ${requiredPath}`,
+      );
+    }
+
+    assert.ok(
+      nginxConfig.includes("location = /manifest.webmanifest"),
+      "Nginx allowlist is missing the web app manifest",
+    );
+    assert.ok(
+      nginxConfig.includes("default_type application/manifest+json"),
+      "Nginx must serve the web app manifest with its registered media type",
+    );
+  });
+
+  it("serves prerendered route documents and keeps prerendering enabled in production", () => {
+    const nginxConfig = readFileSync(
+      resolve(process.cwd(), "frontend-nginx.conf"),
+      "utf8",
+    );
+    const dockerfile = readFileSync(
+      resolve(process.cwd(), "frontend.Dockerfile"),
+      "utf8",
+    );
+
+    assert.ok(nginxConfig.includes("try_files /$1$2/index.html /index.html"));
+    assert.ok(nginxConfig.includes("error_page 404 /pl/404/index.html"));
+    assert.ok(nginxConfig.includes("error_page 404 /en/404/index.html"));
+    assert.ok(dockerfile.includes("playwright install --with-deps chromium"));
+    assert.ok(!dockerfile.includes("ENV SKIP_PRERENDER=1"));
+    assert.ok(
+      dockerfile.includes('test -n "$VITE_TURNSTILE_SITE_KEY"'),
+      "Production images must fail closed when the Turnstile site key is missing",
+    );
+  });
+
+  it("prioritizes lightweight hero posters before background video", () => {
+    const heroSource = readFileSync(
+      resolve(process.cwd(), "src/components/common/VideoHeroSection.tsx"),
+      "utf8",
+    );
+    const prerenderSource = readFileSync(
+      resolve(process.cwd(), "scripts/prerender-head.ts"),
+      "utf8",
+    );
+
+    assert.ok(heroSource.includes('rel="preload"'));
+    assert.ok(heroSource.includes('fetchPriority="high"'));
+    assert.ok(heroSource.includes("poster={videoPosterSrc}"));
+    assert.ok(
+      heroSource.indexOf('type="video/webm"') <
+        heroSource.indexOf('type="video/mp4"'),
+      "The smaller WebM source must be preferred when supported",
+    );
+    assert.ok(existsSync(resolve(process.cwd(), "public/hero-poster.avif")));
+    assert.ok(existsSync(resolve(process.cwd(), "public/footer-poster.avif")));
+    assert.ok(!prerenderSource.includes('href="/hero-bg.mp4?v=65de2eb"'));
+    assert.ok(!prerenderSource.includes('replace(/\\sposter="[^"]*"'));
+  });
+
+  it("opts prerendered content out of Cloudflare email rewriting", () => {
+    const appShell = readFileSync(resolve(process.cwd(), "index.html"), "utf8");
+
+    const start = appShell.indexOf("<!--email_off-->");
+    const root = appShell.indexOf('<div id="root"></div>');
+    const end = appShell.indexOf("<!--/email_off-->");
+
+    assert.ok(start >= 0, "Cloudflare email opt-out start marker is missing");
+    assert.ok(end > start, "Cloudflare email opt-out end marker is missing");
+    assert.ok(
+      root > start && root < end,
+      "The application root must stay inside the Cloudflare email opt-out block",
     );
   });
 });

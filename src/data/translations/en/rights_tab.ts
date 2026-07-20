@@ -1,15 +1,23 @@
 export const rights_tabTranslations = {
-    'privacy.rights.title': 'Your rights',
-    'privacy.rights.access.title': 'Right of access',
-    'privacy.rights.access.description': 'You have the right to obtain information about what personal data we process and to receive a copy of that data.',
-    'privacy.rights.rectification.title': 'Right to rectification',
-    'privacy.rights.rectification.description': 'You have the right to request correction of inaccurate or completion of incomplete personal data.',
-    'privacy.rights.erasure.title': 'Right to erasure',
-    'privacy.rights.erasure.description': 'You have the right to request deletion of your personal data in certain cases.',
-    'privacy.rights.portability.title': 'Right to data portability',
-    'privacy.rights.portability.description': 'You have the right to receive your data in a structured, commonly used format.',
-    'privacy.rights.objection.title': 'Right to object',
-    'privacy.rights.objection.description': 'You have the right to object to the processing of your personal data in certain cases.',
-    'privacy.rights.contact.title': 'Contact us',
-    'privacy.rights.contact.description': 'To exercise your rights or get more information, please contact us.',
-} as const
+  "privacy.rights.title": "Your rights",
+  "privacy.rights.intro":
+    "The scope of each right depends on the legal basis and purpose of processing. We will respond to your request in accordance with the GDPR.",
+  "privacy.rights.access.title": "Right of access",
+  "privacy.rights.access.description":
+    "You have the right to obtain information about what personal data we process and to receive a copy of that data.",
+  "privacy.rights.rectification.title": "Right to rectification",
+  "privacy.rights.rectification.description":
+    "You have the right to request correction of inaccurate or completion of incomplete personal data.",
+  "privacy.rights.erasure.title": "Right to erasure",
+  "privacy.rights.erasure.description":
+    "You have the right to request deletion of your personal data in certain cases.",
+  "privacy.rights.portability.title": "Right to data portability",
+  "privacy.rights.portability.description":
+    "You have the right to receive your data in a structured, commonly used format.",
+  "privacy.rights.objection.title": "Right to object",
+  "privacy.rights.objection.description":
+    "You have the right to object to the processing of your personal data in certain cases.",
+  "privacy.rights.contact.title": "Contact us",
+  "privacy.rights.contact.description":
+    "To exercise your rights or get more information, please contact us.",
+} as const;
