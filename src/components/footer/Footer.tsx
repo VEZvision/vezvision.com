@@ -259,6 +259,7 @@ export default function Footer() {
               ref={videoRef}
               width="3840"
               height="2160"
+              autoPlay
               muted
               loop
               playsInline
