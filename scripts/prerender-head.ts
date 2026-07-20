@@ -204,7 +204,7 @@ function sanitizePrerenderVideo(
     return `${tag} autoplay preload="metadata"${rest}`;
   }
 
-  return `${tag} preload="none"${rest}`;
+  return `${tag} autoplay preload="none"${rest}`;
 }
 
 function optimizeHomePrerenderBody(
