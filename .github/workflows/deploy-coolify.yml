@@ -1,0 +1,46 @@
+name: Trigger Coolify deploy
+
+# Couples GitHub to a Coolify webhook URL. Coolify's "Auto Deploy" toggle
+# used to create a webhook on this repo, but it was deleted at some point
+# and neither the webhook nor a GitHub App was re-installed. This workflow
+# replaces the missing webhook: every successful push to `develop` (the
+# branch Coolify builds from) POSTs to Coolify's per-application deploy
+# endpoint stored in the COOLIFY_WEBHOOK_URL secret.
+#
+# Setup: open Coolify dashboard on `vez-prod-01` → application → "Webhooks"
+# → copy the "Deploy webhook" URL → add it to GitHub as a repo secret
+# named `COOLIFY_WEBHOOK_URL`.
+#
+# Manual trigger: re-run this workflow from the Actions tab.
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coolify-deploy
+  cancel-in-progress: false
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: POST to Coolify deploy webhook
+        if: env.COOLIFY_WEBHOOK_URL != ''
+        env:
+          COOLIFY_WEBHOOK_URL: ${{ secrets.COOLIFY_WEBHOOK_URL }}
+        run: |
+          curl --fail --silent --show-error \
+            --request POST \
+            --max-time 30 \
+            "$COOLIFY_WEBHOOK_URL"
+      - name: Refuse to deploy without the webhook secret
+        if: env.COOLIFY_WEBHOOK_URL == ''
+        run: |
+          echo "::error::The COOLIFY_WEBHOOK_URL repo secret is not set. Copy the Deploy webhook URL from Coolify dashboard (application → Webhooks) and add it to https://github.com/VEZvision/vezvision.com/settings/secrets/actions as COOLIFY_WEBHOOK_URL."
+          echo "::error::For a manual deploy until the secret is in place, build and restart the stack in the Coolify dashboard on vez-prod-01."
+          exit 1
