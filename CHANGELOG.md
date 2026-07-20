@@ -4,6 +4,16 @@
 "entries": [
 {
 "version": "0.0.0",
+"date": "2026-07-20",
+"sections": {
+"Fixed": [
+"Background videos (hero + footer) stopped looping after a short while — added missing autoPlay attribute on footer <video>, added 2-second health-check interval in installBackgroundVideoRecovery to restart muted videos paused mid-playback by iOS Safari / Chrome battery saver (loop=true suppresses the ended event per HTML5 spec so existing recovery listeners cannot restart)",
+"Prerendered HTML for footer videos now includes the autoplay attribute so it matches React hydration output"
+]
+}
+},
+{
+"version": "0.0.0",
 "date": "2026-06-19",
 "sections": {
 "Security": [
