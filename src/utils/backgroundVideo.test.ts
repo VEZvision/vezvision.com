@@ -32,7 +32,11 @@ describe("backgroundVideo", () => {
     expect(play).toHaveBeenCalledOnce();
   });
 
-  it("recovers explicitly when the media ends or stalls", () => {
+  it("recovers explicitly when the media ends, stalls, or pauses unexpectedly", () => {
+    Object.defineProperty(document, "visibilityState", {
+      configurable: true,
+      value: "visible",
+    });
     const video = document.createElement("video");
     const onPlay = vi.fn();
     video.currentTime = 3.8;
@@ -40,13 +44,14 @@ describe("backgroundVideo", () => {
     const cleanup = installBackgroundVideoRecovery(video, onPlay);
     video.dispatchEvent(new Event("ended"));
     video.dispatchEvent(new Event("stalled"));
+    video.dispatchEvent(new Event("pause"));
 
     expect(video.currentTime).toBe(0);
-    expect(onPlay).toHaveBeenCalledTimes(2);
+    expect(onPlay).toHaveBeenCalledTimes(3);
 
     cleanup();
     video.dispatchEvent(new Event("ended"));
-    expect(onPlay).toHaveBeenCalledTimes(2);
+    expect(onPlay).toHaveBeenCalledTimes(3);
   });
 
   describe("health check", () => {
