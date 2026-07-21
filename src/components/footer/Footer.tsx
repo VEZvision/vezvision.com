@@ -15,6 +15,7 @@ import { useBackgroundVideoSection } from "@/hooks/useBackgroundVideoSection";
 import { isSafeExternalHref, safePublicHref } from "@/utils/safeHref";
 import { localizeInternalHref } from "@/routing/locale";
 import { getLocalizedLabel } from "@/utils/i18n";
+import { versionBackgroundMedia } from "@/config/backgroundMedia";
 import { FooterSocial } from "./FooterSocial";
 import twitterIcon from "@/assets/footer/twitter-icon.svg";
 import instagramIcon from "@/assets/footer/instagram-icon.svg";
@@ -50,10 +51,12 @@ export default function Footer() {
 
   const pathWithoutLocale = location.pathname.replace(/^\/(en|pl)(?=\/|$)/, "");
   const isHome = pathWithoutLocale === "" || pathWithoutLocale === "/";
-  const videoSrc = isHome
-    ? "/hero-bg.mp4?v=65de2eb"
-    : "/footer-bg.mp4?v=65de2eb";
-  const videoWebmSrc = isHome ? "/hero-bg.webm" : "/footer-bg.webm";
+  const videoSrc = versionBackgroundMedia(
+    isHome ? "/hero-bg.mp4" : "/footer-bg.mp4",
+  );
+  const videoWebmSrc = versionBackgroundMedia(
+    isHome ? "/hero-bg.webm" : "/footer-bg.webm",
+  );
   const videoPosterSrc = isHome ? "/hero-poster.avif" : "/footer-poster.avif";
   const showVideo = !prefersReducedData;
 
