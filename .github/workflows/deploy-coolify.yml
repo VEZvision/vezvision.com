@@ -37,10 +37,12 @@ jobs:
       - name: Deploy develop API
         env:
           WEBHOOK_URL: ${{ secrets.COOLIFY_DEVELOP_API_WEBHOOK_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_DEVELOP_API_TOKEN }}
         run: ./scripts/trigger-coolify-deploy.sh
       - name: Deploy develop frontend
         env:
           WEBHOOK_URL: ${{ secrets.COOLIFY_DEVELOP_FRONTEND_WEBHOOK_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_DEVELOP_API_TOKEN }}
         run: ./scripts/trigger-coolify-deploy.sh
 
   production:
@@ -57,8 +59,10 @@ jobs:
       - name: Deploy production API
         env:
           WEBHOOK_URL: ${{ secrets.COOLIFY_PRODUCTION_API_WEBHOOK_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_PRODUCTION_API_TOKEN }}
         run: ./scripts/trigger-coolify-deploy.sh
       - name: Deploy production frontend
         env:
           WEBHOOK_URL: ${{ secrets.COOLIFY_PRODUCTION_FRONTEND_WEBHOOK_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_PRODUCTION_API_TOKEN }}
         run: ./scripts/trigger-coolify-deploy.sh
