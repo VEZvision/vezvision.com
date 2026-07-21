@@ -2,6 +2,7 @@ import { memo } from "react";
 import { Sparkles } from "lucide-react";
 
 import VideoHeroSection from "@/components/common/VideoHeroSection";
+import { versionBackgroundMedia } from "@/config/backgroundMedia";
 import { buildHeroSocialLinks } from "@/components/common/heroSocialLinks";
 import { useLanguageContext } from "@/hooks/useLanguage";
 import { useSocial } from "@/hooks/useSettings";
@@ -16,8 +17,8 @@ const Hero = memo(() => {
   return (
     <VideoHeroSection
       variant="home"
-      videoMp4Src="/hero-bg.mp4?v=65de2eb"
-      videoWebmSrc="/hero-bg.webm"
+      videoMp4Src={versionBackgroundMedia("/hero-bg.mp4")}
+      videoWebmSrc={versionBackgroundMedia("/hero-bg.webm")}
       videoPosterSrc="/hero-poster.avif"
       title={<span>{t("hero.subtitle")}</span>}
       subtitle={t("hero.description")}

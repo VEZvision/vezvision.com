@@ -46,6 +46,12 @@ export function installBackgroundVideoRecovery(
     retry();
   };
 
+  const onUnexpectedPause = () => {
+    if (document.visibilityState === "visible") {
+      retry();
+    }
+  };
+
   // `loop=true` suppresses the `ended` event (HTML5 spec), so browsers that
   // pause a muted background video mid-playback (iOS Safari, Chrome battery
   // saver) won't trigger our other recovery listeners.
@@ -61,6 +67,7 @@ export function installBackgroundVideoRecovery(
   document.addEventListener("visibilitychange", onVisibilityChange);
   video.addEventListener("ended", onEnded);
   video.addEventListener("stalled", retry);
+  video.addEventListener("pause", onUnexpectedPause);
   document.addEventListener("touchstart", retry, { once: true, passive: true });
   document.addEventListener("pointerdown", retry, {
     once: true,
@@ -73,6 +80,9 @@ export function installBackgroundVideoRecovery(
     document.removeEventListener("visibilitychange", onVisibilityChange);
     video.removeEventListener("ended", onEnded);
     video.removeEventListener("stalled", retry);
+    video.removeEventListener("pause", onUnexpectedPause);
+    document.removeEventListener("touchstart", retry);
+    document.removeEventListener("pointerdown", retry);
   };
 }
 

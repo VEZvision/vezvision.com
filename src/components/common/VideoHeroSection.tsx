@@ -10,10 +10,11 @@ import { useBackgroundVideoSection } from "@/hooks/useBackgroundVideoSection";
 import logoNavbar from "@brand/wordmark-horizontal-dark.svg";
 import { safeExternalHref, safePublicHref } from "@/utils/safeHref";
 import { scrollToElement } from "@/scroll";
+import { versionBackgroundMedia } from "@/config/backgroundMedia";
 import styles from "./VideoHeroSection.module.css";
 
-const DEFAULT_VIDEO_MP4 = "/footer-bg.mp4?v=65de2eb";
-const DEFAULT_VIDEO_WEBM = "/footer-bg.webm";
+const DEFAULT_VIDEO_MP4 = versionBackgroundMedia("/footer-bg.mp4");
+const DEFAULT_VIDEO_WEBM = versionBackgroundMedia("/footer-bg.webm");
 const DEFAULT_VIDEO_POSTER = "/footer-poster.avif";
 
 export interface SocialLink {
