@@ -1,16 +1,16 @@
 # Video Assets CDN Strategy
 
 **Date:** 2026-06-19
-**Status:** Documented — migration deferred until Supabase Storage bucket is configured
+**Status:** Documented: migration deferred until Supabase Storage bucket is configured
 
 ## Current state
 
 Two video files are committed directly in `public/`:
 
-- `aMPvRVYHFQxBoB0v2qyJln83jI.mp4` (131KB) — hero/home background video
-- `aMPvRVYHFQxBoB0v2qyJln83jI.webm` (134KB) — WebM version
-- `navons.mp4` (1.1MB) — footer/other pages background video
-- `navons.webm` (1.3MB) — WebM version
+- `aMPvRVYHFQxBoB0v2qyJln83jI.mp4` (131KB): hero/home background video
+- `aMPvRVYHFQxBoB0v2qyJln83jI.webm` (134KB): WebM version
+- `navons.mp4` (1.1MB): footer/other pages background video
+- `navons.webm` (1.3MB): WebM version
 
 Total: ~2.5MB in the repository. Every `git clone` downloads these files.
 
@@ -49,7 +49,7 @@ Move video files to Supabase Storage public bucket (`vezvision-assets`) or a CDN
 
 ### Why deferred
 
-- Current video files are small (total 2.5MB) — not a critical performance issue
+- Current video files are small (total 2.5MB): not a critical performance issue
 - Supabase Storage bucket `vezvision-assets` exists but video files are not yet uploaded
 - Requires testing video playback from Storage URL (CORS, range requests, seeking)
 - Can be done in a focused PR without affecting other work
