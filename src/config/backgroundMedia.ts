@@ -1,4 +1,4 @@
-const BACKGROUND_MEDIA_VERSION = "20260721-1";
+const BACKGROUND_MEDIA_VERSION = "20260722-1";
 
 export function versionBackgroundMedia(path: string): string {
   const separator = path.includes("?") ? "&" : "?";
