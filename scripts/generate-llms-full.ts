@@ -1,6 +1,7 @@
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { getScriptApi } from "./lib/api";
+import { stripHtmlToText } from "./lib/html";
 
 const SITE_URL = (process.env.VITE_SITE_URL || "https://vezvision.com").replace(
   /\/$/,
@@ -44,19 +45,6 @@ interface FaqRow {
   question_en: string | null;
   answer_pl: string;
   answer_en: string | null;
-}
-
-function stripHtml(html: string): string {
-  return html
-    .replace(/<[^>]*>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/\s+/g, " ")
-    .trim();
 }
 
 function truncate(text: string, max: number): string {
@@ -161,7 +149,9 @@ function buildLlmsFull(
     for (const s of services) {
       const title = s.title_en || s.title_pl || s.slug;
       const desc = s.short_desc_en || s.short_desc_pl || "";
-      const fullDesc = stripHtml(s.description_en || s.description_pl || "");
+      const fullDesc = stripHtmlToText(
+        s.description_en || s.description_pl || "",
+      );
       lines.push(`### ${title}`);
       lines.push("");
       lines.push(`URL: ${SITE_URL}/en/services`);
@@ -179,7 +169,9 @@ function buildLlmsFull(
     for (const p of projects) {
       const title = p.title_en || p.title_pl || p.slug;
       const desc = p.short_desc_en || p.short_desc_pl || "";
-      const fullDesc = stripHtml(p.description_en || p.description_pl || "");
+      const fullDesc = stripHtmlToText(
+        p.description_en || p.description_pl || "",
+      );
       lines.push(`### ${title}`);
       lines.push("");
       lines.push(`URL: ${SITE_URL}/en/portfolio/${p.slug}`);
@@ -198,7 +190,7 @@ function buildLlmsFull(
     for (const b of blogPosts) {
       const title = b.title_en || b.title_pl || b.slug;
       const excerpt = b.excerpt_en || b.excerpt_pl || "";
-      const content = stripHtml(b.content_en || b.content_pl || "");
+      const content = stripHtmlToText(b.content_en || b.content_pl || "");
       lines.push(`### ${title}`);
       lines.push("");
       lines.push(`URL: ${SITE_URL}/en/blog/${b.slug}`);
@@ -215,7 +207,7 @@ function buildLlmsFull(
     lines.push("");
     for (const f of faqItems) {
       const q = f.question_en || f.question_pl;
-      const a = stripHtml(f.answer_en || f.answer_pl || "");
+      const a = stripHtmlToText(f.answer_en || f.answer_pl || "");
       lines.push(`### ${q}`);
       lines.push("");
       if (a) lines.push(a);
