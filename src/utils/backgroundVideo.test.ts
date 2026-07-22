@@ -19,20 +19,21 @@ describe("backgroundVideo", () => {
     expect(video.hasAttribute("playsinline")).toBe(true);
   });
 
-  it("restarts an ended video before playing it", () => {
+  it("does not rewind during normal play (stutter prevention)", () => {
     const video = document.createElement("video");
     const play = vi.fn().mockResolvedValue(undefined);
-    Object.defineProperty(video, "ended", { configurable: true, value: true });
     Object.defineProperty(video, "play", { configurable: true, value: play });
     video.currentTime = 3.8;
 
     playBackgroundVideo(video);
 
-    expect(video.currentTime).toBe(0);
+    // Should NOT rewind — playBackgroundVideo is called from media
+    // events during normal playback, rewinding would stutter.
+    expect(video.currentTime).toBe(3.8);
     expect(play).toHaveBeenCalledOnce();
   });
 
-  it("recovers explicitly when the media ends, stalls, or pauses unexpectedly", () => {
+  it("recovers from stalls and pauses", () => {
     Object.defineProperty(document, "visibilityState", {
       configurable: true,
       value: "visible",
@@ -42,16 +43,14 @@ describe("backgroundVideo", () => {
     video.currentTime = 3.8;
 
     const cleanup = installBackgroundVideoRecovery(video, onPlay);
-    video.dispatchEvent(new Event("ended"));
     video.dispatchEvent(new Event("stalled"));
     video.dispatchEvent(new Event("pause"));
 
-    expect(video.currentTime).toBe(0);
-    expect(onPlay).toHaveBeenCalledTimes(3);
+    expect(onPlay).toHaveBeenCalledTimes(2);
 
     cleanup();
-    video.dispatchEvent(new Event("ended"));
-    expect(onPlay).toHaveBeenCalledTimes(3);
+    video.dispatchEvent(new Event("stalled"));
+    expect(onPlay).toHaveBeenCalledTimes(2);
   });
 
   describe("health check", () => {

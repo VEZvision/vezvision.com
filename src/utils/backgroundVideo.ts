@@ -21,12 +21,10 @@ export function prepareBackgroundVideo(video: HTMLVideoElement): void {
 
 export function playBackgroundVideo(video: HTMLVideoElement): void {
   prepareBackgroundVideo(video);
-  // Only rewind on explicit `ended` (fires when loop=false). With loop=true
-  // the browser handles the boundary natively and seamlessly — manual
-  // currentTime=0 seeks cause a visible stutter at the loop point.
-  if (video.ended) {
-    video.currentTime = 0;
-  }
+  // Do NOT rewind here. This function is called from media events
+  // (canplay, loadeddata) that fire during normal playback, so
+  // rewinding here would stutter at the loop boundary.
+  // Rewind logic lives only in the health check below.
   void video.play().catch(ignoreExpectedMediaPlayError);
 }
 
@@ -44,31 +42,22 @@ export function installBackgroundVideoRecovery(
     }
   };
 
-  const onEnded = () => {
-    video.currentTime = 0;
-    retry();
-  };
-
   const onUnexpectedPause = () => {
     if (document.visibilityState === "visible") {
       retry();
     }
   };
 
-  // `loop=true` suppresses the `ended` event (HTML5 spec), so browsers that
-  // pause a muted background video mid-playback (iOS Safari, Chrome battery
-  // saver) won't trigger our other recovery listeners.
-  // IMPORTANT: do NOT rewind at the loop boundary — loop=true handles that
-  // natively and seamlessly. Manual currentTime=0 seeks cause a visible
-  // stutter. Only intervene when the video is genuinely stalled (paused or
-  // currentTime frozen for reasons other than natural looping).
+  // With preload="auto", muted, and loop="true", the browser handles
+  // buffering and looping natively. On most browsers loop works
+  // seamlessly. But on some (iOS Safari, Chrome battery saver),
+  // loop=true can fail: the video stalls at currentTime=duration,
+  // video.ended stays false (HTML5 spec: loop suppresses ended),
+  // and play() can't restart from the end. We detect this by
+  // tracking whether currentTime actually advanced between checks.
   let lastTime = video.currentTime;
   const healthCheck = () => {
     if (document.visibilityState !== "visible") return;
-    // Check if video is stuck: either paused or stalled (currentTime
-    // hasn't moved since last check despite not being paused).
-    // Do NOT check for "at end" — loop=true handles the boundary
-    // natively and seeking to 0 manually causes a visible stutter.
     const stalled =
       !video.paused &&
       video.currentTime > 0 &&
@@ -77,15 +66,25 @@ export function installBackgroundVideoRecovery(
       lastTime = video.currentTime;
       return;
     }
+    // Video is genuinely stalled or paused. If stalled at the end of
+    // the clip (loop=true failed), rewind to 0 so play() can restart.
+    // This only fires after 2 seconds of zero progress, so it never
+    // triggers during normal looping where currentTime advances.
+    if (
+      stalled &&
+      video.duration > 0 &&
+      video.currentTime >= video.duration - 0.05
+    ) {
+      video.currentTime = 0;
+    }
     if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
-    lastTime = 0;
+    lastTime = video.currentTime;
     retry();
   };
   const healthCheckIntervalId = window.setInterval(healthCheck, 2000);
 
   window.addEventListener("pageshow", retry);
   document.addEventListener("visibilitychange", onVisibilityChange);
-  video.addEventListener("ended", onEnded);
   video.addEventListener("stalled", retry);
   video.addEventListener("pause", onUnexpectedPause);
   document.addEventListener("touchstart", retry, { once: true, passive: true });
@@ -98,7 +97,6 @@ export function installBackgroundVideoRecovery(
     window.clearInterval(healthCheckIntervalId);
     window.removeEventListener("pageshow", retry);
     document.removeEventListener("visibilitychange", onVisibilityChange);
-    video.removeEventListener("ended", onEnded);
     video.removeEventListener("stalled", retry);
     video.removeEventListener("pause", onUnexpectedPause);
     document.removeEventListener("touchstart", retry);

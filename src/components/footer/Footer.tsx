@@ -267,7 +267,7 @@ export default function Footer() {
               muted
               loop
               playsInline
-              preload={isHome ? "none" : "metadata"}
+              preload="auto"
               poster={videoPosterSrc}
               aria-hidden="true"
               tabIndex={-1}
