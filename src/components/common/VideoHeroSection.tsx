@@ -152,7 +152,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
               loop
               muted
               playsInline
-              preload="metadata"
+              preload="auto"
               poster={videoPosterSrc}
               tabIndex={-1}
               disableRemotePlayback
