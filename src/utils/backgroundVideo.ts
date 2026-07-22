@@ -21,7 +21,10 @@ export function prepareBackgroundVideo(video: HTMLVideoElement): void {
 
 export function playBackgroundVideo(video: HTMLVideoElement): void {
   prepareBackgroundVideo(video);
-  if (video.ended) {
+  // loop=true suppresses the `ended` event (HTML5 spec), so video.ended
+  // is always false.  Check currentTime directly instead and rewind
+  // when we are at or past the end so play() restarts from the top.
+  if (video.duration > 0 && video.currentTime >= video.duration - 0.05) {
     video.currentTime = 0;
   }
   void video.play().catch(ignoreExpectedMediaPlayError);
@@ -55,10 +58,28 @@ export function installBackgroundVideoRecovery(
   // `loop=true` suppresses the `ended` event (HTML5 spec), so browsers that
   // pause a muted background video mid-playback (iOS Safari, Chrome battery
   // saver) won't trigger our other recovery listeners.
+  // Also track the last known currentTime to detect stalled playback
+  // (not paused, but not advancing) which happens on some browsers when
+  // the video reaches the end with loop=true.
+  let lastTime = video.currentTime;
   const healthCheck = () => {
     if (document.visibilityState !== "visible") return;
-    if (!video.paused) return;
+    if (document.visibilityState !== "visible") return;
+    // Check if video is stuck: either paused, or not advancing (currentTime
+    // hasn't moved since last check despite not being paused), or at end.
+    const atEnd =
+      video.duration > 0 && video.currentTime >= video.duration - 0.05;
+    const stalled =
+      !video.paused && Math.abs(video.currentTime - lastTime) < 0.01;
+    if (!video.paused && !atEnd && !stalled) {
+      lastTime = video.currentTime;
+      return;
+    }
     if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
+    if (atEnd) {
+      video.currentTime = 0;
+    }
+    lastTime = 0;
     retry();
   };
   const healthCheckIntervalId = window.setInterval(healthCheck, 2000);
