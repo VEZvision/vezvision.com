@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-// LiteSpeed (Hostido) normalizes URLs that point to existing directories
+// Some static Apache/LiteSpeed hosts normalize URLs that point to directories
 // (e.g. `/en` → 301 `/en/`) and then tries to find an index file inside
 // that directory. When no `index.html` is present and directory listing is
 // disabled, LiteSpeed returns 403 — even if mod_rewrite rules normally
