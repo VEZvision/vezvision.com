@@ -21,13 +21,10 @@ export function prepareBackgroundVideo(video: HTMLVideoElement): void {
 
 export function playBackgroundVideo(video: HTMLVideoElement): void {
   prepareBackgroundVideo(video);
-  // loop=true suppresses the `ended` event (HTML5 spec), so video.ended
-  // is always false in practice. Rewind when ended, or when currentTime
-  // is at/past the end so play() restarts from the top.
-  if (
-    video.ended ||
-    (video.duration > 0 && video.currentTime >= video.duration - 0.05)
-  ) {
+  // Only rewind on explicit `ended` (fires when loop=false). With loop=true
+  // the browser handles the boundary natively and seamlessly — manual
+  // currentTime=0 seeks cause a visible stutter at the loop point.
+  if (video.ended) {
     video.currentTime = 0;
   }
   void video.play().catch(ignoreExpectedMediaPlayError);
@@ -61,30 +58,26 @@ export function installBackgroundVideoRecovery(
   // `loop=true` suppresses the `ended` event (HTML5 spec), so browsers that
   // pause a muted background video mid-playback (iOS Safari, Chrome battery
   // saver) won't trigger our other recovery listeners.
-  // Also track the last known currentTime to detect stalled playback
-  // (not paused, but not advancing) which happens on some browsers when
-  // the video reaches the end with loop=true.
+  // IMPORTANT: do NOT rewind at the loop boundary — loop=true handles that
+  // natively and seamlessly. Manual currentTime=0 seeks cause a visible
+  // stutter. Only intervene when the video is genuinely stalled (paused or
+  // currentTime frozen for reasons other than natural looping).
   let lastTime = video.currentTime;
   const healthCheck = () => {
     if (document.visibilityState !== "visible") return;
-    // Check if video is stuck: either paused, at end, or stalled
-    // (currentTime hasn't moved since last check despite not being paused).
-    // Only check stalled when currentTime > 0 to avoid false positives
-    // at the start of playback (currentTime=0 is the beginning, not a stall).
-    const atEnd =
-      video.duration > 0 && video.currentTime >= video.duration - 0.05;
+    // Check if video is stuck: either paused or stalled (currentTime
+    // hasn't moved since last check despite not being paused).
+    // Do NOT check for "at end" — loop=true handles the boundary
+    // natively and seeking to 0 manually causes a visible stutter.
     const stalled =
       !video.paused &&
       video.currentTime > 0 &&
       Math.abs(video.currentTime - lastTime) < 0.01;
-    if (!video.paused && !atEnd && !stalled) {
+    if (!video.paused && !stalled) {
       lastTime = video.currentTime;
       return;
     }
     if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
-    if (atEnd) {
-      video.currentTime = 0;
-    }
     lastTime = 0;
     retry();
   };
