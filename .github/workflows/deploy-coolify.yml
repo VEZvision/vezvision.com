@@ -1,0 +1,68 @@
+name: Deploy to Coolify
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [develop, main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Deployment target
+        required: true
+        type: choice
+        options:
+          - develop
+          - production
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coolify-${{ github.event.workflow_run.head_branch || inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  develop:
+    if: >-
+      (github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'develop') ||
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'develop')
+    runs-on: ubuntu-latest
+    environment: develop
+    steps:
+      - name: Checkout deployment scripts
+        uses: actions/checkout@v6
+      - name: Deploy develop API
+        env:
+          WEBHOOK_URL: ${{ secrets.COOLIFY_DEVELOP_API_WEBHOOK_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_DEVELOP_API_TOKEN }}
+        run: ./scripts/trigger-coolify-deploy.sh
+      - name: Deploy develop frontend
+        env:
+          WEBHOOK_URL: ${{ secrets.COOLIFY_DEVELOP_FRONTEND_WEBHOOK_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_DEVELOP_API_TOKEN }}
+        run: ./scripts/trigger-coolify-deploy.sh
+
+  production:
+    if: >-
+      (github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main') ||
+      (github.event_name == 'workflow_dispatch' && inputs.environment == 'production')
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout deployment scripts
+        uses: actions/checkout@v6
+      - name: Deploy production API
+        env:
+          WEBHOOK_URL: ${{ secrets.COOLIFY_PRODUCTION_API_WEBHOOK_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_PRODUCTION_API_TOKEN }}
+        run: ./scripts/trigger-coolify-deploy.sh
+      - name: Deploy production frontend
+        env:
+          WEBHOOK_URL: ${{ secrets.COOLIFY_PRODUCTION_FRONTEND_WEBHOOK_URL }}
+          COOLIFY_API_TOKEN: ${{ secrets.COOLIFY_PRODUCTION_API_TOKEN }}
+        run: ./scripts/trigger-coolify-deploy.sh

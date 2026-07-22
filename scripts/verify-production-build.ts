@@ -123,7 +123,9 @@ if (!notFoundHtml) {
 
 const htaccess = readTextFile(htaccessPath);
 if (!htaccess) {
-  errors.push("dist/.htaccess is missing — Hostido SPA routing will not work");
+  errors.push(
+    "dist/.htaccess is missing - static-host SPA routing will not work",
+  );
 } else {
   addHtaccessErrors(htaccess);
 }
