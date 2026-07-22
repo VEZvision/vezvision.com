@@ -32,11 +32,11 @@ VEZvision employs a world-class SEO strategy covering traditional search (Google
 
 ### llms.txt
 
-`public/llms.txt` — curated content map for AI crawlers. Includes sections: About, What we do, Services, Portfolio, Products, Blog, FAQ, Key pages, Content sources, Contact.
+`public/llms.txt`: curated content map for AI crawlers. Includes sections: About, What we do, Services, Portfolio, Products, Blog, FAQ, Key pages, Content sources, Contact.
 
 ### ai.txt
 
-`public/ai.txt` — usage preferences for AI systems (Spawning.ai standard). Grants retrieval and summarization with attribution; prohibits training without consent.
+`public/ai.txt`: usage preferences for AI systems (Spawning.ai standard). Grants retrieval and summarization with attribution; prohibits training without consent.
 
 ### robots.txt AI sections
 
@@ -44,7 +44,7 @@ Explicit `Allow` for: GPTBot, ChatGPT-User, PerplexityBot, ClaudeBot, Google-Ext
 
 ### Internal linking
 
-Auto-linker in `sanitizeCmsHtml` hook — links service keywords (AI, automation, websites) to relevant pages.
+Auto-linker in `sanitizeCmsHtml` hook: links service keywords (AI, automation, websites) to relevant pages.
 
 ## Internationalization
 

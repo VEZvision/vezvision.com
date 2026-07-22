@@ -1,4 +1,4 @@
-# Architectural Decision Record — Database Schema Scope
+# Architectural Decision Record: Database Schema Scope
 
 **Date:** 2026-06-19
 **Status:** Accepted
@@ -23,11 +23,11 @@ These tables are actively queried by the public SPA and Edge Functions:
 
 These tables are NOT queried by the public site. They support VEZcore modules such as private CMS, CRM, file management, calendar, and operational dashboards:
 
-- `profiles`, `user_permissions` — RBAC (0 rows)
-- `vv_folders`, `vv_files`, `vv_file_permissions`, `vv_file_events` — file manager (0-2 rows)
-- `vv_calendar_events` — calendar (0 rows)
-- `vv_newsletter_campaigns`, `vv_newsletter_send_logs`, `vv_newsletter_templates` — newsletter campaign management (1-2 rows, used by admin + `retry-message-sends` edge function)
-- `vv_message_send_logs` — contact message send tracking (used by `retry-message-sends` edge function)
+- `profiles`, `user_permissions`: RBAC (0 rows)
+- `vv_folders`, `vv_files`, `vv_file_permissions`, `vv_file_events`: file manager (0-2 rows)
+- `vv_calendar_events`: calendar (0 rows)
+- `vv_newsletter_campaigns`, `vv_newsletter_send_logs`, `vv_newsletter_templates`: newsletter campaign management (1-2 rows, used by admin + `retry-message-sends` edge function)
+- `vv_message_send_logs`: contact message send tracking (used by `retry-message-sends` edge function)
 
 ## Decision
 
@@ -36,8 +36,8 @@ These tables are NOT queried by the public site. They support VEZcore modules su
 ### Rationale
 
 1. **Shared edge functions**: `retry-message-sends` edge function reads from `vv_message_send_logs` and `vv_newsletter_send_logs`. Moving these would break the cron retry pipeline.
-2. **Cross-schema RLS complexity**: VEZcore queries user identity (`profiles`) and permissions (`user_permissions`) which are FK-linked to `auth.users`. Splitting schemas would require cross-schema RLS policies — fragile and hard to maintain.
-3. **Zero cost of keeping**: Unused tables with 0 rows have negligible storage impact. RLS policies already prevent public access (verified by Supabase security advisors — no permissive policies on these tables).
+2. **Cross-schema RLS complexity**: VEZcore queries user identity (`profiles`) and permissions (`user_permissions`) which are FK-linked to `auth.users`. Splitting schemas would require cross-schema RLS policies: fragile and hard to maintain.
+3. **Zero cost of keeping**: Unused tables with 0 rows have negligible storage impact. RLS policies already prevent public access (verified by Supabase security advisors: no permissive policies on these tables).
 4. **Migration risk**: Moving tables to a separate schema/database is a high-risk operation requiring downtime, app code changes in VEZcore, and careful FK handling. The benefit (cleaner `public` schema) does not justify the risk at current scale.
 5. **Future option preserved**: If VEZcore grows significantly or needs independent scaling, the `vezDatabase` project (`glgldtfuvahmrlkywdoy`, eu-west-1) already exists as a potential migration target. This decision can be revisited without lock-in.
 
@@ -45,7 +45,7 @@ These tables are NOT queried by the public site. They support VEZcore modules su
 
 - All VEZcore tables have RLS enabled (verified 2026-06-19).
 - `REVOKE EXECUTE FROM PUBLIC` applied to all SECURITY DEFINER functions (migration `20260619100000`).
-- FK indexes added to all tables (migration `20260619120000`) — admin query performance is now optimal.
+- FK indexes added to all tables (migration `20260619120000`): admin query performance is now optimal.
 - Supabase security advisors show NO permissive policies on VEZcore tables.
 
 ## Revisit triggers

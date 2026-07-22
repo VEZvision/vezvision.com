@@ -1,14 +1,14 @@
 # Migration Drift & Baseline Strategy
 
 **Date:** 2026-06-19 (updated 2026-07-08)
-**Status:** Drift archived — orphaned migrations moved to `_archive-pre-202603/`
+**Status:** Drift archived: orphaned migrations moved to `_archive-pre-202603/`
 
 ## Current state
 
 - **Local repo:** 46 active migrations in `supabase/migrations/`
 - **Archived:** 69 pre-reset migrations moved to `supabase/migrations/_archive-pre-202603/` (kept as historical record, no longer on the migration path)
 - **Live DB (`pcxcqbpygyidkusetghk`):** 89 migrations applied (recorded in `supabase_migrations.schema_migrations`)
-- **Active baseline:** `20260328145106_vezvision_fresh_schema` and everything after — matches live DB state
+- **Active baseline:** `20260328145106_vezvision_fresh_schema` and everything after: matches live DB state
 
 ## What happened
 
@@ -36,5 +36,4 @@ Developer writes migration SQL
   → Migration is recorded in supabase_migrations.schema_migrations automatically
 ```
 
-This workflow avoids the drift problem entirely — `db push` is safe, no version conflicts, no risk to the live DB.
-
+This workflow avoids the drift problem entirely: `db push` is safe, no version conflicts, no risk to the live DB.

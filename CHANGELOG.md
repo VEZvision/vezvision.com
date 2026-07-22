@@ -17,9 +17,9 @@
 "date": "2026-06-19",
 "sections": {
 "Security": [
-"REVOKE EXECUTE from PUBLIC on 3 SECURITY DEFINER functions — prevent anonymous execution via REST API",
-"Moved pg_net to extensions schema — resolve Supabase security advisor warning",
-"Real CSP nonce replacing 'unsafe-inline' — per-build nonce shared between headers and index.html",
+"REVOKE EXECUTE from PUBLIC on 3 SECURITY DEFINER functions: prevent anonymous execution via REST API",
+"Moved pg_net to extensions schema: resolve Supabase security advisor warning",
+"Real CSP nonce replacing 'unsafe-inline': per-build nonce shared between headers and index.html",
 "HMAC webhook signing replacing plaintext header secret in submit-contact",
 "Fail-closed email dispatch in submit-contact (no default onboarding@resend.dev)",
 "CodeQL + Dependency Review CI workflows",
