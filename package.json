@@ -81,7 +81,7 @@
     "lint-staged": "^17.0.8",
     "prettier": "^3.8.4",
     "sass-embedded": "^1.93.1",
-    "sharp": "^0.33.5",
+    "sharp": "^0.35.3",
     "size-limit": "^12.1.0",
     "tailwindcss": "^4.3.2",
     "tsx": "^4.23.0",
