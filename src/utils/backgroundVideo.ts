@@ -22,9 +22,12 @@ export function prepareBackgroundVideo(video: HTMLVideoElement): void {
 export function playBackgroundVideo(video: HTMLVideoElement): void {
   prepareBackgroundVideo(video);
   // loop=true suppresses the `ended` event (HTML5 spec), so video.ended
-  // is always false.  Check currentTime directly instead and rewind
-  // when we are at or past the end so play() restarts from the top.
-  if (video.duration > 0 && video.currentTime >= video.duration - 0.05) {
+  // is always false in practice. Rewind when ended, or when currentTime
+  // is at/past the end so play() restarts from the top.
+  if (
+    video.ended ||
+    (video.duration > 0 && video.currentTime >= video.duration - 0.05)
+  ) {
     video.currentTime = 0;
   }
   void video.play().catch(ignoreExpectedMediaPlayError);
@@ -64,13 +67,16 @@ export function installBackgroundVideoRecovery(
   let lastTime = video.currentTime;
   const healthCheck = () => {
     if (document.visibilityState !== "visible") return;
-    if (document.visibilityState !== "visible") return;
-    // Check if video is stuck: either paused, or not advancing (currentTime
-    // hasn't moved since last check despite not being paused), or at end.
+    // Check if video is stuck: either paused, at end, or stalled
+    // (currentTime hasn't moved since last check despite not being paused).
+    // Only check stalled when currentTime > 0 to avoid false positives
+    // at the start of playback (currentTime=0 is the beginning, not a stall).
     const atEnd =
       video.duration > 0 && video.currentTime >= video.duration - 0.05;
     const stalled =
-      !video.paused && Math.abs(video.currentTime - lastTime) < 0.01;
+      !video.paused &&
+      video.currentTime > 0 &&
+      Math.abs(video.currentTime - lastTime) < 0.01;
     if (!video.paused && !atEnd && !stalled) {
       lastTime = video.currentTime;
       return;
