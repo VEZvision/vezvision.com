@@ -134,6 +134,7 @@
   align-self: center;
   display: flex;
   align-items: center;
+  container-type: inline-size;
 }
 
 .techPathLine {
@@ -162,19 +163,20 @@
   border-radius: 50%;
   background: #10b981;
   transform: translateX(-50%) scale(1);
+  will-change: transform;
   opacity: 1;
   animation: techDotSlide 3s ease-in-out infinite;
 }
 
 @keyframes techDotSlide {
   0% {
-    left: 0%;
+    transform: translateX(-50%) scale(1);
   }
   50% {
-    left: 100%;
+    transform: translateX(calc(100cqw - 50%)) scale(1);
   }
   100% {
-    left: 0%;
+    transform: translateX(-50%) scale(1);
   }
 }
 
@@ -196,7 +198,7 @@
   }
 
   .techPathDot {
-    left: 50%;
+    transform: translateX(calc(50cqw - 50%)) scale(1);
   }
 
   .blinkingCursor {
