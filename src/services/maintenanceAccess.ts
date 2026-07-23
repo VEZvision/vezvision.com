@@ -1,95 +1,76 @@
-import { logError } from '@/lib/logger'
-import { getApiClient } from '@/lib/api'
-
-interface MaintenanceAccessResponse {
-  success?: boolean
-  maintenance?: boolean
-  bypass?: boolean
-}
+import { logError } from "@/lib/logger";
+import { getApiClient } from "@/lib/api";
 
 export interface MaintenanceAccessSnapshot {
-  /** Authoritative flag from vv_site_settings via edge. */
-  maintenance: boolean
-  /** Whether the current visitor may use the public site during maintenance. */
-  bypass: boolean
-  /** Edge function could not be reached; combine with a fresh DB read for fail-closed decisions. */
-  unavailable: boolean
+  maintenance: boolean;
+  bypass: boolean;
+  unavailable: boolean;
 }
 
-const AVAILABILITY_FALLBACK: MaintenanceAccessSnapshot = {
+const ACCESSIBLE: MaintenanceAccessSnapshot = {
   maintenance: false,
   bypass: true,
-  unavailable: true,
-}
+  unavailable: false,
+};
 
+/**
+ * PostgREST replacement for the old Supabase Edge Function.
+ * Reads the maintenance_mode setting directly from vv_site_settings.
+ */
 export async function fetchMaintenanceEnabledFromDb(): Promise<boolean | null> {
-  const api = getApiClient()
+  const api = getApiClient();
   const { data, error } = await api
-    .from<{ value: { enabled?: boolean } }>('vv_site_settings')
-    .select('value')
-    .eq('key', 'maintenance_mode')
-    .eq('is_public', true)
-    .maybeSingle()
+    .from<{ value: { enabled?: boolean } }>("vv_site_settings")
+    .select("value")
+    .eq("key", "maintenance_mode")
+    .eq("is_public", true)
+    .maybeSingle();
 
   if (error) {
-    logError('maintenanceAccess.db', error)
-    return null
+    logError("maintenanceAccess.db", error);
+    return null;
   }
 
-  const settings = data?.value ?? null
-  return settings?.enabled === true
-}
-
-export async function fetchMaintenanceAccess(): Promise<MaintenanceAccessSnapshot> {
-  const response = await getApiClient().invoke<MaintenanceAccessResponse>('check-maintenance-access')
-
-  if (response.error) {
-    logError('maintenanceAccess.invoke', response.error)
-    return AVAILABILITY_FALLBACK
-  }
-
-  const data = response.data
-
-  if (data?.success === false) {
-    if (data?.maintenance === true) {
-      return {
-        maintenance: true,
-        bypass: Boolean(data?.bypass),
-        unavailable: false,
-      }
-    }
-
-    logError('maintenanceAccess.response', new Error('check-maintenance-access returned success=false'))
-    return AVAILABILITY_FALLBACK
-  }
-
-  if (data?.maintenance !== true) {
-    return { maintenance: false, bypass: true, unavailable: false }
-  }
-
-  return {
-    maintenance: true,
-    bypass: Boolean(data?.bypass),
-    unavailable: false,
-  }
+  const settings = data?.value ?? null;
+  return settings?.enabled === true;
 }
 
 /**
- * @param settingsMaintenanceEnabled CMS flag from cached settings — when edge is down but
- * maintenance is enabled in CMS, fail closed so a half-deployed site stays protected.
+ * Checks maintenance access via PostgREST.
+ * If the database is unreachable, default to accessible (optimistic)
+ * so the site stays up during transient DB issues.
  */
+export async function fetchMaintenanceAccess(): Promise<MaintenanceAccessSnapshot> {
+  try {
+    const dbMaintenance = await fetchMaintenanceEnabledFromDb();
+    if (dbMaintenance === null) {
+      // DB unreachable — be optimistic, don't block the site
+      return ACCESSIBLE;
+    }
+    return {
+      maintenance: dbMaintenance,
+      bypass: !dbMaintenance,
+      unavailable: false,
+    };
+  } catch (error) {
+    logError("maintenanceAccess.fetch", error);
+    return ACCESSIBLE;
+  }
+}
+
 export function isSiteAccessible(
   snapshot: MaintenanceAccessSnapshot,
   settingsMaintenanceEnabled = false,
   dbMaintenanceEnabled: boolean | null = null,
 ): boolean {
   if (snapshot.unavailable) {
-    if (settingsMaintenanceEnabled) return false
-    if (dbMaintenanceEnabled === true) return false
-    if (dbMaintenanceEnabled === null) return false
-    return true
+    // If we know maintenance is explicitly enabled in CMS or DB, block
+    if (settingsMaintenanceEnabled) return false;
+    if (dbMaintenanceEnabled === true) return false;
+    // Unknown state — be optimistic, let users in
+    return true;
   }
 
-  if (!snapshot.maintenance) return true
-  return snapshot.bypass
+  if (!snapshot.maintenance) return true;
+  return snapshot.bypass;
 }
