@@ -114,6 +114,8 @@ function ProcessSection() {
                     alt={t("process.analysis.title")}
                     className={styles.cardImage}
                     sizes="(max-width: 1024px) 100vw, 400px"
+                    width={800}
+                    height={1243}
                   />
                 </div>
               </div>
@@ -154,6 +156,8 @@ function ProcessSection() {
                     alt={t("process.implementation.title")}
                     className={styles.cardImage}
                     sizes="(max-width: 1024px) 100vw, 400px"
+                    width={1056}
+                    height={425}
                   />
                 </div>
               </div>
@@ -189,6 +193,8 @@ function ProcessSection() {
                     alt={t("process.support.title")}
                     className={styles.cardImage}
                     sizes="(max-width: 1024px) 100vw, 400px"
+                    width={1056}
+                    height={425}
                   />
                 </div>
               </div>

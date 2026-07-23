@@ -195,6 +195,8 @@ const Navbar = memo(() => {
                       alt="VEZvision Logo"
                       width="838"
                       height="153"
+                      loading="eager"
+                      fetchPriority="high"
                       className="h-6 w-auto"
                     />
                   </Link>

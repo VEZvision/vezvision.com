@@ -157,7 +157,7 @@ function stripHomePreconnects(headHtml: string, routePath: string): string {
   }
 
   return headHtml.replace(
-    /<link\b[^>]*rel=["'](?:preconnect|dns-prefetch)["'][^>]*(?:googletagmanager|cloudflare)[^>]*>\s*/gi,
+    /<link\b[^>]*rel=["']dns-prefetch["'][^>]*(?:googletagmanager|cloudflare)[^>]*>\s*/gi,
     "",
   );
 }
