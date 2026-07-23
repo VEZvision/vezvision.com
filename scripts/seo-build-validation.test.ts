@@ -180,6 +180,10 @@ describe("SEO build validation", () => {
       resolve(process.cwd(), "src/components/common/VideoHeroSection.tsx"),
       "utf8",
     );
+    const videoSource = readFileSync(
+      resolve(process.cwd(), "src/components/common/CrossfadeLoopVideo.tsx"),
+      "utf8",
+    );
     const prerenderSource = readFileSync(
       resolve(process.cwd(), "scripts/prerender-head.ts"),
       "utf8",
@@ -187,10 +191,13 @@ describe("SEO build validation", () => {
 
     assert.ok(heroSource.includes('rel="preload"'));
     assert.ok(heroSource.includes('fetchPriority="high"'));
-    assert.ok(heroSource.includes("poster={videoPosterSrc}"));
     assert.ok(
-      heroSource.indexOf('type="video/webm"') <
-        heroSource.indexOf('type="video/mp4"'),
+      heroSource.includes("posterSrc={videoPosterSrc}"),
+      "Hero poster must be passed to the background video component",
+    );
+    assert.ok(
+      videoSource.indexOf('type="video/webm"') <
+        videoSource.indexOf('type="video/mp4"'),
       "The smaller WebM source must be preferred when supported",
     );
     assert.ok(existsSync(resolve(process.cwd(), "public/hero-poster.avif")));
