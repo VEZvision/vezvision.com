@@ -26,7 +26,9 @@ export default function PublicChrome({ children }: PublicChromeProps) {
       </a>
       <SettingsDegradedBanner />
       <div data-lenis-events>
-        <Navbar />
+        <header>
+          <Navbar />
+        </header>
         {children}
         <Footer />
       </div>

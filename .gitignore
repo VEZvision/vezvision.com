@@ -71,3 +71,9 @@ public/icons/
 public/icon-dark.svg
 public/logo-navbar.svg
 .omo/
+
+# Old/original video backups (kept locally only)
+public/*-old.mp4
+public/*-old.webm
+public/*-orig.mp4
+public/*-orig.webm

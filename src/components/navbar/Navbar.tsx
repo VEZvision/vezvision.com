@@ -25,6 +25,21 @@ function getContentPath(pathname: string): string {
     : pathWithoutLocale.replace(/\/+$/, "") || "/";
 }
 
+function isActiveRoute(currentPathname: string, href: string): boolean {
+  if (isExternalHref(href) || typeof window === "undefined") return false;
+
+  const targetUrl = new URL(href, window.location.origin);
+  if (targetUrl.origin !== window.location.origin || targetUrl.hash)
+    return false;
+
+  const currentContentPath = getContentPath(currentPathname).replace(/\/$/, "");
+  const targetContentPath = getContentPath(targetUrl.pathname).replace(
+    /\/$/,
+    "",
+  );
+  return currentContentPath === targetContentPath;
+}
+
 const FALLBACK_NAV_LINKS = [
   { id: "about", href: "/about", labelKey: "nav.about" },
   { id: "services", href: "/services", labelKey: "nav.services" },
@@ -165,6 +180,7 @@ const Navbar = memo(() => {
         }}
       />
       <nav
+        aria-label={t("nav.primary")}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 transform-[translateZ(0)] ${
           isScrolled ? "pt-2" : ""
         }`}
@@ -217,6 +233,11 @@ const Navbar = memo(() => {
                       key={item.id}
                       href={item.href}
                       className={`px-4 py-2 text-sm ${navTextClass} ${navHoverClass} rounded-md transition-colors`}
+                      aria-current={
+                        isActiveRoute(location.pathname, item.href)
+                          ? "page"
+                          : undefined
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -227,6 +248,11 @@ const Navbar = memo(() => {
                       key={item.id}
                       to={item.href}
                       prefetch="intent"
+                      aria-current={
+                        isActiveRoute(location.pathname, item.href)
+                          ? "page"
+                          : undefined
+                      }
                       onClick={(event) =>
                         scrollToTopIfSameRoute(event, item.href)
                       }
@@ -288,6 +314,8 @@ const Navbar = memo(() => {
                 <button
                   onClick={toggleMenu}
                   className={`inline-flex items-center justify-center p-2 rounded-md ${mobileButtonTextClass} transition-colors`}
+                  aria-expanded={isMenuOpen}
+                  aria-controls="primary-navigation"
                   aria-label={
                     isMenuOpen ? t("nav.menu.close") : t("nav.menu.open")
                   }
@@ -305,6 +333,7 @@ const Navbar = memo(() => {
 
           {/* Mobile Navigation */}
           <div
+            id="primary-navigation"
             className={`tablet-lg:hidden overflow-hidden transition-all duration-500 ease-in-out ${
               isMenuOpen ? "max-h-screen" : "max-h-0"
             }`}
@@ -317,6 +346,11 @@ const Navbar = memo(() => {
                     href={item.href}
                     onClick={closeMenu}
                     className="block px-3 py-2 text-base text-black hover:bg-white/50 rounded-md transition-colors"
+                    aria-current={
+                      isActiveRoute(location.pathname, item.href)
+                        ? "page"
+                        : undefined
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -326,6 +360,11 @@ const Navbar = memo(() => {
                   <Link
                     key={item.id}
                     to={item.href}
+                    aria-current={
+                      isActiveRoute(location.pathname, item.href)
+                        ? "page"
+                        : undefined
+                    }
                     onClick={(event) => {
                       scrollToTopIfSameRoute(event, item.href);
                       closeMenu();
