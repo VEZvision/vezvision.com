@@ -15,17 +15,7 @@
   height: 100%;
   min-width: 100%;
   min-height: 100%;
-  transform: translate3d(-50%, -50%, 0);
   object-fit: cover;
+  transform: translate3d(-50%, -50%, 0);
   backface-visibility: hidden;
-  will-change: opacity;
-}
-
-.frameOverlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: #ffffff;
-  opacity: 0;
-  transition: opacity 50ms ease;
 }
