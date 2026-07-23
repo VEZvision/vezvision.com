@@ -11,7 +11,7 @@ import {
 } from "@/hooks/useSettings";
 import { useCookieConsent } from "@/hooks/useCookieConsent";
 import { usePrefersReducedData } from "@/hooks/usePrefersReducedData";
-import { useBackgroundVideoSection } from "@/hooks/useBackgroundVideoSection";
+import { CrossfadeLoopVideo } from "@/components/common/CrossfadeLoopVideo";
 import { isSafeExternalHref, safePublicHref } from "@/utils/safeHref";
 import { localizeInternalHref } from "@/routing/locale";
 import { getLocalizedLabel } from "@/utils/i18n";
@@ -37,7 +37,6 @@ function normalizeFooterCopy(value: string): string {
 }
 
 export default function Footer() {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const footerRef = useRef<HTMLElement>(null);
   const { t, language } = useLanguageContext();
   const social = useSocial();
@@ -59,15 +58,6 @@ export default function Footer() {
   );
   const videoPosterSrc = isHome ? "/hero-poster.avif" : "/footer-poster.avif";
   const showVideo = !prefersReducedData;
-
-  useBackgroundVideoSection({
-    enabled: showVideo,
-    sectionRef: footerRef,
-    videoRef,
-    threshold: 0,
-    rootMargin: "120px",
-    reloadKey: videoSrc,
-  });
 
   const socialLinks = [
     social?.x
@@ -259,26 +249,13 @@ export default function Footer() {
       <div className={styles.backgroundLayer}>
         <div className={styles.videoBackdrop}>
           {showVideo && (
-            <video
-              ref={videoRef}
-              width="3840"
-              height="2160"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              poster={videoPosterSrc}
+            <CrossfadeLoopVideo
+              mp4Src={videoSrc}
+              webmSrc={videoWebmSrc}
+              posterSrc={videoPosterSrc}
+              videoClassName={styles.footerVideo}
               aria-hidden="true"
-              tabIndex={-1}
-              data-lenis-prevent
-              className={styles.footerVideo}
-              disableRemotePlayback
-              x-webkit-airplay="deny"
-            >
-              <source src={videoWebmSrc} type="video/webm" />
-              <source src={videoSrc} type="video/mp4" />
-            </video>
+            />
           )}
           <div className={styles.videoOverlay} />
         </div>

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocalizedPath } from "@/hooks/useLocalizedPath";
 import { useLanguageContext } from "@/hooks/useLanguage";
 import { usePrefersReducedData } from "@/hooks/usePrefersReducedData";
-import { useBackgroundVideoSection } from "@/hooks/useBackgroundVideoSection";
+import { CrossfadeLoopVideo } from "@/components/common/CrossfadeLoopVideo";
 import logoNavbar from "@brand/wordmark-horizontal-dark.svg";
 import { safeExternalHref, safePublicHref } from "@/utils/safeHref";
 import { scrollToElement } from "@/scroll";
@@ -70,18 +70,8 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
   const { toLocalizedPath } = useLocalizedPath();
   const { t } = useLanguageContext();
   const prefersReducedData = usePrefersReducedData();
-  const videoRef = useRef<HTMLVideoElement | null>(null);
   const sectionRef = useRef<HTMLElement | null>(null);
   const showVideo = !prefersReducedData;
-
-  useBackgroundVideoSection({
-    enabled: showVideo,
-    sectionRef,
-    videoRef,
-    initiallyVisible: true,
-    threshold: 0.2,
-    reloadKey: videoMp4Src,
-  });
 
   const runAction = (href?: string, onClick?: () => void) => {
     if (onClick) {
@@ -143,24 +133,13 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
       >
         <div className={styles.media} aria-hidden="true">
           {showVideo ? (
-            <video
-              ref={videoRef}
-              className={styles.videoBg}
-              width="3840"
-              height="2160"
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              poster={videoPosterSrc}
-              tabIndex={-1}
-              disableRemotePlayback
-              x-webkit-airplay="deny"
-            >
-              <source src={videoWebmSrc} type="video/webm" />
-              <source src={videoMp4Src} type="video/mp4" />
-            </video>
+            <CrossfadeLoopVideo
+              mp4Src={videoMp4Src}
+              webmSrc={videoWebmSrc}
+              posterSrc={videoPosterSrc}
+              videoClassName={styles.videoBg}
+              aria-hidden="true"
+            />
           ) : (
             <div className={styles.fallbackBg} />
           )}
