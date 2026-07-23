@@ -19,12 +19,18 @@ export function prepareBackgroundVideo(video: HTMLVideoElement): void {
   video.setAttribute("webkit-playsinline", "");
 }
 
+function rewindIfAtEnd(video: HTMLVideoElement): void {
+  if (video.duration > 0 && video.currentTime >= video.duration - 0.05) {
+    video.currentTime = 0;
+  }
+}
+
 export function playBackgroundVideo(video: HTMLVideoElement): void {
   prepareBackgroundVideo(video);
   // Do NOT rewind here. This function is called from media events
   // (canplay, loadeddata) that fire during normal playback, so
-  // rewinding here would stutter at the loop boundary.
-  // Rewind logic lives only in the health check below.
+  // rewinding here would stutter. Rewind logic lives only in the
+  // recovery handlers below.
   void video.play().catch(ignoreExpectedMediaPlayError);
 }
 
@@ -38,50 +44,52 @@ export function installBackgroundVideoRecovery(
 
   const onVisibilityChange = () => {
     if (document.visibilityState === "visible") {
+      rewindIfAtEnd(video);
       retry();
     }
   };
 
   const onUnexpectedPause = () => {
-    if (document.visibilityState === "visible") {
+    if (document.visibilityState !== "visible") return;
+    rewindIfAtEnd(video);
+    retry();
+  };
+
+  // With preload="auto", muted, and loop="true", most browsers loop
+  // cleanly. On iOS Safari / Chrome battery saver the loop boundary
+  // can hang: currentTime stops near duration and play() can't restart.
+  // We react to the browser's pause event plus a sub-second health
+  // check so any hang is imperceptible.
+  let lastTime = video.currentTime;
+  let staleTicks = 0;
+  const healthCheck = () => {
+    if (document.visibilityState !== "visible") return;
+
+    const progress = video.currentTime - lastTime;
+    const isAdvancing = Math.abs(progress) > 0.001;
+
+    if (video.paused || isAdvancing || video.currentTime <= 0) {
+      lastTime = video.currentTime;
+      staleTicks = 0;
+      return;
+    }
+
+    // Video is visible, playing, but currentTime is stuck above 0.
+    // Wait for a second consecutive stuck tick to avoid false positives
+    // right after the health check starts observing.
+    staleTicks++;
+    if (staleTicks < 2) return;
+
+    // Stuck at loop boundary. Rewind and resume so the freeze lasts no
+    // more than a few hundred milliseconds.
+    rewindIfAtEnd(video);
+    if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      lastTime = video.currentTime;
+      staleTicks = 0;
       retry();
     }
   };
-
-  // With preload="auto", muted, and loop="true", the browser handles
-  // buffering and looping natively. On most browsers loop works
-  // seamlessly. But on some (iOS Safari, Chrome battery saver),
-  // loop=true can fail: the video stalls at currentTime=duration,
-  // video.ended stays false (HTML5 spec: loop suppresses ended),
-  // and play() can't restart from the end. We detect this by
-  // tracking whether currentTime actually advanced between checks.
-  let lastTime = video.currentTime;
-  const healthCheck = () => {
-    if (document.visibilityState !== "visible") return;
-    const stalled =
-      !video.paused &&
-      video.currentTime > 0 &&
-      Math.abs(video.currentTime - lastTime) < 0.01;
-    if (!video.paused && !stalled) {
-      lastTime = video.currentTime;
-      return;
-    }
-    // Video is genuinely stalled or paused. If stalled at the end of
-    // the clip (loop=true failed), rewind to 0 so play() can restart.
-    // This only fires after 2 seconds of zero progress, so it never
-    // triggers during normal looping where currentTime advances.
-    if (
-      stalled &&
-      video.duration > 0 &&
-      video.currentTime >= video.duration - 0.05
-    ) {
-      video.currentTime = 0;
-    }
-    if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
-    lastTime = video.currentTime;
-    retry();
-  };
-  const healthCheckIntervalId = window.setInterval(healthCheck, 2000);
+  const healthCheckIntervalId = window.setInterval(healthCheck, 250);
 
   window.addEventListener("pageshow", retry);
   document.addEventListener("visibilitychange", onVisibilityChange);
