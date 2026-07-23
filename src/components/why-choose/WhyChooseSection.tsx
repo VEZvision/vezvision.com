@@ -56,7 +56,7 @@ function WhyChooseSection() {
         <StaggerReveal className={styles.cards} amount={0.3}>
           {/* Card 1 */}
           <StaggerItem>
-            <article className={styles.card} role="listitem">
+            <article className={styles.card}>
               <div className={styles.shapeArea} aria-hidden="true">
                 <div className={styles.gauge}>
                   <div className={styles.gaugeInner} />
@@ -71,7 +71,7 @@ function WhyChooseSection() {
 
           {/* Card 2 */}
           <StaggerItem>
-            <article className={styles.card} role="listitem">
+            <article className={styles.card}>
               <div className={styles.shapeArea} aria-hidden="true">
                 <div className={styles.bars}>
                   <div className={`${styles.bar} ${styles.h75}`} />
@@ -89,10 +89,7 @@ function WhyChooseSection() {
 
           {/* Card 3 */}
           <StaggerItem>
-            <article
-              className={`${styles.card} ${styles.thirdCard}`}
-              role="listitem"
-            >
+            <article className={`${styles.card} ${styles.thirdCard}`}>
               <div
                 className={`${styles.shapeArea} ${styles.networkShapeArea}`}
                 aria-hidden="true"

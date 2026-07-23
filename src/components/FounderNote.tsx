@@ -145,8 +145,6 @@ function FounderNote({ className = "", variant = "home" }: FounderNoteProps) {
             className={styles.blogLine}
             data-visible={isRevealed ? "true" : "false"}
             aria-hidden="true"
-            role="presentation"
-            tabIndex={-1}
           >
             <span className={styles.reserveText}>{fullText}</span>
             <span className={styles.typedLayer}>
@@ -161,8 +159,6 @@ function FounderNote({ className = "", variant = "home" }: FounderNoteProps) {
             className={styles.homeLine}
             data-visible={isRevealed ? "true" : "false"}
             aria-hidden="true"
-            role="presentation"
-            tabIndex={-1}
           >
             <span className={styles.reserveText}>{fullText}</span>
             <span className={styles.typedLayer}>

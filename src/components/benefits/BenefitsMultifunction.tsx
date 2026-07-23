@@ -17,7 +17,7 @@ const BenefitsMultifunction: React.FC = () => {
         aria-hidden="true"
       >
         <div className={styles.dial}>
-          <div className={styles.shape} role="presentation" />
+          <div className={styles.shape} />
 
           <div className={styles.container}>
             <img
