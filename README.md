@@ -1,7 +1,7 @@
 # VEZvision website
 
-[![CI](https://img.shields.io/badge/CI-passing-brightgreen)](https://github.com/vezcode/vezvision/actions)
-[![Security](https://img.shields.io/badge/security-CodeQL-blue)](https://github.com/vezcode/vezvision/actions/workflows/codeql.yml)
+[![CI](https://github.com/VEZvision/vezvision.com/actions/workflows/ci.yml/badge.svg)](https://github.com/VEZvision/vezvision.com/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/VEZvision/vezvision.com/actions/workflows/codeql.yml/badge.svg)](https://github.com/VEZvision/vezvision.com/actions/workflows/codeql.yml)
 [![TypeScript](https://img.shields.io/badge/TS-strict-blue)](https://www.typescriptlang.org)
 [![Node](https://img.shields.io/badge/node-%3E%3D22-green)](https://nodejs.org)
 
