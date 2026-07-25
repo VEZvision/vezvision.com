@@ -11,6 +11,16 @@ const allowedOrigins = String(process.env.ALLOWED_ORIGINS || process.env.ALLOWED
   .filter(Boolean)
 const turnstileSecret = process.env.TURNSTILE_SECRET_KEY?.trim()
 const turnstileTestMode = process.env.TURNSTILE_TEST_MODE === 'true'
+
+const TURNSTILE_TEST_SECRET = "1x00000000000000000000AA"
+
+// Refuse to start in production with test keys
+if (!turnstileTestMode && turnstileSecret === TURNSTILE_TEST_SECRET) {
+  console.error("FATAL: TURNSTILE_SECRET_KEY is the Cloudflare test secret but TURNSTILE_TEST_MODE is false.")
+  console.error("Create a real Turnstile widget at https://dash.cloudflare.com → Turnstile")
+  console.error("Then set TURNSTILE_SECRET_KEY to the real secret and VITE_TURNSTILE_SITE_KEY to the real site key.")
+  process.exit(1)
+}
 const turnstileExpectedHostnames = String(process.env.TURNSTILE_EXPECTED_HOSTNAMES || '')
   .split(',').map(value => value.trim().toLowerCase()).filter(Boolean)
 const resendApiKey = process.env.RESEND_API_KEY?.trim()
