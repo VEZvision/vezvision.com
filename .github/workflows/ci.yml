@@ -50,32 +50,30 @@ jobs:
           path: dist
           retention-days: 1
 
-      - name: Audit dependencies
+      - name: Audit production dependencies
         run: |
-          # Exclude GHSA-qwww-vcr4-c8h2 (react-router RSC CSRF bypass)
-          # This advisory affects only RSC mode, which VEZvision does not use (pure client-side SPA).
-          VULNS=$(npm audit --json 2>/dev/null || true)
-          FILTERED=$(echo "$VULNS" | node -e "
+          # Audit only production deps (skip dev deps like eslint chain).
+          # Exclude GHSA-qwww-vcr4-c8h2 (react-router RSC CSRF bypass) — VEZvision
+          # is a pure client-side SPA and does not use RSC mode.
+          npm audit --omit=dev --json 2>/dev/null | node -e "
             const data = JSON.parse(require('fs').readFileSync(0, 'utf8'));
-            const SKIP = new Set(['GHSA-qwww-vcr4-c8h2', 'GHSA-mh99-v99m-4gvg']);
+            const SKIP = new Set(['GHSA-qwww-vcr4-c8h2']);
             const real = Object.entries(data.vulnerabilities || {})
               .filter(([name, v]) => {
                 const vias = Array.isArray(v.via) ? v.via : [v.via];
                 return vias.some(via => {
                   if (typeof via === 'string') return true;
                   if (via.source && SKIP.has(via.source)) return false;
-                  if (via.url && (via.url.includes('GHSA-qwww-vcr4-c8h2') || via.url.includes('GHSA-mh99-v99m-4gvg'))) return false;
+                  if (via.url && via.url.includes('GHSA-qwww-vcr4-c8h2')) return false;
                   return true;
                 });
               });
-            const count = real.length;
-            if (count > 0) {
-              for (const [name, v] of real) console.error('  ' + name + ': ' + v.severity);
+            if (real.length > 0) {
+              for (const [name, v] of real) console.error(name + ': ' + v.severity);
               process.exit(1);
             }
-            console.log('No vulnerabilities (excluding non-applicable react-router RSC advisory)');
-          ")
-          echo "$FILTERED"
+            console.log('No production vulnerabilities');
+          "
 
   e2e:
     runs-on: ubuntu-latest
