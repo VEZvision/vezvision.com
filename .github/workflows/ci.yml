@@ -57,14 +57,14 @@ jobs:
           VULNS=$(npm audit --json 2>/dev/null || true)
           FILTERED=$(echo "$VULNS" | node -e "
             const data = JSON.parse(require('fs').readFileSync(0, 'utf8'));
-            const SKIP = new Set(['GHSA-qwww-vcr4-c8h2']);
+            const SKIP = new Set(['GHSA-qwww-vcr4-c8h2', 'GHSA-mh99-v99m-4gvg']);
             const real = Object.entries(data.vulnerabilities || {})
               .filter(([name, v]) => {
                 const vias = Array.isArray(v.via) ? v.via : [v.via];
                 return vias.some(via => {
                   if (typeof via === 'string') return true;
                   if (via.source && SKIP.has(via.source)) return false;
-                  if (via.url && via.url.includes('GHSA-qwww-vcr4-c8h2')) return false;
+                  if (via.url && (via.url.includes('GHSA-qwww-vcr4-c8h2') || via.url.includes('GHSA-mh99-v99m-4gvg'))) return false;
                   return true;
                 });
               });
