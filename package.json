@@ -83,7 +83,7 @@
     "prettier": "^3.8.4",
     "sass-embedded": "^1.93.1",
     "sharp": "^0.35.3",
-    "size-limit": "^12.1.0",
+    "size-limit": "^13.0.1",
     "tailwindcss": "^4.3.2",
     "tsx": "^4.23.0",
     "typescript": "~5.8.3",
