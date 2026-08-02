@@ -30,9 +30,9 @@ describe('buildContentSecurityPolicy', () => {
     assert.match(policy, /form-action 'self'/)
   })
 
-  it('enforces trusted types for script sinks', () => {
+  it('does not enforce trusted types until WebKit-compatible policies are available', () => {
     const policy = buildContentSecurityPolicy()
-    assert.match(policy, /require-trusted-types-for 'script'/)
-    assert.match(policy, /trusted-types default dompurify react-helmet/)
+    assert.doesNotMatch(policy, /require-trusted-types-for/)
+    assert.doesNotMatch(policy, /trusted-types/)
   })
 })

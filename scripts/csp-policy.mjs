@@ -34,7 +34,5 @@ export function buildContentSecurityPolicy(apiHost) {
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
-    "require-trusted-types-for 'script'",
-    "trusted-types default dompurify react-helmet",
   ].join('; ')
 }
