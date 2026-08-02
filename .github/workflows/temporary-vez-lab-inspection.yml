@@ -7,22 +7,14 @@ jobs:
   inspect:
     runs-on: [self-hosted, Linux, X64, vezlab-vezvision-deploy]
     steps:
-      - name: Inspect safe lab metadata
+      - name: Verify privileged lab channel
         env:
-          COOLIFY_TOKEN: ${{ secrets.COOLIFY_DEVELOP_API_TOKEN }}
-          COOLIFY_WEBHOOK_URL: ${{ secrets.COOLIFY_DEVELOP_API_WEBHOOK_URL }}
+          LAB_ROOT_KEY: ${{ secrets.VEZ_TEMP_LAB_ROOT_KEY }}
         run: |
           set -euo pipefail
-          printf 'host=%s user=%s\n' "$(hostname)" "$(id -un)"
-          printf 'docker_access='; docker info >/dev/null 2>&1 && echo yes || echo no
-          printf 'sudo_access='; sudo -n true >/dev/null 2>&1 && echo yes || echo no
-          printf 'sudo_docker_access='; sudo -n docker info >/dev/null 2>&1 && echo yes || echo no
-          base_url="${COOLIFY_WEBHOOK_URL%%/api/v1/*}"
-          printf 'coolify_base=%s\n' "$base_url"
-          printf 'coolify_health='; curl -fsS "$base_url/api/health" | jq -c .
-          cf_token="$(sudo -n docker inspect coolify-proxy --format '{{range .Config.Env}}{{println .}}{{end}}' | sed -n 's/^CF_DNS_API_TOKEN=//p' | head -1)"
-          test -n "$cf_token"
-          printf 'cloudflare_token='; curl -fsS -H "Authorization: Bearer $cf_token" https://api.cloudflare.com/client/v4/user/tokens/verify | jq -r '.result.status'
-          curl -fsS -H "Authorization: Bearer $cf_token" 'https://api.cloudflare.com/client/v4/zones?per_page=50' |
-            jq -c '{success,zones:[.result[]|{id,name,status}]}'
-          printf 'network='; ip -4 route get 10.77.30.1 | head -1
+          key="$RUNNER_TEMP/vez-lab-root"
+          printf '%s\n' "$LAB_ROOT_KEY" > "$key"
+          chmod 600 "$key"
+          ssh -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=no root@10.77.30.35 \
+            'printf "root_channel=yes host=%s coolify=%s\n" "$(hostname)" "$(docker inspect coolify --format "{{.Config.Image}}")"; docker exec coolify-db psql -U coolify -d coolify -At -F "|" -c "select p.uuid,p.name,e.uuid,e.name from projects p join environments e on e.project_id=p.id order by p.id,e.id;"'
+          unlink "$key"
