@@ -38,8 +38,8 @@ jobs:
           curl -fsS \
             -H "Authorization: Bearer $COOLIFY_TOKEN" \
             "$api/applications/$app_uuid" \
-            | jq '{name, uuid, git_branch, domains, status}'
+            | jq '{name, uuid, git_branch, fqdn, status}'
           curl -fsS \
             -H "Authorization: Bearer $COOLIFY_TOKEN" \
             "$api/deploy?uuid=$app_uuid&force=false" \
-            | jq '{message, deployment_uuid}'
+            | jq .
