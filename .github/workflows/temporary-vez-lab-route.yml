@@ -34,6 +34,13 @@ jobs:
           ssh -i "$work/lab-root" -o BatchMode=yes -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@10.77.40.2 'hostname; ip -brief address; ip route' || true
           echo '--- router through pve ---'
           ssh -i "$work/openwrt" -o BatchMode=yes -o ConnectTimeout=3 -o StrictHostKeyChecking=no -o "ProxyCommand=ssh -i $work/lab-root -o BatchMode=yes -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@10.77.40.2 nc %h %p" root@10.77.40.1 'ubus call system board | jsonfilter -e "@.hostname"' || true
+          echo '--- coolify host routes ---'
+          ssh -i "$work/lab-root" -o BatchMode=yes -o StrictHostKeyChecking=no root@10.77.30.35 'hostname; ip -brief address; ip route; ip neigh' || true
+          echo '--- router through coolify host ---'
+          for candidate in 10.77.30.1 10.77.0.1 10.77.40.1 192.168.2.1; do
+            printf '%s ' "$candidate"
+            ssh -i "$work/openwrt" -o BatchMode=yes -o ConnectTimeout=3 -o StrictHostKeyChecking=no -o "ProxyCommand=ssh -i $work/lab-root -o BatchMode=yes -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@10.77.30.35 nc %h %p" "root@$candidate" 'ubus call system board | jsonfilter -e "@.hostname"' 2>/dev/null || echo unavailable
+          done
           echo '--- website lab resolution ---'
           getent ahosts website.vezlabs.dev || true
           curl -kIsS --max-time 15 https://website.vezlabs.dev | sed -n '1,12p' || true
