@@ -1,115 +1,38 @@
-name: Temporary VEZ lab bootstrap
+name: Temporary VEZ lab finalize
 
 on:
   workflow_dispatch:
 
 jobs:
-  bootstrap:
+  finalize:
     runs-on: [self-hosted, Linux, X64, vezlab-vezvision-deploy]
     steps:
-      - name: Bootstrap VEZ develop application and runner
+      - name: Finalize VEZ lab deployment
         env:
           LAB_ROOT_KEY: ${{ secrets.VEZ_TEMP_LAB_ROOT_KEY }}
           OPENWRT_KEY: ${{ secrets.VEZ_TEMP_OPENWRT_KEY }}
-          DEPLOY_KEY: ${{ secrets.VEZ_TEMP_DEPLOY_KEY }}
-          REPO_RUNNER_TOKEN: ${{ secrets.VEZ_TEMP_RUNNER_TOKEN }}
           VEZHQ_ADMIN_TOKEN: ${{ secrets.VEZ_TEMP_GITHUB_ADMIN_TOKEN }}
           COOLIFY_DEPLOY_TOKEN: ${{ secrets.COOLIFY_DEVELOP_API_TOKEN }}
         run: |
           set -euo pipefail
-          work="$RUNNER_TEMP/vez-bootstrap"
+          work="$RUNNER_TEMP/vez-finalize"
           mkdir -p "$work"
           chmod 700 "$work"
           printf '%s\n' "$LAB_ROOT_KEY" > "$work/lab-root"
           printf '%s\n' "$OPENWRT_KEY" > "$work/openwrt"
-          printf '%s\n' "$DEPLOY_KEY" > "$work/deploy-key"
-          printf '%s' "$REPO_RUNNER_TOKEN" > "$work/runner-token"
           chmod 600 "$work"/*
-
           ssh_opts=(-i "$work/lab-root" -o BatchMode=yes -o StrictHostKeyChecking=no)
-          scp "${ssh_opts[@]}" "$work/deploy-key" root@10.77.30.35:/root/.vez_deploy_key
-          scp "${ssh_opts[@]}" "$work/runner-token" root@10.77.30.35:/root/.vez_runner_token
+          app_uuid="$(ssh "${ssh_opts[@]}" root@10.77.30.35 'sed -n "1p" /root/.vez_develop_app_uuid')"
 
-          ssh "${ssh_opts[@]}" root@10.77.30.35 'bash -s' <<'REMOTE'
-          set -euo pipefail
-          chmod 600 /root/.vez_deploy_key /root/.vez_runner_token
-
-          plain="$(openssl rand -hex 32)"
-          hash="$(printf %s "$plain" | sha256sum | cut -d' ' -f1)"
-          docker exec coolify-db psql -U coolify -d coolify -qAt -c "delete from personal_access_tokens where name='codex-vez-bootstrap';" >/dev/null
-          token_id="$(docker exec coolify-db psql -U coolify -d coolify -qAt -c "insert into personal_access_tokens (tokenable_type,tokenable_id,name,token,team_id,abilities,expires_at,created_at,updated_at) values ('App\\Models\\User',0,'codex-vez-bootstrap','$hash','0','[\"read\",\"write\",\"deploy\"]',now()+interval '2 hours',now(),now()) returning id;" | head -1)"
-          api_token="$token_id|$plain"
-          api='http://127.0.0.1:8000/api/v1'
-
-          key_payload="$(jq -n --arg name 'VEZ GitHub read-only' --arg description 'Read-only deployment key for VEZ develop' --rawfile private_key /root/.vez_deploy_key '$ARGS.named')"
-          key_uuid="$(curl -fsS -X POST "$api/security/keys" -H "Authorization: Bearer $api_token" -H 'Content-Type: application/json' --data "$key_payload" | jq -r .uuid)"
-
-          read -r server_uuid destination_uuid < <(docker exec coolify-db psql -U coolify -d coolify -At -F ' ' -c "select s.uuid,d.uuid from servers s join standalone_dockers d on d.server_id=s.id order by s.id,d.id limit 1;")
-          app_uuid="$(docker exec coolify-db psql -U coolify -d coolify -At -c "select uuid from applications where name='vez-develop' order by id desc limit 1;")"
-          domains='https://website.vezhq.com,https://website.vezlabs.dev'
-          if [ -z "$app_uuid" ]; then
-            payload="$(jq -n \
-              --arg project_uuid 'ur4pgqmhw38jtkmqh7isyo6b' \
-              --arg environment_uuid 'y9yd92bh6bwfig4yuiwlsx5t' \
-              --arg server_uuid "$server_uuid" \
-              --arg destination_uuid "$destination_uuid" \
-              --arg private_key_uuid "$key_uuid" \
-              --arg git_repository 'git@github.com:VEZhq/vezhq.com.git' \
-              --arg git_branch 'develop' \
-              --arg build_pack 'dockerfile' \
-              --arg dockerfile_location '/Dockerfile' \
-              --arg ports_exposes '4321' \
-              --arg name 'vez-develop' \
-              --arg description 'VEZ develop website' \
-              --arg domains "$domains" \
-              '$ARGS.named + {health_check_enabled:true,health_check_path:"/",health_check_port:"4321",health_check_host:"127.0.0.1",health_check_method:"GET",health_check_return_code:200,health_check_scheme:"http",health_check_interval:30,health_check_timeout:5,health_check_retries:3,health_check_start_period:30,is_force_https_enabled:true,is_auto_deploy_enabled:false,instant_deploy:false,autogenerate_domain:false,limits_memory:"512m",limits_cpus:"1"}')"
-            app_uuid="$(curl -fsS -X POST "$api/applications/private-deploy-key" -H "Authorization: Bearer $api_token" -H 'Content-Type: application/json' --data "$payload" | jq -r .uuid)"
-          else
-            curl -fsS -X PATCH "$api/applications/$app_uuid" -H "Authorization: Bearer $api_token" -H 'Content-Type: application/json' \
-              --data "$(jq -n --arg domains "$domains" '{name:"vez-develop",description:"VEZ develop website",git_repository:"git@github.com:VEZhq/vezhq.com.git",git_branch:"develop",dockerfile_location:"/Dockerfile",ports_exposes:"4321",health_check_enabled:true,health_check_path:"/",health_check_port:"4321",health_check_host:"127.0.0.1",health_check_start_period:30,domains:$domains,is_force_https_enabled:true}')" >/dev/null
-          fi
-          printf '%s' "$app_uuid" > /root/.vez_develop_app_uuid
-          curl -fsS -X POST "$api/applications/$app_uuid/start" -H "Authorization: Bearer $api_token" >/dev/null
-          docker exec coolify-db psql -U coolify -d coolify -qAt -c "delete from personal_access_tokens where name='codex-vez-bootstrap';" >/dev/null
-          unlink /root/.vez_deploy_key
-
-          cf_token="$(docker inspect coolify-proxy --format '{{range .Config.Env}}{{println .}}{{end}}' | sed -n 's/^CF_DNS_API_TOKEN=//p' | head -1)"
-          zone_id="$(curl -fsS -H "Authorization: Bearer $cf_token" 'https://api.cloudflare.com/client/v4/zones?name=vezhq.com' | jq -r '.result[0].id // empty')"
-          if [ -n "$zone_id" ]; then
-            upsert_dns() {
-              name="$1"; payload="$2"
-              record_id="$(curl -fsS -H "Authorization: Bearer $cf_token" "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records?name=$name" | jq -r '.result[0].id // empty')"
-              if [ -n "$record_id" ]; then
-                curl -fsS -X PUT -H "Authorization: Bearer $cf_token" -H 'Content-Type: application/json' "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records/$record_id" --data "$payload" >/dev/null
-              else
-                curl -fsS -X POST -H "Authorization: Bearer $cf_token" -H 'Content-Type: application/json' "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records" --data "$payload" >/dev/null
-              fi
-            }
-            upsert_dns 'vezhq.com' '{"type":"A","name":"vezhq.com","content":"46.225.25.171","ttl":1,"proxied":true}'
-            upsert_dns 'www.vezhq.com' '{"type":"CNAME","name":"www.vezhq.com","content":"vezhq.com","ttl":1,"proxied":true}'
-            echo 'cloudflare_vezhq_dns=updated'
-          else
-            echo 'cloudflare_vezhq_dns=zone_not_available'
-          fi
-
-          if [ ! -f /opt/actions-runner-vezhq/.runner ]; then
-            install -d -o github-runner -g github-runner /opt/actions-runner-vezhq
-            curl -fsSL https://github.com/actions/runner/releases/download/v2.336.0/actions-runner-linux-x64-2.336.0.tar.gz -o /tmp/actions-runner-vezhq.tgz
-            tar -xzf /tmp/actions-runner-vezhq.tgz -C /opt/actions-runner-vezhq
-            chown -R github-runner:github-runner /opt/actions-runner-vezhq
-            runner_token="$(sed -n '1p' /root/.vez_runner_token)"
-            sudo -u github-runner /opt/actions-runner-vezhq/config.sh --unattended --url https://github.com/VEZhq/vezhq.com --token "$runner_token" --name vezlabs-vez-deploy --labels vezlab-vez-deploy --work _work --replace
-            cd /opt/actions-runner-vezhq
-            ./svc.sh install github-runner
-            ./svc.sh start
-            unlink /tmp/actions-runner-vezhq.tgz
-          fi
-          unlink /root/.vez_runner_token
-          printf 'lab_app_uuid=%s runner_service=ready\n' "$app_uuid"
-          REMOTE
-
-          router_opts=(-i "$work/openwrt" -o BatchMode=yes -o StrictHostKeyChecking=no)
-          ssh "${router_opts[@]}" root@10.77.30.1 'sh -s' <<'ROUTER'
+          router_host=''
+          for candidate in 192.168.2.1 10.77.0.1 10.77.10.1 10.77.20.1 10.77.30.1 10.77.40.1; do
+            if ssh -i "$work/openwrt" -o BatchMode=yes -o ConnectTimeout=2 -o StrictHostKeyChecking=no "root@$candidate" 'ubus call system board >/dev/null' 2>/dev/null; then
+              router_host="$candidate"
+              break
+            fi
+          done
+          if [ -n "$router_host" ]; then
+            ssh -i "$work/openwrt" -o BatchMode=yes -o StrictHostKeyChecking=no "root@$router_host" 'sh -s' <<'ROUTER'
           set -eu
           ensure_domain() {
             domain="$1"
@@ -122,10 +45,12 @@ jobs:
           ensure_domain website.vezlabs.dev
           uci commit dhcp
           /etc/init.d/dnsmasq restart
-          echo 'router_dns=updated'
           ROUTER
+            printf 'router_dns=updated host=%s\n' "$router_host"
+          else
+            echo 'router_dns=management_interface_not_reachable'
+          fi
 
-          app_uuid="$(ssh "${ssh_opts[@]}" root@10.77.30.35 'sed -n "1p" /root/.vez_develop_app_uuid')"
           gh_version=2.95.0
           curl -fsSL "https://github.com/cli/cli/releases/download/v${gh_version}/gh_${gh_version}_linux_amd64.tar.gz" -o "$work/gh.tgz"
           tar -xzf "$work/gh.tgz" -C "$work"
@@ -133,4 +58,6 @@ jobs:
           printf '%s' "$COOLIFY_DEPLOY_TOKEN" | GH_TOKEN="$VEZHQ_ADMIN_TOKEN" "$gh_bin" secret set COOLIFY_DEVELOP_API_TOKEN --repo VEZhq/vezhq.com
           printf '%s' "https://coolify.vezlabs.dev/api/v1/deploy?uuid=$app_uuid&force=false" | GH_TOKEN="$VEZHQ_ADMIN_TOKEN" "$gh_bin" secret set COOLIFY_DEVELOP_WEBHOOK_URL --repo VEZhq/vezhq.com
           echo 'vezhq_deploy_secrets=configured'
+
+          ssh "${ssh_opts[@]}" root@10.77.30.35 "docker exec coolify-db psql -U coolify -d coolify -At -F '|' -c \"select status,commit,created_at,finished_at from application_deployment_queues where application_id=(select id::text from applications where uuid='$app_uuid') order by id desc limit 1;\""
           find "$work" -type f -exec unlink {} \;
