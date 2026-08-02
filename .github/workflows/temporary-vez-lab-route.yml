@@ -21,7 +21,7 @@ jobs:
           chmod 600 "$work/openwrt"
           chmod 600 "$work/lab-root"
           echo '--- route table ---'
-          cat /proc/net/route
+          cat /proc/net/route || true
           echo '--- addresses ---'
           hostname -I || true
           echo '--- router probes ---'
