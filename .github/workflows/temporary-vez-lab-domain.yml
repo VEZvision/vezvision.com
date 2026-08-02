@@ -1,0 +1,29 @@
+name: Temporary VEZ lab domain finalize
+
+on:
+  workflow_dispatch:
+
+jobs:
+  finalize:
+    runs-on: [self-hosted, Linux, X64, vezlab-vezvision-deploy]
+    steps:
+      - name: Keep VEZ lab on vezlabs.dev
+        env:
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_DEVELOP_API_TOKEN }}
+        run: |
+          set -euo pipefail
+          app_uuid='gjw76qejdx4vq1oqnzxn0x5e'
+          api='https://coolify.vezlabs.dev/api/v1'
+          curl -fsS -X PATCH \
+            -H "Authorization: Bearer $COOLIFY_TOKEN" \
+            -H 'Content-Type: application/json' \
+            -d '{"domains":"https://website.vezlabs.dev"}' \
+            "$api/applications/$app_uuid" >/dev/null
+          curl -fsS \
+            -H "Authorization: Bearer $COOLIFY_TOKEN" \
+            "$api/applications/$app_uuid" \
+            | jq '{name, uuid, git_branch, domains, status}'
+          curl -fsS \
+            -H "Authorization: Bearer $COOLIFY_TOKEN" \
+            "$api/deploy?uuid=$app_uuid&force=false" \
+            | jq '{message, deployment_uuid}'
