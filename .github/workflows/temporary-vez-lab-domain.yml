@@ -20,7 +20,7 @@ jobs:
           ssh_opts=(-i "$work/lab-root" -o BatchMode=yes -o StrictHostKeyChecking=no)
           raw_token="$(openssl rand -hex 32)"
           token_hash="$(printf '%s' "$raw_token" | sha256sum | awk '{print $1}')"
-          sql="insert into personal_access_tokens (tokenable_type, tokenable_id, name, token, abilities, created_at, updated_at) values ('App\\Models\\User', (select id from users order by id limit 1), 'codex-vez-lab-domain', '$token_hash', '[\"*\"]', now(), now()) returning id;"
+          sql="insert into personal_access_tokens (tokenable_type, tokenable_id, team_id, name, token, abilities, created_at, updated_at) values ('App\\Models\\User', (select id from users order by id limit 1), (select id from teams order by id limit 1), 'codex-vez-lab-domain', '$token_hash', '[\"*\"]', now(), now()) returning id;"
           token_id="$(printf '%s' "$sql" | base64 | ssh "${ssh_opts[@]}" root@10.77.30.35 'base64 -d | docker exec -i coolify-db psql -U coolify -d coolify -At' | head -n 1)"
           cleanup() {
             ssh "${ssh_opts[@]}" root@10.77.30.35 "docker exec coolify-db psql -U coolify -d coolify -c \"delete from personal_access_tokens where name='codex-vez-lab-domain';\"" >/dev/null || true
