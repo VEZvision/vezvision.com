@@ -1,0 +1,31 @@
+name: Temporary VEZ lab inspection
+
+on:
+  workflow_dispatch:
+
+jobs:
+  inspect:
+    runs-on: [self-hosted, Linux, X64, vezlab-vezvision-deploy]
+    steps:
+      - name: Inspect safe lab metadata
+        env:
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_DEVELOP_API_TOKEN }}
+          COOLIFY_WEBHOOK_URL: ${{ secrets.COOLIFY_DEVELOP_API_WEBHOOK_URL }}
+        run: |
+          set -euo pipefail
+          printf 'host=%s user=%s\n' "$(hostname)" "$(id -un)"
+          printf 'docker_access='; docker info >/dev/null 2>&1 && echo yes || echo no
+          base_url="${COOLIFY_WEBHOOK_URL%%/api/v1/*}"
+          printf 'coolify_base=%s\n' "$base_url"
+          curl -fsS -H "Authorization: Bearer $COOLIFY_TOKEN" "$base_url/api/v1/projects" |
+            jq -c 'map({uuid,name,environments:(.environments // [] | map({uuid,name}))})'
+          curl -fsS -H "Authorization: Bearer $COOLIFY_TOKEN" "$base_url/api/v1/servers" |
+            jq -c 'map({uuid,name,ip,proxyType:(.proxy.type // null),destinations:(.destinations // [] | map({uuid,name,network}))})'
+          curl -fsS -H "Authorization: Bearer $COOLIFY_TOKEN" "$base_url/api/v1/applications" |
+            jq -c 'map({uuid,name,git_branch,build_pack,domains:(.fqdn // .domains // null)})'
+          cf_token="$(docker inspect coolify-proxy --format '{{range .Config.Env}}{{println .}}{{end}}' | sed -n 's/^CF_DNS_API_TOKEN=//p' | head -1)"
+          test -n "$cf_token"
+          printf 'cloudflare_token='; curl -fsS -H "Authorization: Bearer $cf_token" https://api.cloudflare.com/client/v4/user/tokens/verify | jq -r '.result.status'
+          curl -fsS -H "Authorization: Bearer $cf_token" 'https://api.cloudflare.com/client/v4/zones?per_page=50' |
+            jq -c '{success,zones:[.result[]|{id,name,status}]}'
+          printf 'network='; ip -4 route get 10.77.30.1 | head -1
