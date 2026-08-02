@@ -10,23 +10,28 @@ jobs:
       - name: Inspect lab routing
         env:
           OPENWRT_KEY: ${{ secrets.VEZ_TEMP_OPENWRT_KEY }}
+          LAB_ROOT_KEY: ${{ secrets.VEZ_TEMP_LAB_ROOT_KEY }}
         run: |
-          set -euo pipefail
+          set -u
           work="$RUNNER_TEMP/vez-route-inspection"
           mkdir -p "$work"
           chmod 700 "$work"
           printf '%s\n' "$OPENWRT_KEY" > "$work/openwrt"
+          printf '%s\n' "$LAB_ROOT_KEY" > "$work/lab-root"
           chmod 600 "$work/openwrt"
-          echo '--- routes ---'
-          ip route
+          chmod 600 "$work/lab-root"
+          echo '--- route table ---'
+          cat /proc/net/route
           echo '--- addresses ---'
-          ip -brief address
-          echo '--- neighbours ---'
-          ip neigh
+          hostname -I || true
           echo '--- router probes ---'
-          candidates="$(ip route | awk '/^default / {print $3}') $(ip neigh | awk '{print $1}') 192.168.2.1 10.77.0.1 10.77.10.1 10.77.20.1 10.77.30.1 10.77.40.1"
+          candidates="192.168.2.1 10.77.0.1 10.77.10.1 10.77.20.1 10.77.30.1 10.77.40.1 10.77.40.2"
           for candidate in $candidates; do
             printf '%s ' "$candidate"
             ssh -i "$work/openwrt" -o BatchMode=yes -o ConnectTimeout=2 -o StrictHostKeyChecking=no "root@$candidate" 'ubus call system board | jsonfilter -e "@.hostname"' 2>/dev/null || echo unavailable
           done
+          echo '--- pve probe ---'
+          ssh -i "$work/lab-root" -o BatchMode=yes -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@10.77.40.2 'hostname; ip -brief address; ip route' || true
+          echo '--- router through pve ---'
+          ssh -i "$work/openwrt" -o BatchMode=yes -o ConnectTimeout=3 -o StrictHostKeyChecking=no -o "ProxyCommand=ssh -i $work/lab-root -o BatchMode=yes -o ConnectTimeout=3 -o StrictHostKeyChecking=no root@10.77.40.2 nc %h %p" root@10.77.40.1 'ubus call system board | jsonfilter -e "@.hostname"' || true
           find "$work" -type f -exec unlink {} \;
