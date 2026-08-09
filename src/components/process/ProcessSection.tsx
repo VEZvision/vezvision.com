@@ -13,14 +13,14 @@ import { safeJsonLd } from "@/utils/safeJsonLd";
 
 // Import images
 import analysisImage from "@/assets/process/analysis-image.png";
-import analysisImageSrcset from "@/assets/process/analysis-image.png?w=400;800&format=webp&as=srcset";
-import analysisImageAvifSrcset from "@/assets/process/analysis-image.png?w=400;800&format=avif&as=srcset";
+import analysisImageSrcset from "@/assets/process/analysis-image.png?w=200;400;800&format=webp&as=srcset";
+import analysisImageAvifSrcset from "@/assets/process/analysis-image.png?w=200;400;800&format=avif&as=srcset";
 import implementationImage from "@/assets/process/implementation-image.png";
-import implementationImageSrcset from "@/assets/process/implementation-image.png?w=400;800&format=webp&as=srcset";
-import implementationImageAvifSrcset from "@/assets/process/implementation-image.png?w=400;800&format=avif&as=srcset";
+import implementationImageSrcset from "@/assets/process/implementation-image.png?w=200;400;800&format=webp&as=srcset";
+import implementationImageAvifSrcset from "@/assets/process/implementation-image.png?w=200;400;800&format=avif&as=srcset";
 import supportImage from "@/assets/process/support-image.png";
-import supportImageSrcset from "@/assets/process/support-image.png?w=400;800&format=webp&as=srcset";
-import supportImageAvifSrcset from "@/assets/process/support-image.png?w=400;800&format=avif&as=srcset";
+import supportImageSrcset from "@/assets/process/support-image.png?w=200;400;800&format=webp&as=srcset";
+import supportImageAvifSrcset from "@/assets/process/support-image.png?w=200;400;800&format=avif&as=srcset";
 
 function ProcessSection() {
   const { t } = useLanguageContext();
@@ -113,7 +113,9 @@ function ProcessSection() {
                     avifSrcSet={analysisImageAvifSrcset}
                     alt={t("process.analysis.title")}
                     className={styles.cardImage}
-                    sizes="(max-width: 1024px) 100vw, 400px"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+                    width={800}
+                    height={1243}
                   />
                 </div>
               </div>
@@ -153,7 +155,9 @@ function ProcessSection() {
                     avifSrcSet={implementationImageAvifSrcset}
                     alt={t("process.implementation.title")}
                     className={styles.cardImage}
-                    sizes="(max-width: 1024px) 100vw, 400px"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+                    width={1056}
+                    height={425}
                   />
                 </div>
               </div>
@@ -188,7 +192,9 @@ function ProcessSection() {
                     avifSrcSet={supportImageAvifSrcset}
                     alt={t("process.support.title")}
                     className={styles.cardImage}
-                    sizes="(max-width: 1024px) 100vw, 400px"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px"
+                    width={1056}
+                    height={425}
                   />
                 </div>
               </div>

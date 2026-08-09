@@ -1,7 +1,7 @@
 # VEZvision website
 
-[![CI](https://img.shields.io/badge/CI-passing-brightgreen)](https://github.com/vezcode/vezvision/actions)
-[![Security](https://img.shields.io/badge/security-CodeQL-blue)](https://github.com/vezcode/vezvision/actions/workflows/codeql.yml)
+[![CI](https://github.com/VEZvision/vezvision.com/actions/workflows/ci.yml/badge.svg)](https://github.com/VEZvision/vezvision.com/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/VEZvision/vezvision.com/actions/workflows/codeql.yml/badge.svg)](https://github.com/VEZvision/vezvision.com/actions/workflows/codeql.yml)
 [![TypeScript](https://img.shields.io/badge/TS-strict-blue)](https://www.typescriptlang.org)
 [![Node](https://img.shields.io/badge/node-%3E%3D22-green)](https://nodejs.org)
 
@@ -107,13 +107,14 @@ It runs install, typecheck, lint, unit tests, production build, npm audit, and C
 
 These endpoints are served by the self-hosted Node API in `backend/`; public reads are served by PostgREST through a GET-only gateway. The browser only needs `VITE_API_URL`.
 
-### Optional Turnstile (contact + newsletter)
+### Turnstile (contact + newsletter)
 
 | Env (client) | `VITE_TURNSTILE_SITE_KEY` |
 | Env (server) | `TURNSTILE_SECRET_KEY` |
 
-When the site key is unset, widgets are hidden. When set, configure the secret in
-the self-hosted API environment.
+Turnstile may be omitted for local development. Production starts fail closed unless
+the site key is built into the frontend and both `TURNSTILE_SECRET_KEY` and
+`TURNSTILE_EXPECTED_HOSTNAMES` are configured in the API environment.
 
 Before every production build, `npm run build` verifies CSP sources (`verify:security`) and `dist/` artifacts (`verify-production-build.mjs`).
 
@@ -122,6 +123,9 @@ Before every production build, `npm run build` verifies CSP sources (`verify:sec
 - Frontend and API are built by Coolify from `frontend.Dockerfile` and `coolify-compose.yml`.
 - Production runs on Hetzner. The old Hostido deploy job is intentionally absent.
 - Coolify environment values are the source of truth for production build and server secrets.
+- Use separate `API_DATABASE_URL` and `POSTGREST_DATABASE_URL` values backed by
+  dedicated least-privilege roles; never give the public PostgREST container the API
+  write role or a database-owner credential.
 - Use **npm** (`npm ci`) for installs; do not commit alternate lockfiles.
 - Keep Browserslist data current with `npm update caniuse-lite browserslist` when build warnings appear.
 - Do not commit local files such as `.env`, `.DS_Store`, Playwright traces, or reports.

@@ -28,7 +28,12 @@ const NotFound = () => {
         </div>
         <div className={styles.content}>
           <div className={styles.icon}>
-            <Compass size={22} strokeWidth={1.6} aria-hidden="true" />
+            <Compass
+              size={22}
+              strokeWidth={1.6}
+              aria-hidden="true"
+              focusable="false"
+            />
           </div>
           <p className={styles.eyebrow}>{t("notfound.eyebrow")}</p>
           <h1 id="not-found-title" className={styles.title}>
@@ -38,7 +43,7 @@ const NotFound = () => {
           <div className={styles.actions}>
             <Link to={toLocalizedPath()} className={styles.primaryButton}>
               {t("notfound.cta.home")}
-              <ArrowUpRight size={17} aria-hidden="true" />
+              <ArrowUpRight size={17} aria-hidden="true" focusable="false" />
             </Link>
             <Link
               to={toLocalizedPath("contact")}

@@ -6,7 +6,7 @@ If you discover a security vulnerability in the VEZvision website, please report
 
 **DO NOT** open a public issue.
 
-**Contact:** contact@vezvision.com
+**Contact:** security@vezvision.com
 
 Please include:
 

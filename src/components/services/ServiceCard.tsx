@@ -11,6 +11,15 @@ import {
   Cloud,
   Bot,
   Megaphone,
+  ShoppingCart,
+  Building2,
+  Workflow,
+  BrainCircuit,
+  Palette,
+  Network,
+  Wrench,
+  ClipboardCheck,
+  TrendingUp,
 } from "lucide-react";
 import { safeImageUrl } from "@/utils/safeHref";
 
@@ -28,6 +37,7 @@ function isImageSource(value: string): boolean {
 
 const iconMap: Record<string, LucideIcon> = {
   Globe,
+  ShoppingCart,
   Smartphone,
   Database,
   ScanLine,
@@ -38,6 +48,14 @@ const iconMap: Record<string, LucideIcon> = {
   Cloud,
   Bot,
   Megaphone,
+  Building2,
+  Workflow,
+  BrainCircuit,
+  Palette,
+  Network,
+  Wrench,
+  ClipboardCheck,
+  TrendingUp,
 };
 
 function resolveLucideIcon(name: string): LucideIcon | null {

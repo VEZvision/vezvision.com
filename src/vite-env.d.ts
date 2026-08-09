@@ -99,6 +99,14 @@ declare module "*.png?w=600;1200&format=avif&as=srcset" {
   const srcset: string;
   export default srcset;
 }
+declare module "*.png?w=200;400;800&format=webp&as=srcset" {
+  const srcset: string;
+  export default srcset;
+}
+declare module "*.png?w=200;400;800&format=avif&as=srcset" {
+  const srcset: string;
+  export default srcset;
+}
 
 declare module "./scripts/vite-plugin-csp-nonce.mjs" {
   import type { Plugin } from "vite";

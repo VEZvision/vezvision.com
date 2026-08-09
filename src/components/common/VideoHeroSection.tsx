@@ -156,6 +156,7 @@ const VideoHeroSection: FC<VideoHeroSectionProps> = ({
               width="838"
               height="153"
               className={styles.logo}
+              loading="eager"
               fetchPriority={brandPriority ? "high" : "auto"}
             />
 

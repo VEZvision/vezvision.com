@@ -1,7 +1,16 @@
 {
+  "entry": [
+    "backend/server.mjs"
+  ],
   "ignore": [
     "public/trusted-types-policy.js",
     "supabase/functions/**",
     "src/types/database.types.ts"
-  ]
+  ],
+  "ignoreDependencies": ["lightningcss", "pg"],
+  "rules": {
+    "exports": "warn",
+    "types": "warn",
+    "duplicates": "warn"
+  }
 }

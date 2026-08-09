@@ -272,6 +272,7 @@ export default function Footer() {
                 height="153"
                 className={styles.logoImage}
                 decoding="async"
+                loading="lazy"
               />
               <p className={styles.eyebrow}>{footerEyebrow}</p>
               <h2 className={styles.statement}>{footerStatement}</h2>
@@ -311,6 +312,7 @@ export default function Footer() {
                       className={styles.ctaIcon}
                       aria-hidden="true"
                       decoding="async"
+                      loading="lazy"
                     />
                   </a>
                 ) : (
@@ -324,6 +326,7 @@ export default function Footer() {
                       className={styles.ctaIcon}
                       aria-hidden="true"
                       decoding="async"
+                      loading="lazy"
                     />
                   </Link>
                 )}

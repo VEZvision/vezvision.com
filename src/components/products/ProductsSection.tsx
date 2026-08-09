@@ -1,17 +1,26 @@
-import { memo } from 'react';
-import { Link } from 'react-router-dom';
-import styles from './ProductsSection.module.css';
-import SectionHeader from '@/components/ui/SectionHeader';
-import { BriefcaseBusiness, GraduationCap, Package, Sparkles } from 'lucide-react';
-import { useLanguageContext } from '@/hooks/useLanguage';
-import { SectionReveal, StaggerReveal, StaggerItem } from '@/components/ui/SectionReveal';
-import { useSettings } from '@/hooks/useSettings';
-import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { memo } from "react";
+import { Link } from "react-router-dom";
+import styles from "./ProductsSection.module.css";
+import SectionHeader from "@/components/ui/SectionHeader";
+import {
+  BriefcaseBusiness,
+  GraduationCap,
+  Package,
+  Sparkles,
+} from "lucide-react";
+import { useLanguageContext } from "@/hooks/useLanguage";
+import {
+  SectionReveal,
+  StaggerReveal,
+  StaggerItem,
+} from "@/components/ui/SectionReveal";
+import { useSettings } from "@/hooks/useSettings";
+import { useLocalizedPath } from "@/hooks/useLocalizedPath";
 
 const PRODUCT_CATEGORY_KEYS = [
-  'products.category.creative',
-  'products.category.educational',
-  'products.category.business',
+  "products.category.creative",
+  "products.category.educational",
+  "products.category.business",
 ] as const;
 
 const PRODUCT_ICONS = [Sparkles, GraduationCap, BriefcaseBusiness] as const;
@@ -36,7 +45,7 @@ const LinkedInIcon = () => (
 
 interface ProductCardProps {
   index: number;
-  social: ReturnType<typeof useSettings>['social'];
+  social: ReturnType<typeof useSettings>["social"];
 }
 
 const ProductCard = memo(({ index, social }: ProductCardProps) => {
@@ -49,7 +58,7 @@ const ProductCard = memo(({ index, social }: ProductCardProps) => {
   return (
     <article
       className={styles.productCard}
-      aria-label={`${t(categoryKey)} - ${t('products.card.title')}`}
+      aria-label={`${t(categoryKey)} - ${t("products.card.title")}`}
     >
       <div className={styles.cardTopRow}>
         <div className={styles.cardMeta}>
@@ -57,31 +66,53 @@ const ProductCard = memo(({ index, social }: ProductCardProps) => {
           <span className={styles.cardCategory}>{t(categoryKey)}</span>
         </div>
         <div className={styles.iconShell}>
-          <CardIcon className={styles.cardMainIcon} aria-hidden="true" />
+          <CardIcon
+            className={styles.cardMainIcon}
+            aria-hidden="true"
+            focusable="false"
+          />
         </div>
       </div>
 
       <div className={styles.cardContent}>
-        <p className={styles.productEyebrow}>{t('products.coming.subtitle')}</p>
-        <h3 className={styles.productTitle}>{t('products.card.title')}</h3>
-        <p className={styles.productDesc}>{t('products.coming.desc')}</p>
+        <p className={styles.productEyebrow}>{t("products.coming.subtitle")}</p>
+        <h3 className={styles.productTitle}>{t("products.card.title")}</h3>
+        <p className={styles.productDesc}>{t("products.coming.desc")}</p>
       </div>
 
       <div className={styles.cardFooter}>
         {social && (
           <div className={styles.socialIcons}>
             {social.x && (
-              <a href={social.x} className={styles.socialIcon} aria-label="X (Twitter)" target="_blank" rel="noopener noreferrer">
+              <a
+                href={social.x}
+                className={styles.socialIcon}
+                aria-label="X (Twitter)"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <XIcon />
               </a>
             )}
             {social.instagram && (
-              <a href={social.instagram} className={styles.socialIcon} aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+              <a
+                href={social.instagram}
+                className={styles.socialIcon}
+                aria-label="Instagram"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <InstagramIcon />
               </a>
             )}
             {social.linkedin && (
-              <a href={social.linkedin} className={styles.socialIcon} aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
+              <a
+                href={social.linkedin}
+                className={styles.socialIcon}
+                aria-label="LinkedIn"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <LinkedInIcon />
               </a>
             )}
@@ -89,45 +120,55 @@ const ProductCard = memo(({ index, social }: ProductCardProps) => {
         )}
 
         <Link
-          to={toLocalizedPath('newsletter')}
+          to={toLocalizedPath("newsletter")}
           className={styles.comingSoonBadge}
         >
-          <span>{t('products.coming.title')}</span>
+          <span>{t("products.coming.title")}</span>
         </Link>
       </div>
     </article>
   );
 });
 
-ProductCard.displayName = 'ProductCard';
+ProductCard.displayName = "ProductCard";
 
 const ProductsSection = memo(() => {
   const { t } = useLanguageContext();
   const { social } = useSettings();
 
   return (
-    <section id="products" className={styles.section} aria-labelledby="products-heading">
+    <section
+      id="products"
+      className={styles.section}
+      aria-labelledby="products-heading"
+    >
       <div className={styles.container}>
         <SectionReveal>
-        <SectionHeader
-          badgeText={t('products.badge')}
-          badgeIcon={<Package className="w-3.5 h-3.5" />}
-          title={t('products.title')}
-          subtitle={t('products.subtitle')}
-          id="products-heading"
-        />
+          <SectionHeader
+            badgeText={t("products.badge")}
+            badgeIcon={<Package className="w-3.5 h-3.5" />}
+            title={t("products.title")}
+            subtitle={t("products.subtitle")}
+            id="products-heading"
+          />
         </SectionReveal>
 
         <StaggerReveal className={styles.productsGrid}>
-          <StaggerItem><ProductCard index={0} social={social} /></StaggerItem>
-          <StaggerItem><ProductCard index={1} social={social} /></StaggerItem>
-          <StaggerItem><ProductCard index={2} social={social} /></StaggerItem>
+          <StaggerItem>
+            <ProductCard index={0} social={social} />
+          </StaggerItem>
+          <StaggerItem>
+            <ProductCard index={1} social={social} />
+          </StaggerItem>
+          <StaggerItem>
+            <ProductCard index={2} social={social} />
+          </StaggerItem>
         </StaggerReveal>
       </div>
     </section>
   );
 });
 
-ProductsSection.displayName = 'ProductsSection';
+ProductsSection.displayName = "ProductsSection";
 
 export default ProductsSection;

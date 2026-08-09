@@ -1,6 +1,6 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from "react";
 
-import { getTurnstileSiteKey, isTurnstileEnabled } from '@/lib/turnstile';
+import { getTurnstileSiteKey, isTurnstileEnabled } from "@/lib/turnstile";
 
 declare global {
   interface Window {
@@ -10,9 +10,9 @@ declare global {
         options: {
           sitekey: string;
           callback: (token: string) => void;
-          'expired-callback'?: () => void;
-          'error-callback'?: () => void;
-          theme?: 'light' | 'dark' | 'auto';
+          "expired-callback"?: () => void;
+          "error-callback"?: () => void;
+          theme?: "light" | "dark" | "auto";
           action?: string;
         },
       ) => string;
@@ -22,11 +22,12 @@ declare global {
   }
 }
 
-const TURNSTILE_SCRIPT_ID = 'cf-turnstile-script';
-const TURNSTILE_SCRIPT_SRC = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+const TURNSTILE_SCRIPT_ID = "cf-turnstile-script";
+const TURNSTILE_SCRIPT_SRC =
+  "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 
 function loadTurnstileScript(): Promise<void> {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return Promise.resolve();
   }
 
@@ -34,22 +35,28 @@ function loadTurnstileScript(): Promise<void> {
     return Promise.resolve();
   }
 
-  const existing = document.getElementById(TURNSTILE_SCRIPT_ID) as HTMLScriptElement | null;
+  const existing = document.getElementById(
+    TURNSTILE_SCRIPT_ID,
+  ) as HTMLScriptElement | null;
   if (existing) {
     return new Promise((resolve, reject) => {
-      existing.addEventListener('load', () => resolve(), { once: true });
-      existing.addEventListener('error', () => reject(new Error('Turnstile script failed')), { once: true });
+      existing.addEventListener("load", () => resolve(), { once: true });
+      existing.addEventListener(
+        "error",
+        () => reject(new Error("Turnstile script failed")),
+        { once: true },
+      );
     });
   }
 
   return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
+    const script = document.createElement("script");
     script.id = TURNSTILE_SCRIPT_ID;
     script.src = TURNSTILE_SCRIPT_SRC;
     script.async = true;
     script.defer = true;
     script.onload = () => resolve();
-    script.onerror = () => reject(new Error('Turnstile script failed'));
+    script.onerror = () => reject(new Error("Turnstile script failed"));
     document.head.appendChild(script);
   });
 }
@@ -59,7 +66,7 @@ interface TurnstileFieldProps {
   className?: string;
   resetKey?: number;
   loadErrorMessage?: string;
-  action: 'contact' | 'newsletter';
+  action: "contact" | "newsletter";
 }
 
 export default function TurnstileField({
@@ -90,7 +97,7 @@ export default function TurnstileField({
       .catch(() => {
         if (!cancelled) {
           setLoadFailed(true);
-          onTokenChange('');
+          onTokenChange("");
         }
       });
 
@@ -104,11 +111,11 @@ export default function TurnstileField({
 
     widgetIdRef.current = window.turnstile.render(containerRef.current, {
       sitekey: getTurnstileSiteKey(),
-      theme: 'auto',
+      theme: "auto",
       action,
       callback: (token) => onTokenChange(token),
-      'expired-callback': () => onTokenChange(''),
-      'error-callback': () => onTokenChange(''),
+      "expired-callback": () => onTokenChange(""),
+      "error-callback": () => onTokenChange(""),
     });
 
     return () => {
@@ -122,7 +129,7 @@ export default function TurnstileField({
   useEffect(() => {
     if (!ready || !window.turnstile || !widgetIdRef.current) return;
     window.turnstile.reset(widgetIdRef.current);
-    onTokenChange('');
+    onTokenChange("");
   }, [resetKey, ready, onTokenChange]);
 
   if (!isTurnstileEnabled()) {
@@ -134,6 +141,7 @@ export default function TurnstileField({
       <div
         ref={containerRef}
         id={fieldId}
+        role="group"
         aria-label="Security verification"
       />
       {loadFailed && loadErrorMessage ? (

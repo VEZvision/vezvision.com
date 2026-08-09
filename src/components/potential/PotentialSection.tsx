@@ -12,7 +12,7 @@ import IdeaIconCluster from "@/components/potential/IdeaIconCluster";
 
 function BarChartIcon() {
   return (
-    <div className={styles.customBarIcon} aria-hidden>
+    <div className={styles.customBarIcon} aria-hidden="true">
       <div className={styles.barColumn}>
         <div className={`${styles.barMiddle} ${styles.barShort}`} />
       </div>
@@ -61,7 +61,7 @@ function PotentialSection() {
                   <div className={styles.techOrb}>
                     <BarChartIcon />
                   </div>
-                  <div className={styles.techPath} aria-hidden>
+                  <div className={styles.techPath} aria-hidden="true">
                     <span className={styles.techPathLine} />
                     <span className={styles.techPathDot} />
                   </div>
@@ -90,11 +90,7 @@ function PotentialSection() {
           <StaggerItem className={styles.cardLarge}>
             <div className={styles.card}>
               <div className={styles.graphicArea}>
-                <div
-                  className={styles.interactionMockup}
-                  aria-hidden="true"
-                  role="presentation"
-                >
+                <div className={styles.interactionMockup} aria-hidden="true">
                   <div className={styles.mockupHeader}>
                     <div className={styles.searchBarPill}>
                       <div className={styles.statusCircle} />
@@ -132,11 +128,7 @@ function PotentialSection() {
           <StaggerItem className={styles.cardLarge}>
             <div className={styles.card}>
               <div className={styles.graphicArea}>
-                <div
-                  className={styles.pillLayout}
-                  aria-hidden="true"
-                  role="presentation"
-                >
+                <div className={styles.pillLayout} aria-hidden="true">
                   <div className={styles.floatingTagPill}>
                     <span>{t("potential.card3.tag1")}</span>
                     <div className={styles.smallAvatar}>

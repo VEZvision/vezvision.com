@@ -6,7 +6,6 @@ on:
     branches:
       - develop
       - main
-      - master
 
 permissions:
   contents: read
@@ -35,14 +34,17 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Knip (dead code detection — advisory)
-        run: npm run knip -- --no-exit-code
+      - name: Knip (dead code detection)
+        run: npm run knip
 
       - name: Typecheck, parity, and unit tests
         run: npm run check
 
       - name: Build
         run: npm run build
+
+      - name: Bundle size budget
+        run: npm run size:check
 
       - name: Upload production dist
         uses: actions/upload-artifact@v7
@@ -51,8 +53,11 @@ jobs:
           path: dist
           retention-days: 1
 
-      - name: Audit dependencies
-        run: npm audit --audit-level=moderate
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Audit all dependencies
+        run: npm audit --audit-level=high
 
   e2e:
     runs-on: ubuntu-latest
@@ -120,6 +125,7 @@ jobs:
         run: npm run build
         env:
           VITE_API_URL: https://api.example.test
+          SKIP_PRERENDER: "1"
 
       - name: Run Lighthouse CI
         run: npx --yes @lhci/cli@0.15.1 autorun --config=./.github/lighthouserc.json

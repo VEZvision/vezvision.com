@@ -6,7 +6,10 @@ services:
       dockerfile: backend/Dockerfile
     restart: unless-stopped
     environment:
-      DATABASE_URL: ${DATABASE_URL}
+      # API and PostgREST must use different least-privilege database roles.
+      # DATABASE_URL remains a temporary fallback for existing installations.
+      DATABASE_URL: ${API_DATABASE_URL:-${DATABASE_URL}}
+      NODE_ENV: production
       ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
@@ -28,17 +31,25 @@ services:
     networks:
       vezvision_internal:
         aliases: [vezvision-api]
+      # The Coolify-managed PostgreSQL service is discoverable only on this
+      # network. The API still has no published port or Traefik labels.
       coolify: {}
-    security_opt: [no-new-privileges:true]
+    security_opt: ["no-new-privileges:true"]
     cap_drop: [ALL]
     read_only: true
     tmpfs: [/tmp]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/healthz >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
 
   postgrest:
-    image: postgrest/postgrest:v14.1
+    image: postgrest/postgrest:v14.1@sha256:e9490aa503a5fb07d8e8c80da46e5c0c193894e583b59ed9077e74c4101ffae2
     restart: unless-stopped
     environment:
-      PGRST_DB_URI: ${DATABASE_URL}
+      PGRST_DB_URI: ${POSTGREST_DATABASE_URL:-${DATABASE_URL}}
       PGRST_DB_SCHEMA: public
       PGRST_DB_ANON_ROLE: anon
       PGRST_SERVER_HOST: 0.0.0.0
@@ -47,22 +58,27 @@ services:
       vezvision_internal:
         aliases: [vezvision-postgrest]
       coolify: {}
-    security_opt: [no-new-privileges:true]
+    security_opt: ["no-new-privileges:true"]
     cap_drop: [ALL]
     read_only: true
     tmpfs: [/tmp]
-
   gateway:
     build:
       context: .
       dockerfile: backend/nginx.Dockerfile
     restart: unless-stopped
-    depends_on: [api, postgrest]
+    depends_on:
+      api:
+        condition: service_healthy
+      postgrest:
+        # The pinned PostgREST image is distroless and has no shell/wget for a
+        # Compose health command. PostgREST itself retries database startup.
+        condition: service_started
     expose: ["8080"]
     labels:
       - traefik.docker.network=coolify
     networks: [vezvision_internal, coolify]
-    security_opt: [no-new-privileges:true]
+    security_opt: ["no-new-privileges:true"]
     cap_drop: [ALL]
     read_only: true
     tmpfs: [/var/cache/nginx, /var/run, /tmp]
