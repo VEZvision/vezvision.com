@@ -4,7 +4,11 @@ import { Pool } from 'pg'
 import { contactAutoReplyEmail, contactNotificationEmail, newsletterConfirmationEmail } from './email-templates.mjs'
 import { sendEmail as sendResendEmail } from './resend-email.mjs'
 
-const databaseUrl = process.env.DATABASE_URL
+// Coolify injects application variables into each Compose service before
+// Docker performs nested interpolation. Prefer the dedicated role explicitly
+// so a retained legacy DATABASE_URL can remain available for rollback without
+// silently widening the API's database privileges.
+const databaseUrl = process.env.API_DATABASE_URL || process.env.DATABASE_URL
 const isProduction = process.env.NODE_ENV === 'production'
 const allowedOrigins = String(process.env.ALLOWED_ORIGINS || process.env.ALLOWED_ORIGIN || '')
   .split(',')
@@ -37,7 +41,7 @@ const adminPostgrestUrl = process.env.ADMIN_POSTGREST_URL?.trim().replace(/\/$/,
 const adminPostgrestApiKey = process.env.ADMIN_POSTGREST_API_KEY?.trim()
 const publicSiteUrl = (process.env.PUBLIC_SITE_URL?.trim() || allowedOrigins[0] || '').replace(/\/$/, '')
 const publicEmailSiteUrl = (process.env.PUBLIC_EMAIL_SITE_URL?.trim() || 'https://vezvision.com').replace(/\/$/, '')
-if (!databaseUrl || allowedOrigins.length === 0) throw new Error('DATABASE_URL and ALLOWED_ORIGIN/ALLOWED_ORIGINS are required')
+if (!databaseUrl || allowedOrigins.length === 0) throw new Error('API_DATABASE_URL/DATABASE_URL and ALLOWED_ORIGIN/ALLOWED_ORIGINS are required')
 if (isProduction && (!turnstileSecret || turnstileExpectedHostnames.length === 0)) {
   throw new Error('TURNSTILE_SECRET_KEY and TURNSTILE_EXPECTED_HOSTNAMES are required in production')
 }

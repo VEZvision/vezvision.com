@@ -31,6 +31,9 @@ services:
     networks:
       vezvision_internal:
         aliases: [vezvision-api]
+      # The Coolify-managed PostgreSQL service is discoverable only on this
+      # network. The API still has no published port or Traefik labels.
+      coolify: {}
     security_opt: ["no-new-privileges:true"]
     cap_drop: [ALL]
     read_only: true
@@ -54,17 +57,11 @@ services:
     networks:
       vezvision_internal:
         aliases: [vezvision-postgrest]
+      coolify: {}
     security_opt: ["no-new-privileges:true"]
     cap_drop: [ALL]
     read_only: true
     tmpfs: [/tmp]
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3001/ >/dev/null || exit 1"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-      start_period: 10s
-
   gateway:
     build:
       context: .
@@ -74,7 +71,9 @@ services:
       api:
         condition: service_healthy
       postgrest:
-        condition: service_healthy
+        # The pinned PostgREST image is distroless and has no shell/wget for a
+        # Compose health command. PostgREST itself retries database startup.
+        condition: service_started
     expose: ["8080"]
     labels:
       - traefik.docker.network=coolify
