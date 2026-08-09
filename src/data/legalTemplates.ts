@@ -31,7 +31,7 @@ Dane podane w formularzu są przetwarzane w celu wynikającym z funkcji konkretn
 Dane osobowe przechowywane są przez okres niezbędny do realizacji celu przetwarzania:
 
 *   **Dane z formularza kontaktowego** - przechowywane przez okres niezbędny do obsługi zgłoszenia, nie dłużej niż 2 lata od ostatniego kontaktu, chyba że przepisy prawa wymagają dłuższego okresu.
-*   **Dane subskrybenta newslettera** - przechowywane do momentu cofnięcia zgody (wypisania się z newslettera); niepotwierdzone zapisy są usuwane po 30 dniach.
+*   **Dane subskrybenta newslettera** - przechowywane do momentu cofnięcia zgody (wypisania się z newslettera); niepotwierdzone zapisy są usuwane po 30 dniach, a 30 dni po wypisaniu adres e-mail i dane techniczne są anonimizowane. Zachowujemy wyłącznie skrót adresu oraz daty zgody i jej cofnięcia jako minimalny dowód zgodności.
 *   **Dane dotyczące zgody na pliki cookies** - przechowywane przez 1 rok od wyrażenia zgody lub do jej cofnięcia.
 *   **Dane sesyjne (tokeny autoryzacyjne)** - przechowywane przez czas trwania sesji.
 
@@ -104,7 +104,7 @@ Data provided in the form is processed for the purpose resulting from the functi
 Personal data is stored for the period necessary to achieve the purpose of processing:
 
 *   **Contact form data** - stored for the period necessary to handle the inquiry, no longer than 2 years from the last contact, unless applicable law requires a longer period.
-*   **Newsletter subscriber data** - stored until consent is withdrawn (unsubscribing); unconfirmed signups are deleted after 30 days.
+*   **Newsletter subscriber data** - stored until consent is withdrawn (unsubscribing); unconfirmed signups are deleted after 30 days, and the e-mail address and technical data are anonymized 30 days after unsubscribing. Only a hash of the address and the consent/withdrawal dates remain as minimum compliance evidence.
 *   **Cookie consent data** - stored for 1 year from the date of granting consent or until it is withdrawn.
 *   **Session data (authentication tokens)** - stored for the duration of the session.
 

@@ -1,25 +1,18 @@
-## Description
+## What changed
 
-Brief description of what this PR does and why.
+<!-- Describe the user-visible and technical changes. -->
 
-## Type of change
+## Verification
 
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Performance improvement
-- [ ] Refactor / code quality
-- [ ] Documentation update
+- [ ] `npm run lint`
+- [ ] `npm run knip`
+- [ ] `npm run check`
+- [ ] `npm run build`
+- [ ] `npm run size:check`
+- [ ] `npm audit --audit-level=high`
+- [ ] No secret or personal data was added
+- [ ] Mobile and desktop behaviour was checked when UI changed
 
-## Checklist
+## Deployment and rollback
 
-- [ ] Code follows the project's style guidelines (ESLint + Prettier)
-- [ ] Self-review completed
-- [ ] Comments added for complex logic
-- [ ] No new TypeScript errors (`npm run check`)
-- [ ] No new ESLint warnings (`npm run lint`)
-- [ ] No new Knip dead-code findings
-- [ ] npm audit passes with no moderate+ vulnerabilities
-- [ ] No secrets, API keys, or credentials committed
-- [ ] Accessibility implications considered (ARIA, keyboard nav, contrast)
-- [ ] Mobile and desktop layouts verified
+<!-- Note environment changes, migration order and the rollback path. -->
