@@ -4,7 +4,7 @@ set -euo pipefail
 # Loads only the versioned INSERT statements. It deliberately does not re-run
 # Supabase-specific triggers, policies or grants from the source migrations.
 root="$(cd "$(dirname "$0")/../.." && pwd)"
-database_url="${DATABASE_URL:?Set DATABASE_URL for the dedicated vezvision database}"
+database_url="${MIGRATION_DATABASE_URL:?Set MIGRATION_DATABASE_URL for the dedicated vezvision database owner}"
 
 for migration in \
   20260331100000_vv_site_settings.sql \

@@ -5,6 +5,7 @@ import { contactAutoReplyEmail, contactNotificationEmail, newsletterConfirmation
 import { sendEmail as sendResendEmail } from './resend-email.mjs'
 
 const databaseUrl = process.env.DATABASE_URL
+const isProduction = process.env.NODE_ENV === 'production'
 const allowedOrigins = String(process.env.ALLOWED_ORIGINS || process.env.ALLOWED_ORIGIN || '')
   .split(',')
   .map(origin => origin.trim())
@@ -37,7 +38,13 @@ const adminPostgrestApiKey = process.env.ADMIN_POSTGREST_API_KEY?.trim()
 const publicSiteUrl = (process.env.PUBLIC_SITE_URL?.trim() || allowedOrigins[0] || '').replace(/\/$/, '')
 const publicEmailSiteUrl = (process.env.PUBLIC_EMAIL_SITE_URL?.trim() || 'https://vezvision.com').replace(/\/$/, '')
 if (!databaseUrl || allowedOrigins.length === 0) throw new Error('DATABASE_URL and ALLOWED_ORIGIN/ALLOWED_ORIGINS are required')
-if (!turnstileSecret) console.warn('TURNSTILE_SECRET_KEY is not set; contact and newsletter captcha verification is disabled')
+if (isProduction && (!turnstileSecret || turnstileExpectedHostnames.length === 0)) {
+  throw new Error('TURNSTILE_SECRET_KEY and TURNSTILE_EXPECTED_HOSTNAMES are required in production')
+}
+if (isProduction && (!resendApiKey || !contactNotificationFromEmail || !contactReplyFromEmail || !newsletterFromEmail)) {
+  throw new Error('Resend API key and sender addresses are required in production')
+}
+if (!turnstileSecret) console.warn('TURNSTILE_SECRET_KEY is not set; allowed only outside production')
 if (turnstileTestMode) console.warn('TURNSTILE_TEST_MODE is enabled; use only in development')
 if (!resendApiKey || !contactNotificationFromEmail || !contactReplyFromEmail || !newsletterFromEmail) console.warn('Resend API key or sender addresses are not fully configured; some emails are disabled')
 if ([adminApiTokenSha256, adminPostgrestUrl, adminPostgrestApiKey].some(Boolean)
@@ -91,7 +98,7 @@ const cors = (req, res) => {
 }
 const hasAllowedBrowserOrigin = req => {
   const origin = String(req.headers.origin || '').trim()
-  return !origin || allowedOrigins.includes(origin)
+  return origin.length > 0 && allowedOrigins.includes(origin)
 }
 const body = async req => {
   let raw = ''
@@ -198,9 +205,9 @@ async function cleanupRateLimits() {
     const { rows: [retention] } = await pool.query(
       `SELECT * FROM public.cleanup_expired_private_data()`,
     )
-    if (Number(retention?.expired_messages) > 0 || Number(retention?.expired_unconfirmed_subscribers) > 0) {
+    if (Number(retention?.expired_messages) > 0 || Number(retention?.expired_unconfirmed_subscribers) > 0 || Number(retention?.anonymized_unsubscribed) > 0) {
       console.info(
-        `Applied data retention: ${retention.expired_messages} messages and ${retention.expired_unconfirmed_subscribers} unconfirmed subscribers removed`,
+        `Applied data retention: ${retention.expired_messages} messages removed, ${retention.expired_unconfirmed_subscribers} unconfirmed subscribers removed and ${retention.anonymized_unsubscribed} withdrawn subscriptions anonymized`,
       )
     }
   } catch (error) {

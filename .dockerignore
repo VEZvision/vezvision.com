@@ -1,0 +1,17 @@
+.git
+.github
+.husky
+.env
+.env.*
+!.env.example
+node_modules
+backend/node_modules
+dist
+coverage
+playwright-report
+test-results
+docs
+tests
+supabase
+*.log
+.DS_Store

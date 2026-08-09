@@ -1,4 +1,6 @@
 * @vezcode
-/src/components/seo/ @vezcode
-/supabase/ @vezcode
-/scripts/ @vezcode
+
+/.github/ @vezcode
+/backend/ @vezcode
+/deploy/ @vezcode
+/supabase/migrations/ @vezcode

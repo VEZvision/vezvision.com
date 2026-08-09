@@ -10,13 +10,18 @@ API hostname.
 
 1. Apply `schema.sql` to the dedicated `vezvision` database as its owner, then run
    `seed-from-repository.sh` to restore the public CMS defaults versioned in this repo.
-2. Generate a long, unique password and run `provision-postgrest-role.sql` with it.
-3. Set `DATABASE_URL` in Coolify for the restricted `vezvision_api` role, not the
-   `postgres` owner.
+   Apply files in `migrations/` in timestamp order and record each applied filename
+   in the deployment log; every production run starts with a verified backup.
+2. Generate two different long, unique passwords and run
+   `provision-postgrest-role.sql` with `api_password` and `postgrest_password`.
+3. Set `API_DATABASE_URL` in Coolify for the restricted `vezvision_api` role and
+   `POSTGREST_DATABASE_URL` for the dedicated public-read authenticator. These must
+   be different credentials; neither may use the `postgres` owner.
 4. Set `ALLOWED_ORIGIN` or comma-separated `ALLOWED_ORIGINS` to the website origin(s)
    allowed to call `/functions/v1/*`.
-5. If Cloudflare Turnstile is enabled in the frontend (`VITE_TURNSTILE_SITE_KEY`),
-   set the matching server-side `TURNSTILE_SECRET_KEY` in the API service.
+5. In production, set `VITE_TURNSTILE_SITE_KEY`, the matching server-side
+   `TURNSTILE_SECRET_KEY`, and `TURNSTILE_EXPECTED_HOSTNAMES`. The API refuses to
+   start with missing or test credentials.
 6. Point `VITE_API_URL` to the public gateway and `VITE_PUBLIC_ASSETS_URL` to the
    public MinIO/CDN endpoint. Both values are build-time public configuration.
 

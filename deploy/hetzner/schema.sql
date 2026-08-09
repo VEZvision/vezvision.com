@@ -133,7 +133,8 @@ CREATE TABLE IF NOT EXISTS public.vv_newsletter_subscribers (
   token text NOT NULL UNIQUE, is_active boolean NOT NULL DEFAULT true, language text NOT NULL DEFAULT 'pl',
   subscribed_at timestamptz NOT NULL DEFAULT now(), unsubscribed_at timestamptz, updated_at timestamptz NOT NULL DEFAULT now(),
   first_name text, last_name text, created_at timestamptz NOT NULL DEFAULT now(),
-  confirmation_requested_at timestamptz, confirmed_at timestamptz, consent_ip inet, consent_user_agent text
+  confirmation_requested_at timestamptz, confirmed_at timestamptz, consent_ip inet, consent_user_agent text,
+  email_hash text
 );
 
 -- Keep re-applying this standalone schema safe for installations created from an
@@ -153,6 +154,7 @@ ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS confirmati
 ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS confirmed_at timestamptz;
 ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS consent_ip inet;
 ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS consent_user_agent text;
+ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS email_hash text;
 CREATE TABLE IF NOT EXISTS public.messages (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), full_name text NOT NULL, email text NOT NULL, phone text,
   subject text NOT NULL, message text NOT NULL, language text NOT NULL DEFAULT 'pl', client_ip text,
@@ -181,7 +183,7 @@ END $$;
 REVOKE ALL ON FUNCTION public.cleanup_rate_limit_buckets(interval) FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION public.cleanup_expired_private_data()
-RETURNS TABLE(expired_messages bigint, expired_unconfirmed_subscribers bigint)
+RETURNS TABLE(expired_messages bigint, expired_unconfirmed_subscribers bigint, anonymized_unsubscribed bigint)
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public, pg_temp
@@ -189,6 +191,7 @@ AS $$
 DECLARE
   message_count bigint;
   subscriber_count bigint;
+  anonymized_count bigint;
 BEGIN
   DELETE FROM public.messages
   WHERE created_at < now() - interval '2 years';
@@ -200,7 +203,24 @@ BEGIN
     AND confirmation_requested_at < now() - interval '30 days';
   GET DIAGNOSTICS subscriber_count = ROW_COUNT;
 
-  RETURN QUERY SELECT message_count, subscriber_count;
+  UPDATE public.vv_newsletter_subscribers
+  SET email_hash = encode(digest(lower(email), 'sha256'), 'hex'),
+      email = 'erased+' || id::text || '@invalid.local',
+      token = encode(gen_random_bytes(32), 'hex'),
+      source = 'erased',
+      tags = '{}',
+      first_name = NULL,
+      last_name = NULL,
+      consent_ip = NULL,
+      consent_user_agent = NULL,
+      updated_at = now()
+  WHERE is_active = false
+    AND confirmed_at IS NOT NULL
+    AND unsubscribed_at < now() - interval '30 days'
+    AND email_hash IS NULL;
+  GET DIAGNOSTICS anonymized_count = ROW_COUNT;
+
+  RETURN QUERY SELECT message_count, subscriber_count, anonymized_count;
 END $$;
 REVOKE ALL ON FUNCTION public.cleanup_expired_private_data() FROM PUBLIC;
 
