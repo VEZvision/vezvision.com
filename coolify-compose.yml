@@ -12,7 +12,9 @@ services:
       NODE_ENV: production
       ALLOWED_ORIGIN: ${ALLOWED_ORIGIN}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
-      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY:-}
+      # Keep the runtime name expected by the API while sourcing the rotated,
+      # pre-provisioned production secret from Coolify.
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY_ROTATED_202609:-}
       TURNSTILE_EXPECTED_HOSTNAMES: ${TURNSTILE_EXPECTED_HOSTNAMES:-}
       TURNSTILE_TEST_MODE: ${TURNSTILE_TEST_MODE:-false}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
