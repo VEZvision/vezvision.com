@@ -14,7 +14,7 @@ services:
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
       # Use a fresh secret variable so the previously locked Coolify secret can
       # be retired without changing the runtime variable consumed by the API.
-      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY_V2:-}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY_V3:-}
       TURNSTILE_EXPECTED_HOSTNAMES: ${TURNSTILE_EXPECTED_HOSTNAMES:-}
       TURNSTILE_TEST_MODE: ${TURNSTILE_TEST_MODE:-false}
       RESEND_API_KEY: ${RESEND_API_KEY:-}
