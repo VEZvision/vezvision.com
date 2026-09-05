@@ -24,13 +24,6 @@ CREATE TABLE IF NOT EXISTS public.vv_page_seo (
   indexable boolean NOT NULL DEFAULT true, structured_data_json text NOT NULL DEFAULT '',
   is_public boolean NOT NULL DEFAULT true, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
 );
-CREATE TABLE IF NOT EXISTS public.vv_page_sections (
-  page_key text NOT NULL, section_key text NOT NULL, order_index integer NOT NULL DEFAULT 0,
-  enabled boolean NOT NULL DEFAULT true, content_pl jsonb NOT NULL DEFAULT '{}'::jsonb,
-  content_en jsonb NOT NULL DEFAULT '{}'::jsonb, config jsonb NOT NULL DEFAULT '{}'::jsonb,
-  is_public boolean NOT NULL DEFAULT true, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(),
-  UNIQUE (page_key, section_key)
-);
 CREATE TABLE IF NOT EXISTS public.vv_legal_documents (
   document_key text PRIMARY KEY, title_pl text NOT NULL, title_en text NOT NULL,
   content_pl text NOT NULL, content_en text NOT NULL, version text NOT NULL DEFAULT '1.0',
@@ -116,6 +109,19 @@ CREATE TABLE IF NOT EXISTS public.vv_service_category_assignments (
   PRIMARY KEY (service_id, category_id)
 );
 
+CREATE TABLE IF NOT EXISTS public.vv_products (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(), slug text NOT NULL UNIQUE,
+  status text NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'coming_soon', 'published', 'archived')),
+  featured boolean NOT NULL DEFAULT false, order_index integer NOT NULL DEFAULT 0,
+  category_pl text, category_en text, icon text NOT NULL DEFAULT 'package', image_url text,
+  title_display text NOT NULL DEFAULT 'text' CHECK (title_display IN ('text', 'logo')),
+  logo_url text,
+  title_pl text NOT NULL, title_en text, short_desc_pl text, short_desc_en text,
+  description_pl text, description_en text, cta_label_pl text, cta_label_en text,
+  cta_url text, release_at timestamptz, published_at timestamptz, created_by uuid,
+  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
+);
+
 CREATE TABLE IF NOT EXISTS public.vv_faq_categories (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), slug text NOT NULL UNIQUE, name_pl text NOT NULL, name_en text,
   order_index integer NOT NULL DEFAULT 0, is_active boolean NOT NULL DEFAULT true, created_by uuid,
@@ -155,6 +161,8 @@ ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS confirmed_
 ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS consent_ip inet;
 ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS consent_user_agent text;
 ALTER TABLE public.vv_newsletter_subscribers ADD COLUMN IF NOT EXISTS email_hash text;
+ALTER TABLE public.vv_products ADD COLUMN IF NOT EXISTS title_display text NOT NULL DEFAULT 'text';
+ALTER TABLE public.vv_products ADD COLUMN IF NOT EXISTS logo_url text;
 CREATE TABLE IF NOT EXISTS public.messages (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), full_name text NOT NULL, email text NOT NULL, phone text,
   subject text NOT NULL, message text NOT NULL, language text NOT NULL DEFAULT 'pl', client_ip text,
@@ -242,10 +250,10 @@ END $$;
 DROP TRIGGER IF EXISTS vv_blog_posts_updated_at ON public.vv_blog_posts;
 DROP TRIGGER IF EXISTS vv_blog_posts_published_at ON public.vv_blog_posts;
 DROP TRIGGER IF EXISTS vv_page_seo_updated_at ON public.vv_page_seo;
-DROP TRIGGER IF EXISTS vv_page_sections_updated_at ON public.vv_page_sections;
 DROP TRIGGER IF EXISTS vv_legal_documents_updated_at ON public.vv_legal_documents;
 DROP TRIGGER IF EXISTS vv_projects_updated_at ON public.vv_projects;
 DROP TRIGGER IF EXISTS vv_services_updated_at ON public.vv_services;
+DROP TRIGGER IF EXISTS vv_products_updated_at ON public.vv_products;
 DROP TRIGGER IF EXISTS vv_faq_items_updated_at ON public.vv_faq_items;
 DROP TRIGGER IF EXISTS vv_newsletter_subscribers_updated_at ON public.vv_newsletter_subscribers;
 DROP TRIGGER IF EXISTS messages_updated_at ON public.messages;
@@ -253,10 +261,10 @@ DROP TRIGGER IF EXISTS messages_updated_at ON public.messages;
 CREATE TRIGGER vv_blog_posts_updated_at BEFORE UPDATE ON public.vv_blog_posts FOR EACH ROW EXECUTE FUNCTION public.vv_set_updated_at();
 CREATE TRIGGER vv_blog_posts_published_at BEFORE INSERT OR UPDATE ON public.vv_blog_posts FOR EACH ROW EXECUTE FUNCTION public.vv_set_published_at();
 CREATE TRIGGER vv_page_seo_updated_at BEFORE UPDATE ON public.vv_page_seo FOR EACH ROW EXECUTE FUNCTION public.vv_set_updated_at();
-CREATE TRIGGER vv_page_sections_updated_at BEFORE UPDATE ON public.vv_page_sections FOR EACH ROW EXECUTE FUNCTION public.vv_set_updated_at();
 CREATE TRIGGER vv_legal_documents_updated_at BEFORE UPDATE ON public.vv_legal_documents FOR EACH ROW EXECUTE FUNCTION public.vv_set_updated_at();
 CREATE TRIGGER vv_projects_updated_at BEFORE UPDATE ON public.vv_projects FOR EACH ROW EXECUTE FUNCTION public.vv_set_updated_at();
 CREATE TRIGGER vv_services_updated_at BEFORE UPDATE ON public.vv_services FOR EACH ROW EXECUTE FUNCTION public.vv_set_updated_at();
+CREATE TRIGGER vv_products_updated_at BEFORE UPDATE ON public.vv_products FOR EACH ROW EXECUTE FUNCTION public.vv_set_updated_at();
 CREATE TRIGGER vv_faq_items_updated_at BEFORE UPDATE ON public.vv_faq_items FOR EACH ROW EXECUTE FUNCTION public.vv_set_updated_at();
 CREATE TRIGGER vv_newsletter_subscribers_updated_at BEFORE UPDATE ON public.vv_newsletter_subscribers FOR EACH ROW EXECUTE FUNCTION public.vv_set_updated_at();
 CREATE TRIGGER messages_updated_at BEFORE UPDATE ON public.messages FOR EACH ROW EXECUTE FUNCTION public.vv_set_updated_at();
@@ -264,14 +272,35 @@ CREATE TRIGGER messages_updated_at BEFORE UPDATE ON public.messages FOR EACH ROW
 CREATE INDEX IF NOT EXISTS idx_vv_blog_posts_public ON public.vv_blog_posts(published_at DESC) WHERE status = 'published';
 CREATE INDEX IF NOT EXISTS idx_vv_projects_public ON public.vv_projects(order_index) WHERE status = 'published';
 CREATE INDEX IF NOT EXISTS idx_vv_services_public ON public.vv_services(order_index) WHERE status = 'active';
+CREATE INDEX IF NOT EXISTS idx_vv_products_public ON public.vv_products(featured, order_index) WHERE status IN ('coming_soon', 'published');
 CREATE INDEX IF NOT EXISTS idx_vv_faq_items_public ON public.vv_faq_items(category_id, order_index) WHERE is_active;
 
 GRANT USAGE ON SCHEMA public TO anon;
-GRANT SELECT ON public.vv_site_settings, public.vv_page_seo, public.vv_page_sections, public.vv_legal_documents,
-  public.vv_blog_categories, public.vv_blog_posts, public.vv_blog_post_categories,
-  public.vv_project_categories, public.vv_projects, public.vv_project_category_assignments, public.vv_project_technologies, public.vv_project_images,
-  public.vv_service_categories, public.vv_services, public.vv_service_category_assignments,
-  public.vv_faq_categories, public.vv_faq_items TO anon;
+REVOKE SELECT ON ALL TABLES IN SCHEMA public FROM anon;
+GRANT SELECT (key, value, is_public, updated_at) ON public.vv_site_settings TO anon;
+GRANT SELECT (page_key, title_pl, title_en, description_pl, description_en, og_title_pl, og_title_en, og_description_pl, og_description_en, og_image_url, canonical_url, robots, indexable, is_public) ON public.vv_page_seo TO anon;
+GRANT SELECT (document_key, title_pl, title_en, content_pl, content_en, version, last_updated, is_published) ON public.vv_legal_documents TO anon;
+GRANT SELECT (id, slug, name_pl, name_en, color, order_index, created_at) ON public.vv_blog_categories TO anon;
+GRANT SELECT (id, slug, status, featured, featured_image, reading_time, views_count, published_at, title_pl, title_en, excerpt_pl, excerpt_en, content_pl, content_en, meta_title_pl, meta_title_en, meta_desc_pl, meta_desc_en, tags_pl, tags_en, created_at, updated_at) ON public.vv_blog_posts TO anon;
+GRANT SELECT (post_id, category_id, is_primary) ON public.vv_blog_post_categories TO anon;
+GRANT SELECT (id, slug, name_pl, name_en, order_index, created_at) ON public.vv_project_categories TO anon;
+GRANT SELECT (id, slug, status, featured, order_index, cover_image, demo_url, github_url, client_name, title_pl, title_en, show_cover_image, show_demo_url, show_challenge, show_solution, short_desc_pl, short_desc_en, description_pl, description_en, challenge_pl, challenge_en, solution_pl, solution_en, result_pl, result_en, seo_title_pl, seo_title_en, seo_desc_pl, seo_desc_en, created_at, updated_at) ON public.vv_projects TO anon;
+GRANT SELECT (project_id, category_id) ON public.vv_project_category_assignments TO anon;
+GRANT SELECT (id, project_id, name, color, icon, order_index) ON public.vv_project_technologies TO anon;
+GRANT SELECT (id, project_id, path, type, alt_pl, alt_en, order_index, created_at) ON public.vv_project_images TO anon;
+GRANT SELECT (id, slug, name_pl, name_en, order_index, created_at) ON public.vv_service_categories TO anon;
+GRANT SELECT (id, slug, status, featured, order_index, icon, image_url, price, price_unit, price_from, duration, title_pl, title_en, short_desc_pl, short_desc_en, description_pl, description_en, features_pl, features_en, meta_title_pl, meta_title_en, meta_desc_pl, meta_desc_en, created_at, updated_at) ON public.vv_services TO anon;
+GRANT SELECT (service_id, category_id) ON public.vv_service_category_assignments TO anon;
+GRANT SELECT (id, slug, status, featured, order_index, category_pl, category_en, icon, image_url, title_display, logo_url, title_pl, title_en, short_desc_pl, short_desc_en, description_pl, description_en, cta_label_pl, cta_label_en, cta_url, release_at, published_at, created_at, updated_at) ON public.vv_products TO anon;
+GRANT SELECT (id, slug, name_pl, name_en, order_index, is_active, created_at) ON public.vv_faq_categories TO anon;
+GRANT SELECT (id, category_id, question_pl, question_en, answer_pl, answer_en, order_index, is_active, created_at, updated_at) ON public.vv_faq_items TO anon;
+
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'vezvision_admin_api') THEN
+    GRANT SELECT, INSERT, UPDATE, DELETE ON public.vv_products TO vezvision_admin_api;
+  END IF;
+END $$;
 
 DO $$
 DECLARE
@@ -299,7 +328,6 @@ END $$;
 
 ALTER TABLE public.vv_site_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vv_page_seo ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.vv_page_sections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vv_legal_documents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vv_blog_categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vv_blog_posts ENABLE ROW LEVEL SECURITY;
@@ -312,6 +340,7 @@ ALTER TABLE public.vv_project_images ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vv_service_categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vv_services ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vv_service_category_assignments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.vv_products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vv_faq_categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.vv_faq_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
@@ -321,7 +350,6 @@ ALTER TABLE public.vv_blog_post_views ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS public_settings_read ON public.vv_site_settings;
 DROP POLICY IF EXISTS page_seo_read ON public.vv_page_seo;
-DROP POLICY IF EXISTS page_sections_read ON public.vv_page_sections;
 DROP POLICY IF EXISTS legal_documents_read ON public.vv_legal_documents;
 DROP POLICY IF EXISTS blog_categories_read ON public.vv_blog_categories;
 DROP POLICY IF EXISTS blog_posts_read ON public.vv_blog_posts;
@@ -334,6 +362,7 @@ DROP POLICY IF EXISTS project_images_read ON public.vv_project_images;
 DROP POLICY IF EXISTS service_categories_read ON public.vv_service_categories;
 DROP POLICY IF EXISTS services_read ON public.vv_services;
 DROP POLICY IF EXISTS service_assignments_read ON public.vv_service_category_assignments;
+DROP POLICY IF EXISTS products_read ON public.vv_products;
 DROP POLICY IF EXISTS faq_categories_read ON public.vv_faq_categories;
 DROP POLICY IF EXISTS faq_items_read ON public.vv_faq_items;
 
@@ -349,7 +378,6 @@ END $$;
 
 CREATE POLICY public_settings_read ON public.vv_site_settings FOR SELECT TO anon USING (is_public);
 CREATE POLICY page_seo_read ON public.vv_page_seo FOR SELECT TO anon USING (is_public);
-CREATE POLICY page_sections_read ON public.vv_page_sections FOR SELECT TO anon USING (is_public);
 CREATE POLICY legal_documents_read ON public.vv_legal_documents FOR SELECT TO anon USING (is_published);
 CREATE POLICY blog_categories_read ON public.vv_blog_categories FOR SELECT TO anon USING (true);
 CREATE POLICY blog_posts_read ON public.vv_blog_posts FOR SELECT TO anon USING (status = 'published' AND (published_at IS NULL OR published_at <= now()));
@@ -362,6 +390,7 @@ CREATE POLICY project_images_read ON public.vv_project_images FOR SELECT TO anon
 CREATE POLICY service_categories_read ON public.vv_service_categories FOR SELECT TO anon USING (true);
 CREATE POLICY services_read ON public.vv_services FOR SELECT TO anon USING (status = 'active');
 CREATE POLICY service_assignments_read ON public.vv_service_category_assignments FOR SELECT TO anon USING (EXISTS (SELECT 1 FROM public.vv_services s WHERE s.id = service_id AND s.status = 'active'));
+CREATE POLICY products_read ON public.vv_products FOR SELECT TO anon USING (status IN ('coming_soon', 'published') AND (published_at IS NULL OR published_at <= now()));
 CREATE POLICY faq_categories_read ON public.vv_faq_categories FOR SELECT TO anon USING (is_active);
 CREATE POLICY faq_items_read ON public.vv_faq_items FOR SELECT TO anon USING (is_active);
 
